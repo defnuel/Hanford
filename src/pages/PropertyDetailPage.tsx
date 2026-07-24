@@ -137,7 +137,7 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
           <div className="lg:col-span-2 space-y-12">
             {/* Gallery Viewer */}
             <div className="space-y-4">
-              <div className="relative h-[450px] bg-[#510F23] border border-[#8C8C8C]/30 rounded-t-[100px] overflow-hidden shadow-xl group">
+              <div className="relative w-full aspect-[16/10] sm:aspect-video sm:h-[480px] bg-[#510F23] border border-[#8C8C8C]/30 rounded-t-[40px] sm:rounded-t-[100px] overflow-hidden shadow-xl group">
                 <img
                   src={allGalleryImages[activeImageIndex] || property.heroImage}
                   alt={`${property.name} slide ${activeImageIndex + 1}`}
