@@ -1,0 +1,6 @@
+{
+  "name": "Hanford Hotels & Resorts",
+  "description": "Editorial luxury hospitality brand architecture and digital experience for Hanford Hotels & Resorts.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
