@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { Property } from '../types';
 import { fetchPropertyBySlug } from '../services/dataService';
-import { MapPin, Calendar, ArrowLeft, Star } from 'lucide-react';
+import { MapPin, Calendar, ArrowLeft, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CleanPropertyDetails } from '../components/CleanPropertyDetails';
 import { AmenityBadge } from '../components/AmenityBadge';
 
@@ -14,14 +14,40 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const thumbnailContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setLoading(true);
     fetchPropertyBySlug(slug).then((res) => {
       setProperty(res.data);
       setLoading(false);
+      setActiveImageIndex(0);
     });
   }, [slug]);
+
+  // Unique gallery images array removing any duplicates
+  const allGalleryImages = useMemo(() => {
+    if (!property) return [];
+    const combined = [property.heroImage, ...(property.galleryImages || [])].filter(Boolean);
+    return Array.from(new Set(combined));
+  }, [property]);
+
+  // Auto-scroll active thumbnail into view
+  useEffect(() => {
+    if (thumbnailContainerRef.current && allGalleryImages.length > 0) {
+      const activeThumb = thumbnailContainerRef.current.children[activeImageIndex] as HTMLElement;
+      if (activeThumb) {
+        activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+  }, [activeImageIndex, allGalleryImages.length]);
+
+  const scrollThumbnails = (direction: 'left' | 'right') => {
+    if (thumbnailContainerRef.current) {
+      const scrollAmount = direction === 'left' ? -280 : 280;
+      thumbnailContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   if (loading) {
     return (
@@ -55,8 +81,6 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
       </div>
     );
   }
-
-  const allGalleryImages = [property.heroImage, ...(property.galleryImages || [])];
 
   return (
     <div className="bg-[#E8DAC1] pt-24 pb-24 text-[#1A1A1A]">
@@ -113,33 +137,84 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
           <div className="lg:col-span-2 space-y-12">
             {/* Gallery Viewer */}
             <div className="space-y-4">
-              <div className="relative h-[450px] bg-[#510F23] border border-[#8C8C8C]/30 rounded-t-[100px] overflow-hidden shadow-xl">
+              <div className="relative h-[450px] bg-[#510F23] border border-[#8C8C8C]/30 rounded-t-[100px] overflow-hidden shadow-xl group">
                 <img
-                  src={allGalleryImages[activeImageIndex]}
-                  alt={`${property.name} slide`}
+                  src={allGalleryImages[activeImageIndex] || property.heroImage}
+                  alt={`${property.name} slide ${activeImageIndex + 1}`}
                   className="w-full h-full object-cover transition-all duration-500"
                   referrerPolicy="no-referrer"
                 />
+
+                {/* Counter overlay */}
+                {allGalleryImages.length > 0 && (
+                  <div className="absolute bottom-4 right-6 bg-[#510F23]/80 backdrop-blur-md text-[#E8DAC1] px-3.5 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border border-[#C19F6A]/30">
+                    {activeImageIndex + 1} / {allGalleryImages.length}
+                  </div>
+                )}
+
+                {/* Main image Prev/Next arrows overlay */}
+                {allGalleryImages.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => setActiveImageIndex((prev) => (prev === 0 ? allGalleryImages.length - 1 : prev - 1))}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-[#510F23]/80 text-[#E8DAC1] hover:bg-[#510F23] transition-all opacity-0 group-hover:opacity-100 border border-[#C19F6A]/30 shadow-lg"
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft className="w-5 h-5 text-[#C19F6A]" />
+                    </button>
+                    <button
+                      onClick={() => setActiveImageIndex((prev) => (prev === allGalleryImages.length - 1 ? 0 : prev + 1))}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-[#510F23]/80 text-[#E8DAC1] hover:bg-[#510F23] transition-all opacity-0 group-hover:opacity-100 border border-[#C19F6A]/30 shadow-lg"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight className="w-5 h-5 text-[#C19F6A]" />
+                    </button>
+                  </>
+                )}
               </div>
 
-              {/* Gallery Thumbnails */}
-              <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
-                {allGalleryImages.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveImageIndex(idx)}
-                    className={`relative h-20 overflow-hidden rounded-xl border-2 transition-all ${
-                      activeImageIndex === idx ? 'border-[#510F23] scale-95 shadow-md' : 'border-transparent opacity-70 hover:opacity-100'
-                    }`}
-                  >
-                    <img
-                      src={img}
-                      alt="Thumbnail"
-                      className="w-full h-full object-cover"
-                      referrerPolicy="no-referrer"
-                    />
-                  </button>
-                ))}
+              {/* Horizontal Single Row Thumbnail Carousel with Navigation Arrows */}
+              <div className="relative flex items-center gap-2">
+                <button
+                  onClick={() => scrollThumbnails('left')}
+                  className="p-2.5 rounded-full bg-[#510F23] text-[#E8DAC1] hover:bg-[#3d0b1a] transition-all border border-[#C19F6A]/30 shrink-0 shadow-sm"
+                  aria-label="Scroll thumbnails left"
+                >
+                  <ChevronLeft className="w-4 h-4 text-[#C19F6A]" />
+                </button>
+
+                <div
+                  ref={thumbnailContainerRef}
+                  className="flex flex-1 gap-3 overflow-x-auto scroll-smooth py-1 px-1 scrollbar-none"
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                  {allGalleryImages.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveImageIndex(idx)}
+                      className={`relative h-20 w-28 shrink-0 overflow-hidden rounded-xl border-2 transition-all ${
+                        activeImageIndex === idx
+                          ? 'border-[#510F23] scale-95 shadow-md ring-2 ring-[#C19F6A]'
+                          : 'border-transparent opacity-70 hover:opacity-100'
+                      }`}
+                    >
+                      <img
+                        src={img}
+                        alt={`Thumbnail ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => scrollThumbnails('right')}
+                  className="p-2.5 rounded-full bg-[#510F23] text-[#E8DAC1] hover:bg-[#3d0b1a] transition-all border border-[#C19F6A]/30 shrink-0 shadow-sm"
+                  aria-label="Scroll thumbnails right"
+                >
+                  <ChevronRight className="w-4 h-4 text-[#C19F6A]" />
+                </button>
               </div>
             </div>
 
