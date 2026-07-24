@@ -41,11 +41,11 @@ export const getAmenityIcon = (name: string) => {
 export const AmenityBadge: React.FC<AmenityBadgeProps> = ({ name }) => {
   const Icon = getAmenityIcon(name);
   return (
-    <div className="flex items-center gap-3.5 py-3 px-4 rounded-xl bg-[#f5f2ed] border border-black/10 hover:border-black/30 transition-all shadow-sm group">
-      <div className="w-9 h-9 rounded-full bg-[#1a1a1a] flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
-        <Icon className="w-4 h-4 text-amber-200" />
+    <div className="flex items-center gap-3.5 py-3 px-4 rounded-xl bg-[#E8DAC1]/80 border border-[#8C8C8C]/30 hover:border-[#510F23]/40 transition-all shadow-sm group">
+      <div className="w-9 h-9 rounded-full bg-[#510F23] flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform border border-[#C19F6A]/30">
+        <Icon className="w-4 h-4 text-[#C19F6A]" />
       </div>
-      <span className="text-xs font-medium text-[#1a1a1a] tracking-wide">{name}</span>
+      <span className="text-xs font-medium text-[#1A1A1A] tracking-wide">{name}</span>
     </div>
   );
 };

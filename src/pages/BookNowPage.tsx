@@ -92,54 +92,54 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
   };
 
   return (
-    <div className="bg-[#f5f2ed] text-[#1a1a1a] pt-32 pb-24 min-h-screen">
+    <div className="bg-[#E8DAC1] text-[#1A1A1A] pt-32 pb-24 min-h-screen">
       <div className="max-w-4xl mx-auto px-6 sm:px-8">
         {/* Header */}
         <div className="text-center space-y-4 mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#1a1a1a] text-white rounded-full text-[10px] font-bold tracking-[0.3em] uppercase shadow">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#510F23] text-[#E8DAC1] rounded-full text-[10px] font-bold tracking-[0.3em] uppercase shadow border border-[#C19F6A]/30">
+            <Sparkles className="w-3.5 h-3.5 text-[#C19F6A]" />
             <span>CENTRAL RESERVATIONS</span>
           </div>
-          <h1 className="font-serif italic text-4xl sm:text-6xl text-[#1a1a1a] font-light">
+          <h1 className="font-serif italic text-4xl sm:text-6xl text-[#510F23] font-light">
             Reserve Your Sanctuary
           </h1>
-          <p className="text-xs sm:text-sm text-black/70 max-w-lg mx-auto font-light leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#1A1A1A]/80 max-w-lg mx-auto font-light leading-relaxed">
             Please submit your itinerary details. Inquiries are logged directly to the Hanford Central Booking Register (Google Sheets Integration).
           </p>
         </div>
 
         {/* Success Modal / Banner */}
         {successResult ? (
-          <div className="bg-[#e8e4de] border border-black/10 rounded-2xl p-10 text-center space-y-6 shadow-2xl animate-in fade-in duration-500">
-            <div className="w-16 h-16 bg-[#1a1a1a] text-white rounded-full flex items-center justify-center mx-auto border border-black/20">
+          <div className="bg-[#E8DAC1] border border-[#8C8C8C]/40 rounded-2xl p-10 text-center space-y-6 shadow-2xl animate-in fade-in duration-500">
+            <div className="w-16 h-16 bg-[#510F23] text-[#C19F6A] rounded-full flex items-center justify-center mx-auto border border-[#C19F6A]/30">
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
             <div className="space-y-2">
-              <span className="text-[10px] font-bold tracking-[0.3em] text-black/60 uppercase block">
+              <span className="text-[10px] font-bold tracking-[0.3em] text-[#8C8C8C] uppercase block">
                 RESERVATION INQUIRY RECORDED
               </span>
-              <h2 className="font-serif italic text-3xl text-[#1a1a1a]">
+              <h2 className="font-serif italic text-3xl text-[#510F23]">
                 Thank You, {formData.guestName}
               </h2>
             </div>
 
-            <p className="text-xs text-black/70 max-w-md mx-auto leading-relaxed font-light">
+            <p className="text-xs text-[#1A1A1A]/80 max-w-md mx-auto leading-relaxed font-light">
               {successResult.message}
             </p>
 
-            <div className="bg-white p-6 border border-black/10 rounded-2xl text-left text-xs space-y-2 max-w-md mx-auto">
-              <div className="flex justify-between border-b border-black/10 pb-2">
-                <span className="text-black/50">Sanctuary:</span>
-                <strong className="text-[#1a1a1a]">{formData.propertyName}</strong>
+            <div className="bg-[#FAF8F5] p-6 border border-[#8C8C8C]/30 rounded-2xl text-left text-xs space-y-2 max-w-md mx-auto">
+              <div className="flex justify-between border-b border-[#8C8C8C]/20 pb-2">
+                <span className="text-[#8C8C8C]">Sanctuary:</span>
+                <strong className="text-[#510F23]">{formData.propertyName}</strong>
               </div>
-              <div className="flex justify-between border-b border-black/10 pb-2">
-                <span className="text-black/50">Dates:</span>
-                <span className="text-[#1a1a1a]">{formData.checkInDate || 'TBD'} to {formData.checkOutDate || 'TBD'}</span>
+              <div className="flex justify-between border-b border-[#8C8C8C]/20 pb-2">
+                <span className="text-[#8C8C8C]">Dates:</span>
+                <span className="text-[#1A1A1A]">{formData.checkInDate || 'TBD'} to {formData.checkOutDate || 'TBD'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-black/50">Guests:</span>
-                <span className="text-[#1a1a1a]">{formData.guestsCount} Guests</span>
+                <span className="text-[#8C8C8C]">Guests:</span>
+                <span className="text-[#1A1A1A]">{formData.guestsCount} Guests</span>
               </div>
             </div>
 
@@ -159,14 +159,14 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     specialRequests: ''
                   });
                 }}
-                className="px-6 py-3 border border-black/20 text-[#1a1a1a] rounded-full text-xs font-bold tracking-widest uppercase hover:bg-black/10 transition-colors"
+                className="px-6 py-3 border border-[#8C8C8C]/40 text-[#510F23] rounded-full text-xs font-bold tracking-widest uppercase hover:bg-[#510F23]/10 transition-colors"
               >
                 SUBMIT ANOTHER INQUIRY
               </button>
 
               <button
                 onClick={() => onNavigate('/locations')}
-                className="px-6 py-3 bg-[#1a1a1a] text-white rounded-full text-xs font-bold tracking-widest uppercase hover:bg-black/80 transition-colors"
+                className="px-6 py-3 bg-[#510F23] text-white rounded-full text-xs font-bold tracking-widest uppercase hover:bg-[#3d0b1a] transition-colors border border-[#C19F6A]/30"
               >
                 EXPLORE LOCATIONS
               </button>
@@ -176,7 +176,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
           /* Form Container */
           <form
             onSubmit={handleSubmit}
-            className="bg-[#e8e4de] border border-black/10 rounded-2xl p-8 sm:p-12 shadow-xl space-y-8"
+            className="bg-[#E8DAC1] border border-[#8C8C8C]/40 rounded-2xl p-8 sm:p-12 shadow-xl space-y-8"
           >
             {errorMessage && (
               <div className="p-4 bg-rose-100 border border-rose-300 text-rose-900 text-xs rounded-xl flex items-center gap-3">
@@ -187,19 +187,19 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
             {/* Section 1: Property Selection */}
             <div className="space-y-4">
-              <label className="block text-[11px] font-bold tracking-[0.2em] text-[#1a1a1a] uppercase">
+              <label className="block text-[11px] font-bold tracking-[0.2em] text-[#510F23] uppercase">
                 1. SELECT SANCTUARY & DESTINATION *
               </label>
 
               {loadingLocations ? (
-                <div className="h-10 bg-black/10 animate-pulse rounded-full" />
+                <div className="h-10 bg-[#8C8C8C]/20 animate-pulse rounded-full" />
               ) : (
                 <div className="relative">
                   <select
                     value={formData.propertySlug}
                     onChange={(e) => handlePropertyChange(e.target.value)}
                     required
-                    className="w-full px-5 py-3 bg-white border border-black/10 rounded-full text-xs text-[#1a1a1a] font-medium focus:outline-none focus:border-black appearance-none"
+                    className="w-full px-5 py-3 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-full text-xs text-[#1A1A1A] font-medium focus:outline-none focus:border-[#510F23] appearance-none"
                   >
                     {properties.map((p) => (
                       <option key={p.id} value={p.slug}>
@@ -207,20 +207,20 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       </option>
                     ))}
                   </select>
-                  <Building2 className="w-4 h-4 text-gray-400 absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <Building2 className="w-4 h-4 text-[#8C8C8C] absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               )}
             </div>
 
             {/* Section 2: Guest Personal Information */}
-            <div className="space-y-4 pt-4 border-t border-black/10">
-              <label className="block text-[11px] font-bold tracking-[0.2em] text-[#1a1a1a] uppercase">
+            <div className="space-y-4 pt-4 border-t border-[#8C8C8C]/30">
+              <label className="block text-[11px] font-bold tracking-[0.2em] text-[#510F23] uppercase">
                 2. GUEST CONTACT INFORMATION *
               </label>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-[11px] font-bold text-black/60 mb-1">
+                  <label className="block text-[11px] font-bold text-[#8C8C8C] mb-1">
                     Full Name *
                   </label>
                   <input
@@ -229,12 +229,12 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     placeholder="Lord / Lady / Mr. / Ms. Full Name"
                     value={formData.guestName}
                     onChange={(e) => setFormData({ ...formData, guestName: e.target.value })}
-                    className="w-full px-5 py-3 bg-white border border-black/10 rounded-full text-xs text-[#1a1a1a] focus:outline-none focus:border-black"
+                    className="w-full px-5 py-3 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-full text-xs text-[#1A1A1A] focus:outline-none focus:border-[#510F23]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold text-black/60 mb-1">
+                  <label className="block text-[11px] font-bold text-[#8C8C8C] mb-1">
                     Email Address *
                   </label>
                   <input
@@ -243,13 +243,13 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     placeholder="guest@domain.com"
                     value={formData.guestEmail}
                     onChange={(e) => setFormData({ ...formData, guestEmail: e.target.value })}
-                    className="w-full px-5 py-3 bg-white border border-black/10 rounded-full text-xs text-[#1a1a1a] focus:outline-none focus:border-black"
+                    className="w-full px-5 py-3 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-full text-xs text-[#1A1A1A] focus:outline-none focus:border-[#510F23]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-black/60 mb-1">
+                <label className="block text-[11px] font-bold text-[#8C8C8C] mb-1">
                   Telephone / WhatsApp Number
                 </label>
                 <input
@@ -257,50 +257,50 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   placeholder="+1 (555) 000-0000"
                   value={formData.guestPhone}
                   onChange={(e) => setFormData({ ...formData, guestPhone: e.target.value })}
-                  className="w-full px-5 py-3 bg-white border border-black/10 rounded-full text-xs text-[#1a1a1a] focus:outline-none focus:border-black"
+                  className="w-full px-5 py-3 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-full text-xs text-[#1A1A1A] focus:outline-none focus:border-[#510F23]"
                 />
               </div>
             </div>
 
             {/* Section 3: Travel Dates & Party */}
-            <div className="space-y-4 pt-4 border-t border-black/10">
-              <label className="block text-[11px] font-bold tracking-[0.2em] text-[#1a1a1a] uppercase">
+            <div className="space-y-4 pt-4 border-t border-[#8C8C8C]/30">
+              <label className="block text-[11px] font-bold tracking-[0.2em] text-[#510F23] uppercase">
                 3. DATES & PARTY DETAILS
               </label>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-[11px] font-bold text-black/60 mb-1">
+                  <label className="block text-[11px] font-bold text-[#8C8C8C] mb-1">
                     Check-in Date
                   </label>
                   <input
                     type="date"
                     value={formData.checkInDate}
                     onChange={(e) => setFormData({ ...formData, checkInDate: e.target.value })}
-                    className="w-full px-5 py-3 bg-white border border-black/10 rounded-full text-xs text-[#1a1a1a] focus:outline-none focus:border-black"
+                    className="w-full px-5 py-3 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-full text-xs text-[#1A1A1A] focus:outline-none focus:border-[#510F23]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold text-black/60 mb-1">
+                  <label className="block text-[11px] font-bold text-[#8C8C8C] mb-1">
                     Check-out Date
                   </label>
                   <input
                     type="date"
                     value={formData.checkOutDate}
                     onChange={(e) => setFormData({ ...formData, checkOutDate: e.target.value })}
-                    className="w-full px-5 py-3 bg-white border border-black/10 rounded-full text-xs text-[#1a1a1a] focus:outline-none focus:border-black"
+                    className="w-full px-5 py-3 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-full text-xs text-[#1A1A1A] focus:outline-none focus:border-[#510F23]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold text-black/60 mb-1">
+                  <label className="block text-[11px] font-bold text-[#8C8C8C] mb-1">
                     Number of Guests
                   </label>
                   <select
                     value={formData.guestsCount}
                     onChange={(e) => setFormData({ ...formData, guestsCount: parseInt(e.target.value, 10) })}
-                    className="w-full px-5 py-3 bg-white border border-black/10 rounded-full text-xs text-[#1a1a1a] focus:outline-none focus:border-black"
+                    className="w-full px-5 py-3 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-full text-xs text-[#1A1A1A] focus:outline-none focus:border-[#510F23]"
                   >
                     {[1, 2, 3, 4, 5, 6, 8, 10].map((n) => (
                       <option key={n} value={n}>
@@ -313,8 +313,8 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
             </div>
 
             {/* Section 4: Special Requests / Concierge Notes */}
-            <div className="space-y-4 pt-4 border-t border-black/10">
-              <label className="block text-[11px] font-bold tracking-[0.2em] text-[#1a1a1a] uppercase">
+            <div className="space-y-4 pt-4 border-t border-[#8C8C8C]/30">
+              <label className="block text-[11px] font-bold tracking-[0.2em] text-[#510F23] uppercase">
                 4. SPECIAL REQUESTS & CONCIERGE PREFERENCES
               </label>
 
@@ -323,16 +323,16 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 placeholder="Dietary requirements, airport transfer details, celebratory arrangements, suite preferences..."
                 value={formData.specialRequests}
                 onChange={(e) => setFormData({ ...formData, specialRequests: e.target.value })}
-                className="w-full px-5 py-4 bg-white border border-black/10 rounded-2xl text-xs text-[#1a1a1a] focus:outline-none focus:border-black"
+                className="w-full px-5 py-4 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-2xl text-xs text-[#1A1A1A] focus:outline-none focus:border-[#510F23]"
               />
             </div>
 
             {/* Submit Action */}
-            <div className="pt-6 border-t border-black/10">
+            <div className="pt-6 border-t border-[#8C8C8C]/30">
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-4 bg-[#1a1a1a] text-white hover:bg-black/80 rounded-full text-xs font-bold tracking-[0.25em] uppercase transition-all duration-300 shadow-xl flex items-center justify-center gap-3 disabled:opacity-50"
+                className="w-full py-4 bg-[#510F23] text-white hover:bg-[#3d0b1a] rounded-full text-xs font-bold tracking-[0.25em] uppercase transition-all duration-300 shadow-xl flex items-center justify-center gap-3 disabled:opacity-50 border border-[#C19F6A]/30"
               >
                 {submitting ? (
                   <>
@@ -341,7 +341,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   </>
                 ) : (
                   <>
-                    <Send className="w-4 h-4" />
+                    <Send className="w-4 h-4 text-[#C19F6A]" />
                     <span>SUBMIT INQUIRY TO HANFORD</span>
                   </>
                 )}

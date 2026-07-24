@@ -25,10 +25,10 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
 
   if (loading) {
     return (
-      <div className="bg-[#f5f2ed] pt-32 pb-24 min-h-screen flex items-center justify-center">
+      <div className="bg-[#E8DAC1] pt-32 pb-24 min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="w-12 h-12 border-2 border-black border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-xs font-serif italic tracking-widest text-[#1a1a1a] uppercase">
+          <div className="w-12 h-12 border-2 border-[#510F23] border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-xs font-serif italic tracking-widest text-[#510F23] uppercase">
             Loading Sanctuary Details...
           </p>
         </div>
@@ -38,16 +38,16 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
 
   if (!property) {
     return (
-      <div className="bg-[#f5f2ed] pt-32 pb-24 min-h-screen">
+      <div className="bg-[#E8DAC1] pt-32 pb-24 min-h-screen">
         <div className="max-w-3xl mx-auto px-6 text-center space-y-6">
-          <MapPin className="w-12 h-12 text-[#1a1a1a] mx-auto" />
-          <h1 className="font-serif italic text-3xl text-[#1a1a1a]">Sanctuary Not Found</h1>
-          <p className="text-xs text-black/70 font-light">
+          <MapPin className="w-12 h-12 text-[#510F23] mx-auto" />
+          <h1 className="font-serif italic text-3xl text-[#510F23]">Sanctuary Not Found</h1>
+          <p className="text-xs text-[#1A1A1A]/80 font-light">
             We could not locate the requested Hanford property details.
           </p>
           <button
             onClick={() => onNavigate('/locations')}
-            className="px-6 py-3 bg-[#1a1a1a] text-white rounded-full text-xs font-bold tracking-widest uppercase hover:bg-black/80 transition-colors"
+            className="px-6 py-3 bg-[#510F23] text-white rounded-full text-xs font-bold tracking-widest uppercase hover:bg-[#3d0b1a] transition-colors border border-[#C19F6A]/30"
           >
             RETURN TO ALL LOCATIONS
           </button>
@@ -59,33 +59,33 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
   const allGalleryImages = [property.heroImage, ...(property.galleryImages || [])];
 
   return (
-    <div className="bg-[#f5f2ed] pt-24 pb-24 text-[#1a1a1a]">
+    <div className="bg-[#E8DAC1] pt-24 pb-24 text-[#1A1A1A]">
       {/* Breadcrumb Navigation Bar */}
-      <div className="bg-[#e8e4de] border-b border-black/10 py-4">
+      <div className="bg-[#E8DAC1] border-b border-[#8C8C8C]/30 py-4">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 flex items-center justify-between text-xs">
           <button
             onClick={() => onNavigate('/locations')}
-            className="inline-flex items-center gap-2 text-black/70 hover:text-black font-bold tracking-wider transition-colors"
+            className="inline-flex items-center gap-2 text-[#510F23] hover:text-[#C19F6A] font-bold tracking-wider transition-colors"
           >
-            <ArrowLeft className="w-3.5 h-3.5 text-[#1a1a1a]" />
+            <ArrowLeft className="w-3.5 h-3.5 text-[#510F23]" />
             <span>BACK TO ALL LOCATIONS</span>
           </button>
 
-          <span className="text-black/60 font-light">
-            {property.continent} / {property.country} / <strong className="text-[#1a1a1a]">{property.name}</strong>
+          <span className="text-[#8C8C8C] font-light">
+            {property.continent} / {property.country} / <strong className="text-[#510F23]">{property.name}</strong>
           </span>
         </div>
       </div>
 
       {/* Main Hero Header */}
-      <section className="relative bg-[#1a1a1a] text-white py-16 overflow-hidden">
+      <section className="relative bg-[#510F23] text-[#E8DAC1] py-16 overflow-hidden border-b border-[#C19F6A]/30">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 relative z-10">
           <div className="max-w-3xl space-y-4">
             <div className="flex items-center gap-3">
-              <span className="px-3 py-1 bg-white text-[#1a1a1a] text-[10px] font-bold tracking-[0.2em] uppercase rounded-full">
+              <span className="px-3 py-1 bg-[#C19F6A] text-[#1A1A1A] text-[10px] font-bold tracking-[0.2em] uppercase rounded-full">
                 {property.status}
               </span>
-              <span className="text-xs font-bold tracking-[0.25em] text-[#d6d2cc] uppercase">
+              <span className="text-xs font-bold tracking-[0.25em] text-[#C19F6A] uppercase">
                 {property.continent} • {property.country}
               </span>
             </div>
@@ -94,12 +94,12 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
               {property.name}
             </h1>
 
-            <p className="text-base sm:text-lg font-light text-gray-300 italic">
+            <p className="text-base sm:text-lg font-light text-[#E8DAC1]/80 italic">
               "{property.tagline}"
             </p>
 
-            <div className="flex items-center gap-2 text-xs text-gray-300 pt-2 font-light">
-              <MapPin className="w-4 h-4 text-[#d6d2cc]" />
+            <div className="flex items-center gap-2 text-xs text-[#E8DAC1]/80 pt-2 font-light">
+              <MapPin className="w-4 h-4 text-[#C19F6A]" />
               <span>{property.address}</span>
             </div>
           </div>
@@ -113,7 +113,7 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
           <div className="lg:col-span-2 space-y-12">
             {/* Gallery Viewer */}
             <div className="space-y-4">
-              <div className="relative h-[450px] bg-[#1a1a1a] border border-black/10 rounded-t-[100px] overflow-hidden shadow-xl">
+              <div className="relative h-[450px] bg-[#510F23] border border-[#8C8C8C]/30 rounded-t-[100px] overflow-hidden shadow-xl">
                 <img
                   src={allGalleryImages[activeImageIndex]}
                   alt={`${property.name} slide`}
@@ -129,7 +129,7 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
                     className={`relative h-20 overflow-hidden rounded-xl border-2 transition-all ${
-                      activeImageIndex === idx ? 'border-black scale-95' : 'border-transparent opacity-70 hover:opacity-100'
+                      activeImageIndex === idx ? 'border-[#510F23] scale-95 shadow-md' : 'border-transparent opacity-70 hover:opacity-100'
                     }`}
                   >
                     <img
@@ -150,58 +150,58 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
           {/* Right Column: Reservation Card & Amenities Grid */}
           <div className="space-y-8">
             {/* Direct Reservation Sticky Card */}
-            <div className="bg-[#1a1a1a] text-white p-8 border border-black/10 rounded-2xl shadow-2xl sticky top-28 space-y-6">
-              <div className="border-b border-white/20 pb-6 flex items-end justify-between">
+            <div className="bg-[#510F23] text-[#E8DAC1] p-8 border border-[#C19F6A]/30 rounded-2xl shadow-2xl sticky top-28 space-y-6">
+              <div className="border-b border-[#C19F6A]/30 pb-6 flex items-end justify-between">
                 <div>
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-gray-400 block">
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-[#C19F6A] block">
                     Starting From
                   </span>
                   <span className="font-serif italic text-3xl text-white font-light">
                     ${property.priceFrom}
                   </span>
-                  <span className="text-xs text-gray-400 font-light"> / night</span>
+                  <span className="text-xs text-[#E8DAC1]/80 font-light"> / night</span>
                 </div>
-                <div className="flex items-center gap-1 text-white text-xs">
-                  <Star className="w-4 h-4 fill-white text-amber-300" />
+                <div className="flex items-center gap-1 text-[#E8DAC1] text-xs">
+                  <Star className="w-4 h-4 fill-[#C19F6A] text-[#C19F6A]" />
                   <span className="font-bold">{property.rating}</span>
                 </div>
               </div>
 
-              <div className="space-y-3 text-xs text-gray-300 font-light">
-                <div className="flex justify-between py-2 border-b border-white/10">
-                  <span className="text-gray-400">Status</span>
-                  <span className="text-emerald-400 font-medium">{property.status}</span>
+              <div className="space-y-3 text-xs text-[#E8DAC1]/80 font-light">
+                <div className="flex justify-between py-2 border-b border-[#C19F6A]/20">
+                  <span className="text-[#C19F6A]">Status</span>
+                  <span className="text-emerald-300 font-medium">{property.status}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-white/10">
-                  <span className="text-gray-400">Country</span>
+                <div className="flex justify-between py-2 border-b border-[#C19F6A]/20">
+                  <span className="text-[#C19F6A]">Country</span>
                   <span className="text-white">{property.country}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-white/10">
-                  <span className="text-gray-400">Continent</span>
+                <div className="flex justify-between py-2 border-b border-[#C19F6A]/20">
+                  <span className="text-[#C19F6A]">Continent</span>
                   <span className="text-white">{property.continent}</span>
                 </div>
               </div>
 
               <button
                 onClick={() => onNavigate(`/book-now?property=${property.slug}`)}
-                className="w-full py-4 bg-white text-[#1a1a1a] hover:bg-[#d6d2cc] rounded-full text-xs font-bold tracking-widest uppercase transition-colors shadow-lg flex items-center justify-center gap-2"
+                className="w-full py-4 bg-[#C19F6A] text-[#1A1A1A] hover:bg-[#d4b17c] rounded-full text-xs font-bold tracking-widest uppercase transition-colors shadow-lg flex items-center justify-center gap-2"
               >
-                <Calendar className="w-4 h-4" />
+                <Calendar className="w-4 h-4 text-[#1A1A1A]" />
                 <span>RESERVE THIS SANCTUARY</span>
               </button>
 
-              <p className="text-[10px] text-gray-400 text-center font-light leading-relaxed">
+              <p className="text-[10px] text-[#E8DAC1]/70 text-center font-light leading-relaxed">
                 Inquiries are transmitted directly to Hanford Central Reservations in real time.
               </p>
             </div>
 
             {/* Included Estate Amenities with Icons */}
-            <div className="bg-[#e8e4de] p-8 border border-black/10 rounded-2xl space-y-6">
+            <div className="bg-[#E8DAC1] p-8 border border-[#8C8C8C]/40 rounded-2xl space-y-6 shadow-sm">
               <div>
-                <h3 className="font-serif italic text-2xl text-[#1a1a1a]">
+                <h3 className="font-serif italic text-2xl text-[#510F23]">
                   Amenities & Privileges
                 </h3>
-                <p className="text-xs text-black/60 font-light mt-1">
+                <p className="text-xs text-[#8C8C8C] font-light mt-1">
                   Complimentary estate services provided to all guests.
                 </p>
               </div>

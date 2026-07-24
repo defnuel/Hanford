@@ -59,13 +59,13 @@ export const CleanPropertyDetails: React.FC<CleanPropertyDetailsProps> = ({ deta
     <div className="space-y-8">
       {/* Overview Card */}
       {overviewParagraphs.length > 0 && (
-        <div className="bg-[#e8e4de] p-8 sm:p-10 border border-black/10 rounded-2xl space-y-6">
-          <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.3em] text-[#1a1a1a]/60 uppercase">
-            <Compass className="w-4 h-4 text-[#1a1a1a]" />
+        <div className="bg-[#E8DAC1] p-8 sm:p-10 border border-[#8C8C8C]/40 rounded-2xl space-y-6 shadow-sm">
+          <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.3em] text-[#510F23] uppercase">
+            <Compass className="w-4 h-4 text-[#510F23]" />
             <span>SANCTUARY OVERVIEW</span>
           </div>
 
-          <div className="space-y-4 text-black/80 font-light leading-relaxed text-sm sm:text-base">
+          <div className="space-y-4 text-[#1A1A1A] font-light leading-relaxed text-sm sm:text-base">
             {overviewParagraphs.map((para, idx) => (
               <p key={idx} className="leading-relaxed">
                 {para}
@@ -85,12 +85,12 @@ export const CleanPropertyDetails: React.FC<CleanPropertyDetailsProps> = ({ deta
         if (titleLower.includes('room') || titleLower.includes('suite')) Icon = BedDouble;
 
         return (
-          <div key={idx} className="bg-[#e8e4de] p-8 sm:p-10 border border-black/10 rounded-2xl space-y-6">
-            <div className="flex items-center gap-3 border-b border-black/10 pb-4">
-              <div className="w-7 h-7 rounded-full bg-[#1a1a1a] flex items-center justify-center text-white shrink-0">
-                <Icon className="w-3.5 h-3.5 text-amber-200" />
+          <div key={idx} className="bg-[#E8DAC1] p-8 sm:p-10 border border-[#8C8C8C]/40 rounded-2xl space-y-6 shadow-sm">
+            <div className="flex items-center gap-3 border-b border-[#8C8C8C]/30 pb-4">
+              <div className="w-8 h-8 rounded-full bg-[#510F23] flex items-center justify-center text-white shrink-0 border border-[#C19F6A]/30">
+                <Icon className="w-4 h-4 text-[#C19F6A]" />
               </div>
-              <h3 className="font-serif italic text-xl sm:text-2xl text-[#1a1a1a]">
+              <h3 className="font-serif italic text-xl sm:text-2xl text-[#510F23]">
                 {sec.title}
               </h3>
             </div>
@@ -98,8 +98,8 @@ export const CleanPropertyDetails: React.FC<CleanPropertyDetailsProps> = ({ deta
             {sec.items.length > 0 ? (
               <ul className="space-y-3.5">
                 {sec.items.map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 text-xs sm:text-sm text-black/80 font-light leading-relaxed">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#1a1a1a] mt-2 shrink-0" />
+                  <li key={i} className="flex items-start gap-3 text-xs sm:text-sm text-[#1A1A1A] font-light leading-relaxed">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#C19F6A] mt-2 shrink-0" />
                     <span>{item}</span>
                   </li>
                 ))}

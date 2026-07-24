@@ -8,7 +8,8 @@ export interface RawGoogleSheetsPropertyRow {
   Continent: string;
   Status: PropertyStatus | string;
   Details: string; // May contain full HTML content
-  "Picture's folder": string; // Google Drive folder link
+  Gallery?: string; // Comma-separated image links
+  "Picture's folder"?: string; // Internal only
   Source?: string; // Internal only - MUST NEVER be displayed publicly
 }
 
