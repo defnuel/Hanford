@@ -36,9 +36,9 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
 
   if (loading) {
     return (
-      <div className="pt-32 pb-24 min-h-screen bg-[#E8DAC1] flex flex-col items-center justify-center space-y-4">
-        <div className="w-8 h-8 border-2 border-[#510F23] border-t-transparent rounded-full animate-spin" />
-        <p className="text-xs uppercase tracking-widest font-serif text-[#510F23]">
+      <div className="pt-32 pb-24 min-h-screen bg-[#FFFFFF] flex flex-col items-center justify-center space-y-4">
+        <div className="w-8 h-8 border-2 border-[#51867E] border-t-transparent rounded-full animate-spin" />
+        <p className="text-xs uppercase tracking-widest font-serif text-[#3A4F67]">
           Loading Collaboration Details...
         </p>
       </div>
@@ -47,14 +47,14 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
 
   if (!project) {
     return (
-      <div className="pt-32 pb-24 min-h-screen bg-[#E8DAC1] flex flex-col items-center justify-center space-y-6 px-6 text-center">
-        <h2 className="text-3xl font-serif font-light text-[#510F23]">Collaboration Not Found</h2>
-        <p className="text-xs text-[#1A1A1A]/80 max-w-md">
+      <div className="pt-32 pb-24 min-h-screen bg-[#FFFFFF] flex flex-col items-center justify-center space-y-6 px-6 text-center">
+        <h2 className="text-3xl font-serif font-light text-[#3A4F67]">Collaboration Not Found</h2>
+        <p className="text-xs text-[#2C3744] max-w-md">
           The requested collaboration project could not be located in the Hanford database.
         </p>
         <button
           onClick={() => onNavigate('/collaborations')}
-          className="px-8 py-3 bg-[#510F23] text-white rounded-full text-xs font-semibold tracking-wider uppercase hover:bg-[#3d0b1a]"
+          className="px-8 py-3 bg-[#51867E] text-white rounded-full text-xs font-semibold tracking-wider uppercase hover:bg-[#3f6d66]"
         >
           Return to Collaborations
         </button>
@@ -73,54 +73,54 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
   };
 
   return (
-    <div className="pt-28 pb-24 min-h-screen bg-[#E8DAC1] text-[#1A1A1A]">
+    <div className="pt-28 pb-24 min-h-screen bg-[#FFFFFF] text-[#2C3744]">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 space-y-10">
         {/* Navigation Breadcrumb & Back Action */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#8C8C8C]/30">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#88B2AB]/30">
           <button
             onClick={() => onNavigate('/collaborations')}
-            className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#510F23] hover:text-[#C19F6A] transition-colors focus:outline-none"
+            className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#3A4F67] hover:text-[#51867E] transition-colors focus:outline-none cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to All Collaborations</span>
           </button>
 
-          <div className="flex items-center gap-2 text-[11px] font-medium text-[#1A1A1A]/70 uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-[11px] font-medium text-[#2C3744] uppercase tracking-wider">
             <span>Home</span>
             <span>/</span>
-            <button onClick={() => onNavigate('/collaborations')} className="hover:text-[#510F23]">Collaborations</button>
+            <button onClick={() => onNavigate('/collaborations')} className="hover:text-[#51867E]">Collaborations</button>
             <span>/</span>
-            <span className="text-[#510F23] font-bold truncate max-w-[200px]">{project.projectName}</span>
+            <span className="text-[#3A4F67] font-bold truncate max-w-[200px]">{project.projectName}</span>
           </div>
         </div>
 
         {/* Project Header Banner */}
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="px-3.5 py-1 bg-[#510F23] text-white text-[10px] font-bold tracking-[0.2em] uppercase rounded-full">
+            <span className="px-3.5 py-1 bg-[#3A4F67] text-white text-[10px] font-bold tracking-[0.2em] uppercase rounded-full">
               {project.projectType}
             </span>
-            <span className="px-3.5 py-1 bg-[#C19F6A] text-[#1A1A1A] text-[10px] font-bold tracking-[0.2em] uppercase rounded-full">
+            <span className="px-3.5 py-1 bg-[#51867E] text-white text-[10px] font-bold tracking-[0.2em] uppercase rounded-full">
               {project.status}
             </span>
             <DataIntegrationBadge />
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-serif font-light text-[#510F23] tracking-wide leading-tight">
+          <h1 className="text-3xl sm:text-5xl font-serif font-light text-[#3A4F67] tracking-wide leading-tight">
             {project.projectName}
           </h1>
 
-          <div className="flex flex-wrap items-center gap-6 text-xs sm:text-sm text-[#510F23] font-medium pt-2">
+          <div className="flex flex-wrap items-center gap-6 text-xs sm:text-sm text-[#3A4F67] font-medium pt-2">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#C19F6A]" />
-              <span>Partner: <strong className="font-serif italic text-[#1A1A1A]">{project.partnerName}</strong></span>
+              <Sparkles className="w-4 h-4 text-[#51867E]" />
+              <span>Partner: <strong className="font-serif italic text-[#3A4F67]">{project.partnerName}</strong></span>
             </div>
             <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-[#C19F6A]" />
+              <MapPin className="w-4 h-4 text-[#51867E]" />
               <span>{project.location}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-[#C19F6A]" />
+              <Calendar className="w-4 h-4 text-[#51867E]" />
               <span>{project.date}</span>
             </div>
           </div>
@@ -193,40 +193,40 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
 
           {/* Right Sidebar Metadata Card */}
           <div className="space-y-6">
-            <div className="bg-[#FCF7F0] border border-[#8C8C8C]/40 rounded-2xl p-8 space-y-6 shadow-md sticky top-32">
-              <div className="border-b border-[#8C8C8C]/30 pb-4 space-y-1">
-                <span className="text-[10px] font-bold tracking-[0.25em] text-[#C19F6A] uppercase block">
+            <div className="info-panel bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl p-8 space-y-6 shadow-md sticky top-32">
+              <div className="border-b border-[#88B2AB]/30 pb-4 space-y-1">
+                <span className="text-[10px] font-bold tracking-[0.25em] text-[#51867E] uppercase block">
                   COLLABORATION SNAPSHOT
                 </span>
-                <h3 className="font-serif text-xl font-light text-[#510F23]">
+                <h3 className="font-serif text-xl font-light text-[#3A4F67]">
                   {project.projectName}
                 </h3>
               </div>
 
               <div className="space-y-4 text-xs">
-                <div className="flex items-start justify-between border-b border-[#8C8C8C]/20 pb-3">
-                  <span className="text-[#8C8C8C] font-semibold uppercase tracking-wider">Partner</span>
-                  <span className="font-semibold text-[#510F23] text-right">{project.partnerName}</span>
+                <div className="flex items-start justify-between border-b border-[#88B2AB]/20 pb-3">
+                  <span className="text-[#3A4F67] font-semibold uppercase tracking-wider">Partner</span>
+                  <span className="font-semibold text-[#51867E] text-right">{project.partnerName}</span>
                 </div>
 
-                <div className="flex items-start justify-between border-b border-[#8C8C8C]/20 pb-3">
-                  <span className="text-[#8C8C8C] font-semibold uppercase tracking-wider">Type</span>
-                  <span className="font-semibold text-[#1A1A1A] text-right">{project.projectType}</span>
+                <div className="flex items-start justify-between border-b border-[#88B2AB]/20 pb-3">
+                  <span className="text-[#3A4F67] font-semibold uppercase tracking-wider">Type</span>
+                  <span className="font-semibold text-[#2C3744] text-right">{project.projectType}</span>
                 </div>
 
-                <div className="flex items-start justify-between border-b border-[#8C8C8C]/20 pb-3">
-                  <span className="text-[#8C8C8C] font-semibold uppercase tracking-wider">Location</span>
-                  <span className="font-semibold text-[#1A1A1A] text-right">{project.location}</span>
+                <div className="flex items-start justify-between border-b border-[#88B2AB]/20 pb-3">
+                  <span className="text-[#3A4F67] font-semibold uppercase tracking-wider">Location</span>
+                  <span className="font-semibold text-[#2C3744] text-right">{project.location}</span>
                 </div>
 
-                <div className="flex items-start justify-between border-b border-[#8C8C8C]/20 pb-3">
-                  <span className="text-[#8C8C8C] font-semibold uppercase tracking-wider">Date</span>
-                  <span className="font-semibold text-[#1A1A1A] text-right">{project.date}</span>
+                <div className="flex items-start justify-between border-b border-[#88B2AB]/20 pb-3">
+                  <span className="text-[#3A4F67] font-semibold uppercase tracking-wider">Date</span>
+                  <span className="font-semibold text-[#2C3744] text-right">{project.date}</span>
                 </div>
 
                 <div className="flex items-start justify-between pb-1">
-                  <span className="text-[#8C8C8C] font-semibold uppercase tracking-wider">Status</span>
-                  <span className="px-2.5 py-0.5 bg-[#510F23] text-white font-bold rounded-full text-[10px] uppercase">
+                  <span className="text-[#3A4F67] font-semibold uppercase tracking-wider">Status</span>
+                  <span className="px-2.5 py-0.5 bg-[#51867E] text-white font-bold rounded-full text-[10px] uppercase">
                     {project.status}
                   </span>
                 </div>
@@ -235,7 +235,7 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
               <div className="pt-4 space-y-3">
                 <button
                   onClick={() => onNavigate('/book-now')}
-                  className="w-full py-3.5 bg-[#510F23] text-white hover:bg-[#3d0b1a] rounded-full text-xs font-semibold tracking-widest uppercase transition-colors shadow-md border border-[#C19F6A]/30 text-center block"
+                  className="w-full py-3.5 bg-[#51867E] text-white hover:bg-[#3f6d66] rounded-full text-xs font-semibold tracking-widest uppercase transition-colors shadow-md border border-[#88B2AB]/30 text-center block cursor-pointer"
                 >
                   Book Stay At Sanctuary
                 </button>
@@ -244,9 +244,9 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
                   href="https://x.com/Hanford_HnR"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-3 bg-[#E8DAC1] text-[#510F23] hover:bg-[#d8c3a1] rounded-full text-xs font-semibold tracking-wider uppercase transition-colors border border-[#8C8C8C]/40 text-center flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-white text-[#3A4F67] hover:bg-[#EAF2F1] rounded-full text-xs font-semibold tracking-wider uppercase transition-colors border border-[#88B2AB]/40 text-center flex items-center justify-center gap-2"
                 >
-                  <MessageSquare className="w-3.5 h-3.5" />
+                  <MessageSquare className="w-3.5 h-3.5 text-[#51867E]" />
                   <span>Inquire For Partnerships</span>
                 </a>
               </div>

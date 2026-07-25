@@ -54,20 +54,20 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
   });
 
   return (
-    <div className="pt-28 pb-24 min-h-screen bg-[#E8DAC1] text-[#1A1A1A]">
+    <div className="pt-28 pb-24 min-h-screen bg-[#FFFFFF] text-[#2C3744]">
       {/* Editorial Page Header */}
       <section className="max-w-7xl mx-auto px-6 sm:px-8 pt-6 pb-12">
-        <div className="border-b border-[#8C8C8C]/30 pb-12">
+        <div className="border-b border-[#88B2AB]/30 pb-12">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="max-w-3xl space-y-4">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#510F23]/10 border border-[#510F23]/20 text-[#510F23] text-[10px] font-bold tracking-[0.25em] uppercase">
-                <Sparkles className="w-3 h-3 text-[#C19F6A]" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#51867E]/10 border border-[#51867E]/20 text-[#51867E] text-[10px] font-bold tracking-[0.25em] uppercase">
+                <Sparkles className="w-3 h-3 text-[#88B2AB]" />
                 <span>Executive Partnerships & Creative Initiatives</span>
               </div>
-              <h1 className="text-3xl sm:text-5xl font-serif font-light text-[#510F23] tracking-wide leading-tight">
+              <h1 className="text-3xl sm:text-5xl font-serif font-light text-[#3A4F67] tracking-wide leading-tight">
                 Collaborations & Creative Projects
               </h1>
-              <p className="text-base text-[#1A1A1A]/80 font-light leading-relaxed">
+              <p className="text-base text-[#2C3744]/80 font-light leading-relaxed">
                 Explore bespoke partnerships with world-renowned models, fashion houses, master artisans, artists, and visionary brands across our global Hanford sanctuaries.
               </p>
             </div>
@@ -77,29 +77,29 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
 
       {/* Filter & Search Bar */}
       <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-12">
-        <div className="bg-[#FCF7F0] border border-[#8C8C8C]/30 rounded-2xl p-6 shadow-sm space-y-6">
+        <div className="bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl p-6 shadow-sm space-y-6">
           {/* Top Row: Search Input & Quick Controls */}
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="relative w-full md:w-96">
-              <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-[#8C8C8C]" />
+              <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-[#3A4F67]" />
               <input
                 type="text"
                 placeholder="Search project, partner, or location..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-[#E8DAC1]/40 border border-[#8C8C8C]/30 rounded-full text-xs text-[#1A1A1A] placeholder-[#8C8C8C] focus:outline-none focus:border-[#510F23] transition-colors"
+                className="w-full pl-11 pr-4 py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] placeholder-[#4A5568] focus:outline-none focus:border-[#51867E] font-medium transition-colors"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[#8C8C8C] hover:text-[#510F23]"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[#3A4F67] hover:text-[#51867E] font-semibold"
                 >
                   Clear
                 </button>
               )}
             </div>
 
-            <div className="flex items-center gap-3 w-full md:w-auto text-xs text-[#510F23]">
+            <div className="flex items-center gap-3 w-full md:w-auto text-xs text-[#3A4F67]">
               <span className="font-medium tracking-wider uppercase text-[10px]">
                 Showing {filteredProjects.length} of {projects.length} Collaborations
               </span>
@@ -107,8 +107,8 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
           </div>
 
           {/* Project Type Filter Pills */}
-          <div className="space-y-2 pt-2 border-t border-[#8C8C8C]/20">
-            <label className="text-[10px] font-bold tracking-[0.2em] text-[#510F23] uppercase block">
+          <div className="space-y-2 pt-2 border-t border-[#88B2AB]/20">
+            <label className="text-[10px] font-bold tracking-[0.2em] text-[#51867E] uppercase block">
               Filter by Category / Type
             </label>
             <div className="flex flex-wrap items-center gap-2">
@@ -118,10 +118,10 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
                   <button
                     key={type}
                     onClick={() => setSelectedType(type)}
-                    className={`px-4 py-2 rounded-full text-[11px] font-medium tracking-wider transition-all focus:outline-none ${
+                    className={`px-4 py-2 rounded-full text-[11px] font-medium tracking-wider transition-all focus:outline-none cursor-pointer ${
                       isActive
-                        ? 'bg-[#510F23] text-white shadow-md'
-                        : 'bg-[#E8DAC1]/50 text-[#1A1A1A]/80 hover:bg-[#E8DAC1] hover:text-[#510F23] border border-[#8C8C8C]/30'
+                        ? 'bg-[#51867E] text-white shadow-md'
+                        : 'bg-white text-[#2C3744] hover:bg-[#51867E]/10 hover:text-[#51867E] border border-[#88B2AB]/30'
                     }`}
                   >
                     {type}
@@ -133,7 +133,7 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
 
           {/* Status Filter Pills */}
           <div className="space-y-2">
-            <label className="text-[10px] font-bold tracking-[0.2em] text-[#510F23] uppercase block">
+            <label className="text-[10px] font-bold tracking-[0.2em] text-[#51867E] uppercase block">
               Filter by Status
             </label>
             <div className="flex flex-wrap items-center gap-2">
@@ -143,10 +143,10 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
                   <button
                     key={status}
                     onClick={() => setSelectedStatus(status)}
-                    className={`px-3.5 py-1.5 rounded-full text-[10px] font-semibold tracking-wider transition-all focus:outline-none uppercase ${
+                    className={`px-3.5 py-1.5 rounded-full text-[10px] font-semibold tracking-wider transition-all focus:outline-none uppercase cursor-pointer ${
                       isActive
-                        ? 'bg-[#C19F6A] text-[#1A1A1A] font-bold shadow-sm'
-                        : 'bg-[#E8DAC1]/30 text-[#1A1A1A]/70 hover:bg-[#E8DAC1] border border-[#8C8C8C]/20'
+                        ? 'bg-[#51867E] text-white font-bold shadow-sm'
+                        : 'bg-white text-[#2C3744] hover:bg-[#EAF2F1] border border-[#88B2AB]/30'
                     }`}
                   >
                     {status}
@@ -162,21 +162,21 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
       <section className="max-w-7xl mx-auto px-6 sm:px-8">
         {loading ? (
           <div className="py-24 text-center space-y-4">
-            <RefreshCw className="w-8 h-8 animate-spin text-[#510F23] mx-auto" />
-            <p className="text-sm text-[#510F23] font-serif tracking-widest uppercase">
+            <RefreshCw className="w-8 h-8 animate-spin text-[#51867E] mx-auto" />
+            <p className="text-sm text-[#3A4F67] font-serif tracking-widest uppercase">
               Retrieving Collaborations from Hanford Google Sheets...
             </p>
           </div>
         ) : filteredProjects.length === 0 ? (
-          <div className="py-20 text-center bg-[#FCF7F0] border border-[#8C8C8C]/30 rounded-2xl p-8 space-y-4">
-            <p className="text-lg font-serif text-[#510F23]">No collaborations matched your search parameters.</p>
+          <div className="py-20 text-center bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl p-8 space-y-4">
+            <p className="text-lg font-serif text-[#3A4F67]">No collaborations matched your search parameters.</p>
             <button
               onClick={() => {
                 setSearchQuery('');
                 setSelectedType('ALL');
                 setSelectedStatus('ALL');
               }}
-              className="px-6 py-2.5 bg-[#510F23] text-white rounded-full text-xs font-semibold uppercase tracking-wider hover:bg-[#3d0b1a]"
+              className="px-6 py-2.5 bg-[#51867E] text-white rounded-full text-xs font-semibold uppercase tracking-wider hover:bg-[#3f6d66] cursor-pointer"
             >
               Reset Filters
             </button>
@@ -187,11 +187,11 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
               <div
                 key={project.id}
                 onClick={() => onNavigate(`/collaborations/${project.slug}`)}
-                className="group cursor-pointer bg-[#FCF7F0] border border-[#8C8C8C]/30 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                className="group cursor-pointer bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between hover:border-[#51867E]"
               >
                 <div>
                   {/* Card Image Wrapper */}
-                  <div className="relative aspect-[16/10] bg-[#510F23] overflow-hidden">
+                  <div className="relative aspect-[16/10] bg-[#3A4F67] overflow-hidden">
                     <img
                       src={project.heroImage}
                       alt={project.projectName}
@@ -204,13 +204,13 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
 
                     {/* Top Badges */}
                     <div className="absolute top-4 left-4 right-4 flex items-center justify-between gap-2">
-                      <span className="px-3 py-1 bg-[#FCF7F0]/90 backdrop-blur-md text-[#510F23] text-[9px] font-bold tracking-widest uppercase rounded-full shadow-sm border border-[#8C8C8C]/30">
+                      <span className="px-3 py-1 bg-[#EAF2F1]/90 backdrop-blur-md text-[#3A4F67] text-[9px] font-bold tracking-widest uppercase rounded-full shadow-sm border border-[#88B2AB]/30">
                         {project.projectType}
                       </span>
                       <span className={`px-3 py-1 text-[9px] font-bold tracking-widest uppercase rounded-full shadow-sm border ${
                         project.status.toLowerCase() === 'completed'
-                          ? 'bg-[#510F23] text-white border-[#C19F6A]/40'
-                          : 'bg-[#C19F6A] text-[#1A1A1A] border-[#1A1A1A]/20'
+                          ? 'bg-[#3A4F67] text-white border-[#88B2AB]/40'
+                          : 'bg-[#51867E] text-white border-white/20'
                       }`}>
                         {project.status}
                       </span>
@@ -219,11 +219,11 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
                     {/* Bottom Metadata Overlay */}
                     <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-white text-[11px] font-light">
                       <div className="flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5 text-[#C19F6A]" />
+                        <MapPin className="w-3.5 h-3.5 text-[#88B2AB]" />
                         <span className="truncate">{project.location}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-[#C19F6A]" />
+                        <Calendar className="w-3.5 h-3.5 text-[#88B2AB]" />
                         <span>{project.date}</span>
                       </div>
                     </div>
@@ -232,23 +232,23 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
                   {/* Card Content */}
                   <div className="p-6 space-y-4">
                     <div className="space-y-1.5">
-                      <h3 className="text-xl font-serif font-medium text-[#510F23] group-hover:text-[#C19F6A] transition-colors leading-snug">
+                      <h3 className="text-xl font-serif font-medium text-[#3A4F67] group-hover:text-[#51867E] transition-colors leading-snug">
                         {project.projectName}
                       </h3>
-                      <div className="flex items-center gap-2 text-xs font-semibold text-[#C19F6A]">
+                      <div className="flex items-center gap-2 text-xs font-semibold text-[#51867E]">
                         <Sparkles className="w-3.5 h-3.5" />
                         <span>Partner: {project.partnerName}</span>
                       </div>
                     </div>
 
-                    <p className="text-xs text-[#1A1A1A]/80 font-light leading-relaxed line-clamp-3">
+                    <p className="text-xs text-[#2C3744]/80 font-light leading-relaxed line-clamp-3">
                       {project.description}
                     </p>
                   </div>
                 </div>
 
                 {/* Card Footer */}
-                <div className="px-6 pb-6 pt-2 border-t border-[#8C8C8C]/20 flex items-center justify-between text-xs font-semibold tracking-wider text-[#510F23] group-hover:text-[#C19F6A] transition-colors">
+                <div className="px-6 pb-6 pt-2 border-t border-[#88B2AB]/20 flex items-center justify-between text-xs font-semibold tracking-wider text-[#3A4F67] group-hover:text-[#51867E] transition-colors">
                   <span className="uppercase text-[10px]">View Collaboration Details</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>

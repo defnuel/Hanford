@@ -27,45 +27,45 @@ const CollapsibleSectionCard: React.FC<CollapsibleSectionCardProps> = ({ sec }) 
   if (titleLower.includes('room') || titleLower.includes('suite')) Icon = BedDouble;
 
   return (
-    <div className="bg-[#E8DAC1] border border-[#8C8C8C]/40 rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
+    <div className="info-panel bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-6 sm:p-8 flex items-center justify-between text-left hover:bg-[#dfd0b5]/50 transition-colors focus:outline-none cursor-pointer group"
+        className="w-full p-6 sm:p-8 flex items-center justify-between text-left hover:bg-[#88B2AB]/15 transition-colors focus:outline-none cursor-pointer group"
         aria-expanded={isOpen}
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#510F23] flex items-center justify-center text-white shrink-0 border border-[#C19F6A]/30 group-hover:scale-105 transition-transform">
-            <Icon className="w-4 h-4 text-[#C19F6A]" />
+          <div className="w-8 h-8 rounded-full bg-[#51867E] flex items-center justify-center text-white shrink-0 border border-[#88B2AB]/30 group-hover:scale-105 transition-transform">
+            <Icon className="w-4 h-4 text-[#88B2AB]" />
           </div>
-          <h3 className="font-serif italic text-xl sm:text-2xl text-[#510F23]">
+          <h3 className="font-serif italic text-xl sm:text-2xl text-[#3A4F67]">
             {sec.title}
           </h3>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-[10px] uppercase font-bold tracking-widest text-[#8C8C8C] group-hover:text-[#510F23] transition-colors hidden sm:inline">
+          <span className="text-[10px] uppercase font-bold tracking-widest text-[#666666] group-hover:text-[#51867E] transition-colors hidden sm:inline">
             {isOpen ? 'Minimize' : 'Expand'}
           </span>
-          <div className="w-8 h-8 rounded-full bg-[#510F23]/10 flex items-center justify-center text-[#510F23] group-hover:bg-[#510F23] group-hover:text-white transition-all">
+          <div className="w-8 h-8 rounded-full bg-[#51867E]/10 flex items-center justify-center text-[#51867E] group-hover:bg-[#51867E] group-hover:text-white transition-all">
             {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </div>
         </div>
       </button>
 
       {isOpen && (
-        <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-2 border-t border-[#8C8C8C]/20">
+        <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-2 border-t border-[#88B2AB]/20">
           {sec.items.length > 0 ? (
             <ul className="space-y-3.5 pt-2">
               {sec.items.map((item, i) => (
-                <li key={i} className="flex items-start gap-3 text-xs sm:text-sm text-[#1A1A1A] font-light leading-relaxed">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#C19F6A] mt-2 shrink-0" />
+                <li key={i} className="flex items-start gap-3 text-xs sm:text-sm text-[#2C3744] font-light leading-relaxed">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#88B2AB] mt-2 shrink-0" />
                   <span>{item}</span>
                 </li>
               ))}
             </ul>
           ) : sec.paragraphs.length > 0 ? (
-            <div className="space-y-3 pt-2 text-xs sm:text-sm text-[#1A1A1A] font-light leading-relaxed">
+            <div className="space-y-3 pt-2 text-xs sm:text-sm text-[#2C3744] font-light leading-relaxed">
               {sec.paragraphs.map((p, i) => (
                 <p key={i}>{p}</p>
               ))}
@@ -131,30 +131,30 @@ export const CleanPropertyDetails: React.FC<CleanPropertyDetailsProps> = ({ deta
     <div className="space-y-8">
       {/* Overview Card */}
       {overviewParagraphs.length > 0 && (
-        <div className="bg-[#E8DAC1] border border-[#8C8C8C]/40 rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
+        <div className="info-panel bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
           <button
             type="button"
             onClick={() => setIsOverviewOpen(!isOverviewOpen)}
-            className="w-full p-6 sm:p-8 flex items-center justify-between text-left hover:bg-[#dfd0b5]/50 transition-colors focus:outline-none cursor-pointer group"
+            className="w-full p-6 sm:p-8 flex items-center justify-between text-left hover:bg-[#88B2AB]/15 transition-colors focus:outline-none cursor-pointer group"
             aria-expanded={isOverviewOpen}
           >
-            <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.3em] text-[#510F23] uppercase">
-              <Compass className="w-4 h-4 text-[#510F23]" />
+            <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.3em] text-[#51867E] uppercase">
+              <Compass className="w-4 h-4 text-[#51867E]" />
               <span>SANCTUARY OVERVIEW</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase font-bold tracking-widest text-[#8C8C8C] group-hover:text-[#510F23] transition-colors hidden sm:inline">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-[#666666] group-hover:text-[#51867E] transition-colors hidden sm:inline">
                 {isOverviewOpen ? 'Minimize' : 'Expand'}
               </span>
-              <div className="w-8 h-8 rounded-full bg-[#510F23]/10 flex items-center justify-center text-[#510F23] group-hover:bg-[#510F23] group-hover:text-white transition-all">
+              <div className="w-8 h-8 rounded-full bg-[#51867E]/10 flex items-center justify-center text-[#51867E] group-hover:bg-[#51867E] group-hover:text-white transition-all">
                 {isOverviewOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </div>
             </div>
           </button>
 
           {isOverviewOpen && (
-            <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-2 border-t border-[#8C8C8C]/20 space-y-4 text-[#1A1A1A] font-light leading-relaxed text-sm sm:text-base">
+            <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-2 border-t border-[#88B2AB]/20 space-y-4 text-[#2C3744] font-light leading-relaxed text-sm sm:text-base">
               {overviewParagraphs.map((para, idx) => (
                 <p key={idx} className="leading-relaxed">
                   {para}

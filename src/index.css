@@ -1,14 +1,53 @@
 @import "tailwindcss";
 
 @theme {
-  --color-burgundy: #510F23;
-  --color-gold: #C19F6A;
-  --color-cream: #E8DAC1;
-  --color-slategray: #8C8C8C;
-  --color-charcoal: #1A1A1A;
+  --color-sage: #88B2AB;
+  --color-teal: #51867E;
+  --color-navy: #3A4F67;
+  --color-slategray: #666666;
+  --color-offblack: #2C3744;
+  --color-sagetint: #EAF2F1;
 }
 
-body {
-  background-color: #fcf7f0;
-  color: #1A1A1A;
+/* ==========================================================================
+   HANFORD HOTEL & RESORTS - PANTONE HOTEL COLOR PALETTE (UI/UX DESIGN SYSTEM)
+   Palette Specification:
+   - Primary Colours: PANTONE 4172 C (#88B2AB - Sage) & PANTONE 2462 C (#51867E - Teal)
+   - Secondary Colours: PANTONE 2378 C (#3A4F67 - Slate Navy) & PANTONE 4195 C (#666666 - Neutral Gray)
+   ========================================================================== */
+
+/* 1. Body & Canvas Background: Pure White (#FFFFFF) */
+@layer base {
+  body,
+  main,
+  .main-content,
+  #root {
+    background-color: #FFFFFF;
+    color: #2C3744;
+  }
+
+  /* 3. Title Headings (h1, h2, h3), Site Logo (.site-logo), & Luxury Emphasis (.luxury-emphasis) */
+  h1,
+  h2,
+  h3,
+  .site-logo,
+  .luxury-emphasis {
+    color: #3A4F67;
+  }
+
+  /* 5. Paragraph Text (p), Navigation Links (.nav-link), & Standard Body Text */
+  p,
+  .nav-link {
+    color: #2C3744;
+  }
 }
+
+.nav-link:hover {
+  color: #51867E !important;
+}
+
+.text-muted {
+  color: #666666 !important;
+}
+
+

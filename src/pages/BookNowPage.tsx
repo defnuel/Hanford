@@ -107,7 +107,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
       return;
     }
 
-    if (formData.bookOption === 'room' || formData.bookOption === 'both') {
+    if (formData.bookOption === 'room' || formData.bookOption === 'both' || formData.bookOption === 'room_meeting') {
       const totalRooms = (formData.standardRooms || 0) + (formData.deluxeRooms || 0) + (formData.presidentialSuites || 0) + (formData.privateVillas || 0);
       if (totalRooms <= 0) {
         setErrorMessage('Please specify at least 1 room in one of the room categories. / Mohon isi setidaknya 1 kamar.');
@@ -119,13 +119,13 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
       }
     }
 
-    if (formData.bookOption === 'event' || formData.bookOption === 'both') {
+    if (formData.bookOption === 'event' || formData.bookOption === 'both' || formData.bookOption === 'meeting' || formData.bookOption === 'room_meeting') {
       if (!formData.eventDate) {
-        setErrorMessage('Please select Event Date for Event Location booking. / Mohon pilih Tanggal Event.');
+        setErrorMessage('Please select Event / Meeting Date. / Mohon pilih Tanggal Event / Meeting.');
         return;
       }
       if (!formData.eventAttendees || formData.eventAttendees <= 0) {
-        setErrorMessage('Please enter valid number of Event Attendees (Pax). / Mohon masukkan jumlah orang dalam event.');
+        setErrorMessage('Please enter valid number of Event / Meeting Attendees (Pax). / Mohon masukkan jumlah orang dalam event / meeting.');
         return;
       }
       if ((formData.eventAddons === 'catering' || formData.eventAddons === 'both') && (!formData.cateringPax || formData.cateringPax <= 0)) {
@@ -151,21 +151,21 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
   const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1a2WN_AqaV9WS15h-37FDCyVV_ZpLB1IaBDbvb2VYzeU/edit?gid=0#gid=0';
 
   return (
-    <div className="bg-[#E8DAC1] text-[#1A1A1A] pt-32 pb-24 min-h-screen">
+    <div className="bg-[#FFFFFF] text-[#2C3744] pt-32 pb-24 min-h-screen">
       <div className="max-w-4xl mx-auto px-6 sm:px-8">
         
         {/* Header */}
         <div className="text-center space-y-4 mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#510F23] text-[#E8DAC1] rounded-full text-[10px] font-bold tracking-[0.3em] uppercase shadow border border-[#C19F6A]/30">
-            <Sparkles className="w-3.5 h-3.5 text-[#C19F6A]" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#3A4F67] text-[#EAF2F1] rounded-full text-[10px] font-bold tracking-[0.3em] uppercase shadow border border-[#88B2AB]/30">
+            <Sparkles className="w-3.5 h-3.5 text-[#88B2AB]" />
             <span>CENTRAL RESERVATIONS</span>
           </div>
-          <h1 className="font-serif italic text-4xl sm:text-6xl text-[#510F23] font-light">
+          <h1 className="font-serif italic text-4xl sm:text-6xl text-[#3A4F67] font-light">
             Reserve Your Experience
           </h1>
-          <p className="text-xs sm:text-sm text-[#1A1A1A]/80 max-w-xl mx-auto font-light leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#2C3744] max-w-xl mx-auto font-light leading-relaxed">
             Automated booking form synchronized directly with Hanford Central Reservations Google Sheets.
-            <span className="block text-[11px] text-[#8C8C8C] italic mt-0.5">
+            <span className="block text-[11px] text-[#3A4F67] font-medium italic mt-0.5">
               Formulir pendaftaran reservasi terhubung langsung ke Google Sheets Central Register.
             </span>
           </p>
@@ -175,110 +175,112 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
               href={SPREADSHEET_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-[11px] font-medium text-[#510F23] bg-[#FAF8F5]/80 hover:bg-[#FAF8F5] px-4 py-2 rounded-full border border-[#8C8C8C]/30 shadow-sm transition-all hover:shadow"
+              className="inline-flex items-center gap-2 text-[11px] font-medium text-[#3A4F67] bg-[#EAF2F1] hover:bg-[#EAF2F1]/80 px-4 py-2 rounded-full border border-[#88B2AB]/30 shadow-sm transition-all hover:shadow"
             >
-              <Building2 className="w-3.5 h-3.5 text-[#510F23]" />
+              <Building2 className="w-3.5 h-3.5 text-[#3A4F67]" />
               <span>Google Sheet Ready (Bookings Register)</span>
-              <ExternalLink className="w-3 h-3 text-[#8C8C8C]" />
+              <ExternalLink className="w-3 h-3 text-[#3A4F67]" />
             </a>
           </div>
         </div>
 
         {/* Success Confirmation View */}
         {successResult ? (
-          <div className="bg-[#E8DAC1] border border-[#8C8C8C]/40 rounded-2xl p-8 sm:p-12 text-center space-y-6 shadow-2xl animate-in fade-in duration-500">
-            <div className="w-16 h-16 bg-[#510F23] text-[#C19F6A] rounded-full flex items-center justify-center mx-auto border border-[#C19F6A]/30">
+          <div className="info-panel bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl p-8 sm:p-12 text-center space-y-6 shadow-2xl animate-in fade-in duration-500">
+            <div className="w-16 h-16 bg-[#3A4F67] text-[#88B2AB] rounded-full flex items-center justify-center mx-auto border border-[#88B2AB]/30">
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
             <div className="space-y-2">
-              <span className="text-[10px] font-bold tracking-[0.3em] text-[#8C8C8C] uppercase block">
+              <span className="text-[10px] font-bold tracking-[0.3em] text-[#3A4F67] uppercase block">
                 RESERVATION RECORDED / RESERVASI TERCATAT
               </span>
-              <h2 className="font-serif italic text-3xl text-[#510F23]">
+              <h2 className="font-serif italic text-3xl text-[#3A4F67]">
                 Thank You, {formData.guestName}
               </h2>
             </div>
 
-            <p className="text-xs text-[#1A1A1A]/80 max-w-md mx-auto leading-relaxed font-light">
+            <p className="text-xs text-[#2C3744] max-w-md mx-auto leading-relaxed font-light">
               Your reservation inquiry has been saved and appended to our Google Sheet Booking Register.
             </p>
 
-            <div className="bg-[#FAF8F5] p-6 border border-[#8C8C8C]/30 rounded-2xl text-left text-xs space-y-3 max-w-lg mx-auto">
-              <div className="flex justify-between border-b border-[#8C8C8C]/20 pb-2">
-                <span className="text-[#8C8C8C]">Hotel Location / Lokasi:</span>
-                <strong className="text-[#510F23]">{formData.propertyName}</strong>
+            <div className="bg-white p-6 border border-[#88B2AB]/30 rounded-2xl text-left text-xs space-y-3 max-w-lg mx-auto">
+              <div className="flex justify-between border-b border-[#88B2AB]/20 pb-2">
+                <span className="text-[#3A4F67] font-medium">Hotel Location / Lokasi:</span>
+                <strong className="text-[#3A4F67]">{formData.propertyName}</strong>
               </div>
-              <div className="flex justify-between border-b border-[#8C8C8C]/20 pb-2">
-                <span className="text-[#8C8C8C]">Guest Name / Nama:</span>
-                <span className="text-[#1A1A1A] font-semibold">{formData.guestName}</span>
+              <div className="flex justify-between border-b border-[#88B2AB]/20 pb-2">
+                <span className="text-[#3A4F67] font-medium">Guest Name / Nama:</span>
+                <span className="text-[#2C3744] font-semibold">{formData.guestName}</span>
               </div>
-              <div className="flex justify-between border-b border-[#8C8C8C]/20 pb-2">
-                <span className="text-[#8C8C8C]">X Username / Akun X:</span>
-                <span className="text-[#510F23] font-medium">{formData.xUsername}</span>
+              <div className="flex justify-between border-b border-[#88B2AB]/20 pb-2">
+                <span className="text-[#3A4F67] font-medium">X Username / Akun X:</span>
+                <span className="text-[#51867E] font-medium">{formData.xUsername}</span>
               </div>
-              <div className="flex justify-between border-b border-[#8C8C8C]/20 pb-2">
-                <span className="text-[#8C8C8C]">Book Option / Opsi:</span>
-                <span className="text-[#1A1A1A] font-medium capitalize">
+              <div className="flex justify-between border-b border-[#88B2AB]/20 pb-2">
+                <span className="text-[#3A4F67] font-medium">Book Option / Opsi:</span>
+                <span className="text-[#2C3744] font-medium capitalize">
                   {formData.bookOption === 'room' && 'For Room Only'}
                   {formData.bookOption === 'event' && 'For Event Location Only'}
                   {formData.bookOption === 'both' && 'Both Room & Events'}
+                  {formData.bookOption === 'meeting' && 'For Meeting Only'}
+                  {formData.bookOption === 'room_meeting' && 'Both Room & Meeting'}
                 </span>
               </div>
 
-              {(formData.bookOption === 'room' || formData.bookOption === 'both') && (
+              {(formData.bookOption === 'room' || formData.bookOption === 'both' || formData.bookOption === 'room_meeting') && (
                 <>
-                  <div className="border-b border-[#8C8C8C]/20 pb-2 space-y-1">
+                  <div className="border-b border-[#88B2AB]/20 pb-2 space-y-1">
                     <div className="flex justify-between">
-                      <span className="text-[#8C8C8C]">Rooms Breakdown / Rincian Kamar:</span>
-                      <strong className="text-[#510F23]">{formData.roomsCount} Total Room(s)</strong>
+                      <span className="text-[#3A4F67] font-medium">Rooms Breakdown / Rincian Kamar:</span>
+                      <strong className="text-[#3A4F67]">{formData.roomsCount} Total Room(s)</strong>
                     </div>
-                    <div className="text-[11px] text-[#1A1A1A] pl-2 space-y-0.5">
+                    <div className="text-[11px] text-[#2C3744] pl-2 space-y-0.5">
                       {formData.standardRooms! > 0 && <div>• Standard Room: {formData.standardRooms}</div>}
                       {formData.deluxeRooms! > 0 && <div>• Deluxe Room: {formData.deluxeRooms}</div>}
                       {formData.presidentialSuites! > 0 && <div>• Presidential Suite: {formData.presidentialSuites}</div>}
-                      {formData.privateVillas! > 0 && <div>• Private Villa: {formData.privateVillas}</div>}
+                      {!isGrandHotel && formData.privateVillas! > 0 && <div>• Private Villa: {formData.privateVillas}</div>}
                     </div>
                   </div>
-                  <div className="flex justify-between border-b border-[#8C8C8C]/20 pb-2">
-                    <span className="text-[#8C8C8C]">Stay Dates / Tanggal Inap:</span>
-                    <span className="text-[#1A1A1A] font-medium">{formData.checkInDate} to {formData.checkOutDate}</span>
+                  <div className="flex justify-between border-b border-[#88B2AB]/20 pb-2">
+                    <span className="text-[#3A4F67] font-medium">Stay Dates / Tanggal Inap:</span>
+                    <span className="text-[#2C3744] font-medium">{formData.checkInDate} to {formData.checkOutDate}</span>
                   </div>
                 </>
               )}
 
-              {(formData.bookOption === 'event' || formData.bookOption === 'both') && (
+              {(formData.bookOption === 'event' || formData.bookOption === 'both' || formData.bookOption === 'meeting' || formData.bookOption === 'room_meeting') && (
                 <>
-                  <div className="flex justify-between border-b border-[#8C8C8C]/20 pb-2">
-                    <span className="text-[#8C8C8C]">Event Attendees / Jumlah Tamu:</span>
-                    <span className="text-[#510F23] font-semibold">{formData.eventAttendees} Pax</span>
+                  <div className="flex justify-between border-b border-[#88B2AB]/20 pb-2">
+                    <span className="text-[#3A4F67] font-medium">Attendees / Jumlah Tamu:</span>
+                    <span className="text-[#3A4F67] font-semibold">{formData.eventAttendees} Pax</span>
                   </div>
-                  <div className="flex justify-between border-b border-[#8C8C8C]/20 pb-2">
-                    <span className="text-[#8C8C8C]">Event Services / Opsi Event:</span>
-                    <span className="text-[#1A1A1A] font-medium">
+                  <div className="flex justify-between border-b border-[#88B2AB]/20 pb-2">
+                    <span className="text-[#3A4F67] font-medium">Services / Opsi Tambahan:</span>
+                    <span className="text-[#2C3744] font-medium">
                       {formData.eventAddons === 'both' && 'With Catering & Decoration'}
                       {formData.eventAddons === 'catering' && 'With Catering Only'}
                       {formData.eventAddons === 'decoration' && 'With Decoration Only'}
-                      {formData.eventAddons === 'none' && 'Venue Only (No Catering/Decoration)'}
+                      {formData.eventAddons === 'none' && 'Venue / Room Only (No Catering/Decoration)'}
                     </span>
                   </div>
                   {(formData.eventAddons === 'catering' || formData.eventAddons === 'both') && (
-                    <div className="flex justify-between border-b border-[#8C8C8C]/20 pb-2">
-                      <span className="text-[#8C8C8C]">Catering Pax / Porsi Katering:</span>
-                      <span className="text-[#510F23] font-semibold">{formData.cateringPax} Pax</span>
+                    <div className="flex justify-between border-b border-[#88B2AB]/20 pb-2">
+                      <span className="text-[#3A4F67] font-medium">Catering Pax / Porsi Katering:</span>
+                      <span className="text-[#3A4F67] font-semibold">{formData.cateringPax} Pax</span>
                     </div>
                   )}
-                  <div className="flex justify-between border-b border-[#8C8C8C]/20 pb-2">
-                    <span className="text-[#8C8C8C]">Event Date / Tanggal Event:</span>
-                    <span className="text-[#1A1A1A] font-medium">{formData.eventDate}</span>
+                  <div className="flex justify-between border-b border-[#88B2AB]/20 pb-2">
+                    <span className="text-[#3A4F67] font-medium">Event / Meeting Date:</span>
+                    <span className="text-[#2C3744] font-medium">{formData.eventDate}</span>
                   </div>
                 </>
               )}
 
               {formData.notes && (
                 <div className="pt-1">
-                  <span className="text-[#8C8C8C] block mb-1">Remarks / Keterangan:</span>
-                  <p className="text-[#1A1A1A] italic bg-white/60 p-3 rounded-lg border border-[#8C8C8C]/20">
+                  <span className="text-[#3A4F67] font-medium block mb-1">Remarks / Keterangan:</span>
+                  <p className="text-[#2C3744] italic bg-[#EAF2F1]/50 p-3 rounded-lg border border-[#88B2AB]/20">
                     "{formData.notes}"
                   </p>
                 </div>
@@ -309,7 +311,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     notes: ''
                   });
                 }}
-                className="px-6 py-3 border border-[#8C8C8C]/40 text-[#510F23] rounded-full text-xs font-bold tracking-widest uppercase hover:bg-[#510F23]/10 transition-colors"
+                className="px-6 py-3 border border-[#88B2AB]/40 text-[#3A4F67] rounded-full text-xs font-bold tracking-widest uppercase hover:bg-[#51867E]/10 transition-colors cursor-pointer"
               >
                 NEW RESERVATION / INQUIRY BARU
               </button>
@@ -318,7 +320,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 href={SPREADSHEET_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-3 bg-[#510F23] text-white rounded-full text-xs font-bold tracking-widest uppercase hover:bg-[#3d0b1a] transition-colors border border-[#C19F6A]/30 flex items-center gap-2"
+                className="px-6 py-3 bg-[#51867E] text-white rounded-full text-xs font-bold tracking-widest uppercase hover:bg-[#3f6d66] transition-colors border border-[#88B2AB]/30 flex items-center gap-2"
               >
                 <span>OPEN GOOGLE SHEET</span>
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -329,7 +331,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
           /* Main Interactive Form */
           <form
             onSubmit={handleSubmit}
-            className="bg-[#E8DAC1] border border-[#8C8C8C]/40 rounded-2xl p-6 sm:p-10 shadow-xl space-y-8"
+            className="info-panel bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl p-6 sm:p-10 shadow-xl space-y-8"
           >
             {errorMessage && (
               <div className="p-4 bg-rose-100 border border-rose-300 text-rose-900 text-xs rounded-xl flex items-center gap-3">
@@ -340,22 +342,22 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
             {/* 1. Location Selector */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold tracking-[0.2em] text-[#510F23] uppercase">
+              <label className="block text-xs font-bold tracking-[0.2em] text-[#3A4F67] uppercase">
                 1. HOTEL / RESORT LOCATION *
-                <span className="block text-[10px] text-[#8C8C8C] font-normal italic lowercase tracking-normal">
+                <span className="block text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
                   pilih lokasi hotel atau resort hanford
                 </span>
               </label>
 
               {loadingLocations ? (
-                <div className="h-11 bg-[#8C8C8C]/20 animate-pulse rounded-full" />
+                <div className="h-11 bg-[#88B2AB]/20 animate-pulse rounded-full" />
               ) : (
                 <div className="relative">
                   <select
                     value={formData.propertySlug}
                     onChange={(e) => handlePropertyChange(e.target.value)}
                     required
-                    className="w-full px-5 py-3.5 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-full text-xs text-[#1A1A1A] font-semibold focus:outline-none focus:border-[#510F23] appearance-none"
+                    className="w-full px-5 py-3.5 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] font-semibold focus:outline-none focus:border-[#51867E] appearance-none"
                   >
                     {properties.map((p) => (
                       <option key={p.id} value={p.slug}>
@@ -363,28 +365,28 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       </option>
                     ))}
                   </select>
-                  <Building2 className="w-4 h-4 text-[#510F23] absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <Building2 className="w-4 h-4 text-[#51867E] absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               )}
             </div>
 
             {/* 2. Contact / Personal Details */}
-            <div className="space-y-4 pt-4 border-t border-[#8C8C8C]/30">
-              <label className="block text-xs font-bold tracking-[0.2em] text-[#510F23] uppercase">
+            <div className="space-y-4 pt-4 border-t border-[#88B2AB]/30">
+              <label className="block text-xs font-bold tracking-[0.2em] text-[#3A4F67] uppercase">
                 2. GUEST INFORMATION *
-                <span className="block text-[10px] text-[#8C8C8C] font-normal italic lowercase tracking-normal">
+                <span className="block text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
                   informasi data pemesan
                 </span>
               </label>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-[11px] font-bold text-[#510F23] mb-1">
+                  <label className="block text-[11px] font-bold text-[#3A4F67] mb-1">
                     <span className="flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5 text-[#510F23]" />
+                      <User className="w-3.5 h-3.5 text-[#51867E]" />
                       Full Name *
                     </span>
-                    <span className="block text-[10px] text-[#8C8C8C] font-normal italic">
+                    <span className="block text-[10px] text-[#3A4F67] font-medium italic">
                       nama lengkap
                     </span>
                   </label>
@@ -394,17 +396,17 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     placeholder="e.g. Eleanor Vance"
                     value={formData.guestName}
                     onChange={(e) => setFormData({ ...formData, guestName: e.target.value })}
-                    className="w-full px-5 py-3 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-full text-xs text-[#1A1A1A] focus:outline-none focus:border-[#510F23] font-medium"
+                    className="w-full px-5 py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold text-[#510F23] mb-1">
+                  <label className="block text-[11px] font-bold text-[#3A4F67] mb-1">
                     <span className="flex items-center gap-1.5">
-                      <AtSign className="w-3.5 h-3.5 text-[#510F23]" />
+                      <AtSign className="w-3.5 h-3.5 text-[#51867E]" />
                       X / Twitter Username *
                     </span>
-                    <span className="block text-[10px] text-[#8C8C8C] font-normal italic">
+                    <span className="block text-[10px] text-[#3A4F67] font-medium italic">
                       username akun x (tanpa @)
                     </span>
                   </label>
@@ -414,43 +416,43 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     placeholder="@username"
                     value={formData.xUsername}
                     onChange={(e) => setFormData({ ...formData, xUsername: e.target.value })}
-                    className="w-full px-5 py-3 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-full text-xs text-[#1A1A1A] focus:outline-none focus:border-[#510F23] font-medium"
+                    className="w-full px-5 py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium"
                   />
                 </div>
               </div>
             </div>
 
             {/* 3. Book Option Choice */}
-            <div className="space-y-4 pt-4 border-t border-[#8C8C8C]/30">
-              <label className="block text-xs font-bold tracking-[0.2em] text-[#510F23] uppercase">
+            <div className="space-y-4 pt-4 border-t border-[#88B2AB]/30">
+              <label className="block text-xs font-bold tracking-[0.2em] text-[#3A4F67] uppercase">
                 3. BOOKING CATEGORY *
-                <span className="block text-[10px] text-[#8C8C8C] font-normal italic lowercase tracking-normal">
+                <span className="block text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
                   kategori jenis pemesanan
                 </span>
               </label>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                 {/* Option: Room */}
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, bookOption: 'room' })}
-                  className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-3 cursor-pointer ${
+                  className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-2 cursor-pointer ${
                     formData.bookOption === 'room'
-                      ? 'bg-[#510F23] text-white border-[#C19F6A] shadow-md ring-2 ring-[#C19F6A]/50'
-                      : 'bg-[#FAF8F5] text-[#1A1A1A] border-[#8C8C8C]/30 hover:border-[#510F23]/50'
+                      ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
+                      : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <Hotel className={`w-5 h-5 ${formData.bookOption === 'room' ? 'text-[#C19F6A]' : 'text-[#510F23]'}`} />
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
-                      formData.bookOption === 'room' ? 'bg-[#C19F6A] text-[#510F23]' : 'bg-[#8C8C8C]/20 text-[#8C8C8C]'
+                    <Hotel className={`w-4 h-4 ${formData.bookOption === 'room' ? 'text-white' : 'text-[#51867E]'}`} />
+                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                      formData.bookOption === 'room' ? 'bg-[#88B2AB] text-[#1E293B]' : 'bg-[#3A4F67]/15 text-[#3A4F67]'
                     }`}>
                       ROOM
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold uppercase tracking-wider">For Room</h3>
-                    <p className={`text-[10px] mt-0.5 font-light ${formData.bookOption === 'room' ? 'text-white/80' : 'text-[#8C8C8C]'}`}>
+                    <h3 className={`text-xs font-bold uppercase tracking-wider ${formData.bookOption === 'room' ? 'text-white' : 'text-[#3A4F67]'}`}>ROOM</h3>
+                    <p className={`text-[10px] mt-0.5 font-medium leading-tight ${formData.bookOption === 'room' ? 'text-[#EAF2F1]' : 'text-[#3A4F67]'}`}>
                       Pemesanan kamar & suite menginap
                     </p>
                   </div>
@@ -460,50 +462,102 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, bookOption: 'event' })}
-                  className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-3 cursor-pointer ${
+                  className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-2 cursor-pointer ${
                     formData.bookOption === 'event'
-                      ? 'bg-[#510F23] text-white border-[#C19F6A] shadow-md ring-2 ring-[#C19F6A]/50'
-                      : 'bg-[#FAF8F5] text-[#1A1A1A] border-[#8C8C8C]/30 hover:border-[#510F23]/50'
+                      ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
+                      : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <PartyPopper className={`w-5 h-5 ${formData.bookOption === 'event' ? 'text-[#C19F6A]' : 'text-[#510F23]'}`} />
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
-                      formData.bookOption === 'event' ? 'bg-[#C19F6A] text-[#510F23]' : 'bg-[#8C8C8C]/20 text-[#8C8C8C]'
+                    <PartyPopper className={`w-4 h-4 ${formData.bookOption === 'event' ? 'text-white' : 'text-[#51867E]'}`} />
+                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                      formData.bookOption === 'event' ? 'bg-[#88B2AB] text-[#1E293B]' : 'bg-[#3A4F67]/15 text-[#3A4F67]'
                     }`}>
                       EVENT
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold uppercase tracking-wider">For Event Location</h3>
-                    <p className={`text-[10px] mt-0.5 font-light ${formData.bookOption === 'event' ? 'text-white/80' : 'text-[#8C8C8C]'}`}>
+                    <h3 className={`text-xs font-bold uppercase tracking-wider ${formData.bookOption === 'event' ? 'text-white' : 'text-[#3A4F67]'}`}>Event Location</h3>
+                    <p className={`text-[10px] mt-0.5 font-medium leading-tight ${formData.bookOption === 'event' ? 'text-[#EAF2F1]' : 'text-[#3A4F67]'}`}>
                       Penyewaan venue acara & galeri
                     </p>
                   </div>
                 </button>
 
-                {/* Option: Both */}
+                {/* Option: Both Room & Events */}
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, bookOption: 'both' })}
-                  className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-3 cursor-pointer ${
+                  className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-2 cursor-pointer ${
                     formData.bookOption === 'both'
-                      ? 'bg-[#510F23] text-white border-[#C19F6A] shadow-md ring-2 ring-[#C19F6A]/50'
-                      : 'bg-[#FAF8F5] text-[#1A1A1A] border-[#8C8C8C]/30 hover:border-[#510F23]/50'
+                      ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
+                      : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <Layers className={`w-5 h-5 ${formData.bookOption === 'both' ? 'text-[#C19F6A]' : 'text-[#510F23]'}`} />
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
-                      formData.bookOption === 'both' ? 'bg-[#C19F6A] text-[#510F23]' : 'bg-[#8C8C8C]/20 text-[#8C8C8C]'
+                    <Layers className={`w-4 h-4 ${formData.bookOption === 'both' ? 'text-white' : 'text-[#51867E]'}`} />
+                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                      formData.bookOption === 'both' ? 'bg-[#88B2AB] text-[#1E293B]' : 'bg-[#3A4F67]/15 text-[#3A4F67]'
                     }`}>
                       BOTH
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold uppercase tracking-wider">Both Room & Events</h3>
-                    <p className={`text-[10px] mt-0.5 font-light ${formData.bookOption === 'both' ? 'text-white/80' : 'text-[#8C8C8C]'}`}>
+                    <h3 className={`text-xs font-bold uppercase tracking-wider ${formData.bookOption === 'both' ? 'text-white' : 'text-[#3A4F67]'}`}>Room & Event</h3>
+                    <p className={`text-[10px] mt-0.5 font-medium leading-tight ${formData.bookOption === 'both' ? 'text-[#EAF2F1]' : 'text-[#3A4F67]'}`}>
                       Kombinasi kamar & venue acara
+                    </p>
+                  </div>
+                </button>
+
+                {/* Option: Meeting */}
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, bookOption: 'meeting' })}
+                  className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-2 cursor-pointer ${
+                    formData.bookOption === 'meeting'
+                      ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
+                      : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <Users className={`w-4 h-4 ${formData.bookOption === 'meeting' ? 'text-white' : 'text-[#51867E]'}`} />
+                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                      formData.bookOption === 'meeting' ? 'bg-[#88B2AB] text-[#1E293B]' : 'bg-[#3A4F67]/15 text-[#3A4F67]'
+                    }`}>
+                      MEETING
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className={`text-xs font-bold uppercase tracking-wider ${formData.bookOption === 'meeting' ? 'text-white' : 'text-[#3A4F67]'}`}>Meeting</h3>
+                    <p className={`text-[10px] mt-0.5 font-medium leading-tight ${formData.bookOption === 'meeting' ? 'text-[#EAF2F1]' : 'text-[#3A4F67]'}`}>
+                      Penyewaan ruang meeting
+                    </p>
+                  </div>
+                </button>
+
+                {/* Option: Room & Meeting */}
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, bookOption: 'room_meeting' })}
+                  className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-2 cursor-pointer ${
+                    formData.bookOption === 'room_meeting'
+                      ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
+                      : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <Building2 className={`w-4 h-4 ${formData.bookOption === 'room_meeting' ? 'text-white' : 'text-[#51867E]'}`} />
+                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                      formData.bookOption === 'room_meeting' ? 'bg-[#88B2AB] text-[#1E293B]' : 'bg-[#3A4F67]/15 text-[#3A4F67]'
+                    }`}>
+                      ROOM & MEETING
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className={`text-xs font-bold uppercase tracking-wider ${formData.bookOption === 'room_meeting' ? 'text-white' : 'text-[#3A4F67]'}`}>Room & Meeting</h3>
+                    <p className={`text-[10px] mt-0.5 font-medium leading-tight ${formData.bookOption === 'room_meeting' ? 'text-[#EAF2F1]' : 'text-[#3A4F67]'}`}>
+                      Kamar & ruang meeting
                     </p>
                   </div>
                 </button>
@@ -511,27 +565,27 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
             </div>
 
             {/* 4. Room Category Breakdown (Input Numbers) */}
-            {(formData.bookOption === 'room' || formData.bookOption === 'both') && (
-              <div className="space-y-4 pt-4 border-t border-[#8C8C8C]/30 animate-in fade-in duration-300">
+            {(formData.bookOption === 'room' || formData.bookOption === 'both' || formData.bookOption === 'room_meeting') && (
+              <div className="space-y-4 pt-4 border-t border-[#88B2AB]/30 animate-in fade-in duration-300">
                 <div className="flex items-center justify-between">
-                  <label className="block text-xs font-bold tracking-[0.2em] text-[#510F23] uppercase">
+                  <label className="block text-xs font-bold tracking-[0.2em] text-[#3A4F67] uppercase">
                     REQUIRED ROOM QUANTITIES *
-                    <span className="block text-[10px] text-[#8C8C8C] font-normal italic lowercase tracking-normal">
+                    <span className="block text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
                       opsi jumlah kamar tiap tipe kamar (masukkan angka)
                     </span>
                   </label>
 
-                  <span className="text-[10px] font-bold text-[#510F23] bg-[#FAF8F5] px-3 py-1 rounded-full border border-[#8C8C8C]/30">
+                  <span className="text-[10px] font-bold text-[#3A4F67] bg-white px-3 py-1 rounded-full border border-[#88B2AB]/30">
                     Total: {(formData.standardRooms || 0) + (formData.deluxeRooms || 0) + (formData.presidentialSuites || 0) + (formData.privateVillas || 0)} Room(s)
                   </span>
                 </div>
 
                 <div className={`grid grid-cols-1 sm:grid-cols-2 ${isGrandHotel ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-4`}>
                   {/* Standard Room */}
-                  <div className="bg-[#FAF8F5] p-4 rounded-2xl border border-[#8C8C8C]/30 space-y-2">
-                    <label className="block text-xs font-bold text-[#510F23]">
+                  <div className="bg-white p-4 rounded-2xl border border-[#88B2AB]/30 space-y-2">
+                    <label className="block text-xs font-bold text-[#3A4F67]">
                       Standard Room
-                      <span className="block text-[10px] text-[#8C8C8C] font-normal italic">
+                      <span className="block text-[10px] text-[#3A4F67] font-medium italic">
                         kamar tipe standar
                       </span>
                     </label>
@@ -541,15 +595,15 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       max="50"
                       value={formData.standardRooms ?? 0}
                       onChange={(e) => handleRoomCountChange('standardRooms', parseInt(e.target.value) || 0)}
-                      className="w-full px-4 py-2.5 bg-white border border-[#8C8C8C]/30 rounded-xl text-xs font-bold text-[#1A1A1A] focus:outline-none focus:border-[#510F23]"
+                      className="w-full px-4 py-2.5 bg-[#EAF2F1]/30 border border-[#88B2AB]/30 rounded-xl text-xs font-bold text-[#2C3744] focus:outline-none focus:border-[#51867E]"
                     />
                   </div>
 
                   {/* Deluxe Room */}
-                  <div className="bg-[#FAF8F5] p-4 rounded-2xl border border-[#8C8C8C]/30 space-y-2">
-                    <label className="block text-xs font-bold text-[#510F23]">
+                  <div className="bg-white p-4 rounded-2xl border border-[#88B2AB]/30 space-y-2">
+                    <label className="block text-xs font-bold text-[#3A4F67]">
                       Deluxe Room
-                      <span className="block text-[10px] text-[#8C8C8C] font-normal italic">
+                      <span className="block text-[10px] text-[#3A4F67] font-medium italic">
                         kamar tipe deluxe
                       </span>
                     </label>
@@ -559,15 +613,15 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       max="50"
                       value={formData.deluxeRooms ?? 0}
                       onChange={(e) => handleRoomCountChange('deluxeRooms', parseInt(e.target.value) || 0)}
-                      className="w-full px-4 py-2.5 bg-white border border-[#8C8C8C]/30 rounded-xl text-xs font-bold text-[#1A1A1A] focus:outline-none focus:border-[#510F23]"
+                      className="w-full px-4 py-2.5 bg-[#EAF2F1]/30 border border-[#88B2AB]/30 rounded-xl text-xs font-bold text-[#2C3744] focus:outline-none focus:border-[#51867E]"
                     />
                   </div>
 
                   {/* Presidential Suite */}
-                  <div className="bg-[#FAF8F5] p-4 rounded-2xl border border-[#8C8C8C]/30 space-y-2">
-                    <label className="block text-xs font-bold text-[#510F23]">
+                  <div className="bg-white p-4 rounded-2xl border border-[#88B2AB]/30 space-y-2">
+                    <label className="block text-xs font-bold text-[#3A4F67]">
                       Presidential Suite
-                      <span className="block text-[10px] text-[#8C8C8C] font-normal italic">
+                      <span className="block text-[10px] text-[#3A4F67] font-medium italic">
                         kamar presidential suite
                       </span>
                     </label>
@@ -577,16 +631,16 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       max="10"
                       value={formData.presidentialSuites ?? 0}
                       onChange={(e) => handleRoomCountChange('presidentialSuites', parseInt(e.target.value) || 0)}
-                      className="w-full px-4 py-2.5 bg-white border border-[#8C8C8C]/30 rounded-xl text-xs font-bold text-[#1A1A1A] focus:outline-none focus:border-[#510F23]"
+                      className="w-full px-4 py-2.5 bg-[#EAF2F1]/30 border border-[#88B2AB]/30 rounded-xl text-xs font-bold text-[#2C3744] focus:outline-none focus:border-[#51867E]"
                     />
                   </div>
 
                   {/* Private Villa (Only shown for Resorts, hidden for Grand Hotel) */}
                   {!isGrandHotel && (
-                    <div className="bg-[#FAF8F5] p-4 rounded-2xl border border-[#8C8C8C]/30 space-y-2 animate-in fade-in duration-300">
-                      <label className="block text-xs font-bold text-[#510F23]">
+                    <div className="bg-white p-4 rounded-2xl border border-[#88B2AB]/30 space-y-2 animate-in fade-in duration-300">
+                      <label className="block text-xs font-bold text-[#3A4F67]">
                         Private Villa
-                        <span className="block text-[10px] text-[#8C8C8C] font-normal italic">
+                        <span className="block text-[10px] text-[#3A4F67] font-medium italic">
                           private villa (resort only)
                         </span>
                       </label>
@@ -596,7 +650,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         max="10"
                         value={formData.privateVillas ?? 0}
                         onChange={(e) => handleRoomCountChange('privateVillas', parseInt(e.target.value) || 0)}
-                        className="w-full px-4 py-2.5 bg-white border border-[#8C8C8C]/30 rounded-xl text-xs font-bold text-[#1A1A1A] focus:outline-none focus:border-[#510F23]"
+                        className="w-full px-4 py-2.5 bg-[#EAF2F1]/30 border border-[#88B2AB]/30 rounded-xl text-xs font-bold text-[#2C3744] focus:outline-none focus:border-[#51867E]"
                       />
                     </div>
                   )}
@@ -604,16 +658,16 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
               </div>
             )}
 
-            {/* 5. Event Attendees & Catering Pax */}
-            {(formData.bookOption === 'event' || formData.bookOption === 'both') && (
-              <div className="space-y-6 pt-4 border-t border-[#8C8C8C]/30 animate-in fade-in duration-300">
+            {/* 5. Event / Meeting Attendees & Services */}
+            {(formData.bookOption === 'event' || formData.bookOption === 'both' || formData.bookOption === 'meeting' || formData.bookOption === 'room_meeting') && (
+              <div className="space-y-6 pt-4 border-t border-[#88B2AB]/30 animate-in fade-in duration-300">
                 
-                {/* Event Attendees Pax Input */}
+                {/* Event / Meeting Attendees Pax Input */}
                 <div className="space-y-2">
-                  <label className="block text-xs font-bold tracking-[0.2em] text-[#510F23] uppercase">
-                    EVENT ATTENDEES (PAX) *
-                    <span className="block text-[10px] text-[#8C8C8C] font-normal italic lowercase tracking-normal">
-                      jumlah orang dalam event jika memilih opsi event
+                  <label className="block text-xs font-bold tracking-[0.2em] text-[#3A4F67] uppercase">
+                    {formData.bookOption === 'meeting' || formData.bookOption === 'room_meeting' ? 'MEETING ATTENDEES (PAX) *' : 'EVENT ATTENDEES (PAX) *'}
+                    <span className="block text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
+                      jumlah peserta / tamu {formData.bookOption === 'meeting' || formData.bookOption === 'room_meeting' ? 'meeting' : 'event'}
                     </span>
                   </label>
 
@@ -625,64 +679,34 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       placeholder="e.g. 50"
                       value={formData.eventAttendees ?? ''}
                       onChange={(e) => setFormData({ ...formData, eventAttendees: parseInt(e.target.value) || 0 })}
-                      className="w-full px-5 py-3 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-full text-xs font-bold text-[#1A1A1A] focus:outline-none focus:border-[#510F23]"
+                      className="w-full px-5 py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs font-bold text-[#2C3744] focus:outline-none focus:border-[#51867E]"
                     />
-                    <Users className="w-4 h-4 text-[#510F23] absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <Users className="w-4 h-4 text-[#51867E] absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
                 </div>
 
-                {/* Event Services (Catering & Decoration) */}
+                {/* Event / Meeting Services (Catering & Venue Only Options) */}
                 <div className="space-y-3">
-                  <label className="block text-xs font-bold tracking-[0.2em] text-[#510F23] uppercase">
-                    EVENT SERVICES & ADD-ONS *
-                    <span className="block text-[10px] text-[#8C8C8C] font-normal italic lowercase tracking-normal">
-                      pilih kebutuhan katering atau dekorasi acara
+                  <label className="block text-xs font-bold tracking-[0.2em] text-[#3A4F67] uppercase">
+                    SERVICES & ADD-ONS *
+                    <span className="block text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
+                      pilih opsi dengan katering atau hanya venue / room
                     </span>
                   </label>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <button
                       type="button"
-                      onClick={() => setFormData({ ...formData, eventAddons: 'both' })}
-                      className={`p-3.5 rounded-xl border text-left text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
-                        formData.eventAddons === 'both'
-                          ? 'bg-[#510F23] text-white border-[#C19F6A]'
-                          : 'bg-[#FAF8F5] text-[#1A1A1A] border-[#8C8C8C]/30'
-                      }`}
-                    >
-                      <div>
-                        <span>With Catering & Decoration</span>
-                        <span className="block text-[10px] font-normal opacity-80">Dengan katering & dekorasi</span>
-                      </div>
-                    </button>
-
-                    <button
-                      type="button"
                       onClick={() => setFormData({ ...formData, eventAddons: 'catering' })}
                       className={`p-3.5 rounded-xl border text-left text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
                         formData.eventAddons === 'catering'
-                          ? 'bg-[#510F23] text-white border-[#C19F6A]'
-                          : 'bg-[#FAF8F5] text-[#1A1A1A] border-[#8C8C8C]/30'
+                          ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md'
+                          : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
                       }`}
                     >
                       <div>
-                        <span>With Catering Only</span>
-                        <span className="block text-[10px] font-normal opacity-80">Dengan katering saja</span>
-                      </div>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setFormData({ ...formData, eventAddons: 'decoration' })}
-                      className={`p-3.5 rounded-xl border text-left text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
-                        formData.eventAddons === 'decoration'
-                          ? 'bg-[#510F23] text-white border-[#C19F6A]'
-                          : 'bg-[#FAF8F5] text-[#1A1A1A] border-[#8C8C8C]/30'
-                      }`}
-                    >
-                      <div>
-                        <span>With Decoration Only</span>
-                        <span className="block text-[10px] font-normal opacity-80">Dengan dekorasi saja</span>
+                        <span className={formData.eventAddons === 'catering' ? 'text-white font-bold' : 'text-[#3A4F67] font-bold'}>With Catering</span>
+                        <span className={`block text-[10px] ${formData.eventAddons === 'catering' ? 'text-[#EAF2F1] font-medium' : 'text-[#3A4F67] font-normal'}`}>Dengan fasilitas katering</span>
                       </div>
                     </button>
 
@@ -691,24 +715,58 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       onClick={() => setFormData({ ...formData, eventAddons: 'none' })}
                       className={`p-3.5 rounded-xl border text-left text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
                         formData.eventAddons === 'none'
-                          ? 'bg-[#510F23] text-white border-[#C19F6A]'
-                          : 'bg-[#FAF8F5] text-[#1A1A1A] border-[#8C8C8C]/30'
+                          ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md'
+                          : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
                       }`}
                     >
                       <div>
-                        <span>Venue Only (No Catering/Decoration)</span>
-                        <span className="block text-[10px] font-normal opacity-80">Hanya sewa tempat</span>
+                        <span className={formData.eventAddons === 'none' ? 'text-white font-bold' : 'text-[#3A4F67] font-bold'}>Venue / Room Only</span>
+                        <span className={`block text-[10px] ${formData.eventAddons === 'none' ? 'text-[#EAF2F1] font-medium' : 'text-[#3A4F67] font-normal'}`}>Hanya sewa tempat (tanpa katering)</span>
                       </div>
                     </button>
+
+                    {(formData.bookOption === 'event' || formData.bookOption === 'both') && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => setFormData({ ...formData, eventAddons: 'decoration' })}
+                          className={`p-3.5 rounded-xl border text-left text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
+                            formData.eventAddons === 'decoration'
+                              ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md'
+                              : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
+                          }`}
+                        >
+                          <div>
+                            <span className={formData.eventAddons === 'decoration' ? 'text-white font-bold' : 'text-[#3A4F67] font-bold'}>With Decoration Only</span>
+                            <span className={`block text-[10px] ${formData.eventAddons === 'decoration' ? 'text-[#EAF2F1] font-medium' : 'text-[#3A4F67] font-normal'}`}>Dengan dekorasi saja</span>
+                          </div>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setFormData({ ...formData, eventAddons: 'both' })}
+                          className={`p-3.5 rounded-xl border text-left text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
+                            formData.eventAddons === 'both'
+                              ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md'
+                              : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
+                          }`}
+                        >
+                          <div>
+                            <span className={formData.eventAddons === 'both' ? 'text-white font-bold' : 'text-[#3A4F67] font-bold'}>With Catering & Decoration</span>
+                            <span className={`block text-[10px] ${formData.eventAddons === 'both' ? 'text-[#EAF2F1] font-medium' : 'text-[#3A4F67] font-normal'}`}>Dengan katering & dekorasi</span>
+                          </div>
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
 
                 {/* Conditional Catering Pax Input */}
                 {(formData.eventAddons === 'catering' || formData.eventAddons === 'both') && (
-                  <div className="space-y-2 bg-[#FAF8F5] p-4 rounded-2xl border border-[#8C8C8C]/30 animate-in fade-in duration-300 max-w-sm">
-                    <label className="block text-xs font-bold tracking-[0.1em] text-[#510F23] uppercase">
+                  <div className="space-y-2 bg-white p-4 rounded-2xl border border-[#88B2AB]/30 animate-in fade-in duration-300 max-w-sm">
+                    <label className="block text-xs font-bold tracking-[0.1em] text-[#3A4F67] uppercase">
                       CATERING PAX COUNT *
-                      <span className="block text-[10px] text-[#8C8C8C] font-normal italic lowercase tracking-normal">
+                      <span className="block text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
                         jumlah pax porsi katering yang dibutuhkan
                       </span>
                     </label>
@@ -721,9 +779,9 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         placeholder="e.g. 50"
                         value={formData.cateringPax ?? ''}
                         onChange={(e) => setFormData({ ...formData, cateringPax: parseInt(e.target.value) || 0 })}
-                        className="w-full px-5 py-3 bg-white border border-[#8C8C8C]/30 rounded-full text-xs font-bold text-[#1A1A1A] focus:outline-none focus:border-[#510F23]"
+                        className="w-full px-5 py-3 bg-[#EAF2F1]/30 border border-[#88B2AB]/30 rounded-full text-xs font-bold text-[#2C3744] focus:outline-none focus:border-[#51867E]"
                       />
-                      <Utensils className="w-4 h-4 text-[#510F23] absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      <Utensils className="w-4 h-4 text-[#51867E] absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none" />
                     </div>
                   </div>
                 )}
@@ -731,10 +789,10 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
             )}
 
             {/* 6. Dates Section */}
-            <div className="space-y-4 pt-4 border-t border-[#8C8C8C]/30">
-              <label className="block text-xs font-bold tracking-[0.2em] text-[#510F23] uppercase">
+            <div className="space-y-4 pt-4 border-t border-[#88B2AB]/30">
+              <label className="block text-xs font-bold tracking-[0.2em] text-[#3A4F67] uppercase">
                 4. RESERVATION DATES *
-                <span className="block text-[10px] text-[#8C8C8C] font-normal italic lowercase tracking-normal">
+                <span className="block text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
                   pilih tanggal pelaksanaan reservasi
                 </span>
               </label>
@@ -743,9 +801,9 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
               {formData.bookOption === 'room' && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-in fade-in duration-300">
                   <div>
-                    <label className="block text-[11px] font-bold text-[#510F23] mb-1">
+                    <label className="block text-[11px] font-bold text-[#3A4F67] mb-1">
                       Check-In Date *
-                      <span className="block text-[10px] text-[#8C8C8C] font-normal italic">
+                      <span className="block text-[10px] text-[#3A4F67] font-medium italic">
                         tanggal check-in
                       </span>
                     </label>
@@ -754,14 +812,14 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       required
                       value={formData.checkInDate}
                       onChange={(e) => setFormData({ ...formData, checkInDate: e.target.value })}
-                      className="w-full px-5 py-3 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-full text-xs text-[#1A1A1A] focus:outline-none focus:border-[#510F23] font-medium"
+                      className="w-full px-5 py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-[#510F23] mb-1">
+                    <label className="block text-[11px] font-bold text-[#3A4F67] mb-1">
                       Check-Out Date *
-                      <span className="block text-[10px] text-[#8C8C8C] font-normal italic">
+                      <span className="block text-[10px] text-[#3A4F67] font-medium italic">
                         tanggal check-out
                       </span>
                     </label>
@@ -770,19 +828,19 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       required
                       value={formData.checkOutDate}
                       onChange={(e) => setFormData({ ...formData, checkOutDate: e.target.value })}
-                      className="w-full px-5 py-3 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-full text-xs text-[#1A1A1A] focus:outline-none focus:border-[#510F23] font-medium"
+                      className="w-full px-5 py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium"
                     />
                   </div>
                 </div>
               )}
 
-              {/* Case 2: Event Only */}
-              {formData.bookOption === 'event' && (
+              {/* Case 2: Event or Meeting Only */}
+              {(formData.bookOption === 'event' || formData.bookOption === 'meeting') && (
                 <div className="animate-in fade-in duration-300 max-w-sm">
-                  <label className="block text-[11px] font-bold text-[#510F23] mb-1">
-                    Event Date *
-                    <span className="block text-[10px] text-[#8C8C8C] font-normal italic">
-                      tanggal pelaksanaan event
+                  <label className="block text-[11px] font-bold text-[#3A4F67] mb-1">
+                    {formData.bookOption === 'meeting' ? 'Meeting Date *' : 'Event Date *'}
+                    <span className="block text-[10px] text-[#3A4F67] font-medium italic">
+                      tanggal pelaksanaan {formData.bookOption === 'meeting' ? 'meeting' : 'event'}
                     </span>
                   </label>
                   <input
@@ -790,18 +848,18 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     required
                     value={formData.eventDate}
                     onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
-                    className="w-full px-5 py-3 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-full text-xs text-[#1A1A1A] focus:outline-none focus:border-[#510F23] font-medium"
+                    className="w-full px-5 py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium"
                   />
                 </div>
               )}
 
-              {/* Case 3: Both Room and Event */}
-              {formData.bookOption === 'both' && (
+              {/* Case 3: Both Room and Event / Room & Meeting */}
+              {(formData.bookOption === 'both' || formData.bookOption === 'room_meeting') && (
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 animate-in fade-in duration-300">
                   <div>
-                    <label className="block text-[11px] font-bold text-[#510F23] mb-1">
+                    <label className="block text-[11px] font-bold text-[#3A4F67] mb-1">
                       Room Check-In *
-                      <span className="block text-[10px] text-[#8C8C8C] font-normal italic">
+                      <span className="block text-[10px] text-[#3A4F67] font-medium italic">
                         tanggal check-in
                       </span>
                     </label>
@@ -810,14 +868,14 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       required
                       value={formData.checkInDate}
                       onChange={(e) => setFormData({ ...formData, checkInDate: e.target.value })}
-                      className="w-full px-5 py-3 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-full text-xs text-[#1A1A1A] focus:outline-none focus:border-[#510F23] font-medium"
+                      className="w-full px-5 py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-[#510F23] mb-1">
+                    <label className="block text-[11px] font-bold text-[#3A4F67] mb-1">
                       Room Check-Out *
-                      <span className="block text-[10px] text-[#8C8C8C] font-normal italic">
+                      <span className="block text-[10px] text-[#3A4F67] font-medium italic">
                         tanggal check-out
                       </span>
                     </label>
@@ -826,15 +884,15 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       required
                       value={formData.checkOutDate}
                       onChange={(e) => setFormData({ ...formData, checkOutDate: e.target.value })}
-                      className="w-full px-5 py-3 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-full text-xs text-[#1A1A1A] focus:outline-none focus:border-[#510F23] font-medium"
+                      className="w-full px-5 py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-[#510F23] mb-1">
-                      Event Date *
-                      <span className="block text-[10px] text-[#8C8C8C] font-normal italic">
-                        tanggal pelaksanaan event
+                    <label className="block text-[11px] font-bold text-[#3A4F67] mb-1">
+                      {formData.bookOption === 'room_meeting' ? 'Meeting Date *' : 'Event Date *'}
+                      <span className="block text-[10px] text-[#3A4F67] font-medium italic">
+                        tanggal pelaksanaan {formData.bookOption === 'room_meeting' ? 'meeting' : 'event'}
                       </span>
                     </label>
                     <input
@@ -842,7 +900,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       required
                       value={formData.eventDate}
                       onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
-                      className="w-full px-5 py-3 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-full text-xs text-[#1A1A1A] focus:outline-none focus:border-[#510F23] font-medium"
+                      className="w-full px-5 py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium"
                     />
                   </div>
                 </div>
@@ -850,10 +908,10 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
             </div>
 
             {/* 7. Keterangan / Remarks & Special Requests */}
-            <div className="space-y-2 pt-4 border-t border-[#8C8C8C]/30">
-              <label className="block text-xs font-bold tracking-[0.2em] text-[#510F23] uppercase">
+            <div className="space-y-2 pt-4 border-t border-[#88B2AB]/30">
+              <label className="block text-xs font-bold tracking-[0.2em] text-[#3A4F67] uppercase">
                 5. REMARKS & SPECIAL REQUESTS
-                <span className="block text-[10px] text-[#8C8C8C] font-normal italic lowercase tracking-normal">
+                <span className="block text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
                   keterangan: tuliskan alasan booking dan detail kebutuhan khusus yang perlu kami ketahui
                 </span>
               </label>
@@ -863,16 +921,16 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 placeholder="Please describe the purpose of your reservation (e.g. vacation stay, private event, brand launch, wedding, photo shoot) and any special arrangements required / Tuliskan alasan booking dan detail khusus..."
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                className="w-full px-5 py-4 bg-[#FAF8F5] border border-[#8C8C8C]/30 rounded-2xl text-xs text-[#1A1A1A] focus:outline-none focus:border-[#510F23] font-light leading-relaxed"
+                className="w-full px-5 py-4 bg-white border border-[#88B2AB]/30 rounded-2xl text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-light leading-relaxed"
               />
             </div>
 
             {/* Submit Action */}
-            <div className="pt-6 border-t border-[#8C8C8C]/30 space-y-4">
+            <div className="pt-6 border-t border-[#88B2AB]/30 space-y-4">
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-4 bg-[#510F23] text-white hover:bg-[#3d0b1a] rounded-full text-xs font-bold tracking-[0.25em] uppercase transition-all duration-300 shadow-xl flex items-center justify-center gap-3 disabled:opacity-50 border border-[#C19F6A]/30 cursor-pointer"
+                className="book-now-button cta-button w-full py-4 bg-[#51867E] text-white hover:bg-[#3f6d66] rounded-full text-xs font-bold tracking-[0.25em] uppercase transition-all duration-300 shadow-xl flex items-center justify-center gap-3 disabled:opacity-50 border border-[#88B2AB]/30 cursor-pointer"
               >
                 {submitting ? (
                   <>
@@ -881,13 +939,13 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   </>
                 ) : (
                   <>
-                    <Send className="w-4 h-4 text-[#C19F6A]" />
+                    <Send className="w-4 h-4 text-white" />
                     <span>SUBMIT RESERVATION TO HANFORD REGISTER</span>
                   </>
                 )}
               </button>
 
-              <p className="text-[10px] text-center text-[#8C8C8C] italic font-light">
+              <p className="text-[10px] text-center text-[#3A4F67] italic font-medium">
                 * Form submissions are recorded and synchronized to Hanford Central Reservations Google Sheets.
               </p>
             </div>

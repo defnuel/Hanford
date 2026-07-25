@@ -52,10 +52,10 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
 
   if (loading) {
     return (
-      <div className="bg-[#E8DAC1] pt-32 pb-24 min-h-screen flex items-center justify-center">
+      <div className="bg-[#FFFFFF] pt-32 pb-24 min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="w-12 h-12 border-2 border-[#510F23] border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-xs font-serif italic tracking-widest text-[#510F23] uppercase">
+          <div className="w-12 h-12 border-2 border-[#3A4F67] border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-xs font-serif italic tracking-widest text-[#3A4F67] uppercase">
             Loading Sanctuary Details...
           </p>
         </div>
@@ -65,16 +65,16 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
 
   if (!property) {
     return (
-      <div className="bg-[#E8DAC1] pt-32 pb-24 min-h-screen">
+      <div className="bg-[#FFFFFF] pt-32 pb-24 min-h-screen text-[#2C3744]">
         <div className="max-w-3xl mx-auto px-6 text-center space-y-6">
-          <MapPin className="w-12 h-12 text-[#510F23] mx-auto" />
-          <h1 className="font-serif italic text-3xl text-[#510F23]">Sanctuary Not Found</h1>
-          <p className="text-xs text-[#1A1A1A]/80 font-light">
+          <MapPin className="w-12 h-12 text-[#3A4F67] mx-auto" />
+          <h1 className="font-serif italic text-3xl text-[#3A4F67]">Sanctuary Not Found</h1>
+          <p className="text-xs text-[#2C3744] font-light">
             We could not locate the requested Hanford property details.
           </p>
           <button
             onClick={() => onNavigate('/locations')}
-            className="px-6 py-3 bg-[#510F23] text-white rounded-full text-xs font-bold tracking-widest uppercase hover:bg-[#3d0b1a] transition-colors border border-[#C19F6A]/30"
+            className="cta-button px-6 py-3 bg-[#51867E] text-white rounded-full text-xs font-bold tracking-widest uppercase hover:bg-[#3f6d66] transition-colors border border-[#88B2AB]/30 cursor-pointer"
           >
             RETURN TO ALL LOCATIONS
           </button>
@@ -93,33 +93,33 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
   const displayStatus = formatStatus(property.status);
 
   return (
-    <div className="bg-[#E8DAC1] pt-24 pb-24 text-[#1A1A1A]">
+    <div className="bg-[#FFFFFF] pt-24 pb-24 text-[#2C3744]">
       {/* Breadcrumb Navigation Bar */}
-      <div className="bg-[#E8DAC1] border-b border-[#8C8C8C]/30 py-4">
+      <div className="bg-[#FFFFFF] border-b border-[#88B2AB]/30 py-4">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 flex items-center justify-between text-xs">
           <button
             onClick={() => onNavigate('/locations')}
-            className="inline-flex items-center gap-2 text-[#510F23] hover:text-[#C19F6A] font-bold tracking-wider transition-colors"
+            className="inline-flex items-center gap-2 text-[#3A4F67] hover:text-[#51867E] font-bold tracking-wider transition-colors cursor-pointer"
           >
-            <ArrowLeft className="w-3.5 h-3.5 text-[#510F23]" />
+            <ArrowLeft className="w-3.5 h-3.5 text-[#3A4F67]" />
             <span>BACK TO ALL LOCATIONS</span>
           </button>
 
-          <span className="text-[#8C8C8C] font-light">
-            {property.continent} / {property.country} / <strong className="text-[#510F23]">{property.name}</strong>
+          <span className="text-[#666666] font-light">
+            {property.continent} / {property.country} / <strong className="text-[#3A4F67]">{property.name}</strong>
           </span>
         </div>
       </div>
 
       {/* Main Hero Header */}
-      <section className="relative bg-[#510F23] text-[#E8DAC1] py-16 overflow-hidden border-b border-[#C19F6A]/30">
+      <section className="relative bg-[#3A4F67] text-[#EAF2F1] py-16 overflow-hidden border-b border-[#88B2AB]/30">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 relative z-10">
           <div className="max-w-3xl space-y-4">
             <div className="flex items-center gap-3">
-              <span className="px-3 py-1 bg-[#C19F6A] text-[#1A1A1A] text-[10px] font-bold tracking-[0.2em] uppercase rounded-full">
+              <span className="px-3 py-1 bg-[#51867E] text-white text-[10px] font-bold tracking-[0.2em] uppercase rounded-full">
                 {displayStatus}
               </span>
-              <span className="text-xs font-bold tracking-[0.25em] text-[#C19F6A] uppercase">
+              <span className="text-xs font-bold tracking-[0.25em] text-[#88B2AB] uppercase">
                 {property.continent} • {property.country}
               </span>
             </div>
@@ -128,12 +128,12 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
               {property.name}
             </h1>
 
-            <p className="text-base sm:text-lg font-light text-[#E8DAC1]/80 italic">
+            <p className="text-base sm:text-lg font-normal text-[#EAF2F1] italic">
               "{property.tagline}"
             </p>
 
-            <div className="flex items-center gap-2 text-xs text-[#E8DAC1]/80 pt-2 font-light">
-              <MapPin className="w-4 h-4 text-[#C19F6A]" />
+            <div className="flex items-center gap-2 text-xs text-[#EAF2F1] pt-2 font-medium">
+              <MapPin className="w-4 h-4 text-[#88B2AB]" />
               <span>{property.address}</span>
             </div>
           </div>
@@ -147,7 +147,7 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
           <div className="lg:col-span-2 space-y-12">
             {/* Gallery Viewer */}
             <div className="space-y-4">
-              <div className="relative w-full aspect-[16/10] sm:aspect-video sm:h-[480px] bg-[#510F23] border border-[#8C8C8C]/30 rounded-t-[40px] sm:rounded-t-[100px] overflow-hidden shadow-xl group">
+              <div className="relative w-full aspect-[16/10] sm:aspect-video sm:h-[480px] bg-[#3A4F67] border border-[#88B2AB]/30 rounded-t-[40px] sm:rounded-t-[100px] overflow-hidden shadow-xl group">
                 <img
                   src={allGalleryImages[activeImageIndex] || property.heroImage}
                   alt={`${property.name} slide ${activeImageIndex + 1}`}
@@ -157,7 +157,7 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
 
                 {/* Counter overlay */}
                 {allGalleryImages.length > 0 && (
-                  <div className="absolute bottom-4 right-6 bg-[#510F23]/80 backdrop-blur-md text-[#E8DAC1] px-3.5 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border border-[#C19F6A]/30">
+                  <div className="absolute bottom-4 right-6 bg-[#3A4F67]/80 backdrop-blur-md text-[#EAF2F1] px-3.5 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border border-[#88B2AB]/30">
                     {activeImageIndex + 1} / {allGalleryImages.length}
                   </div>
                 )}
@@ -167,17 +167,17 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
                   <>
                     <button
                       onClick={() => setActiveImageIndex((prev) => (prev === 0 ? allGalleryImages.length - 1 : prev - 1))}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-[#510F23]/80 text-[#E8DAC1] hover:bg-[#510F23] transition-all opacity-0 group-hover:opacity-100 border border-[#C19F6A]/30 shadow-lg"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-[#3A4F67]/80 text-[#EAF2F1] hover:bg-[#3A4F67] transition-all opacity-0 group-hover:opacity-100 border border-[#88B2AB]/30 shadow-lg cursor-pointer"
                       aria-label="Previous image"
                     >
-                      <ChevronLeft className="w-5 h-5 text-[#C19F6A]" />
+                      <ChevronLeft className="w-5 h-5 text-[#88B2AB]" />
                     </button>
                     <button
                       onClick={() => setActiveImageIndex((prev) => (prev === allGalleryImages.length - 1 ? 0 : prev + 1))}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-[#510F23]/80 text-[#E8DAC1] hover:bg-[#510F23] transition-all opacity-0 group-hover:opacity-100 border border-[#C19F6A]/30 shadow-lg"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-[#3A4F67]/80 text-[#EAF2F1] hover:bg-[#3A4F67] transition-all opacity-0 group-hover:opacity-100 border border-[#88B2AB]/30 shadow-lg cursor-pointer"
                       aria-label="Next image"
                     >
-                      <ChevronRight className="w-5 h-5 text-[#C19F6A]" />
+                      <ChevronRight className="w-5 h-5 text-[#88B2AB]" />
                     </button>
                   </>
                 )}
@@ -187,10 +187,10 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
               <div className="relative flex items-center gap-2">
                 <button
                   onClick={() => scrollThumbnails('left')}
-                  className="p-2.5 rounded-full bg-[#510F23] text-[#E8DAC1] hover:bg-[#3d0b1a] transition-all border border-[#C19F6A]/30 shrink-0 shadow-sm"
+                  className="p-2.5 rounded-full bg-[#3A4F67] text-[#EAF2F1] hover:bg-[#2C3744] transition-all border border-[#88B2AB]/30 shrink-0 shadow-sm cursor-pointer"
                   aria-label="Scroll thumbnails left"
                 >
-                  <ChevronLeft className="w-4 h-4 text-[#C19F6A]" />
+                  <ChevronLeft className="w-4 h-4 text-[#88B2AB]" />
                 </button>
 
                 <div
@@ -202,9 +202,9 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
                     <button
                       key={idx}
                       onClick={() => setActiveImageIndex(idx)}
-                      className={`relative h-20 w-28 shrink-0 overflow-hidden rounded-xl border-2 transition-all ${
+                      className={`relative h-20 w-28 shrink-0 overflow-hidden rounded-xl border-2 transition-all cursor-pointer ${
                         activeImageIndex === idx
-                          ? 'border-[#510F23] scale-95 shadow-md ring-2 ring-[#C19F6A]'
+                          ? 'border-[#3A4F67] scale-95 shadow-md ring-2 ring-[#88B2AB]'
                           : 'border-transparent opacity-70 hover:opacity-100'
                       }`}
                     >
@@ -220,10 +220,10 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
 
                 <button
                   onClick={() => scrollThumbnails('right')}
-                  className="p-2.5 rounded-full bg-[#510F23] text-[#E8DAC1] hover:bg-[#3d0b1a] transition-all border border-[#C19F6A]/30 shrink-0 shadow-sm"
+                  className="p-2.5 rounded-full bg-[#3A4F67] text-[#EAF2F1] hover:bg-[#2C3744] transition-all border border-[#88B2AB]/30 shrink-0 shadow-sm cursor-pointer"
                   aria-label="Scroll thumbnails right"
                 >
-                  <ChevronRight className="w-4 h-4 text-[#C19F6A]" />
+                  <ChevronRight className="w-4 h-4 text-[#88B2AB]" />
                 </button>
               </div>
             </div>
@@ -235,82 +235,82 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
           {/* Right Column: Reservation Card & Amenities Grid */}
           <div className="space-y-8">
             {/* Direct Reservation Non-Floating Static Card */}
-            <div className="bg-[#510F23] text-[#E8DAC1] p-8 border border-[#C19F6A]/30 rounded-2xl shadow-2xl space-y-6">
-              <div className="border-b border-[#C19F6A]/30 pb-6 flex items-end justify-between">
+            <div className="bg-[#3A4F67] text-[#EAF2F1] p-8 border border-[#88B2AB]/30 rounded-2xl shadow-2xl space-y-6">
+              <div className="border-b border-[#88B2AB]/30 pb-6 flex items-end justify-between">
                 <div>
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-[#C19F6A] block">
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-[#88B2AB] block">
                     Starting From
                   </span>
                   <span className="font-serif italic text-3xl text-white font-light">
                     ${property.priceFrom}
                   </span>
-                  <span className="text-xs text-[#E8DAC1]/80 font-light"> / night</span>
+                  <span className="text-xs text-[#EAF2F1]/80 font-light"> / night</span>
                 </div>
-                <div className="flex items-center gap-1 text-[#E8DAC1] text-xs">
-                  <Star className="w-4 h-4 fill-[#C19F6A] text-[#C19F6A]" />
+                <div className="flex items-center gap-1 text-[#EAF2F1] text-xs">
+                  <Star className="w-4 h-4 fill-[#88B2AB] text-[#88B2AB]" />
                   <span className="font-bold">{property.rating}</span>
                 </div>
               </div>
 
-              <div className="space-y-3 text-xs text-[#E8DAC1]/80 font-light">
-                <div className="flex justify-between py-2 border-b border-[#C19F6A]/20">
-                  <span className="text-[#C19F6A]">Status</span>
+              <div className="space-y-3 text-xs text-[#EAF2F1]/80 font-light">
+                <div className="flex justify-between py-2 border-b border-[#88B2AB]/20">
+                  <span className="text-[#88B2AB]">Status</span>
                   <span className={displayStatus === 'Available' ? 'text-emerald-300 font-medium' : 'text-amber-300 font-medium'}>
                     {displayStatus}
                   </span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-[#C19F6A]/20">
-                  <span className="text-[#C19F6A]">Country</span>
+                <div className="flex justify-between py-2 border-b border-[#88B2AB]/20">
+                  <span className="text-[#88B2AB]">Country</span>
                   <span className="text-white">{property.country}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-[#C19F6A]/20">
-                  <span className="text-[#C19F6A]">Continent</span>
+                <div className="flex justify-between py-2 border-b border-[#88B2AB]/20">
+                  <span className="text-[#88B2AB]">Continent</span>
                   <span className="text-white">{property.continent}</span>
                 </div>
               </div>
 
               <button
                 onClick={() => onNavigate(`/book-now?property=${property.slug}`)}
-                className="w-full py-4 bg-[#C19F6A] text-[#1A1A1A] hover:bg-[#d4b17c] rounded-full text-xs font-bold tracking-widest uppercase transition-colors shadow-lg flex items-center justify-center gap-2"
+                className="w-full py-4 bg-[#51867E] text-white hover:bg-[#3f6d66] rounded-full text-xs font-bold tracking-widest uppercase transition-colors shadow-lg flex items-center justify-center gap-2 cursor-pointer"
               >
-                <Calendar className="w-4 h-4 text-[#1A1A1A]" />
+                <Calendar className="w-4 h-4 text-white" />
                 <span>BOOK</span>
               </button>
 
-              <p className="text-[10px] text-[#E8DAC1]/70 text-center font-light leading-relaxed">
+              <p className="text-[10px] text-white font-medium text-center leading-relaxed">
                 Inquiries are transmitted directly to Hanford Central Reservations in real time.
               </p>
             </div>
 
             {/* Included Estate Amenities with Icons */}
-            <div className="bg-[#E8DAC1] border border-[#8C8C8C]/40 rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
+            <div className="bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
               <button
                 type="button"
                 onClick={() => setIsAmenitiesOpen(!isAmenitiesOpen)}
-                className="w-full p-8 flex items-center justify-between text-left hover:bg-[#dfd0b5]/50 transition-colors focus:outline-none cursor-pointer group"
+                className="w-full p-8 flex items-center justify-between text-left hover:bg-[#88B2AB]/10 transition-colors focus:outline-none cursor-pointer group"
                 aria-expanded={isAmenitiesOpen}
               >
                 <div>
-                  <h3 className="font-serif italic text-2xl text-[#510F23]">
+                  <h3 className="font-serif italic text-2xl text-[#3A4F67]">
                     Amenities & Privileges
                   </h3>
-                  <p className="text-xs text-[#8C8C8C] font-light mt-1">
+                  <p className="text-xs text-[#3A4F67] font-medium mt-1">
                     Complimentary estate services provided to all guests.
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0 ml-4">
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-[#8C8C8C] group-hover:text-[#510F23] transition-colors hidden sm:inline">
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-[#3A4F67] group-hover:text-[#51867E] transition-colors hidden sm:inline">
                     {isAmenitiesOpen ? 'Minimize' : 'Expand'}
                   </span>
-                  <div className="w-8 h-8 rounded-full bg-[#510F23]/10 flex items-center justify-center text-[#510F23] group-hover:bg-[#510F23] group-hover:text-white transition-all">
+                  <div className="w-8 h-8 rounded-full bg-[#3A4F67]/10 flex items-center justify-center text-[#3A4F67] group-hover:bg-[#3A4F67] group-hover:text-white transition-all">
                     {isAmenitiesOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                   </div>
                 </div>
               </button>
 
               {isAmenitiesOpen && (
-                <div className="px-8 pb-8 pt-2 border-t border-[#8C8C8C]/20">
+                <div className="px-8 pb-8 pt-2 border-t border-[#88B2AB]/20">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 pt-2">
                     {property.amenities.map((amenity, i) => (
                       <AmenityBadge key={i} name={amenity} />

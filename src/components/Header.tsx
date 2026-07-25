@@ -38,8 +38,8 @@ export const Header: React.FC<HeaderProps> = ({ currentPath, onNavigate }) => {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-[#E8DAC1]/95 backdrop-blur-md border-b border-[#8C8C8C]/30 py-5 shadow-sm'
-          : 'bg-[#E8DAC1]/85 backdrop-blur-sm border-b border-[#8C8C8C]/20 py-6'
+          ? 'bg-white/95 backdrop-blur-md border-b border-[#8C8C8C]/30 py-5 shadow-sm'
+          : 'bg-white/85 backdrop-blur-sm border-b border-[#8C8C8C]/20 py-6'
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 flex items-center justify-between">
@@ -48,13 +48,13 @@ export const Header: React.FC<HeaderProps> = ({ currentPath, onNavigate }) => {
           onClick={() => handleLinkClick('/')}
           className="text-left group flex items-center gap-3 focus:outline-none"
         >
-          <div className="text-2xl sm:text-3xl font-light tracking-[0.3em] uppercase text-[#510F23] font-serif flex items-center gap-2">
+          <div className="site-logo text-2xl sm:text-3xl font-light tracking-[0.3em] uppercase text-[#3A4F67] font-serif flex items-center gap-2">
             <span>Hanford</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#C19F6A]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#88B2AB]" />
           </div>
         </button>
 
-        {/* Primary Desktop Navigation: HOME | ABOUT | LOCATIONS | BOOK NOW */}
+        {/* Primary Desktop Navigation: HOME | LOCATIONS | COLLABORATIONS | ABOUT US */}
         <nav className="hidden md:flex items-center space-x-10">
           {navItems.map((item) => {
             const isActive =
@@ -66,10 +66,10 @@ export const Header: React.FC<HeaderProps> = ({ currentPath, onNavigate }) => {
               <button
                 key={item.name}
                 onClick={() => handleLinkClick(item.path)}
-                className={`text-[11px] font-semibold tracking-widest uppercase transition-all py-1 focus:outline-none ${
+                className={`nav-link text-[11px] font-semibold tracking-widest uppercase transition-all py-1 focus:outline-none ${
                   isActive
-                    ? 'text-[#510F23] border-b-2 border-[#510F23]'
-                    : 'text-[#1A1A1A]/80 hover:text-[#510F23]'
+                    ? 'text-[#51867E] border-b-2 border-[#51867E]'
+                    : 'text-[#2C3744] hover:text-[#51867E]'
                 }`}
               >
                 {item.name}
@@ -77,20 +77,20 @@ export const Header: React.FC<HeaderProps> = ({ currentPath, onNavigate }) => {
             );
           })}
 
-          {/* BOOK NOW - Deep Burgundy Pill Button */}
+          {/* BOOK NOW - Pantone Teal CTA Pill Button */}
           <button
             onClick={() => handleLinkClick('/book-now')}
-            className="bg-[#510F23] text-white hover:bg-[#3d0b1a] px-8 py-3 rounded-full transition-all text-[11px] font-semibold tracking-widest uppercase focus:outline-none shadow-md border border-[#C19F6A]/30 flex items-center gap-2 group"
+            className="book-now-button cta-button bg-[#51867E] text-white hover:bg-[#3f6d66] px-8 py-3 rounded-full transition-all text-[11px] font-bold tracking-widest uppercase focus:outline-none shadow-md border border-[#51867E]/30 flex items-center gap-2 group cursor-pointer"
           >
             <span>Book Now</span>
-            <span className="text-[#C19F6A] group-hover:translate-x-0.5 transition-transform">→</span>
+            <span className="text-white group-hover:translate-x-0.5 transition-transform">→</span>
           </button>
         </nav>
 
         {/* Mobile Hamburger Toggle */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden text-[#510F23] hover:opacity-60 p-2 focus:outline-none"
+          className="md:hidden text-[#3A4F67] hover:opacity-60 p-2 focus:outline-none"
           aria-label="Toggle menu"
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -99,7 +99,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPath, onNavigate }) => {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#E8DAC1] border-b border-[#8C8C8C]/30 px-6 py-8 space-y-6 shadow-2xl animate-in slide-in-from-top duration-300">
+        <div className="md:hidden bg-white border-b border-[#666666]/30 px-6 py-8 space-y-6 shadow-2xl animate-in slide-in-from-top duration-300">
           <div className="flex flex-col space-y-4">
             {navItems.map((item) => {
               const isActive =
@@ -111,8 +111,8 @@ export const Header: React.FC<HeaderProps> = ({ currentPath, onNavigate }) => {
                 <button
                   key={item.name}
                   onClick={() => handleLinkClick(item.path)}
-                  className={`text-left text-xs font-semibold tracking-widest py-2 border-b border-[#8C8C8C]/20 uppercase ${
-                    isActive ? 'text-[#510F23] font-bold' : 'text-[#1A1A1A]/80'
+                  className={`nav-link text-left text-xs font-semibold tracking-widest py-2 border-b border-[#666666]/20 uppercase ${
+                    isActive ? 'text-[#51867E] font-bold' : 'text-[#2C3744]'
                   }`}
                 >
                   {item.name}
@@ -123,7 +123,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPath, onNavigate }) => {
             {/* Mobile BOOK NOW */}
             <button
               onClick={() => handleLinkClick('/book-now')}
-              className="mt-4 w-full py-3.5 px-6 text-center text-xs font-semibold tracking-widest uppercase text-white bg-[#510F23] rounded-full hover:bg-[#3d0b1a] border border-[#C19F6A]/40 transition-colors"
+              className="book-now-button cta-button mt-4 w-full py-3.5 px-6 text-center text-xs font-bold tracking-widest uppercase text-white bg-[#51867E] rounded-full hover:bg-[#3f6d66] border border-[#51867E]/30 transition-colors cursor-pointer"
             >
               BOOK NOW
             </button>

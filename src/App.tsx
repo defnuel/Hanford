@@ -83,7 +83,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-[#E8DAC1] text-[#1A1A1A] antialiased">
+    <div className="min-h-screen flex flex-col font-sans bg-[#FFFFFF] text-[#2C2C2C] antialiased">
       {/* Primary Brand Navigation */}
       <Header currentPath={currentPath} onNavigate={navigate} />
 
