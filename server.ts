@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
-import { getPropertiesFromSource, appendBookingInquiry } from './src/server/googleSheetsService';
+import { getPropertiesFromSource, getProjectsFromSource, appendBookingInquiry } from './src/server/googleSheetsService';
 import { BookingInquiry } from './src/types';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -30,6 +30,7 @@ async function startServer() {
           configured: Boolean(spreadsheetId),
           spreadsheetId: spreadsheetId ? `${spreadsheetId.substring(0, 6)}...` : 'Not set',
           locationsTab: process.env.GOOGLE_SHEETS_LOCATIONS_TAB || 'Locations',
+          projectsTab: process.env.GOOGLE_SHEETS_PROJECTS_TAB || 'Projects',
           bookingsTab: process.env.GOOGLE_SHEETS_BOOKINGS_TAB || 'Booking Requests'
         },
         googleDrive: {
@@ -89,6 +90,60 @@ async function startServer() {
       res.status(500).json({
         success: false,
         error: 'Failed to retrieve property details'
+      });
+    }
+  });
+
+  // GET /api/projects - Fetch all projects / collaborations
+  app.get('/api/projects', async (req: Request, res: Response) => {
+    try {
+      const result = await getProjectsFromSource();
+      res.json({
+        success: true,
+        data: result.projects,
+        source: result.source,
+        message: result.message,
+        sheetInfo: {
+          spreadsheetIdConfigured: result.spreadsheetIdConfigured,
+          activeTab: process.env.GOOGLE_SHEETS_PROJECTS_TAB || 'Projects'
+        }
+      });
+    } catch (error: any) {
+      console.error('Error in /api/projects:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve projects data',
+        details: error?.message
+      });
+    }
+  });
+
+  // GET /api/projects/:slug - Fetch individual project by slug
+  app.get('/api/projects/:slug', async (req: Request, res: Response) => {
+    try {
+      const { slug } = req.params;
+      const result = await getProjectsFromSource();
+      const project = result.projects.find(
+        (p) => p.slug.toLowerCase() === slug.toLowerCase() || p.id === slug
+      );
+
+      if (!project) {
+        return res.status(404).json({
+          success: false,
+          error: `Project with slug '${slug}' not found.`
+        });
+      }
+
+      res.json({
+        success: true,
+        data: project,
+        source: result.source
+      });
+    } catch (error: any) {
+      console.error(`Error in /api/projects/${req.params.slug}:`, error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve project details'
       });
     }
   });

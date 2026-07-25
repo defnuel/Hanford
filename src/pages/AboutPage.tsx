@@ -1,50 +1,148 @@
-import React from 'react';
-import { Award, Shield, Sparkles, Building2, Trees, History, HeartHandshake } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Award, Building2, Trees, HeartHandshake, Sparkles, ChevronLeft, ChevronRight, UserCheck } from 'lucide-react';
+import { fetchLocations } from '../services/dataService';
+import { Property } from '../types';
+import trevorPhoto from '../assets/images/trevor_hanford_pinterest.jpg';
 
 interface AboutPageProps {
   onNavigate: (path: string) => void;
 }
 
-export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
-  return (
-    <div className="bg-[#E8DAC1] pt-32 pb-24 text-[#1A1A1A]">
-      {/* Editorial Header */}
-      <section className="max-w-5xl mx-auto px-6 text-center mb-20">
-        <span className="text-[10px] font-bold tracking-[0.4em] text-[#510F23] uppercase block mb-3">
-          EST. 1920 • VANCOUVER, CANADA
-        </span>
-        <h1 className="font-serif italic text-4xl sm:text-7xl text-[#510F23] font-light mb-6 leading-tight">
-          Hanford Hotels & Resorts
-        </h1>
-        <p className="max-w-3xl mx-auto text-sm sm:text-base text-[#1A1A1A]/80 font-light leading-relaxed">
-          Founded in Vancouver, Canada, Hanford Hotels & Resorts began as a family-owned hospitality company with a simple belief: every guest should feel welcomed with warmth, comfort, and genuine care.
-        </p>
-      </section>
+const fallbackGallery = [
+  {
+    url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=2000&q=85',
+    title: 'Heritage Estate Architecture',
+    caption: 'Vancouver Flagship Headquarters',
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=2000&q=85',
+    title: 'Coastal Eco Sanctuaries',
+    caption: 'Jeju & Santa Barbara Havens',
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=2000&q=85',
+    title: 'Urban Luxury Collections',
+    caption: 'Capitals of Distinction',
+  },
+];
 
-      {/* Main Image Banner */}
-      <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-24">
-        <div className="relative h-[480px] overflow-hidden border border-[#8C8C8C]/30 rounded-t-[160px] shadow-xl">
-          <img
-            src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=2000&q=85"
-            alt="Hanford Estate Architecture"
-            className="w-full h-full object-cover"
-            referrerPolicy="no-referrer"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#510F23]/95 via-[#510F23]/30 to-transparent flex items-end p-8 sm:p-12">
-            <div className="text-[#E8DAC1] max-w-3xl">
-              <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-[#C19F6A] block mb-1">
-                A CENTURY OF EXCELLENCE
-              </span>
-              <h2 className="font-serif italic text-2xl sm:text-4xl font-light text-white">
-                Guided by four generations of the Hanford family since 1920.
-              </h2>
+export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchLocations().then((res) => {
+      if (isMounted && res.data && res.data.length > 0) {
+        setProperties(res.data);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Slide list derived directly from Google Sheets "Main Picture" column
+  const slides =
+    properties.length > 0
+      ? properties.map((p) => ({
+          url: p.heroImage,
+          title: p.name,
+          caption: `${p.country} • ${p.continent}`,
+        }))
+      : fallbackGallery;
+
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
+  const activeSlide = slides[currentSlide] || slides[0];
+
+  return (
+    <div className="bg-[#E8DAC1] text-[#1A1A1A]">
+      {/* Full Picture Gallery Slide Hero Header */}
+      <section className="relative w-full min-h-[75vh] sm:min-h-[85vh] bg-[#510F23] text-white flex flex-col justify-between overflow-hidden pt-28 pb-8 border-b border-[#C19F6A]/30">
+        {/* Gallery Image Slides Background from Google Sheets Main Picture */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          {slides.map((slide, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === currentSlide ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'
+              }`}
+            >
+              <img
+                src={slide.url}
+                alt={slide.title}
+                className="w-full h-full object-cover object-center filter brightness-[0.75]"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#510F23]/80 via-[#510F23]/50 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#510F23]/90 via-transparent to-black/40" />
             </div>
+          ))}
+        </div>
+
+        {/* Hero Text Content */}
+        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center my-auto py-12">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#510F23]/80 backdrop-blur-md border border-[#C19F6A]/50 rounded-full shadow-lg mb-6">
+            <Sparkles className="w-3.5 h-3.5 text-[#C19F6A]" />
+            <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.35em] uppercase text-[#E8DAC1]">
+              EST. 1920 • VANCOUVER, CANADA
+            </span>
+          </div>
+
+          <h1 className="font-serif italic text-3xl sm:text-5xl lg:text-6xl text-white font-light mb-6 leading-tight drop-shadow-md">
+            Hanford Hotels & Resorts
+          </h1>
+
+          <p className="max-w-3xl mx-auto text-sm sm:text-base text-[#E8DAC1]/90 font-light leading-relaxed drop-shadow">
+            Founded in Vancouver, Canada, Hanford Hotels & Resorts began as a family-owned hospitality company with a simple belief: every guest should feel welcomed with warmth, comfort, and genuine care.
+          </p>
+        </div>
+
+        {/* Bottom Gallery Slide Indicators & Controls */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 w-full flex items-center justify-between border-t border-[#C19F6A]/30 pt-4">
+          <span className="text-xs font-serif italic text-[#C19F6A] hidden sm:block">
+            {activeSlide.title} • {activeSlide.caption}
+          </span>
+
+          <div className="flex items-center gap-2 mx-auto sm:mx-0 overflow-x-auto max-w-full py-1">
+            {slides.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentSlide(idx)}
+                className={`h-2 rounded-full transition-all cursor-pointer ${
+                  idx === currentSlide ? 'w-8 bg-[#C19F6A]' : 'w-2 bg-[#E8DAC1]/40'
+                }`}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2 hidden sm:flex">
+            <button
+              onClick={() => setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1))}
+              className="w-8 h-8 rounded-full bg-[#510F23]/90 border border-[#C19F6A]/60 text-[#E8DAC1] hover:bg-[#C19F6A] hover:text-[#1A1A1A] flex items-center justify-center transition-all cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
+              className="w-8 h-8 rounded-full bg-[#510F23]/90 border border-[#C19F6A]/60 text-[#E8DAC1] hover:bg-[#C19F6A] hover:text-[#1A1A1A] flex items-center justify-center transition-all cursor-pointer"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </section>
 
       {/* Heritage & Brand Story */}
-      <section className="py-20 bg-[#E8DAC1] border-y border-[#8C8C8C]/30 mb-24">
+      <section className="py-20 bg-[#E8DAC1] border-b border-[#8C8C8C]/30">
         <div className="max-w-4xl mx-auto px-6 space-y-8 text-center sm:text-left">
           <div className="text-center">
             <span className="text-[10px] font-bold tracking-[0.4em] text-[#510F23] uppercase block mb-2">
@@ -66,6 +164,57 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             <p>
               With properties spanning North America, Europe, and Asia, Hanford Hotels & Resorts continues to welcome business travelers, families, dignitaries, and leisure guests through a legacy built on trust, excellence, and enduring relationships. Every destination shares the same commitment to thoughtful service, timeless elegance, and experiences that celebrate both the people and the places that make each journey unique.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Executive Leadership Section - Trevor Finn Hanford */}
+      <section className="py-20 max-w-6xl mx-auto px-6 sm:px-8 my-12">
+        <div className="bg-[#E8DAC1] border border-[#8C8C8C]/40 rounded-3xl p-8 sm:p-12 shadow-sm relative overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            {/* CEO Portrait Column */}
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="relative group">
+                <div className="w-64 sm:w-72 h-80 sm:h-96 rounded-2xl overflow-hidden border-2 border-[#C19F6A] shadow-xl relative z-10 bg-[#510F23]">
+                  <img
+                    src={trevorPhoto}
+                    alt="Trevor Finn Hanford"
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#510F23]/60 via-transparent to-transparent" />
+                </div>
+                {/* Decorative Frame Underlay */}
+                <div className="absolute -bottom-4 -right-4 w-64 sm:w-72 h-80 sm:h-96 rounded-2xl border border-[#510F23]/30 bg-[#510F23]/10 z-0 hidden sm:block" />
+              </div>
+            </div>
+
+            {/* CEO Bio Column */}
+            <div className="lg:col-span-7 space-y-6">
+              <div className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.3em] text-[#510F23] uppercase bg-[#510F23]/10 px-3 py-1 rounded-full border border-[#510F23]/20">
+                <UserCheck className="w-3.5 h-3.5 text-[#510F23]" />
+                <span>EXECUTIVE LEADERSHIP</span>
+              </div>
+
+              <div>
+                <h2 className="font-serif italic text-3xl sm:text-4xl text-[#510F23] font-light">
+                  Trevor Finn Hanford
+                </h2>
+                <p className="text-xs sm:text-sm font-bold tracking-widest text-[#C19F6A] uppercase mt-1">
+                  Chief Executive Officer, Hanford Hotels & Resorts
+                </p>
+              </div>
+
+              <div className="w-16 h-[1px] bg-[#C19F6A]" />
+
+              <p className="text-sm sm:text-base text-[#1A1A1A]/85 font-light leading-relaxed">
+                Trevor Finn Hanford serves as the Chief Executive Officer of Hanford Hotels & Resorts, leading the group’s vision for thoughtful hospitality, distinctive destinations, and sustainable growth. With a background that bridges science, innovation, and hospitality, Trevor brings a forward-thinking perspective to the development of Hanford’s growing portfolio of luxury hotels and eco-resorts across the world.
+              </p>
+
+              <div className="pt-2 flex items-center gap-3 text-xs font-serif italic text-[#510F23]">
+                <span className="w-2 h-2 rounded-full bg-[#C19F6A]" />
+                <span>Steering the global expansion of Hanford Grand Hotels & Eco Resorts</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -101,8 +250,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
                 A collection of luxury five-star hotels located in the world's leading cities. Positioned within prestigious business districts and cultural landmarks, each property offers refined accommodations, award-winning dining, grand event venues, wellness facilities, and personalized service for business and leisure travelers alike.
               </p>
             </div>
-            <div className="pt-4 border-t border-[#8C8C8C]/30 flex items-center justify-between text-xs font-medium text-[#510F23]">
-              <span>Jakarta • Seoul</span>
+            <div className="pt-4 border-t border-[#8C8C8C]/30 flex items-center justify-end text-xs font-medium text-[#510F23]">
               <span className="font-mono text-[10px] uppercase text-[#8C8C8C]">5-Star Urban Luxury</span>
             </div>
           </div>
@@ -123,11 +271,20 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
                 A collection of sustainable luxury resorts set within remarkable coastal destinations. Designed to immerse guests in nature while preserving the surrounding environment, each resort features private accommodations, locally inspired experiences, wellness programs, and unforgettable connections with the landscape.
               </p>
             </div>
-            <div className="pt-4 border-t border-[#8C8C8C]/30 flex items-center justify-between text-xs font-medium text-[#510F23]">
-              <span>Jeju • Santa Barbara • Santorini</span>
+            <div className="pt-4 border-t border-[#8C8C8C]/30 flex items-center justify-end text-xs font-medium text-[#510F23]">
               <span className="font-mono text-[10px] uppercase text-[#8C8C8C]">Sustainable Coastal Retreats</span>
             </div>
           </div>
+        </div>
+
+        {/* Explore Button before Our Commitment Section */}
+        <div className="mt-12 text-center">
+          <button
+            onClick={() => onNavigate('/locations')}
+            className="px-8 py-3.5 bg-[#510F23] text-white hover:bg-[#3d0b1a] text-xs font-bold tracking-widest uppercase transition-colors rounded-full shadow-lg border border-[#C19F6A]/30 cursor-pointer"
+          >
+            EXPLORE OUR SANCTUARIES
+          </button>
         </div>
       </section>
 
@@ -149,7 +306,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Legacy Honors */}
-      <section className="max-w-5xl mx-auto px-6 text-center space-y-12">
+      <section className="max-w-5xl mx-auto px-6 text-center space-y-12 pb-20">
         <span className="text-[10px] font-bold tracking-[0.4em] text-[#510F23] uppercase block">
           CENTURY OF RECOGNITION
         </span>
@@ -176,16 +333,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             <p className="text-xs text-[#8C8C8C] font-light mt-1">Recognized for Excellence in Service & Sustainability</p>
           </div>
         </div>
-
-        <div className="pt-4">
-          <button
-            onClick={() => onNavigate('/locations')}
-            className="px-8 py-3.5 bg-[#510F23] text-white hover:bg-[#3d0b1a] text-xs font-bold tracking-widest uppercase transition-colors rounded-full shadow-lg border border-[#C19F6A]/30"
-          >
-            EXPLORE OUR SANCTUARIES
-          </button>
-        </div>
       </section>
     </div>
   );
 };
+

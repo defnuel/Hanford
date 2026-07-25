@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { Property } from '../types';
 import { fetchPropertyBySlug } from '../services/dataService';
-import { MapPin, Calendar, ArrowLeft, Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Calendar, ArrowLeft, Star, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { CleanPropertyDetails } from '../components/CleanPropertyDetails';
 import { AmenityBadge } from '../components/AmenityBadge';
 
@@ -14,6 +14,7 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isAmenitiesOpen, setIsAmenitiesOpen] = useState(false);
   const thumbnailContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -82,6 +83,15 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
     );
   }
 
+  const formatStatus = (statusStr: string) => {
+    const s = (statusStr || '').trim().toLowerCase();
+    if (s === 'live' || s === 'active' || s === 'available') return 'Available';
+    if (s === 'coming soon' || s === 'coming-soon' || s === 'fully booked' || s === 'draft') return 'Fully Booked';
+    return statusStr;
+  };
+
+  const displayStatus = formatStatus(property.status);
+
   return (
     <div className="bg-[#E8DAC1] pt-24 pb-24 text-[#1A1A1A]">
       {/* Breadcrumb Navigation Bar */}
@@ -107,7 +117,7 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
           <div className="max-w-3xl space-y-4">
             <div className="flex items-center gap-3">
               <span className="px-3 py-1 bg-[#C19F6A] text-[#1A1A1A] text-[10px] font-bold tracking-[0.2em] uppercase rounded-full">
-                {property.status}
+                {displayStatus}
               </span>
               <span className="text-xs font-bold tracking-[0.25em] text-[#C19F6A] uppercase">
                 {property.continent} • {property.country}
@@ -224,8 +234,8 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
 
           {/* Right Column: Reservation Card & Amenities Grid */}
           <div className="space-y-8">
-            {/* Direct Reservation Sticky Card */}
-            <div className="bg-[#510F23] text-[#E8DAC1] p-8 border border-[#C19F6A]/30 rounded-2xl shadow-2xl sticky top-28 space-y-6">
+            {/* Direct Reservation Non-Floating Static Card */}
+            <div className="bg-[#510F23] text-[#E8DAC1] p-8 border border-[#C19F6A]/30 rounded-2xl shadow-2xl space-y-6">
               <div className="border-b border-[#C19F6A]/30 pb-6 flex items-end justify-between">
                 <div>
                   <span className="text-[10px] uppercase font-bold tracking-widest text-[#C19F6A] block">
@@ -245,7 +255,9 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
               <div className="space-y-3 text-xs text-[#E8DAC1]/80 font-light">
                 <div className="flex justify-between py-2 border-b border-[#C19F6A]/20">
                   <span className="text-[#C19F6A]">Status</span>
-                  <span className="text-emerald-300 font-medium">{property.status}</span>
+                  <span className={displayStatus === 'Available' ? 'text-emerald-300 font-medium' : 'text-amber-300 font-medium'}>
+                    {displayStatus}
+                  </span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-[#C19F6A]/20">
                   <span className="text-[#C19F6A]">Country</span>
@@ -262,7 +274,7 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
                 className="w-full py-4 bg-[#C19F6A] text-[#1A1A1A] hover:bg-[#d4b17c] rounded-full text-xs font-bold tracking-widest uppercase transition-colors shadow-lg flex items-center justify-center gap-2"
               >
                 <Calendar className="w-4 h-4 text-[#1A1A1A]" />
-                <span>RESERVE THIS SANCTUARY</span>
+                <span>BOOK</span>
               </button>
 
               <p className="text-[10px] text-[#E8DAC1]/70 text-center font-light leading-relaxed">
@@ -271,21 +283,41 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
             </div>
 
             {/* Included Estate Amenities with Icons */}
-            <div className="bg-[#E8DAC1] p-8 border border-[#8C8C8C]/40 rounded-2xl space-y-6 shadow-sm">
-              <div>
-                <h3 className="font-serif italic text-2xl text-[#510F23]">
-                  Amenities & Privileges
-                </h3>
-                <p className="text-xs text-[#8C8C8C] font-light mt-1">
-                  Complimentary estate services provided to all guests.
-                </p>
-              </div>
+            <div className="bg-[#E8DAC1] border border-[#8C8C8C]/40 rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
+              <button
+                type="button"
+                onClick={() => setIsAmenitiesOpen(!isAmenitiesOpen)}
+                className="w-full p-8 flex items-center justify-between text-left hover:bg-[#dfd0b5]/50 transition-colors focus:outline-none cursor-pointer group"
+                aria-expanded={isAmenitiesOpen}
+              >
+                <div>
+                  <h3 className="font-serif italic text-2xl text-[#510F23]">
+                    Amenities & Privileges
+                  </h3>
+                  <p className="text-xs text-[#8C8C8C] font-light mt-1">
+                    Complimentary estate services provided to all guests.
+                  </p>
+                </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
-                {property.amenities.map((amenity, i) => (
-                  <AmenityBadge key={i} name={amenity} />
-                ))}
-              </div>
+                <div className="flex items-center gap-2 shrink-0 ml-4">
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-[#8C8C8C] group-hover:text-[#510F23] transition-colors hidden sm:inline">
+                    {isAmenitiesOpen ? 'Minimize' : 'Expand'}
+                  </span>
+                  <div className="w-8 h-8 rounded-full bg-[#510F23]/10 flex items-center justify-center text-[#510F23] group-hover:bg-[#510F23] group-hover:text-white transition-all">
+                    {isAmenitiesOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </div>
+                </div>
+              </button>
+
+              {isAmenitiesOpen && (
+                <div className="px-8 pb-8 pt-2 border-t border-[#8C8C8C]/20">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 pt-2">
+                    {property.amenities.map((amenity, i) => (
+                      <AmenityBadge key={i} name={amenity} />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

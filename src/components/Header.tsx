@@ -24,8 +24,9 @@ export const Header: React.FC<HeaderProps> = ({ currentPath, onNavigate }) => {
 
   const navItems = [
     { name: 'HOME', path: '/' },
-    { name: 'ABOUT', path: '/about' },
     { name: 'LOCATIONS', path: '/locations' },
+    { name: 'COLLABORATIONS', path: '/collaborations' },
+    { name: 'ABOUT US', path: '/about' },
   ];
 
   const handleLinkClick = (path: string) => {

@@ -133,7 +133,7 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-96 bg-[#dcd0b8] animate-pulse rounded-t-[100px]" />
+              <div key={i} className="h-96 bg-[#dcd0b8] animate-pulse rounded-t-[50px]" />
             ))}
           </div>
         ) : filteredProperties.length === 0 ? (
@@ -162,7 +162,7 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
               return (
                 <div
                   key={property.id}
-                  className="bg-[#E8DAC1] border border-[#8C8C8C]/30 rounded-t-[120px] overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col group hover:border-[#C19F6A]"
+                  className="bg-[#E8DAC1] border border-[#8C8C8C]/30 rounded-t-[60px] overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col group hover:border-[#C19F6A]"
                 >
                   {/* Property Hero Image */}
                   <div

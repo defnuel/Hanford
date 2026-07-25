@@ -1,5 +1,4 @@
 import React from 'react';
-import { DataIntegrationBadge } from './DataIntegrationBadge';
 
 interface FooterProps {
   onNavigate: (path: string) => void;
@@ -20,9 +19,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <p className="text-xs text-[#E8DAC1]/80 leading-relaxed font-light">
               Hanford Hotels & Resorts has remained committed to timeless hospitality while embracing the evolving needs of modern travelers.
             </p>
-            <div className="pt-2">
-              <DataIntegrationBadge />
-            </div>
           </div>
 
           {/* Quick Navigation */}
@@ -37,13 +33,18 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('/about')} className="hover:text-[#C19F6A] transition-colors">
-                  ABOUT HANFORD
+                <button onClick={() => onNavigate('/locations')} className="hover:text-[#C19F6A] transition-colors">
+                  LOCATIONS & SANCTUARIES
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('/locations')} className="hover:text-[#C19F6A] transition-colors">
-                  LOCATIONS & SANCTUARIES
+                <button onClick={() => onNavigate('/collaborations')} className="hover:text-[#C19F6A] transition-colors">
+                  COLLABORATIONS & PROJECTS
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onNavigate('/about')} className="hover:text-[#C19F6A] transition-colors">
+                  ABOUT HANFORD
                 </button>
               </li>
               <li>
@@ -108,7 +109,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <p className="text-xs font-medium uppercase tracking-tighter text-[#E8DAC1]">Canada • South Korea • Indonesia</p>
             </div>
             <span className="hidden sm:inline text-[#8C8C8C]/50">|</span>
-            <p className="text-[#8C8C8C]">© {new Date().getFullYear()} Hanford Hotels & Resorts.</p>
+            <p className="text-[#8C8C8C]">© 2026 Hanford Hotels & Resorts.</p>
+          </div>
+          <div className="text-[10px] font-bold tracking-widest uppercase text-[#C19F6A]/80 bg-[#C19F6A]/10 border border-[#C19F6A]/20 px-3 py-1.5 rounded-full">
+            Only for Roleplayer Purpose
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Property } from '../types';
 import { fetchLocations } from '../services/dataService';
-import { Compass, Calendar, ArrowRight, ShieldCheck, Sparkles, MapPin, Award } from 'lucide-react';
+import { Calendar, ArrowRight, ShieldCheck, Sparkles, MapPin, Award, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 
 interface HomePageProps {
   onNavigate: (path: string) => void;
@@ -10,109 +10,177 @@ interface HomePageProps {
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     fetchLocations().then((res) => {
-      setProperties(res.data.filter((p) => p.status === 'Live' || p.status === 'Active').slice(0, 3));
+      setProperties(res.data);
       setLoading(false);
     });
   }, []);
 
-  const featuredHeroProperty = properties[0];
+  const slideList = properties.length > 0 ? properties : [];
+
+  // Auto-advance slide every 6 seconds
+  useEffect(() => {
+    if (slideList.length === 0) return;
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slideList.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [slideList.length]);
+
+  const activeSlide = slideList[currentSlide];
+  const featuredProperties = properties.slice(0, 3);
 
   return (
     <div className="bg-[#E8DAC1] text-[#1A1A1A]">
-      {/* Bold Typography Hero Section */}
-      <section className="pt-32 pb-20 min-h-screen flex items-center max-w-7xl mx-auto px-6 sm:px-8">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          {/* Left Column: Bold Typography Content */}
-          <div className="lg:col-span-7 flex flex-col justify-center">
-            <span className="text-[10px] font-bold tracking-[0.4em] uppercase mb-6 text-[#510F23]">
-              Est. 1920 • Vancouver, Canada
-            </span>
-
-            <h1
-              className="text-6xl sm:text-7xl md:text-[96px] lg:text-[112px] leading-[0.88] font-light italic mb-8 font-serif text-[#510F23] -ml-1 sm:-ml-2 tracking-tight"
-            >
-              Refined<br />Sanctuary
-            </h1>
-
-            <p className="max-w-md text-base sm:text-lg leading-relaxed text-[#1A1A1A]/80 mb-10 font-sans font-light">
-              Founded in Vancouver, Canada in 1920, Hanford Hotels & Resorts operates two distinct collections — Hanford Grand Hotel in leading city capitals and Hanford Eco Resort in extraordinary natural coastal landscapes.
-            </p>
-
-            <div className="flex flex-wrap items-center gap-6">
-              <div className="w-12 h-[1px] bg-[#C19F6A] hidden sm:block" />
-              <button
-                onClick={() => onNavigate('/locations')}
-                className="bg-[#510F23] text-white px-8 py-3.5 rounded-full hover:bg-[#3d0b1a] transition-all text-[11px] font-bold tracking-widest uppercase shadow-lg border border-[#C19F6A]/30 inline-flex items-center gap-3 group"
+      {/* Full Picture Gallery Slide Hero Section */}
+      <section className="relative w-full min-h-[85vh] sm:min-h-[90vh] bg-[#510F23] text-white flex flex-col justify-between overflow-hidden pt-28 pb-8 border-b border-[#C19F6A]/30">
+        {/* Gallery Image Slides Background */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          {slideList.length > 0 ? (
+            slideList.map((slide, index) => (
+              <div
+                key={slide.id || index}
+                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                  index === currentSlide ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'
+                } transition-transform duration-10000`}
               >
-                <span>EXPLORE OUR COLLECTIONS</span>
-                <ArrowRight className="w-4 h-4 text-[#C19F6A] group-hover:translate-x-1 transition-transform" />
-              </button>
+                <img
+                  src={slide.heroImage}
+                  alt={slide.name}
+                  className="w-full h-full object-cover object-center filter brightness-[0.80]"
+                  referrerPolicy="no-referrer"
+                />
+                {/* Gradient Overlays (1/3 lighter/more transparent for crystal-clear image visibility) */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#510F23]/60 via-[#510F23]/35 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#510F23]/60 via-transparent to-black/30" />
+              </div>
+            ))
+          ) : (
+            <div className="absolute inset-0 bg-[#510F23]" />
+          )}
+        </div>
 
-              <button
-                onClick={() => onNavigate('/book-now')}
-                className="border border-[#510F23]/40 text-[#510F23] px-8 py-3.5 rounded-full hover:bg-[#510F23] hover:text-white transition-all text-[11px] font-bold tracking-widest uppercase inline-flex items-center gap-2"
-              >
-                <Calendar className="w-3.5 h-3.5 text-[#C19F6A]" />
-                <span>BOOK NOW</span>
-              </button>
+        {/* Hero Content Layer */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 w-full my-auto py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            {/* Left/Center Main Column */}
+            <div className="lg:col-span-8 space-y-6">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-[#510F23]/80 backdrop-blur-md border border-[#C19F6A]/50 rounded-full shadow-lg">
+                <Sparkles className="w-3.5 h-3.5 text-[#C19F6A]" />
+                <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.35em] uppercase text-[#E8DAC1]">
+                  Est. 1920
+                </span>
+              </div>
+
+              {/* Title */}
+              <h1 className="text-5xl sm:text-7xl md:text-[88px] lg:text-[100px] leading-[0.88] font-light italic font-serif text-white tracking-tight drop-shadow-md">
+                Refined<br />Sanctuary
+              </h1>
+
+              {/* Description */}
+              <p className="max-w-xl text-sm sm:text-base leading-relaxed text-[#E8DAC1]/90 font-light font-sans drop-shadow">
+                Founded in Vancouver, Canada in 1920, Hanford Hotels & Resorts operates two distinct collections — Hanford Grand Hotel in leading city capitals and Hanford Eco Resort in extraordinary natural coastal landscapes.
+              </p>
+
+              {/* Primary Buttons */}
+              <div className="flex flex-wrap items-center gap-4 pt-2">
+                <button
+                  onClick={() => onNavigate('/locations')}
+                  className="bg-[#510F23] text-white hover:bg-[#3d0b1a] px-7 py-3.5 rounded-full text-[11px] font-bold tracking-widest uppercase shadow-lg border border-[#C19F6A]/50 inline-flex items-center gap-2 group transition-all"
+                >
+                  <span>EXPLORE ALL COLLECTIONS</span>
+                  <ArrowRight className="w-4 h-4 text-[#C19F6A] group-hover:translate-x-1 transition-transform" />
+                </button>
+
+                <button
+                  onClick={() => onNavigate('/book-now')}
+                  className="bg-[#C19F6A] text-[#1A1A1A] hover:bg-[#d4b17c] px-7 py-3.5 rounded-full text-[11px] font-bold tracking-widest uppercase inline-flex items-center gap-2 transition-all shadow-md font-bold"
+                >
+                  <Calendar className="w-3.5 h-3.5 text-[#1A1A1A]" />
+                  <span>BOOK NOW</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Right Column: 98% Guest Satisfaction Badge */}
+            <div className="lg:col-span-4 flex flex-col items-center lg:items-end justify-center pt-4 lg:pt-0">
+              <div className="bg-[#510F23]/75 backdrop-blur-md border border-[#C19F6A] text-[#E8DAC1] p-4 sm:p-5 rounded-2xl shadow-xl max-w-[230px] text-center space-y-2.5 hover:border-amber-300 transition-all">
+                <div className="w-8 h-8 rounded-full bg-[#C19F6A]/20 border border-[#C19F6A] flex items-center justify-center mx-auto text-[#C19F6A]">
+                  <Award className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-2xl sm:text-3xl font-serif italic text-white font-bold block leading-none">
+                    98%
+                  </span>
+                  <span className="text-[9px] font-bold tracking-[0.18em] text-[#C19F6A] uppercase block mt-1">
+                    GUEST SATISFACTION INDEX
+                  </span>
+                </div>
+                <div className="flex justify-center gap-1 text-[#C19F6A]">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-3 h-3 fill-[#C19F6A]" />
+                  ))}
+                </div>
+                <p className="text-[9px] font-light text-[#E8DAC1]/80 leading-snug border-t border-[#C19F6A]/30 pt-2">
+                  Awarded top rating by Forbes Travel Guide & international luxury hospitality registers.
+                </p>
+              </div>
             </div>
           </div>
+        </div>
 
-          {/* Right Column: Arched Hero Frame & Floating Satisfaction Badge */}
-          <div className="lg:col-span-5 relative mt-8 lg:mt-0">
-            <div className="w-full h-[500px] sm:h-[560px] bg-[#510F23] rounded-t-[200px] overflow-hidden shadow-2xl relative border border-[#C19F6A]/30 flex flex-col justify-between group">
-              {/* Background Image with subtle overlay */}
-              <img
-                src={featuredHeroProperty?.heroImage || "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=85"}
-                alt="Featured Sanctuary"
-                className="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-700"
-                referrerPolicy="no-referrer"
+        {/* Bottom Gallery Controls & Slide Bar */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 w-full flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#C19F6A]/30 pt-4">
+          {/* Active Sanctuary Name & Country Caption */}
+          {activeSlide && (
+            <div className="flex items-center gap-2 px-3 py-1 bg-[#510F23]/80 backdrop-blur-md rounded-full border border-[#C19F6A]/40 text-xs">
+              <MapPin className="w-3.5 h-3.5 text-[#C19F6A]" />
+              <span className="font-serif italic text-white font-light">{activeSlide.name}</span>
+              <span className="text-[#C19F6A] font-bold text-[10px] uppercase tracking-wider">• {activeSlide.country}</span>
+            </div>
+          )}
+
+          {/* Slide Indicator Dots */}
+          <div className="flex items-center gap-2 overflow-x-auto max-w-full py-1">
+            {slideList.map((s, idx) => (
+              <button
+                key={s.id || idx}
+                onClick={() => setCurrentSlide(idx)}
+                className={`h-2 rounded-full transition-all cursor-pointer ${
+                  idx === currentSlide
+                    ? 'w-8 bg-[#C19F6A]'
+                    : 'w-2 bg-[#E8DAC1]/40 hover:bg-[#E8DAC1]/70'
+                }`}
+                aria-label={`Go to slide ${idx + 1}`}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#510F23]/95 via-[#510F23]/40 to-transparent" />
+            ))}
+          </div>
 
-              {/* Top Watermark Letter */}
-              <div className="relative z-10 p-8 text-center">
-                <div className="text-[100px] sm:text-[120px] font-light leading-none text-[#C19F6A]/20 font-serif select-none">
-                  H
-                </div>
-              </div>
+          {/* Navigation Arrows & Counter */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setCurrentSlide((prev) => (prev === 0 ? slideList.length - 1 : prev - 1))}
+              className="w-10 h-10 rounded-full bg-[#510F23]/90 border border-[#C19F6A]/60 text-[#E8DAC1] hover:bg-[#C19F6A] hover:text-[#1A1A1A] flex items-center justify-center transition-all cursor-pointer shadow-md"
+              aria-label="Previous Slide"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
 
-              {/* Bottom Featured Details */}
-              <div className="relative z-10 p-8 sm:p-10 text-center text-[#E8DAC1] space-y-3">
-                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C19F6A] block">
-                  {featuredHeroProperty?.country || "Maldives"}
-                </span>
-                <h3 className="text-2xl sm:text-3xl font-light italic font-serif text-white">
-                  {featuredHeroProperty?.name || "The Azure Cape"}
-                </h3>
-                <p className="text-[11px] uppercase tracking-widest text-[#E8DAC1]/80 font-light">
-                  {featuredHeroProperty?.address || "South Malé Atoll, Maldives"}
-                </p>
+            <span className="text-xs font-mono font-bold tracking-widest text-[#C19F6A]">
+              {String(currentSlide + 1).padStart(2, '0')} / {String(slideList.length).padStart(2, '0')}
+            </span>
 
-                <div className="pt-2">
-                  <button
-                    onClick={() =>
-                      onNavigate(
-                        featuredHeroProperty ? `/locations/${featuredHeroProperty.slug}` : '/locations'
-                      )
-                    }
-                    className="inline-block border border-[#C19F6A]/60 px-6 py-2 text-[10px] uppercase tracking-widest text-[#E8DAC1] hover:bg-[#C19F6A] hover:text-[#1A1A1A] transition-all rounded-full font-bold"
-                  >
-                    View Detail
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Circular Badge Overlay */}
-            <div className="absolute -bottom-6 -left-4 sm:-left-10 w-40 h-40 sm:w-48 sm:h-48 bg-[#510F23] text-[#E8DAC1] rounded-full flex items-center justify-center text-center p-6 shadow-2xl border-2 border-[#C19F6A] z-20">
-              <span className="text-[10px] sm:text-[11px] font-bold tracking-tighter leading-tight">
-                <span className="text-[#C19F6A]">98% GUEST</span><br />SATISFACTION<br />INDEX
-              </span>
-            </div>
+            <button
+              onClick={() => setCurrentSlide((prev) => (prev + 1) % slideList.length)}
+              className="w-10 h-10 rounded-full bg-[#510F23]/90 border border-[#C19F6A]/60 text-[#E8DAC1] hover:bg-[#C19F6A] hover:text-[#1A1A1A] flex items-center justify-center transition-all cursor-pointer shadow-md"
+              aria-label="Next Slide"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </section>
@@ -140,16 +208,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[1, 2, 3].map((n) => (
-              <div key={n} className="h-96 bg-[#dcd0b8] animate-pulse rounded-t-[100px]" />
+              <div key={n} className="h-96 bg-[#dcd0b8] animate-pulse rounded-t-[50px]" />
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {properties.map((property) => (
+            {featuredProperties.map((property) => (
               <div
                 key={property.id}
                 onClick={() => onNavigate(`/locations/${property.slug}`)}
-                className="group cursor-pointer bg-[#E8DAC1] border border-[#8C8C8C]/30 rounded-t-[120px] overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col hover:border-[#C19F6A]"
+                className="group cursor-pointer bg-[#E8DAC1] border border-[#8C8C8C]/30 rounded-t-[60px] overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col hover:border-[#C19F6A]"
               >
                 <div className="relative h-72 overflow-hidden bg-[#510F23]">
                   <img
@@ -192,6 +260,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {!loading && (
+          <div className="mt-14 text-center">
+            <button
+              onClick={() => onNavigate('/locations')}
+              className="inline-flex items-center gap-3 px-8 py-4 bg-[#510F23] text-white hover:bg-[#3d0b1a] rounded-full text-xs font-bold tracking-[0.25em] uppercase transition-all shadow-md hover:shadow-xl border border-[#C19F6A]/40"
+            >
+              <span>EXPLORE ALL LOCATIONS</span>
+              <ArrowRight className="w-4 h-4 text-[#C19F6A]" />
+            </button>
           </div>
         )}
       </section>

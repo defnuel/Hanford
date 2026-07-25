@@ -5,6 +5,8 @@ import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { LocationsPage } from './pages/LocationsPage';
 import { PropertyDetailPage } from './pages/PropertyDetailPage';
+import { CollaborationsPage } from './pages/CollaborationsPage';
+import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { BookNowPage } from './pages/BookNowPage';
 
 export default function App() {
@@ -54,6 +56,21 @@ export default function App() {
         return <PropertyDetailPage slug={slug} onNavigate={navigate} />;
       }
       return <LocationsPage onNavigate={navigate} />;
+    }
+
+    if (path === '/collaborations' || path === '/collaborations/' || path === '/projects' || path === '/projects/') {
+      return <CollaborationsPage onNavigate={navigate} />;
+    }
+
+    if (path.startsWith('/collaborations/') || path.startsWith('/projects/')) {
+      const slug = path
+        .replace('/collaborations/', '')
+        .replace('/projects/', '')
+        .replace(/\/$/, '');
+      if (slug) {
+        return <ProjectDetailPage slug={slug} onNavigate={navigate} />;
+      }
+      return <CollaborationsPage onNavigate={navigate} />;
     }
 
     if (path.startsWith('/book-now') || path.startsWith('/book')) {
