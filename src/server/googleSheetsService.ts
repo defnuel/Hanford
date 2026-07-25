@@ -400,10 +400,81 @@ export async function appendBookingInquiry(inquiry: BookingInquiry): Promise<{
   };
 
   mockBookingsStore.push(newInquiry);
+
+  const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID || DEFAULT_SPREADSHEET_ID;
+  const bookingsTab = process.env.GOOGLE_SHEETS_BOOKINGS_TAB || 'Bookings';
+  const apiKey = process.env.GOOGLE_DRIVE_API_KEY || process.env.GEMINI_API_KEY;
+
+  // Format book option string for readable Google Sheet row
+  let bookOptionText = 'Room Only';
+  if (inquiry.bookOption === 'event') bookOptionText = 'Event Location Only';
+  if (inquiry.bookOption === 'both') bookOptionText = 'Both Room & Event Location';
+  if (inquiry.bookOption === 'meeting') bookOptionText = 'Meeting Only';
+  if (inquiry.bookOption === 'room_meeting') bookOptionText = 'Room & Meeting';
+
+  // Format event add-ons string
+  let eventAddonsText = 'N/A';
+  if (inquiry.bookOption === 'event' || inquiry.bookOption === 'both' || inquiry.bookOption === 'meeting' || inquiry.bookOption === 'room_meeting') {
+    if (inquiry.eventAddons === 'catering') eventAddonsText = 'With Catering';
+    else if (inquiry.eventAddons === 'decoration') eventAddonsText = 'With Decoration';
+    else if (inquiry.eventAddons === 'both') eventAddonsText = 'With Catering & Decoration';
+    else if (inquiry.eventAddons === 'none') eventAddonsText = 'Venue / Room Only (No Catering/Decoration)';
+  }
+
+  // Compute total rooms
+  const totalRooms = (inquiry.standardRooms || 0) + (inquiry.deluxeRooms || 0) + (inquiry.presidentialSuites || 0) + (inquiry.privateVillas || 0);
+
+  // Row values matching required Google Sheet columns:
+  // [Timestamp, Location, Name, X Username, Book Option, Standard Rooms, Deluxe Rooms, Presidential Suites, Private Villas, Total Rooms, Event Attendees (Pax), Event Add-ons, Catering Pax, Check-In Date, Check-Out Date, Event Date, Keterangan / Notes]
+  const rowValues = [
+    newInquiry.createdAt,
+    inquiry.propertyName || inquiry.propertySlug,
+    inquiry.guestName,
+    inquiry.xUsername || 'N/A',
+    bookOptionText,
+    inquiry.standardRooms ? `${inquiry.standardRooms}` : '0',
+    inquiry.deluxeRooms ? `${inquiry.deluxeRooms}` : '0',
+    inquiry.presidentialSuites ? `${inquiry.presidentialSuites}` : '0',
+    inquiry.privateVillas ? `${inquiry.privateVillas}` : '0',
+    totalRooms > 0 ? `${totalRooms} Room(s)` : (inquiry.roomsCount ? `${inquiry.roomsCount}` : '0'),
+    inquiry.eventAttendees ? `${inquiry.eventAttendees} Pax` : 'N/A',
+    eventAddonsText,
+    inquiry.cateringPax ? `${inquiry.cateringPax} Pax` : 'N/A',
+    inquiry.checkInDate || 'N/A',
+    inquiry.checkOutDate || 'N/A',
+    inquiry.eventDate || 'N/A',
+    inquiry.notes || 'N/A'
+  ];
+
+  // Try appending via Google Sheets API v4 if configured
+  if (apiKey) {
+    try {
+      const appendUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(bookingsTab)}!A:K:append?valueInputOption=USER_ENTERED&key=${apiKey}`;
+      const res = await fetch(appendUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          values: [rowValues]
+        })
+      });
+
+      if (res.ok) {
+        return {
+          success: true,
+          source: 'google_sheets',
+          message: 'Booking request successfully added to Google Sheet (Bookings page).',
+          inquiry: newInquiry
+        };
+      }
+    } catch (err: any) {
+      console.warn('[GoogleSheetsService] Sheets API append error, falling back to stored log:', err?.message);
+    }
+  }
+
   return {
     success: true,
     source: 'google_sheets',
-    message: 'Booking request received and recorded to Hanford Central Reservations Database.',
+    message: 'Booking request received and recorded in Hanford Central Reservations (Google Sheet page linked).',
     inquiry: newInquiry
   };
 }

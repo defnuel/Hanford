@@ -71,17 +71,35 @@ export interface Project {
   galleryImages: string[];
 }
 
+export type BookOption = 'room' | 'event' | 'both' | 'meeting' | 'room_meeting';
+export type EventAddonOption = 'none' | 'catering' | 'decoration' | 'both';
+
 export interface BookingInquiry {
   id?: string;
   propertySlug: string;
   propertyName: string;
   guestName: string;
-  guestEmail: string;
-  guestPhone: string;
-  checkInDate: string;
-  checkOutDate: string;
-  guestsCount: number;
-  specialRequests?: string;
+  xUsername: string; // X / Twitter handle
+  guestEmail?: string;
+  guestPhone?: string;
+  bookOption: BookOption; // 'room' | 'event' | 'both'
+  
+  // Room Breakdown (Input numbers)
+  standardRooms?: number;
+  deluxeRooms?: number;
+  presidentialSuites?: number;
+  privateVillas?: number;
+  roomsCount?: number; // Total rooms count
+
+  // Event & Catering Details
+  eventAttendees?: number; // Jumlah orang dalam event
+  eventAddons?: EventAddonOption; // 'none' | 'catering' | 'decoration' | 'both'
+  cateringPax?: number; // Jumlah Pax untuk catering
+
+  checkInDate?: string;
+  checkOutDate?: string;
+  eventDate?: string;
+  notes?: string; // Keterangan & booking details
   createdAt?: string;
   status?: 'Pending' | 'Confirmed' | 'Reviewed';
 }

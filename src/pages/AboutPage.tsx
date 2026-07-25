@@ -175,14 +175,20 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             {/* CEO Portrait Column */}
             <div className="lg:col-span-5 flex justify-center">
               <div className="relative group">
-                <div className="w-64 sm:w-72 h-80 sm:h-96 rounded-2xl overflow-hidden border-2 border-[#C19F6A] shadow-xl relative z-10 bg-[#510F23]">
+                <a
+                  href="https://id.pinterest.com/pin/1146588386407379367/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-64 sm:w-72 h-80 sm:h-96 rounded-2xl overflow-hidden border-2 border-[#C19F6A] shadow-xl relative z-10 bg-[#510F23]"
+                  title="View Trevor Finn Hanford portrait on Pinterest"
+                >
                   <img
                     src={trevorPhoto}
                     alt="Trevor Finn Hanford"
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#510F23]/60 via-transparent to-transparent" />
-                </div>
+                </a>
                 {/* Decorative Frame Underlay */}
                 <div className="absolute -bottom-4 -right-4 w-64 sm:w-72 h-80 sm:h-96 rounded-2xl border border-[#510F23]/30 bg-[#510F23]/10 z-0 hidden sm:block" />
               </div>
