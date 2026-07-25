@@ -205,7 +205,7 @@ export const MOCK_RAW_GOOGLE_SHEETS_DATA: RawGoogleSheetsPropertyRow[] = [
   }
 ];
 
-export const MOCK_PROPERTIES: Property[] = [
+const RAW_PROPERTIES_DATA: Property[] = [
   {
     id: 'prop-jeju',
     slug: 'hanford-eco-resort-jeju',
@@ -557,3 +557,30 @@ export const MOCK_PROPERTIES: Property[] = [
     amenities: ['Floating Lake Pool', 'Private Boat Launch', 'Historic Villa Gardens']
   }
 ];
+
+export const MOCK_PROPERTIES: Property[] = RAW_PROPERTIES_DATA.map((p) => {
+  const isEcoResort = p.name.toLowerCase().includes('eco resort') || p.tagline.toLowerCase().includes('eco resort');
+  const priceStandard = p.priceFrom || 850;
+  const priceDeluxe = Math.round(priceStandard * 1.45);
+  const pricePresidential = Math.round(priceStandard * 3.8);
+  const pricePrivateVilla = isEcoResort ? Math.round(priceStandard * 5.2) : undefined;
+  const priceMeetingRoom = 120;
+  const priceEventHall = 3200;
+  const priceCateringPerPax = 75;
+
+  return {
+    ...p,
+    priceStandard,
+    priceDeluxe,
+    pricePresidential,
+    pricePrivateVilla,
+    priceMeetingRoom,
+    priceEventHall,
+    priceCateringPerPax,
+    isEcoResort,
+    capacityStandard: 'Max 3 guests (2 Adults + 1 Child)',
+    capacityDeluxe: 'Max 3 guests (2 Adults + 1 Child)',
+    capacityPresidential: 'Max 5 guests (4 Adults + 1 Child)',
+    capacityPrivateVilla: isEcoResort ? 'Max 6 guests (4 Adults + 2 Children)' : undefined
+  };
+});

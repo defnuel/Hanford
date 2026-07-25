@@ -38,17 +38,17 @@ export const Header: React.FC<HeaderProps> = ({ currentPath, onNavigate }) => {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-white/95 backdrop-blur-md border-b border-[#8C8C8C]/30 py-5 shadow-sm'
-          : 'bg-white/85 backdrop-blur-sm border-b border-[#8C8C8C]/20 py-6'
+          ? 'bg-white/95 backdrop-blur-md border-b border-[#8C8C8C]/30 py-3.5 sm:py-5 shadow-sm'
+          : 'bg-white/85 backdrop-blur-sm border-b border-[#8C8C8C]/20 py-4 sm:py-6'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 flex items-center justify-between">
         {/* Brand Logo */}
         <button
           onClick={() => handleLinkClick('/')}
           className="text-left group flex items-center gap-3 focus:outline-none"
         >
-          <div className="site-logo text-2xl sm:text-3xl font-light tracking-[0.3em] uppercase text-[#3A4F67] font-serif flex items-center gap-2">
+          <div className="site-logo text-xl sm:text-3xl font-light tracking-[0.2em] sm:tracking-[0.3em] uppercase text-[#3A4F67] font-serif flex items-center gap-1.5 sm:gap-2">
             <span>Hanford</span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#88B2AB]" />
           </div>

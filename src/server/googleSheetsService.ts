@@ -71,14 +71,34 @@ export function transformSheetRowToProperty(row: RawGoogleSheetsPropertyRow, ind
           defaultHeroes[(index + 2) % defaultHeroes.length]
         ];
 
+  const parsePriceNumber = (val: any): number | undefined => {
+    if (val === undefined || val === null || String(val).trim() === '') return undefined;
+    const num = parseFloat(String(val).replace(/[^0-9.]/g, ''));
+    return !isNaN(num) && num > 0 ? num : undefined;
+  };
+
+  const isEcoResort = name.toLowerCase().includes('eco resort') || (row.Tagline || '').toLowerCase().includes('eco resort');
+
   const priceRaw = row.Price || (row as any)['price'] || (row as any)['PriceFrom'] || (row as any)['Price/night'] || (row as any)['Rate'];
-  let priceFrom = 1800 + (index * 250);
-  if (priceRaw !== undefined && priceRaw !== null && String(priceRaw).trim() !== '') {
-    const num = parseFloat(String(priceRaw).replace(/[^0-9.]/g, ''));
-    if (!isNaN(num) && num > 0) {
-      priceFrom = num;
-    }
+  let priceFrom = 850 + (index * 150);
+  const parsedPriceFrom = parsePriceNumber(priceRaw);
+  if (parsedPriceFrom) {
+    priceFrom = parsedPriceFrom;
   }
+
+  // Parse room and event specific pricing columns from row object
+  const priceStandard = parsePriceNumber(row.Price || (row as any)['Standard Room'] || (row as any)['Standard']) || priceFrom;
+  const priceDeluxe = parsePriceNumber(row['Deluxe Room'] || row.Deluxe) || Math.round(priceStandard * 1.45);
+  const pricePresidential = parsePriceNumber(row['Presidential Suite'] || row.Presidential) || Math.round(priceStandard * 3.8);
+  
+  // Private Villa MUST ONLY appear for Eco Resorts!
+  const pricePrivateVilla = isEcoResort
+    ? (parsePriceNumber(row['Private Villa'] || row.Villa) || Math.round(priceStandard * 5.2))
+    : undefined;
+
+  const priceMeetingRoom = parsePriceNumber(row['Meeting Room'] || row.Meeting) || 120;
+  const priceEventHall = parsePriceNumber(row['Event Hall'] || row.Hall) || 3200;
+  const priceCateringPerPax = parsePriceNumber(row['Catering Per Pax'] || row.Catering) || 75;
 
   const amenitiesRaw = row.Amenities || (row as any)['amenities'] || (row as any)['Privileges'] || (row as any)['Services'];
   let amenitiesList: string[] = [];
@@ -107,7 +127,21 @@ export function transformSheetRowToProperty(row: RawGoogleSheetsPropertyRow, ind
     galleryImages,
     priceFrom,
     rating: 4.95 + ((index % 5) * 0.01),
-    amenities: amenitiesList
+    amenities: amenitiesList,
+    priceStandard,
+    priceDeluxe,
+    pricePresidential,
+    pricePrivateVilla,
+    priceMeetingRoom,
+    priceEventHall,
+    priceCateringPerPax,
+    isEcoResort,
+    capacityStandard: (row as any)['Standard Room Capacity'] || (row as any)['Standard Capacity'] || 'Max 3 guests (2 Adults + 1 Child)',
+    capacityDeluxe: (row as any)['Deluxe Room Capacity'] || (row as any)['Deluxe Capacity'] || 'Max 3 guests (2 Adults + 1 Child)',
+    capacityPresidential: (row as any)['Presidential Suite Capacity'] || (row as any)['Presidential Capacity'] || 'Max 5 guests (4 Adults + 1 Child)',
+    capacityPrivateVilla: isEcoResort
+      ? ((row as any)['Private Villa Capacity'] || (row as any)['Villa Capacity'] || 'Max 6 guests (4 Adults + 2 Children)')
+      : undefined
   };
 }
 
@@ -392,9 +426,10 @@ export async function appendBookingInquiry(inquiry: BookingInquiry): Promise<{
   message: string;
   inquiry: BookingInquiry;
 }> {
+  const bookingId = `BK-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
   const newInquiry: BookingInquiry = {
     ...inquiry,
-    id: `book-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    id: bookingId,
     createdAt: new Date().toISOString(),
     status: 'Pending'
   };
@@ -424,9 +459,10 @@ export async function appendBookingInquiry(inquiry: BookingInquiry): Promise<{
   // Compute total rooms
   const totalRooms = (inquiry.standardRooms || 0) + (inquiry.deluxeRooms || 0) + (inquiry.presidentialSuites || 0) + (inquiry.privateVillas || 0);
 
-  // Row values matching required Google Sheet columns:
-  // [Timestamp, Location, Name, X Username, Book Option, Standard Rooms, Deluxe Rooms, Presidential Suites, Private Villas, Total Rooms, Event Attendees (Pax), Event Add-ons, Catering Pax, Check-In Date, Check-Out Date, Event Date, Keterangan / Notes]
+  // Row values matching Google Sheet columns (including Booking ID):
+  // [Booking ID, Timestamp, Location, Name, X Username, Book Option, Standard Rooms, Deluxe Rooms, Presidential Suites, Private Villas, Total Rooms, Event Attendees (Pax), Event Add-ons, Catering Pax, Check-In Date, Check-Out Date, Event Date, Keterangan / Notes]
   const rowValues = [
+    newInquiry.id,
     newInquiry.createdAt,
     inquiry.propertyName || inquiry.propertySlug,
     inquiry.guestName,
@@ -445,6 +481,34 @@ export async function appendBookingInquiry(inquiry: BookingInquiry): Promise<{
     inquiry.eventDate || 'N/A',
     inquiry.notes || 'N/A'
   ];
+
+  const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
+  if (webhookUrl) {
+    try {
+      const res = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...newInquiry,
+          bookOptionText,
+          eventAddonsText,
+          totalRooms,
+          rowValues
+        })
+      });
+
+      if (res.ok) {
+        return {
+          success: true,
+          source: 'google_sheets',
+          message: 'Booking request successfully sent to Google Sheet via Webhook.',
+          inquiry: newInquiry
+        };
+      }
+    } catch (err: any) {
+      console.warn('[GoogleSheetsService] Webhook append error:', err?.message);
+    }
+  }
 
   // Try appending via Google Sheets API v4 if configured
   if (apiKey) {

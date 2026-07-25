@@ -18,12 +18,17 @@
 
 /* 1. Body & Canvas Background: Pure White (#FFFFFF) */
 @layer base {
+  html,
   body,
+  #root,
   main,
-  .main-content,
-  #root {
+  .main-content {
     background-color: #FFFFFF;
     color: #2C3744;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+    -webkit-text-size-adjust: 100%;
   }
 
   /* 3. Title Headings (h1, h2, h3), Site Logo (.site-logo), & Luxury Emphasis (.luxury-emphasis) */
@@ -33,13 +38,25 @@
   .site-logo,
   .luxury-emphasis {
     color: #3A4F67;
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
 
   /* 5. Paragraph Text (p), Navigation Links (.nav-link), & Standard Body Text */
   p,
   .nav-link {
     color: #2C3744;
+    overflow-wrap: break-word;
   }
+}
+
+/* Scrollbar Utility */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .nav-link:hover {

@@ -98,14 +98,31 @@ async function fetchGoogleSheetsClientDirect(): Promise<Property[]> {
     const heroImage = combinedImageUrls.length > 0 ? combinedImageUrls[0] : defaultHeroes[index % defaultHeroes.length];
     const galleryImages = combinedImageUrls.length > 0 ? combinedImageUrls : [heroImage];
 
+    const parsePriceNumber = (val: any): number | undefined => {
+      if (val === undefined || val === null || String(val).trim() === '') return undefined;
+      const num = parseFloat(String(val).replace(/[^0-9.]/g, ''));
+      return !isNaN(num) && num > 0 ? num : undefined;
+    };
+
+    const isEcoResort = name.toLowerCase().includes('eco resort') || (rowObj.Tagline || '').toLowerCase().includes('eco resort');
+
     const priceRaw = rowObj.Price || rowObj.price || rowObj.PriceFrom || rowObj['Price/night'] || rowObj.Rate;
-    let priceFrom = 1800 + index * 250;
-    if (priceRaw !== undefined && priceRaw !== null && String(priceRaw).trim() !== '') {
-      const num = parseFloat(String(priceRaw).replace(/[^0-9.]/g, ''));
-      if (!isNaN(num) && num > 0) {
-        priceFrom = num;
-      }
+    let priceFrom = 850 + index * 150;
+    const parsedPriceFrom = parsePriceNumber(priceRaw);
+    if (parsedPriceFrom) {
+      priceFrom = parsedPriceFrom;
     }
+
+    const priceStandard = parsePriceNumber(rowObj.Price || rowObj['Standard Room'] || rowObj.Standard) || priceFrom;
+    const priceDeluxe = parsePriceNumber(rowObj['Deluxe Room'] || rowObj.Deluxe) || Math.round(priceStandard * 1.45);
+    const pricePresidential = parsePriceNumber(rowObj['Presidential Suite'] || rowObj.Presidential) || Math.round(priceStandard * 3.8);
+    const pricePrivateVilla = isEcoResort
+      ? (parsePriceNumber(rowObj['Private Villa'] || rowObj.Villa) || Math.round(priceStandard * 5.2))
+      : undefined;
+
+    const priceMeetingRoom = parsePriceNumber(rowObj['Meeting Room'] || rowObj.Meeting) || 120;
+    const priceEventHall = parsePriceNumber(rowObj['Event Hall'] || rowObj.Hall) || 3200;
+    const priceCateringPerPax = parsePriceNumber(rowObj['Catering Per Pax'] || rowObj.Catering) || 75;
 
     const amenitiesRaw = rowObj.Amenities || rowObj.amenities || rowObj.Privileges || rowObj.Services;
     let amenitiesList: string[] = [];
@@ -118,6 +135,13 @@ async function fetchGoogleSheetsClientDirect(): Promise<Property[]> {
     if (amenitiesList.length === 0) {
       amenitiesList = ['Bespoke Butler', 'Thermal Spa', 'Private Dining', 'Concierge Fleet'];
     }
+
+    const capacityStandard = rowObj['Standard Room Capacity'] || rowObj['Standard Capacity'] || 'Max 3 guests (2 Adults + 1 Child)';
+    const capacityDeluxe = rowObj['Deluxe Room Capacity'] || rowObj['Deluxe Capacity'] || 'Max 3 guests (2 Adults + 1 Child)';
+    const capacityPresidential = rowObj['Presidential Suite Capacity'] || rowObj['Presidential Capacity'] || 'Max 5 guests (4 Adults + 1 Child)';
+    const capacityPrivateVilla = isEcoResort
+      ? (rowObj['Private Villa Capacity'] || rowObj['Villa Capacity'] || 'Max 6 guests (4 Adults + 2 Children)')
+      : undefined;
 
     return {
       id: `sheet-prop-${index}-${slug}`,
@@ -134,7 +158,19 @@ async function fetchGoogleSheetsClientDirect(): Promise<Property[]> {
       galleryImages,
       priceFrom,
       rating: 4.95 + ((index % 5) * 0.01),
-      amenities: amenitiesList
+      amenities: amenitiesList,
+      priceStandard,
+      priceDeluxe,
+      pricePresidential,
+      pricePrivateVilla,
+      priceMeetingRoom,
+      priceEventHall,
+      priceCateringPerPax,
+      isEcoResort,
+      capacityStandard,
+      capacityDeluxe,
+      capacityPresidential,
+      capacityPrivateVilla
     };
   });
 

@@ -10,6 +10,18 @@ export interface RawGoogleSheetsPropertyRow {
   Status: PropertyStatus | string;
   Details: string; // May contain full HTML content
   Price?: string | number;
+  "Deluxe Room"?: string | number;
+  "Deluxe"?: string | number;
+  "Presidential Suite"?: string | number;
+  "Presidential"?: string | number;
+  "Private Villa"?: string | number;
+  "Villa"?: string | number;
+  "Meeting Room"?: string | number;
+  "Meeting"?: string | number;
+  "Event Hall"?: string | number;
+  "Hall"?: string | number;
+  "Catering Per Pax"?: string | number;
+  "Catering"?: string | number;
   Amenities?: string;
   Gallery?: string; // Comma-separated image links
   "Main Picture"?: string;
@@ -54,6 +66,21 @@ export interface Property {
   priceFrom: number;
   rating: number;
   amenities: string[];
+  // Pricing breakdown per category
+  priceStandard?: number;
+  priceDeluxe?: number;
+  pricePresidential?: number;
+  pricePrivateVilla?: number; // Only for Eco Resorts
+  priceMeetingRoom?: number; // Per person per day
+  priceEventHall?: number; // Hall rental per day
+  priceCateringPerPax?: number; // Catering per person
+  isEcoResort?: boolean;
+
+  // Capacity information
+  capacityStandard?: string;
+  capacityDeluxe?: string;
+  capacityPresidential?: string;
+  capacityPrivateVilla?: string;
 }
 
 export interface Project {
@@ -72,19 +99,25 @@ export interface Project {
 }
 
 export type BookOption = 'room' | 'event' | 'both' | 'meeting' | 'room_meeting';
+export type EventTypeOption = 'hall' | 'meeting';
 export type EventAddonOption = 'none' | 'catering' | 'decoration' | 'both';
 
 export interface BookingInquiry {
   id?: string;
+  bookingId?: string;
   propertySlug: string;
   propertyName: string;
   guestName: string;
   xUsername: string; // X / Twitter handle
+  businessName?: string; // Optional Business Name
   guestEmail?: string;
   guestPhone?: string;
-  bookOption: BookOption; // 'room' | 'event' | 'both'
+  totalGuests?: number;
+  bookOption: BookOption; // 'room' | 'event' | 'both' | 'meeting' | 'room_meeting'
   
-  // Room Breakdown (Input numbers)
+  // Meeting Room Options
+  accommodationOption?: 'without' | 'with';
+  venueRentalRate?: 'half_day' | 'full_day' | 'full_board';
   standardRooms?: number;
   deluxeRooms?: number;
   presidentialSuites?: number;
@@ -92,14 +125,25 @@ export interface BookingInquiry {
   roomsCount?: number; // Total rooms count
 
   // Event & Catering Details
+  eventType?: EventTypeOption; // 'hall' | 'meeting'
   eventAttendees?: number; // Jumlah orang dalam event
   eventAddons?: EventAddonOption; // 'none' | 'catering' | 'decoration' | 'both'
   cateringPax?: number; // Jumlah Pax untuk catering
+  includeCatering?: boolean;
 
   checkInDate?: string;
   checkOutDate?: string;
   eventDate?: string;
   notes?: string; // Keterangan & booking details
+  
+  // Calculation breakdown
+  numberOfNights?: number;
+  roomSubtotal?: number;
+  eventSubtotal?: number;
+  taxAmount?: number;
+  totalAmount?: number;
+  paymentStatus?: 'UNPAID' | 'PAID';
+
   createdAt?: string;
   status?: 'Pending' | 'Confirmed' | 'Reviewed';
 }

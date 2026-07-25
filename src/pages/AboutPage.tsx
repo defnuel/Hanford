@@ -65,7 +65,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
   return (
     <div className="bg-[#FFFFFF] text-[#2C3744]">
       {/* Full Picture Gallery Slide Hero Header */}
-      <section className="relative w-full min-h-[75vh] sm:min-h-[85vh] bg-[#3A4F67] text-white flex flex-col justify-between overflow-hidden pt-28 pb-8 border-b border-[#88B2AB]/30">
+      <section className="relative w-full min-h-[70vh] sm:min-h-[85vh] bg-[#3A4F67] text-white flex flex-col justify-between overflow-hidden pt-20 sm:pt-28 pb-6 sm:pb-8 border-b border-[#88B2AB]/30">
         {/* Gallery Image Slides Background from Google Sheets Main Picture */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           {slides.map((slide, index) => (
@@ -88,25 +88,25 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
         </div>
 
         {/* Hero Text Content */}
-        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center my-auto py-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#1E293B]/90 backdrop-blur-md border border-[#88B2AB]/60 rounded-full shadow-lg mb-6">
-            <Sparkles className="w-3.5 h-3.5 text-[#88B2AB]" />
-            <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.35em] uppercase text-white">
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center my-auto py-8 sm:py-12">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 bg-[#1E293B]/90 backdrop-blur-md border border-[#88B2AB]/60 rounded-full shadow-lg mb-4 sm:mb-6">
+            <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#88B2AB]" />
+            <span className="text-[9px] sm:text-[11px] font-bold tracking-[0.25em] sm:tracking-[0.35em] uppercase text-white">
               EST. 1920 • VANCOUVER, CANADA
             </span>
           </div>
 
-          <h1 className="font-serif italic text-3xl sm:text-5xl lg:text-6xl text-white font-light mb-6 leading-tight drop-shadow-md">
+          <h1 className="font-serif italic text-2xl sm:text-5xl lg:text-6xl text-white font-light mb-4 sm:mb-6 leading-tight drop-shadow-md">
             Hanford Hotels & Resorts
           </h1>
 
-          <p className="max-w-3xl mx-auto text-base sm:text-lg text-white font-normal leading-relaxed drop-shadow-md">
+          <p className="max-w-3xl mx-auto text-sm sm:text-lg text-white font-normal leading-relaxed drop-shadow-md">
             Founded in Vancouver, Canada, Hanford Hotels & Resorts began as a family-owned hospitality company with a simple belief: every guest should feel welcomed with warmth, comfort, and genuine care.
           </p>
         </div>
 
         {/* Bottom Gallery Slide Indicators & Controls */}
-        <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 w-full flex items-center justify-between border-t border-[#88B2AB]/30 pt-4">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 w-full flex items-center justify-between border-t border-[#88B2AB]/30 pt-3 sm:pt-4">
           <span className="text-xs font-serif italic text-[#88B2AB] hidden sm:block">
             {activeSlide.title} • {activeSlide.caption}
           </span>
@@ -142,19 +142,19 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Heritage & Brand Story */}
-      <section className="py-20 bg-[#EAF2F1] border-b border-[#88B2AB]/30">
-        <div className="max-w-4xl mx-auto px-6 space-y-8 text-center sm:text-left">
+      <section className="py-12 sm:py-20 bg-[#EAF2F1] border-b border-[#88B2AB]/30">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-6 sm:space-y-8 text-center sm:text-left">
           <div className="text-center">
-            <span className="text-[10px] font-bold tracking-[0.4em] text-[#51867E] uppercase block mb-2">
+            <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.3em] sm:tracking-[0.4em] text-[#51867E] uppercase block mb-1.5 sm:mb-2">
               OUR STORY
             </span>
-            <h2 className="font-serif italic text-3xl sm:text-5xl text-[#3A4F67] font-light">
+            <h2 className="font-serif italic text-2xl sm:text-5xl text-[#3A4F67] font-light">
               Over a Century of Timeless Hospitality
             </h2>
-            <div className="w-16 h-[1px] bg-[#51867E] mx-auto mt-4" />
+            <div className="w-12 sm:w-16 h-[1px] bg-[#51867E] mx-auto mt-3 sm:mt-4" />
           </div>
 
-          <div className="space-y-6 text-[#2C3744] font-light leading-relaxed text-sm sm:text-base">
+          <div className="space-y-4 sm:space-y-6 text-[#2C3744] font-light leading-relaxed text-xs sm:text-base">
             <p>
               Founded in Vancouver, Canada, Hanford Hotels & Resorts began as a family-owned hospitality company with a simple belief: every guest should feel welcomed with warmth, comfort, and genuine care. What started as a single grand hotel has grown over more than a century into an international collection of luxury hotels and destination resorts, guided by four generations of the Hanford family.
             </p>
@@ -169,9 +169,9 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Executive Leadership Section - Trevor Finn Hanford */}
-      <section className="py-20 max-w-6xl mx-auto px-6 sm:px-8 my-12">
-        <div className="bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-3xl p-8 sm:p-12 shadow-sm relative overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+      <section className="py-10 sm:py-20 max-w-6xl mx-auto px-4 sm:px-8 my-6 sm:my-12">
+        <div className="bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-3xl p-6 sm:p-12 shadow-sm relative overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 items-center">
             {/* CEO Portrait Column */}
             <div className="lg:col-span-5 flex justify-center">
               <div className="relative group">
@@ -179,7 +179,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
                   href="https://id.pinterest.com/pin/1146588386407379367/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block w-64 sm:w-72 h-80 sm:h-96 rounded-2xl overflow-hidden border-2 border-[#88B2AB] shadow-xl relative z-10 bg-[#3A4F67]"
+                  className="block w-56 sm:w-72 h-72 sm:h-96 rounded-2xl overflow-hidden border-2 border-[#88B2AB] shadow-xl relative z-10 bg-[#3A4F67]"
                   title="View Trevor Finn Hanford portrait on Pinterest"
                 >
                   <img
@@ -190,19 +190,19 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#3A4F67]/60 via-transparent to-transparent" />
                 </a>
                 {/* Decorative Frame Underlay */}
-                <div className="absolute -bottom-4 -right-4 w-64 sm:w-72 h-80 sm:h-96 rounded-2xl border border-[#3A4F67]/30 bg-[#3A4F67]/10 z-0 hidden sm:block" />
+                <div className="absolute -bottom-4 -right-4 w-56 sm:w-72 h-72 sm:h-96 rounded-2xl border border-[#3A4F67]/30 bg-[#3A4F67]/10 z-0 hidden sm:block" />
               </div>
             </div>
 
             {/* CEO Bio Column */}
-            <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.3em] text-[#51867E] uppercase bg-[#51867E]/10 px-3 py-1 rounded-full border border-[#51867E]/20">
+            <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 text-[9px] sm:text-[10px] font-bold tracking-[0.25em] sm:tracking-[0.3em] text-[#51867E] uppercase bg-[#51867E]/10 px-3 py-1 rounded-full border border-[#51867E]/20">
                 <UserCheck className="w-3.5 h-3.5 text-[#51867E]" />
                 <span>EXECUTIVE LEADERSHIP</span>
               </div>
 
               <div>
-                <h2 className="font-serif italic text-3xl sm:text-4xl text-[#3A4F67] font-light">
+                <h2 className="font-serif italic text-2xl sm:text-4xl text-[#3A4F67] font-light">
                   Trevor Finn Hanford
                 </h2>
                 <p className="text-xs sm:text-sm font-bold tracking-widest text-[#51867E] uppercase mt-1">
@@ -210,14 +210,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
                 </p>
               </div>
 
-              <div className="w-16 h-[1px] bg-[#88B2AB]" />
+              <div className="w-12 sm:w-16 h-[1px] bg-[#88B2AB] mx-auto lg:mx-0" />
 
-              <p className="text-sm sm:text-base text-[#2C3744] font-light leading-relaxed">
+              <p className="text-xs sm:text-base text-[#2C3744] font-light leading-relaxed">
                 Trevor Finn Hanford serves as the Chief Executive Officer of Hanford Hotels & Resorts, leading the group’s vision for thoughtful hospitality, distinctive destinations, and sustainable growth. With a background that bridges science, innovation, and hospitality, Trevor brings a forward-thinking perspective to the development of Hanford’s growing portfolio of luxury hotels and eco-resorts across the world.
               </p>
 
-              <div className="pt-2 flex items-center gap-3 text-xs font-serif italic text-[#3A4F67]">
-                <span className="w-2 h-2 rounded-full bg-[#88B2AB]" />
+              <div className="pt-2 flex items-center justify-center lg:justify-start gap-3 text-xs font-serif italic text-[#3A4F67]">
+                <span className="w-2 h-2 rounded-full bg-[#88B2AB] shrink-0" />
                 <span>Steering the global expansion of Hanford Grand Hotels & Eco Resorts</span>
               </div>
             </div>
@@ -226,68 +226,68 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Our Collections Section */}
-      <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-24">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-[10px] font-bold tracking-[0.4em] text-[#51867E] uppercase block mb-2">
+      <section className="max-w-7xl mx-auto px-4 sm:px-8 mb-16 sm:mb-24">
+        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
+          <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.3em] sm:tracking-[0.4em] text-[#51867E] uppercase block mb-1.5 sm:mb-2">
             PORTFOLIO ARCHITECTURE
           </span>
-          <h2 className="font-serif italic text-3xl sm:text-5xl text-[#3A4F67] font-light">
+          <h2 className="font-serif italic text-2xl sm:text-5xl text-[#3A4F67] font-light">
             Our Collections
           </h2>
-          <p className="text-xs text-[#2C3744] font-medium mt-2">
+          <p className="text-xs text-[#2C3744] font-medium mt-1.5 sm:mt-2">
             Today, Hanford Hotels & Resorts operates two distinct collections tailored to every traveler.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10">
           {/* Hanford Grand Hotel */}
-          <div className="p-10 bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl space-y-6 flex flex-col justify-between shadow-sm hover:border-[#51867E] transition-colors">
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-full border border-[#88B2AB]/40 flex items-center justify-center text-[#88B2AB] bg-[#51867E]">
-                <Building2 className="w-6 h-6" />
+          <div className="p-6 sm:p-10 bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl space-y-4 sm:space-y-6 flex flex-col justify-between shadow-sm hover:border-[#51867E] transition-colors">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-[#88B2AB]/40 flex items-center justify-center text-[#88B2AB] bg-[#51867E]">
+                <Building2 className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <span className="text-[10px] font-bold tracking-[0.25em] text-[#3A4F67] uppercase block">
+              <span className="text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#3A4F67] uppercase block">
                 CITY LANDMARKS
               </span>
-              <h3 className="font-serif italic text-3xl text-[#3A4F67] font-light">
+              <h3 className="font-serif italic text-2xl sm:text-3xl text-[#3A4F67] font-light">
                 Hanford Grand Hotel
               </h3>
               <p className="text-xs sm:text-sm text-[#2C3744] font-light leading-relaxed">
                 A collection of luxury five-star hotels located in the world's leading cities. Positioned within prestigious business districts and cultural landmarks, each property offers refined accommodations, award-winning dining, grand event venues, wellness facilities, and personalized service for business and leisure travelers alike.
               </p>
             </div>
-            <div className="pt-4 border-t border-[#88B2AB]/20 flex items-center justify-end text-xs font-medium text-[#3A4F67]">
+            <div className="pt-3 sm:pt-4 border-t border-[#88B2AB]/20 flex items-center justify-end text-xs font-medium text-[#3A4F67]">
               <span className="font-mono text-[10px] uppercase text-[#3A4F67] font-semibold">5-Star Urban Luxury</span>
             </div>
           </div>
 
           {/* Hanford Eco Resort */}
-          <div className="p-10 bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl space-y-6 flex flex-col justify-between shadow-sm hover:border-[#51867E] transition-colors">
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-full border border-[#88B2AB]/40 flex items-center justify-center text-[#88B2AB] bg-[#51867E]">
-                <Trees className="w-6 h-6" />
+          <div className="p-6 sm:p-10 bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl space-y-4 sm:space-y-6 flex flex-col justify-between shadow-sm hover:border-[#51867E] transition-colors">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-[#88B2AB]/40 flex items-center justify-center text-[#88B2AB] bg-[#51867E]">
+                <Trees className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <span className="text-[10px] font-bold tracking-[0.25em] text-[#3A4F67] uppercase block">
+              <span className="text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#3A4F67] uppercase block">
                 NATURAL SANCTUARIES
               </span>
-              <h3 className="font-serif italic text-3xl text-[#3A4F67] font-light">
+              <h3 className="font-serif italic text-2xl sm:text-3xl text-[#3A4F67] font-light">
                 Hanford Eco Resort
               </h3>
               <p className="text-xs sm:text-sm text-[#2C3744] font-light leading-relaxed">
                 A collection of sustainable luxury resorts set within remarkable coastal destinations. Designed to immerse guests in nature while preserving the surrounding environment, each resort features private accommodations, locally inspired experiences, wellness programs, and unforgettable connections with the landscape.
               </p>
             </div>
-            <div className="pt-4 border-t border-[#88B2AB]/20 flex items-center justify-end text-xs font-medium text-[#3A4F67]">
+            <div className="pt-3 sm:pt-4 border-t border-[#88B2AB]/20 flex items-center justify-end text-xs font-medium text-[#3A4F67]">
               <span className="font-mono text-[10px] uppercase text-[#3A4F67] font-semibold">Sustainable Coastal Retreats</span>
             </div>
           </div>
         </div>
 
         {/* Explore Button before Our Commitment Section */}
-        <div className="mt-12 text-center">
+        <div className="mt-8 sm:mt-12 text-center">
           <button
             onClick={() => onNavigate('/locations')}
-            className="px-8 py-3.5 bg-[#51867E] text-white hover:bg-[#3f6d66] text-xs font-bold tracking-widest uppercase transition-colors rounded-full shadow-lg border border-[#88B2AB]/30 cursor-pointer"
+            className="px-6 sm:px-8 py-3 sm:py-3.5 bg-[#51867E] text-white hover:bg-[#3f6d66] text-[10px] sm:text-xs font-bold tracking-widest uppercase transition-colors rounded-full shadow-lg border border-[#88B2AB]/30 cursor-pointer"
           >
             EXPLORE OUR SANCTUARIES
           </button>
@@ -295,47 +295,47 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* The Hanford Promise Banner */}
-      <section className="bg-[#3A4F67] text-[#EAF2F1] py-20 border-y border-[#88B2AB]/30 mb-24">
-        <div className="max-w-4xl mx-auto px-6 text-center space-y-6">
-          <HeartHandshake className="w-10 h-10 text-[#88B2AB] mx-auto" />
-          <span className="text-[10px] font-bold tracking-[0.4em] text-[#88B2AB] uppercase block">
+      <section className="bg-[#3A4F67] text-[#EAF2F1] py-12 sm:py-20 border-y border-[#88B2AB]/30 mb-16 sm:mb-24">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-4 sm:space-y-6">
+          <HeartHandshake className="w-8 h-8 sm:w-10 sm:h-10 text-[#88B2AB] mx-auto" />
+          <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.3em] sm:tracking-[0.4em] text-[#88B2AB] uppercase block">
             OUR COMMITMENT
           </span>
-          <h2 className="font-serif italic text-3xl sm:text-5xl font-light text-white">
+          <h2 className="font-serif italic text-2xl sm:text-5xl font-light text-white">
             The Hanford Promise
           </h2>
-          <div className="w-16 h-[1px] bg-[#88B2AB] mx-auto" />
-          <p className="font-serif italic text-lg sm:text-2xl text-white font-normal leading-relaxed max-w-3xl mx-auto drop-shadow-sm">
+          <div className="w-12 sm:w-16 h-[1px] bg-[#88B2AB] mx-auto" />
+          <p className="font-serif italic text-base sm:text-2xl text-white font-normal leading-relaxed max-w-3xl mx-auto drop-shadow-sm">
             "For more than a century, Hanford Hotels & Resorts has remained dedicated to creating places where every journey feels meaningful. From vibrant city skylines to breathtaking coastlines, every Hanford destination reflects a legacy of hospitality that continues to grow while staying true to the values on which it was founded in 1920."
           </p>
         </div>
       </section>
 
       {/* Legacy Honors */}
-      <section className="max-w-5xl mx-auto px-6 text-center space-y-12 pb-20">
-        <span className="text-[10px] font-bold tracking-[0.4em] text-[#51867E] uppercase block">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 text-center space-y-8 sm:space-y-12 pb-12 sm:pb-20">
+        <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.3em] sm:tracking-[0.4em] text-[#51867E] uppercase block">
           CENTURY OF RECOGNITION
         </span>
-        <h2 className="font-serif italic text-3xl sm:text-5xl font-light text-[#3A4F67]">
+        <h2 className="font-serif italic text-2xl sm:text-5xl font-light text-[#3A4F67]">
           Global Honors & Accolades
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center border-t border-b border-[#88B2AB]/30 py-10">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 text-center border-t border-b border-[#88B2AB]/30 py-8 sm:py-10">
           <div>
-            <Award className="w-8 h-8 text-[#51867E] mx-auto mb-3" />
-            <h4 className="font-serif italic text-lg text-[#3A4F67]">World Luxury Hotel Awards</h4>
+            <Award className="w-6 h-6 sm:w-8 sm:h-8 text-[#51867E] mx-auto mb-2 sm:mb-3" />
+            <h4 className="font-serif italic text-base sm:text-lg text-[#3A4F67]">World Luxury Hotel Awards</h4>
             <p className="text-xs text-[#2C3744] font-medium mt-1">Best Heritage & Luxury Resort Collection</p>
           </div>
 
           <div>
-            <Award className="w-8 h-8 text-[#51867E] mx-auto mb-3" />
-            <h4 className="font-serif italic text-lg text-[#3A4F67]">Condé Nast Traveler</h4>
+            <Award className="w-6 h-6 sm:w-8 sm:h-8 text-[#51867E] mx-auto mb-2 sm:mb-3" />
+            <h4 className="font-serif italic text-base sm:text-lg text-[#3A4F67]">Condé Nast Traveler</h4>
             <p className="text-xs text-[#2C3744] font-medium mt-1">Gold List Top 10 International Collections</p>
           </div>
 
           <div>
-            <Award className="w-8 h-8 text-[#51867E] mx-auto mb-3" />
-            <h4 className="font-serif italic text-lg text-[#3A4F67]">Michelin Key Guide</h4>
+            <Award className="w-6 h-6 sm:w-8 sm:h-8 text-[#51867E] mx-auto mb-2 sm:mb-3" />
+            <h4 className="font-serif italic text-base sm:text-lg text-[#3A4F67]">Michelin Key Guide</h4>
             <p className="text-xs text-[#2C3744] font-medium mt-1">Recognized for Excellence in Service & Sustainability</p>
           </div>
         </div>

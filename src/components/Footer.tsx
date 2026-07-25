@@ -6,13 +6,13 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   return (
-    <footer className="bg-[#3A4F67] text-[#EAF2F1] border-t border-[#88B2AB]/30 pt-20 pb-12">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 pb-16 border-b border-[#88B2AB]/30">
+    <footer className="bg-[#3A4F67] text-[#EAF2F1] border-t border-[#88B2AB]/30 pt-12 sm:pt-20 pb-8 sm:pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 sm:gap-12 pb-10 sm:pb-16 border-b border-[#88B2AB]/30">
           {/* Brand Column */}
-          <div className="md:col-span-1 space-y-4">
+          <div className="md:col-span-1 space-y-3 sm:space-y-4">
             <div className="flex items-center gap-3">
-              <span className="font-serif text-3xl tracking-[0.25em] text-[#88B2AB] font-light uppercase">
+              <span className="font-serif text-2xl sm:text-3xl tracking-[0.2em] sm:tracking-[0.25em] text-[#88B2AB] font-light uppercase">
                 HANFORD
               </span>
             </div>
@@ -23,32 +23,32 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
           {/* Quick Navigation */}
           <div>
-            <h4 className="text-[10px] font-bold tracking-[0.3em] text-[#88B2AB] mb-4 uppercase">
+            <h4 className="text-[10px] font-bold tracking-[0.25em] sm:tracking-[0.3em] text-[#88B2AB] mb-3 sm:mb-4 uppercase">
               Brand Navigation
             </h4>
-            <ul className="space-y-2.5 text-xs text-[#EAF2F1] font-normal tracking-wider">
+            <ul className="space-y-2 sm:space-y-2.5 text-xs text-[#EAF2F1] font-normal tracking-wider">
               <li>
-                <button onClick={() => onNavigate('/')} className="hover:text-[#88B2AB] font-semibold transition-colors">
+                <button onClick={() => onNavigate('/')} className="hover:text-[#88B2AB] font-semibold transition-colors cursor-pointer">
                   HOME
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('/locations')} className="hover:text-[#88B2AB] transition-colors">
+                <button onClick={() => onNavigate('/locations')} className="hover:text-[#88B2AB] transition-colors cursor-pointer">
                   LOCATIONS & SANCTUARIES
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('/collaborations')} className="hover:text-[#88B2AB] transition-colors">
+                <button onClick={() => onNavigate('/collaborations')} className="hover:text-[#88B2AB] transition-colors cursor-pointer">
                   COLLABORATIONS & PROJECTS
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('/about')} className="hover:text-[#88B2AB] transition-colors">
+                <button onClick={() => onNavigate('/about')} className="hover:text-[#88B2AB] transition-colors cursor-pointer">
                   ABOUT HANFORD
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('/book-now')} className="hover:text-white transition-colors font-bold text-[#88B2AB]">
+                <button onClick={() => onNavigate('/book-now')} className="hover:text-white transition-colors font-bold text-[#88B2AB] cursor-pointer">
                   RESERVATIONS & INQUIRIES
                 </button>
               </li>
@@ -57,7 +57,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
           {/* Global Sanctuaries */}
           <div>
-            <h4 className="text-[10px] font-bold tracking-[0.3em] text-[#88B2AB] mb-4 uppercase">
+            <h4 className="text-[10px] font-bold tracking-[0.25em] sm:tracking-[0.3em] text-[#88B2AB] mb-3 sm:mb-4 uppercase">
               Featured Locations
             </h4>
             <ul className="space-y-2 text-xs text-[#EAF2F1] font-normal tracking-wider">
@@ -81,10 +81,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
           {/* Contact / Inquiries */}
           <div>
-            <h4 className="text-[10px] font-bold tracking-[0.3em] text-[#88B2AB] mb-4 uppercase">
+            <h4 className="text-[10px] font-bold tracking-[0.25em] sm:tracking-[0.3em] text-[#88B2AB] mb-3 sm:mb-4 uppercase">
               Inquiries & Contact
             </h4>
-            <p className="text-xs text-[#EAF2F1] mb-4 font-normal leading-relaxed">
+            <p className="text-xs text-[#EAF2F1] mb-3 sm:mb-4 font-normal leading-relaxed">
               For further inquiries, contact us on X:
             </p>
             <a
@@ -102,11 +102,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col md:flex-row items-center justify-between text-[11px] text-[#EAF2F1]/90 font-light tracking-widest gap-6">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-center sm:text-left">
+        <div className="pt-6 sm:pt-8 flex flex-col md:flex-row items-center justify-between text-[11px] text-[#EAF2F1]/90 font-light tracking-widest gap-4 sm:gap-6 text-center md:text-left">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
             <div>
               <span className="text-[10px] font-bold tracking-widest uppercase text-[#88B2AB] block">GLOBAL HEADQUARTERS</span>
-              <p className="text-xs font-medium uppercase tracking-tighter text-[#EAF2F1]">Canada • South Korea • Indonesia</p>
+              <p className="text-xs font-medium uppercase tracking-tight text-[#EAF2F1]">Canada • South Korea • Indonesia</p>
             </div>
             <span className="hidden sm:inline text-[#88B2AB]/50">|</span>
             <p className="text-[#EAF2F1]">© 2026 Hanford Hotels & Resorts.</p>
