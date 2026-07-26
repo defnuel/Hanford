@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { Property } from '../types';
 import { fetchPropertyBySlug } from '../services/dataService';
-import { MapPin, Calendar, ArrowLeft, Star, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { MapPin, Calendar, ArrowLeft, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CleanPropertyDetails } from '../components/CleanPropertyDetails';
-import { AmenityBadge } from '../components/AmenityBadge';
 
 interface PropertyDetailPageProps {
   slug: string;
@@ -14,7 +13,6 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [isAmenitiesOpen, setIsAmenitiesOpen] = useState(false);
   const thumbnailContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -229,10 +227,10 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
             </div>
 
             {/* Clean Editorial Content parsed from Google Sheets text */}
-            <CleanPropertyDetails detailsHtml={property.detailsHtml} propertyName={property.name} />
+            <CleanPropertyDetails detailsHtml={property.detailsHtml} propertyName={property.name} amenities={property.amenities} />
           </div>
 
-          {/* Right Column: Reservation Card & Amenities Grid */}
+          {/* Right Column: Reservation Card */}
           <div className="space-y-6 sm:space-y-8">
             {/* Direct Reservation Non-Floating Static Card */}
             <div className="bg-[#3A4F67] text-[#EAF2F1] p-5 sm:p-8 border border-[#88B2AB]/30 rounded-2xl shadow-2xl space-y-5 sm:space-y-6">
@@ -274,50 +272,12 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
                 className="w-full py-3.5 sm:py-4 bg-[#51867E] text-white hover:bg-[#3f6d66] rounded-full text-xs font-bold tracking-widest uppercase transition-colors shadow-lg flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Calendar className="w-4 h-4 text-white" />
-                <span>BOOK</span>
+                <span>BOOK NOW</span>
               </button>
 
               <p className="text-[10px] text-white font-medium text-center leading-relaxed">
                 Inquiries are transmitted directly to Hanford Central Reservations in real time.
               </p>
-            </div>
-
-            {/* Included Estate Amenities with Icons */}
-            <div className="bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
-              <button
-                type="button"
-                onClick={() => setIsAmenitiesOpen(!isAmenitiesOpen)}
-                className="w-full p-5 sm:p-8 flex items-center justify-between text-left hover:bg-[#88B2AB]/10 transition-colors focus:outline-none cursor-pointer group"
-                aria-expanded={isAmenitiesOpen}
-              >
-                <div>
-                  <h3 className="font-serif italic text-xl sm:text-2xl text-[#3A4F67]">
-                    Amenities & Privileges
-                  </h3>
-                  <p className="text-xs text-[#3A4F67] font-medium mt-1">
-                    Complimentary estate services provided to all guests.
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0 ml-3">
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-[#3A4F67] group-hover:text-[#51867E] transition-colors hidden sm:inline">
-                    {isAmenitiesOpen ? 'Minimize' : 'Expand'}
-                  </span>
-                  <div className="w-8 h-8 rounded-full bg-[#3A4F67]/10 flex items-center justify-center text-[#3A4F67] group-hover:bg-[#3A4F67] group-hover:text-white transition-all">
-                    {isAmenitiesOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                  </div>
-                </div>
-              </button>
-
-              {isAmenitiesOpen && (
-                <div className="px-5 pb-5 sm:px-8 sm:pb-8 pt-2 border-t border-[#88B2AB]/20">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 pt-2">
-                    {property.amenities.map((amenity, i) => (
-                      <AmenityBadge key={i} name={amenity} />
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>

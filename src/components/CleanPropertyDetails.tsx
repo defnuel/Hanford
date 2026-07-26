@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Compass, Sparkles, Eye, UtensilsCrossed, Info, BedDouble, ChevronDown, ChevronUp } from 'lucide-react';
+import { AmenityBadge } from './AmenityBadge';
 
 interface CleanPropertyDetailsProps {
   detailsHtml: string;
   propertyName: string;
+  amenities?: string[];
 }
 
 interface ParsedSection {
@@ -77,7 +79,55 @@ const CollapsibleSectionCard: React.FC<CollapsibleSectionCardProps> = ({ sec }) 
   );
 };
 
-export const CleanPropertyDetails: React.FC<CleanPropertyDetailsProps> = ({ detailsHtml }) => {
+const AmenitiesPrivilegesCard: React.FC<{ amenities: string[] }> = ({ amenities }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="info-panel bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-6 sm:p-8 flex items-center justify-between text-left hover:bg-[#88B2AB]/15 transition-colors focus:outline-none cursor-pointer group"
+        aria-expanded={isOpen}
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-[#51867E] flex items-center justify-center text-white shrink-0 border border-[#88B2AB]/30 group-hover:scale-105 transition-transform">
+            <Sparkles className="w-4 h-4 text-[#88B2AB]" />
+          </div>
+          <div>
+            <h3 className="font-serif italic text-xl sm:text-2xl text-[#3A4F67]">
+              Amenities & Privileges
+            </h3>
+            <p className="text-xs text-[#3A4F67] font-medium mt-0.5">
+              Complimentary estate services provided to all guests.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0 ml-3">
+          <span className="text-[10px] uppercase font-bold tracking-widest text-[#666666] group-hover:text-[#51867E] transition-colors hidden sm:inline">
+            {isOpen ? 'Minimize' : 'Expand'}
+          </span>
+          <div className="w-8 h-8 rounded-full bg-[#51867E]/10 flex items-center justify-center text-[#51867E] group-hover:bg-[#51867E] group-hover:text-white transition-all">
+            {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </div>
+        </div>
+      </button>
+
+      {isOpen && (
+        <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-2 border-t border-[#88B2AB]/20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            {amenities.map((amenity, i) => (
+              <AmenityBadge key={i} name={amenity} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const CleanPropertyDetails: React.FC<CleanPropertyDetailsProps> = ({ detailsHtml, amenities = [] }) => {
   const [isOverviewOpen, setIsOverviewOpen] = useState(true);
 
   // Helper to strip HTML tags and decode basic entities cleanly
@@ -127,6 +177,11 @@ export const CleanPropertyDetails: React.FC<CleanPropertyDetailsProps> = ({ deta
     }
   }
 
+  const hasRestaurantSection = sections.some((sec) => {
+    const t = sec.title.toLowerCase();
+    return t.includes('restaurant') || t.includes('dining');
+  });
+
   return (
     <div className="space-y-8">
       {/* Overview Card */}
@@ -166,9 +221,24 @@ export const CleanPropertyDetails: React.FC<CleanPropertyDetailsProps> = ({ deta
       )}
 
       {/* Dynamic Sections from Content */}
-      {sections.map((sec, idx) => (
-        <CollapsibleSectionCard key={idx} sec={sec} />
-      ))}
+      {sections.map((sec, idx) => {
+        const titleLower = sec.title.toLowerCase();
+        const isRestaurant = titleLower.includes('restaurant') || titleLower.includes('dining');
+
+        return (
+          <React.Fragment key={idx}>
+            <CollapsibleSectionCard sec={sec} />
+            {isRestaurant && amenities.length > 0 && (
+              <AmenitiesPrivilegesCard amenities={amenities} />
+            )}
+          </React.Fragment>
+        );
+      })}
+
+      {/* Render Amenities & Privileges at the end if no restaurant section was present in content */}
+      {!hasRestaurantSection && amenities.length > 0 && (
+        <AmenitiesPrivilegesCard amenities={amenities} />
+      )}
     </div>
   );
 };
