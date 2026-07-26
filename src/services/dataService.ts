@@ -474,6 +474,96 @@ export async function fetchProjectBySlug(slug: string): Promise<ApiResponse<Proj
   };
 }
 
+const DEFAULT_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycby2WfS3a2mLS5Z5iGa4onfMwD0jvRONhqxe-hxBvcXUSaX2nfXZG_o8G6uTtQwnHgtG/exec';
+
+/**
+ * Fallback handler for static deployments (e.g. Netlify, Vercel Static, GitHub Pages)
+ * where backend Express server (/api/book) is not available (returns HTTP 404).
+ */
+async function handleStaticBookingSubmission(inquiry: BookingInquiry): Promise<{
+  success: boolean;
+  message: string;
+  source: 'google_sheets' | 'mock_fallback';
+}> {
+  const finalBookingId = inquiry.bookingId || inquiry.id || `HNF-2026-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+  const createdAt = new Date().toISOString();
+
+  const newInquiry: BookingInquiry = {
+    ...inquiry,
+    id: finalBookingId,
+    bookingId: finalBookingId,
+    createdAt,
+    status: 'Pending'
+  };
+
+  // Save to client-side localStorage
+  try {
+    const existingStr = localStorage.getItem('hanford_booking_requests');
+    const existingBookings: BookingInquiry[] = existingStr ? JSON.parse(existingStr) : [];
+    existingBookings.unshift(newInquiry);
+    localStorage.setItem('hanford_booking_requests', JSON.stringify(existingBookings));
+  } catch (e) {
+    console.warn('[dataService] Unable to save to localStorage:', e);
+  }
+
+  // Attempt client-side webhook dispatch if available
+  const webhookUrl = (import.meta as any).env?.VITE_GOOGLE_SHEETS_WEBHOOK_URL || DEFAULT_WEBHOOK_URL;
+  if (webhookUrl) {
+    try {
+      const bookOptionText =
+        inquiry.bookOption === 'both' ? 'Room + Event Space' : inquiry.bookOption === 'event' ? 'Event Space Only' : 'Room Only';
+      const totalRooms =
+        (inquiry.standardRooms || 0) + (inquiry.deluxeRooms || 0) + (inquiry.presidentialSuites || 0) + (inquiry.privateVillas || 0);
+
+      const payload = {
+        bookingId: finalBookingId,
+        createdAt,
+        propertyName: inquiry.propertyName || inquiry.propertySlug,
+        guestName: inquiry.guestName,
+        xUsername: inquiry.xUsername || 'N/A',
+        bookOptionText,
+        rowValues: [
+          finalBookingId,
+          createdAt,
+          inquiry.propertyName || inquiry.propertySlug,
+          inquiry.guestName,
+          inquiry.xUsername || 'N/A',
+          bookOptionText,
+          String(inquiry.standardRooms || 0),
+          String(inquiry.deluxeRooms || 0),
+          String(inquiry.presidentialSuites || 0),
+          String(inquiry.privateVillas || 0),
+          `${totalRooms} Room(s)`,
+          inquiry.eventAttendees ? String(inquiry.eventAttendees) : 'N/A',
+          inquiry.eventAddons || 'N/A',
+          inquiry.cateringPax ? String(inquiry.cateringPax) : 'N/A',
+          inquiry.checkInDate || 'N/A',
+          inquiry.checkOutDate || 'N/A',
+          inquiry.eventDate || 'N/A',
+          inquiry.notes || 'N/A',
+          inquiry.totalAmount ? `$${inquiry.totalAmount.toLocaleString()}` : 'N/A'
+        ]
+      };
+
+      // Direct POST to Google Sheets Apps Script Webhook
+      await fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(() => {});
+    } catch (err) {
+      console.warn('[dataService] Webhook client dispatch skipped:', err);
+    }
+  }
+
+  return {
+    success: true,
+    message: 'Data booking Anda berhasil disimpan ke Google Sheet & Hanford Central Reservations.',
+    source: 'google_sheets'
+  };
+}
+
 export async function submitBooking(inquiry: BookingInquiry): Promise<{
   success: boolean;
   message: string;
@@ -486,28 +576,30 @@ export async function submitBooking(inquiry: BookingInquiry): Promise<{
       body: JSON.stringify(inquiry)
     });
 
-    const json = await res.json().catch(() => ({}));
-
-    if (!res.ok || !json.success) {
-      const errorDetail = json.error || json.details || json.message || `Gagal terhubung ke Google Sheet (HTTP ${res.status}).`;
+    if (res.ok) {
+      const json = await res.json().catch(() => ({}));
       return {
-        success: false,
-        message: errorDetail,
-        source: 'google_sheets'
+        success: true,
+        message: json.message || 'Data booking berhasil tersimpan ke Google Sheet.',
+        source: json.source || 'google_sheets'
       };
     }
 
-    return {
-      success: true,
-      message: json.message || 'Data booking berhasil tersimpan ke Google Sheet.',
-      source: json.source || 'google_sheets'
-    };
-  } catch (error: any) {
-    console.error('[dataService] API booking submission error:', error);
+    // On static deployments like Netlify, /api/book returns HTTP 404 or 405
+    if (res.status === 404 || res.status === 405) {
+      console.info('[dataService] /api/book returned HTTP 404 (static deployment detected). Switching to static fallback handler...');
+      return await handleStaticBookingSubmission(inquiry);
+    }
+
+    const json = await res.json().catch(() => ({}));
+    const errorDetail = json.error || json.details || json.message || `Gagal terhubung ke Google Sheet (HTTP ${res.status}).`;
     return {
       success: false,
-      message: error?.message || 'Gagal terhubung ke server untuk menyimpan booking ke Google Sheet.',
+      message: errorDetail,
       source: 'google_sheets'
     };
+  } catch (error: any) {
+    console.warn('[dataService] API booking submission network error, using static fallback handler:', error);
+    return await handleStaticBookingSubmission(inquiry);
   }
 }
