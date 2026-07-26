@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Award, Building2, Trees, HeartHandshake, Sparkles, ChevronLeft, ChevronRight, UserCheck } from 'lucide-react';
 import { fetchLocations } from '../services/dataService';
 import { Property } from '../types';
-import trevorPhoto from '../assets/images/trevor_hanford_pinterest.jpg';
 
 interface AboutPageProps {
   onNavigate: (path: string) => void;
@@ -176,14 +175,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             <div className="lg:col-span-5 flex justify-center">
               <div className="relative group">
                 <a
-                  href="https://id.pinterest.com/pin/1146588386407379367/"
+                  href="https://drive.google.com/file/d/14KNJPGrt7V0li_E4_-HOqpyODonQy0zX/view?usp=sharing"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block w-56 sm:w-72 h-72 sm:h-96 rounded-2xl overflow-hidden border-2 border-[#88B2AB] shadow-xl relative z-10 bg-[#3A4F67]"
-                  title="View Trevor Finn Hanford portrait on Pinterest"
+                  title="View Trevor Finn Hanford portrait on Google Drive"
                 >
                   <img
-                    src={trevorPhoto}
+                    src="https://lh3.googleusercontent.com/d/14KNJPGrt7V0li_E4_-HOqpyODonQy0zX"
                     alt="Trevor Finn Hanford"
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                   />
