@@ -107,29 +107,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             </div>
 
             {/* Right Column: 98% Guest Satisfaction Badge */}
-            <div className="lg:col-span-4 flex flex-col items-center lg:items-end justify-center pt-2 sm:pt-4 lg:pt-0">
-              <div className="bg-[#1E293B]/90 backdrop-blur-md border border-[#88B2AB] text-[#EAF2F1] p-3.5 sm:p-5 rounded-xl sm:rounded-2xl shadow-xl max-w-[210px] sm:max-w-[230px] text-center space-y-2 hover:border-[#88B2AB] transition-all">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#88B2AB]/20 border border-[#88B2AB] flex items-center justify-center mx-auto text-[#88B2AB]">
-                  <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#88B2AB]" />
-                </div>
-                <div>
-                  <span className="text-2xl sm:text-3xl font-serif italic text-white font-bold block leading-none">
-                    98%
-                  </span>
-                  <span className="text-[8px] sm:text-[9px] font-bold tracking-[0.18em] text-[#88B2AB] uppercase block mt-1">
-                    GUEST SATISFACTION INDEX
-                  </span>
-                </div>
-                <div className="flex justify-center gap-1 text-[#88B2AB]">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-[#88B2AB] text-[#88B2AB]" />
-                  ))}
-                </div>
-                <p className="text-[9px] sm:text-[10px] font-medium text-[#EAF2F1] leading-snug border-t border-[#88B2AB]/30 pt-2">
-                  Awarded top rating by Forbes Travel Guide & international luxury hospitality registers.
-                </p>
-              </div>
-            </div>
+          
           </div>
         </div>
 

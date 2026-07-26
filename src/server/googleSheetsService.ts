@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { Property, Project, BookingInquiry, RawGoogleSheetsPropertyRow, RawGoogleSheetsProjectRow } from '../types';
 import { MOCK_PROPERTIES, createSlug } from '../data/mockProperties';
 import { MOCK_PROJECTS } from '../data/mockProjects';
@@ -6,6 +7,49 @@ const DEFAULT_SPREADSHEET_ID = '1a2WN_AqaV9WS15h-37FDCyVV_ZpLB1IaBDbvb2VYzeU';
 
 // In-memory array for tracking booking submissions
 const mockBookingsStore: BookingInquiry[] = [];
+
+/**
+ * Generates an OAuth2 access token for Google Sheets API using a Service Account private key.
+ */
+async function getGoogleSheetsAccessToken(email: string, privateKeyPem: string): Promise<string> {
+  const formattedKey = privateKeyPem.replace(/\\n/g, '\n');
+  const now = Math.floor(Date.now() / 1000);
+
+  const header = { alg: 'RS256', typ: 'JWT' };
+  const claimSet = {
+    iss: email,
+    scope: 'https://www.googleapis.com/auth/spreadsheets',
+    aud: 'https://oauth2.googleapis.com/token',
+    exp: now + 3600,
+    iat: now
+  };
+
+  const b64 = (obj: object) => Buffer.from(JSON.stringify(obj)).toString('base64url');
+  const unsignedToken = `${b64(header)}.${b64(claimSet)}`;
+
+  const signer = crypto.createSign('RSA-SHA256');
+  signer.update(unsignedToken);
+  const signature = signer.sign(formattedKey, 'base64url');
+
+  const jwt = `${unsignedToken}.${signature}`;
+
+  const res = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      assertion: jwt
+    })
+  });
+
+  if (!res.ok) {
+    const errJson = await res.json().catch(() => ({}));
+    throw new Error(errJson.error_description || errJson.error || `Token exchange status HTTP ${res.status}`);
+  }
+
+  const data = await res.json();
+  return data.access_token;
+}
 
 /**
  * Parses gallery links string from Google Sheets.
@@ -425,11 +469,13 @@ export async function appendBookingInquiry(inquiry: BookingInquiry): Promise<{
   source: 'google_sheets' | 'mock_fallback';
   message: string;
   inquiry: BookingInquiry;
+  error?: string;
 }> {
-  const bookingId = `BK-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
+  const finalBookingId = inquiry.bookingId || inquiry.id || `HNF-2026-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
   const newInquiry: BookingInquiry = {
     ...inquiry,
-    id: bookingId,
+    id: finalBookingId,
+    bookingId: finalBookingId,
     createdAt: new Date().toISOString(),
     status: 'Pending'
   };
@@ -437,8 +483,12 @@ export async function appendBookingInquiry(inquiry: BookingInquiry): Promise<{
   mockBookingsStore.push(newInquiry);
 
   const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID || DEFAULT_SPREADSHEET_ID;
-  const bookingsTab = process.env.GOOGLE_SHEETS_BOOKINGS_TAB || 'Bookings';
-  const apiKey = process.env.GOOGLE_DRIVE_API_KEY || process.env.GEMINI_API_KEY;
+  let rawTab = (process.env.GOOGLE_SHEETS_BOOKINGS_TAB || 'Bookings').trim();
+  // If rawTab is purely digits (a GID like 1881675892), normalize it to the tab name 'Bookings'
+  let bookingsTab = (/^\d+$/.test(rawTab) || !rawTab) ? 'Bookings' : rawTab;
+  const serviceAccountEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  const serviceAccountPrivateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
+  const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
 
   // Format book option string for readable Google Sheet row
   let bookOptionText = 'Room Only';
@@ -458,11 +508,12 @@ export async function appendBookingInquiry(inquiry: BookingInquiry): Promise<{
 
   // Compute total rooms
   const totalRooms = (inquiry.standardRooms || 0) + (inquiry.deluxeRooms || 0) + (inquiry.presidentialSuites || 0) + (inquiry.privateVillas || 0);
+  const totalInvoiceText = inquiry.totalAmount ? `$${inquiry.totalAmount.toLocaleString()}` : '$0';
 
-  // Row values matching Google Sheet columns (including Booking ID):
-  // [Booking ID, Timestamp, Location, Name, X Username, Book Option, Standard Rooms, Deluxe Rooms, Presidential Suites, Private Villas, Total Rooms, Event Attendees (Pax), Event Add-ons, Catering Pax, Check-In Date, Check-Out Date, Event Date, Keterangan / Notes]
+  // Row values matching Google Sheet columns (including Booking ID and Total Invoice):
+  // [Booking ID, Timestamp, Location, Name, X Username, Book Option, Standard Rooms, Deluxe Rooms, Presidential Suites, Private Villas, Total Rooms, Event Attendees (Pax), Event Add-ons, Catering Pax, Check-In Date, Check-Out Date, Event Date, Keterangan / Notes, Total Invoice ($)]
   const rowValues = [
-    newInquiry.id,
+    finalBookingId,
     newInquiry.createdAt,
     inquiry.propertyName || inquiry.propertySlug,
     inquiry.guestName,
@@ -479,66 +530,109 @@ export async function appendBookingInquiry(inquiry: BookingInquiry): Promise<{
     inquiry.checkInDate || 'N/A',
     inquiry.checkOutDate || 'N/A',
     inquiry.eventDate || 'N/A',
-    inquiry.notes || 'N/A'
+    inquiry.notes || 'N/A',
+    totalInvoiceText
   ];
 
-  const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
+  const errorsLogged: string[] = [];
+
+  // Method 1: Google Service Account OAuth2 JWT to Google Sheets API v4
+  if (serviceAccountEmail && serviceAccountPrivateKey) {
+    try {
+      const accessToken = await getGoogleSheetsAccessToken(serviceAccountEmail, serviceAccountPrivateKey);
+      let targetTab = bookingsTab;
+      let appendUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(targetTab)}:append?valueInputOption=USER_ENTERED`;
+
+      let res = await fetch(appendUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({
+          values: [rowValues]
+        })
+      });
+
+      let json = await res.json().catch(() => ({}));
+
+      // Retry with 'Bookings' if initial tab name was unparseable or failed
+      if (!res.ok && targetTab !== 'Bookings') {
+        console.warn(`[GoogleSheetsService] Range ${targetTab} failed, retrying with fallback tab 'Bookings'...`);
+        targetTab = 'Bookings';
+        appendUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(targetTab)}:append?valueInputOption=USER_ENTERED`;
+        res = await fetch(appendUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+          },
+          body: JSON.stringify({
+            values: [rowValues]
+          })
+        });
+        json = await res.json().catch(() => ({}));
+      }
+
+      if (res.ok) {
+        return {
+          success: true,
+          source: 'google_sheets',
+          message: 'Booking data successfully saved to Google Sheet.',
+          inquiry: newInquiry
+        };
+      } else {
+        const msg = json?.error?.message || json?.error || `HTTP ${res.status}`;
+        console.error('[GoogleSheetsService] Sheets API append error:', msg);
+        errorsLogged.push(`Google Sheets API Error (${res.status}): ${msg}`);
+      }
+    } catch (err: any) {
+      console.error('[GoogleSheetsService] Service account auth/append failed:', err?.message);
+      errorsLogged.push(`Service Account Error: ${err?.message || String(err)}`);
+    }
+  }
+
+  // Method 2: Webhook URL fallback
   if (webhookUrl) {
     try {
       const res = await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...newInquiry,
-          bookOptionText,
-          eventAddonsText,
-          totalRooms,
-          rowValues
+          spreadsheetId,
+          tabName: bookingsTab,
+          rowValues,
+          booking: newInquiry
         })
       });
 
-      if (res.ok) {
+      const text = await res.text().catch(() => '');
+      if (res.ok && !text.includes('You need access') && !text.includes('<!DOCTYPE html>')) {
         return {
           success: true,
           source: 'google_sheets',
-          message: 'Booking request successfully sent to Google Sheet via Webhook.',
+          message: 'Booking data successfully sent to Google Sheet via Webhook.',
           inquiry: newInquiry
         };
+      } else {
+        errorsLogged.push('Webhook Endpoint Error: Received permission/access denied or unhandled HTML response.');
       }
     } catch (err: any) {
       console.warn('[GoogleSheetsService] Webhook append error:', err?.message);
+      errorsLogged.push(`Webhook Error: ${err?.message || String(err)}`);
     }
   }
 
-  // Try appending via Google Sheets API v4 if configured
-  if (apiKey) {
-    try {
-      const appendUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(bookingsTab)}!A:K:append?valueInputOption=USER_ENTERED&key=${apiKey}`;
-      const res = await fetch(appendUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          values: [rowValues]
-        })
-      });
-
-      if (res.ok) {
-        return {
-          success: true,
-          source: 'google_sheets',
-          message: 'Booking request successfully added to Google Sheet (Bookings page).',
-          inquiry: newInquiry
-        };
-      }
-    } catch (err: any) {
-      console.warn('[GoogleSheetsService] Sheets API append error, falling back to stored log:', err?.message);
-    }
-  }
+  // If both or all methods failed to write:
+  const combinedError = errorsLogged.length > 0
+    ? errorsLogged.join(' | ')
+    : 'Google Service Account credentials (GOOGLE_SERVICE_ACCOUNT_EMAIL & GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY) or GOOGLE_SHEETS_WEBHOOK_URL are not configured or lack write access.';
 
   return {
-    success: true,
+    success: false,
     source: 'google_sheets',
-    message: 'Booking request received and recorded in Hanford Central Reservations (Google Sheet page linked).',
+    message: 'Gagal menyimpan booking ke Google Sheet.',
+    error: combinedError,
     inquiry: newInquiry
   };
 }

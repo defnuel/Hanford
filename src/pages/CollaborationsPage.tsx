@@ -164,7 +164,7 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
           <div className="py-16 sm:py-24 text-center space-y-4">
             <RefreshCw className="w-8 h-8 animate-spin text-[#51867E] mx-auto" />
             <p className="text-xs sm:text-sm text-[#3A4F67] font-serif tracking-widest uppercase">
-              Retrieving Collaborations from Hanford Google Sheets...
+              Retrieving Collaborations from Hanford Register...
             </p>
           </div>
         ) : filteredProjects.length === 0 ? (

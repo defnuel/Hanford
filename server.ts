@@ -157,12 +157,20 @@ async function startServer() {
       }
 
       const response = await appendBookingInquiry(payload);
+      if (!response.success) {
+        return res.status(500).json({
+          success: false,
+          error: response.error || response.message || 'Gagal menyimpan booking ke Google Sheet.',
+          details: response.message
+        });
+      }
       res.status(201).json(response);
     } catch (error: any) {
       console.error('Error in /api/book:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to submit booking inquiry'
+        error: 'Failed to submit booking inquiry to Google Sheet',
+        details: error?.message || String(error)
       });
     }
   });

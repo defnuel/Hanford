@@ -486,22 +486,27 @@ export async function submitBooking(inquiry: BookingInquiry): Promise<{
       body: JSON.stringify(inquiry)
     });
 
-    if (!res.ok) {
-      const errJson = await res.json().catch(() => ({}));
-      throw new Error(errJson.error || `HTTP ${res.status}`);
+    const json = await res.json().catch(() => ({}));
+
+    if (!res.ok || !json.success) {
+      const errorDetail = json.error || json.details || json.message || `Gagal terhubung ke Google Sheet (HTTP ${res.status}).`;
+      return {
+        success: false,
+        message: errorDetail,
+        source: 'google_sheets'
+      };
     }
 
-    const json = await res.json();
     return {
       success: true,
-      message: json.message || 'Inquiry successfully transmitted to Hanford Reservations.',
-      source: json.source
+      message: json.message || 'Data booking berhasil tersimpan ke Google Sheet.',
+      source: json.source || 'google_sheets'
     };
   } catch (error: any) {
-    console.warn('[dataService] API booking submission fallback:', error);
+    console.error('[dataService] API booking submission error:', error);
     return {
-      success: true,
-      message: 'Inquiry logged successfully. A Concierge Specialist will reach out shortly.',
+      success: false,
+      message: error?.message || 'Gagal terhubung ke server untuk menyimpan booking ke Google Sheet.',
       source: 'google_sheets'
     };
   }

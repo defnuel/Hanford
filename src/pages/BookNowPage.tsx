@@ -394,7 +394,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
           <p className="text-xs sm:text-sm text-[#2C3744] max-w-xl mx-auto font-light leading-relaxed">
             Real-time hotel booking application connected directly with Hanford Central Register.
             <span className="block text-[10px] sm:text-[11px] text-[#3A4F67] font-medium italic mt-0.5">
-              Sistem reservasi hotel real-time terhubung langsung ke Google Sheets Central Register.
+              Sistem reservasi hotel real-time terhubung langsung ke Central Register.
             </span>
           </p>
 
@@ -406,7 +406,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
               className="inline-flex items-center gap-2 text-[10px] sm:text-[11px] font-medium text-[#3A4F67] bg-[#EAF2F1] hover:bg-[#EAF2F1]/80 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-[#88B2AB]/30 shadow-sm transition-all"
             >
               <Building2 className="w-3.5 h-3.5 text-[#3A4F67]" />
-              <span>Google Sheet Live Database (Bookings Register)</span>
+              <span>Live Central Register (Bookings Database)</span>
               <ExternalLink className="w-3 h-3 text-[#3A4F67]" />
             </a>
           </div>
@@ -427,7 +427,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 <div>
                   <h3 className="font-serif italic text-base sm:text-lg text-white">Booking Registered Successfully</h3>
                   <p className="text-[11px] text-[#EAF2F1]">
-                    Invoice saved to Google Sheets. Download your PNG invoice below.
+                    Invoice saved to Central Register. Download your PNG invoice below.
                   </p>
                 </div>
               </div>
@@ -487,7 +487,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   NEED TO PAY ${confirmedBooking.grandTotal.toLocaleString()}
                 </div>
                 <p className="text-[10px] sm:text-[11px] text-[#2C3744] italic font-light">
-                  Status: <strong className="text-rose-700 uppercase font-bold">UNPAID</strong> — Please complete payment via Bank Transfer or X DM Concierge.
+                  Status: <strong className="text-rose-700 uppercase font-bold">UNPAID</strong> — Please complete payment before 48 hours.
                 </p>
               </div>
 
@@ -506,7 +506,6 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     {confirmedBooking.inquiry.businessName && confirmedBooking.inquiry.businessName.trim() !== '' && (
                       <div><strong>Business Name:</strong> {confirmedBooking.inquiry.businessName.trim()}</div>
                     )}
-                    <div><strong>Total Guests:</strong> {confirmedBooking.inquiry.totalGuests || 2} Person(s)</div>
                   </div>
                 </div>
 
@@ -518,6 +517,9 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   </h4>
                   <div className="text-[11px] sm:text-xs space-y-1 text-[#2C3744]">
                     <div><strong>Destination:</strong> {confirmedBooking.property.name} ({confirmedBooking.property.country})</div>
+                    {confirmedBooking.property.address && (
+                      <div><strong>Address:</strong> {confirmedBooking.property.address}</div>
+                    )}
                     <div><strong>Booking Category:</strong> <span className="uppercase font-semibold text-[#3A4F67]">{confirmedBooking.inquiry.bookOption.replace('_', ' ')}</span></div>
                     
                     {confirmedBooking.inquiry.bookOption === 'meeting' && (
@@ -665,27 +667,61 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
               </div>
 
               {/* Payment Instructions */}
-              <div className="bg-[#EAF2F1]/60 border border-[#88B2AB]/30 p-4 sm:p-5 rounded-xl text-left space-y-3 text-xs">
-                <h4 className="font-bold text-[#3A4F67] uppercase tracking-wider flex items-center gap-1.5">
+              <div className="bg-[#EAF2F1]/60 border border-[#88B2AB]/30 p-4 sm:p-5 rounded-xl text-left space-y-4 text-xs">
+                <h4 className="font-bold text-[#3A4F67] uppercase tracking-wider flex items-center gap-1.5 border-b border-[#88B2AB]/30 pb-2">
                   <CreditCard className="w-4 h-4 text-[#51867E]" />
-                  Payment Instructions
+                  Payment Instructions / Instruksi Pembayaran
                 </h4>
-                <p className="text-[#2C3744] font-light leading-relaxed">
-                  Please remit payment using your preferred method below within 48 hours to confirm your reservation:
-                </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] pt-1">
-                  <div className="bg-white p-3 rounded-lg border border-[#88B2AB]/20">
-                    <strong className="text-[#3A4F67] block">Bank Wire Transfer:</strong>
-                    <div>Bank: Hanford Global Luxury Bank</div>
-                    <div>Account: 8840-1920-7731</div>
-                    <div>Swift: HNFGLXWW</div>
+                {/* English Section */}
+                <div className="space-y-2 text-[#2C3744]">
+                  <p className="font-bold text-[#3A4F67] border-b border-[#88B2AB]/20 pb-0.5 uppercase tracking-wider text-[10px]">
+                    English
+                  </p>
+                  <p className="font-medium text-[#3A4F67]">
+                    Please download your invoice and complete the payment within 48 hours to confirm your reservation.
+                  </p>
+                  <p className="text-[11px] leading-relaxed">
+                    After payment, kindly proceed with direct confirmation by sending a DM or posting a tweet mentioning our official account.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] pt-1">
+                    <div className="bg-white p-3 rounded-lg border border-[#88B2AB]/20 space-y-1">
+                      <strong className="text-[#3A4F67] block font-bold border-b border-[#88B2AB]/20 pb-1">Direct Confirmation on X:</strong>
+                      <div>Official Handle: <a href="https://x.com/Hanford_HnR" target="_blank" rel="noopener noreferrer" className="text-[#51867E] underline font-bold">@Hanford_HnR</a></div>
+                      <div>Send Booking ID: <strong className="text-[#3A4F67]">{confirmedBooking.bookingId}</strong></div>
+                      <div>Attach: Invoice + Payment Transfer Proof</div>
+                    </div>
+
+                    <div className="bg-white p-3 rounded-lg border border-[#88B2AB]/20 space-y-1">
+                      <strong className="text-[#3A4F67] block font-bold border-b border-[#88B2AB]/20 pb-1">Bank Transfer:</strong>
+                      <div>Bank Transfer Name: <strong className="text-[#3A4F67]">{confirmedBooking.property.name}</strong></div>
+                    </div>
                   </div>
+                </div>
 
-                  <div className="bg-white p-3 rounded-lg border border-[#88B2AB]/20">
-                    <strong className="text-[#3A4F67] block">Direct Concierge Confirmation on X:</strong>
-                    <div>Official Handle: <a href="https://x.com/7inchesunder" target="_blank" rel="noopener noreferrer" className="text-[#51867E] underline font-bold">@7inchesunder</a></div>
-                    <div>Send Booking ID: <strong>{confirmedBooking.bookingId}</strong></div>
+                {/* Bahasa Indonesia Section */}
+                <div className="space-y-2 text-[#2C3744] border-t border-[#88B2AB]/20 pt-3">
+                  <p className="font-bold text-[#3A4F67] border-b border-[#88B2AB]/20 pb-0.5 uppercase tracking-wider text-[10px]">
+                    Bahasa Indonesia
+                  </p>
+                  <p className="font-medium text-[#3A4F67]">
+                    Silakan unduh invoice Anda dan lakukan pembayaran dalam waktu 48 jam untuk mengonfirmasi reservasi Anda.
+                  </p>
+                  <p className="text-[11px] leading-relaxed">
+                    Setelah pembayaran, harap lakukan konfirmasi langsung dengan mengirim DM atau membuat tweet dengan menyebut akun resmi kami.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] pt-1">
+                    <div className="bg-white p-3 rounded-lg border border-[#88B2AB]/20 space-y-1">
+                      <strong className="text-[#3A4F67] block font-bold border-b border-[#88B2AB]/20 pb-1">Konfirmasi Langsung melalui X:</strong>
+                      <div>Akun Resmi: <a href="https://x.com/Hanford_HnR" target="_blank" rel="noopener noreferrer" className="text-[#51867E] underline font-bold">@Hanford_HnR</a></div>
+                      <div>Kirim Booking ID: <strong className="text-[#3A4F67]">{confirmedBooking.bookingId}</strong></div>
+                      <div>Lampirkan: Invoice + Bukti Transfer Pembayaran</div>
+                    </div>
+
+                    <div className="bg-white p-3 rounded-lg border border-[#88B2AB]/20 space-y-1">
+                      <strong className="text-[#3A4F67] block font-bold border-b border-[#88B2AB]/20 pb-1">Transfer Bank: CHOBANK</strong>
+                      <div>Nama Transfer Bank: <strong className="text-[#3A4F67]">{confirmedBooking.property.name}</strong></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -769,7 +805,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   <div className="flex items-center justify-between border-b border-[#88B2AB]/20 pb-2">
                     <span className="font-bold text-[#3A4F67] flex items-center gap-1.5">
                       <DollarSign className="w-3.5 h-3.5 text-[#51867E]" />
-                      Dynamically Fetched Pricing (Google Sheets)
+                      Dynamically Fetched Pricing
                     </span>
                     <span className="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-[#EAF2F1] text-[#3A4F67] border border-[#88B2AB]/30 uppercase">
                       {isEcoResort ? 'Eco Resort' : 'Grand Hotel'}

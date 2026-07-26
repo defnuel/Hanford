@@ -21,8 +21,8 @@ export const DataIntegrationBadge: React.FC = () => {
         setStatus({
           configured: sheetConfigured,
           source: sheetConfigured
-            ? `Google Sheets Live (${data.integrations.googleSheets.locationsTab})`
-            : 'Google Sheets Ready (Mock Fallback)',
+            ? `Central Register Live (${data.integrations.googleSheets.locationsTab})`
+            : 'Central Register Active (Mock Fallback)',
           loading: false
         });
       } else {

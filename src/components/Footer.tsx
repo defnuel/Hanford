@@ -58,23 +58,17 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           {/* Global Sanctuaries */}
           <div>
             <h4 className="text-[10px] font-bold tracking-[0.25em] sm:tracking-[0.3em] text-[#88B2AB] mb-3 sm:mb-4 uppercase">
-              Featured Locations
+              Featured Chains
             </h4>
             <ul className="space-y-2 text-xs text-[#EAF2F1] font-normal tracking-wider">
               <li>
-                <strong className="font-bold text-white">Hanford Eco Resort</strong> — Jeju, South Korea
+                <strong className="font-bold text-white">Hanford Grand Hotel</strong>
               </li>
               <li>
-                <strong className="font-bold text-white">Hanford Eco Resort</strong> — Santa Barbara, USA
+                <strong className="font-bold text-white">Hanford Hotel & Resort</strong>
               </li>
               <li>
-                <strong className="font-bold text-white">Hanford Eco Resort</strong> — Santorini, Greece
-              </li>
-              <li>
-                <strong className="font-bold text-white">Hanford Grand Hotel</strong> — Jakarta, Indonesia
-              </li>
-              <li>
-                <strong className="font-bold text-white">Hanford Grand Hotel</strong> — Seoul, South Korea
+                <strong className="font-bold text-white">Hanford Eco Resort</strong>
               </li>
             </ul>
           </div>
