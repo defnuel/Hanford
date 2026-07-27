@@ -901,7 +901,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
           /* ------------------------------------------------------------------ */
           <form
             onSubmit={handleSubmit}
-            className="info-panel bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-xl sm:rounded-2xl p-3.5 sm:p-10 shadow-xl space-y-4 sm:space-y-8 text-left pb-16 sm:pb-10"
+            className="info-panel bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-xl sm:rounded-2xl p-3.5 sm:p-10 shadow-xl space-y-4 sm:space-y-8 text-left pb-16 sm:pb-10 w-full max-w-full overflow-hidden"
           >
             {errorMessage && (
               <div className="p-3.5 bg-rose-100 border border-rose-300 text-rose-900 text-xs rounded-xl flex items-center gap-2.5">
@@ -984,7 +984,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
               </label>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-4">
-                <div>
+                <div className="min-w-0 w-full">
                   <label className="block text-[10.5px] sm:text-[11px] font-bold text-[#3A4F67] mb-1">
                     <span className="flex items-center gap-1.5">
                       <User className="w-3.5 h-3.5 text-[#51867E]" />
@@ -997,11 +997,11 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     placeholder="e.g. Eleanor Vance"
                     value={formData.guestName}
                     onChange={(e) => setFormData({ ...formData, guestName: e.target.value })}
-                    className="w-full px-4 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium"
+                    className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium"
                   />
                 </div>
 
-                <div>
+                <div className="min-w-0 w-full">
                   <label className="block text-[10.5px] sm:text-[11px] font-bold text-[#3A4F67] mb-1">
                     <span className="flex items-center gap-1.5">
                       <AtSign className="w-3.5 h-3.5 text-[#51867E]" />
@@ -1014,11 +1014,11 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     placeholder="@username"
                     value={formData.xUsername}
                     onChange={(e) => setFormData({ ...formData, xUsername: e.target.value })}
-                    className="w-full px-4 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium"
+                    className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium"
                   />
                 </div>
 
-                <div>
+                <div className="min-w-0 w-full">
                   <label className="block text-[10.5px] sm:text-[11px] font-bold text-[#3A4F67] mb-1">
                     <span className="flex items-center gap-1.5">
                       <Briefcase className="w-3.5 h-3.5 text-[#51867E]" />
@@ -1030,7 +1030,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     placeholder="e.g. Acme Corporation"
                     value={formData.businessName || ''}
                     onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                    className="w-full px-4 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium"
+                    className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium"
                   />
                 </div>
               </div>
@@ -1320,19 +1320,19 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
             )}
 
             {/* 4. Dates Selection (Conditional based on showRoomsAndDates or showVenueSettings) */}
-            <div className="space-y-4 pt-4 border-t border-[#88B2AB]/30">
-              <label className="block text-xs font-bold tracking-[0.2em] text-[#3A4F67] uppercase">
+            <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t border-[#88B2AB]/30">
+              <label className="block text-[11px] sm:text-xs font-bold tracking-[0.15em] sm:tracking-[0.2em] text-[#3A4F67] uppercase">
                 4. SCHEDULE & DATES *
-                <span className="block text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
+                <span className="block text-[9.5px] sm:text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
                   tentukan tanggal reservasi stay / event
                 </span>
               </label>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 w-full">
                 {showRoomsAndDates && (
                   <>
-                    <div>
-                      <label className="block text-[11px] font-bold text-[#3A4F67] mb-1">
+                    <div className="min-w-0 w-full">
+                      <label className="block text-[10.5px] sm:text-[11px] font-bold text-[#3A4F67] mb-1">
                         <span className="flex items-center gap-1.5">
                           <Calendar className="w-3.5 h-3.5 text-[#51867E]" />
                           Check-In Date *
@@ -1344,12 +1344,12 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         min={todayStr}
                         value={formData.checkInDate}
                         onChange={(e) => setFormData({ ...formData, checkInDate: e.target.value })}
-                        className="w-full px-5 py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium cursor-pointer"
+                        className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium cursor-pointer"
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-[11px] font-bold text-[#3A4F67] mb-1">
+                    <div className="min-w-0 w-full">
+                      <label className="block text-[10.5px] sm:text-[11px] font-bold text-[#3A4F67] mb-1">
                         <span className="flex items-center gap-1.5">
                           <Calendar className="w-3.5 h-3.5 text-[#51867E]" />
                           Check-Out Date *
@@ -1361,15 +1361,15 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         min={formData.checkInDate || todayStr}
                         value={formData.checkOutDate}
                         onChange={(e) => setFormData({ ...formData, checkOutDate: e.target.value })}
-                        className="w-full px-5 py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium cursor-pointer"
+                        className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium cursor-pointer"
                       />
                     </div>
                   </>
                 )}
 
                 {showVenueSettings && (
-                  <div>
-                    <label className="block text-[11px] font-bold text-[#3A4F67] mb-1">
+                  <div className="min-w-0 w-full">
+                    <label className="block text-[10.5px] sm:text-[11px] font-bold text-[#3A4F67] mb-1">
                       <span className="flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5 text-[#51867E]" />
                         Event / Meeting Date *
@@ -1381,7 +1381,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       min={todayStr}
                       value={formData.eventDate}
                       onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
-                      className="w-full px-5 py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium cursor-pointer"
+                      className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium cursor-pointer"
                     />
                   </div>
                 )}
@@ -1390,17 +1390,17 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
             {/* 5. Venue Attendees & Event Addons (Only for Event or Meeting) */}
             {showVenueSettings && (
-              <div className="space-y-4 pt-4 border-t border-[#88B2AB]/30 animate-in fade-in duration-300">
-                <label className="block text-xs font-bold tracking-[0.2em] text-[#3A4F67] uppercase">
+              <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t border-[#88B2AB]/30 animate-in fade-in duration-300">
+                <label className="block text-[11px] sm:text-xs font-bold tracking-[0.15em] sm:tracking-[0.2em] text-[#3A4F67] uppercase">
                   5. VENUE & ATTENDEES CONFIGURATION *
-                  <span className="block text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
+                  <span className="block text-[9.5px] sm:text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
                     konfigurasi kapasitas tamu dan fasilitas tambahan
                   </span>
                 </label>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-[11px] font-bold text-[#3A4F67] mb-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="min-w-0 w-full">
+                    <label className="block text-[10.5px] sm:text-[11px] font-bold text-[#3A4F67] mb-1">
                       <span className="flex items-center gap-1.5">
                         <Users className="w-3.5 h-3.5 text-[#51867E]" />
                         ATTENDEES / GUESTS COUNT *
@@ -1421,7 +1421,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         });
                       }}
                       placeholder=""
-                      className="w-full px-5 py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-bold"
+                      className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-bold"
                     />
                     <span className="text-[10px] text-[#3A4F67] mt-1 block">
                       Rate:{' '}
@@ -1433,8 +1433,8 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
                   {/* CATERING ADD-ON (Only for Event Hall bookings, NOT for Meeting Room) */}
                   {(formData.bookOption === 'event' || formData.bookOption === 'both') && (
-                    <div>
-                      <label className="block text-[11px] font-bold text-[#3A4F67] mb-1">
+                    <div className="min-w-0 w-full">
+                      <label className="block text-[10.5px] sm:text-[11px] font-bold text-[#3A4F67] mb-1">
                         <span className="flex items-center gap-1.5">
                           <Utensils className="w-3.5 h-3.5 text-[#51867E]" />
                           CATERING ADD-ON *
@@ -1444,7 +1444,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         required
                         value={formData.eventAddons || ''}
                         onChange={(e) => setFormData({ ...formData, eventAddons: e.target.value as EventAddonOption })}
-                        className="w-full px-5 py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-semibold cursor-pointer"
+                        className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-semibold cursor-pointer"
                       >
                         <option value="" disabled hidden>-- Select Catering Option --</option>
                         <option value="none">Venue Only (No Catering)</option>
