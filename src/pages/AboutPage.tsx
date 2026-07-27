@@ -100,7 +100,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           </h1>
 
           <p className="max-w-3xl mx-auto text-sm sm:text-lg text-white font-normal leading-relaxed drop-shadow-md">
-            Founded in Vancouver, Canada, Hanford Hotels & Resorts began as a family-owned hospitality company with a simple belief: every guest should feel welcomed with warmth, comfort, and genuine care.
+            A tradition of warmth, elegance, and genuine hospitality to create unforgettable stays.
           </p>
         </div>
 
@@ -155,7 +155,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
 
           <div className="space-y-4 sm:space-y-6 text-[#2C3744] font-light leading-relaxed text-xs sm:text-base">
             <p>
-              Founded in Vancouver, Canada, Hanford Hotels & Resorts began as a family-owned hospitality company with a simple belief: every guest should feel welcomed with warmth, comfort, and genuine care. What started as a single grand hotel has grown over more than a century into an international collection of luxury hotels and destination resorts, guided by four generations of the Hanford family.
+              A tradition of warmth, elegance, and genuine hospitality to create unforgettable stays. What started as a single grand hotel has grown over more than a century into an international collection of luxury hotels and destination resorts, guided by four generations of the Hanford family.
             </p>
             <p>
               Throughout its history, Hanford Hotels & Resorts has remained committed to timeless hospitality while embracing the evolving needs of modern travelers. Each property reflects the culture, architecture, and character of its destination, combining refined accommodations, exceptional service, and thoughtfully curated experiences that create lasting memories for guests from around the world.

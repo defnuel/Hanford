@@ -104,7 +104,10 @@ async function fetchGoogleSheetsClientDirect(): Promise<Property[]> {
       return !isNaN(num) && num > 0 ? num : undefined;
     };
 
-    const isEcoResort = name.toLowerCase().includes('eco resort') || (rowObj.Tagline || '').toLowerCase().includes('eco resort');
+    const nameLower = name.toLowerCase();
+    const isEcoResort = nameLower.includes('eco resort') || (rowObj.Tagline || '').toLowerCase().includes('eco resort');
+    const isGrandHotel = nameLower.includes('grand hotel') && !nameLower.includes('resort');
+    const hasPrivateVilla = !isGrandHotel;
 
     const priceRaw = rowObj.Price || rowObj.price || rowObj.PriceFrom || rowObj['Price/night'] || rowObj.Rate;
     let priceFrom = 850 + index * 150;
@@ -116,7 +119,7 @@ async function fetchGoogleSheetsClientDirect(): Promise<Property[]> {
     const priceStandard = parsePriceNumber(rowObj.Price || rowObj['Standard Room'] || rowObj.Standard) || priceFrom;
     const priceDeluxe = parsePriceNumber(rowObj['Deluxe Room'] || rowObj.Deluxe) || Math.round(priceStandard * 1.45);
     const pricePresidential = parsePriceNumber(rowObj['Presidential Suite'] || rowObj.Presidential) || Math.round(priceStandard * 3.8);
-    const pricePrivateVilla = isEcoResort
+    const pricePrivateVilla = hasPrivateVilla
       ? (parsePriceNumber(rowObj['Private Villa'] || rowObj.Villa) || Math.round(priceStandard * 5.2))
       : undefined;
 
@@ -139,7 +142,7 @@ async function fetchGoogleSheetsClientDirect(): Promise<Property[]> {
     const capacityStandard = rowObj['Standard Room Capacity'] || rowObj['Standard Capacity'] || 'Max 3 guests (2 Adults + 1 Child)';
     const capacityDeluxe = rowObj['Deluxe Room Capacity'] || rowObj['Deluxe Capacity'] || 'Max 3 guests (2 Adults + 1 Child)';
     const capacityPresidential = rowObj['Presidential Suite Capacity'] || rowObj['Presidential Capacity'] || 'Max 5 guests (4 Adults + 1 Child)';
-    const capacityPrivateVilla = isEcoResort
+    const capacityPrivateVilla = hasPrivateVilla
       ? (rowObj['Private Villa Capacity'] || rowObj['Villa Capacity'] || 'Max 6 guests (4 Adults + 2 Children)')
       : undefined;
 

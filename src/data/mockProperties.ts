@@ -559,11 +559,16 @@ const RAW_PROPERTIES_DATA: Property[] = [
 ];
 
 export const MOCK_PROPERTIES: Property[] = RAW_PROPERTIES_DATA.map((p) => {
-  const isEcoResort = p.name.toLowerCase().includes('eco resort') || p.tagline.toLowerCase().includes('eco resort');
+  const nameLower = p.name.toLowerCase();
+  const taglineLower = p.tagline.toLowerCase();
+  const isEcoResort = nameLower.includes('eco resort') || taglineLower.includes('eco resort');
+  const isGrandHotel = nameLower.includes('grand hotel') && !nameLower.includes('resort');
+  const hasPrivateVilla = !isGrandHotel;
+
   const priceStandard = p.priceFrom || 850;
   const priceDeluxe = Math.round(priceStandard * 1.45);
   const pricePresidential = Math.round(priceStandard * 3.8);
-  const pricePrivateVilla = isEcoResort ? Math.round(priceStandard * 5.2) : undefined;
+  const pricePrivateVilla = hasPrivateVilla ? Math.round(priceStandard * 5.2) : undefined;
   const priceMeetingRoom = 120;
   const priceEventHall = 3200;
   const priceCateringPerPax = 75;
@@ -581,6 +586,6 @@ export const MOCK_PROPERTIES: Property[] = RAW_PROPERTIES_DATA.map((p) => {
     capacityStandard: 'Max 3 guests (2 Adults + 1 Child)',
     capacityDeluxe: 'Max 3 guests (2 Adults + 1 Child)',
     capacityPresidential: 'Max 5 guests (4 Adults + 1 Child)',
-    capacityPrivateVilla: isEcoResort ? 'Max 6 guests (4 Adults + 2 Children)' : undefined
+    capacityPrivateVilla: hasPrivateVilla ? 'Max 6 guests (4 Adults + 2 Children)' : undefined
   };
 });

@@ -121,7 +121,10 @@ export function transformSheetRowToProperty(row: RawGoogleSheetsPropertyRow, ind
     return !isNaN(num) && num > 0 ? num : undefined;
   };
 
-  const isEcoResort = name.toLowerCase().includes('eco resort') || (row.Tagline || '').toLowerCase().includes('eco resort');
+  const nameLower = name.toLowerCase();
+  const isEcoResort = nameLower.includes('eco resort') || (row.Tagline || '').toLowerCase().includes('eco resort');
+  const isGrandHotel = nameLower.includes('grand hotel') && !nameLower.includes('resort');
+  const hasPrivateVilla = !isGrandHotel;
 
   const priceRaw = row.Price || (row as any)['price'] || (row as any)['PriceFrom'] || (row as any)['Price/night'] || (row as any)['Rate'];
   let priceFrom = 850 + (index * 150);
@@ -135,8 +138,8 @@ export function transformSheetRowToProperty(row: RawGoogleSheetsPropertyRow, ind
   const priceDeluxe = parsePriceNumber(row['Deluxe Room'] || row.Deluxe) || Math.round(priceStandard * 1.45);
   const pricePresidential = parsePriceNumber(row['Presidential Suite'] || row.Presidential) || Math.round(priceStandard * 3.8);
   
-  // Private Villa MUST ONLY appear for Eco Resorts!
-  const pricePrivateVilla = isEcoResort
+  // Private Villa appears for Eco Resorts and Hotel & Resorts (only absent for Grand Hotels)
+  const pricePrivateVilla = hasPrivateVilla
     ? (parsePriceNumber(row['Private Villa'] || row.Villa) || Math.round(priceStandard * 5.2))
     : undefined;
 
@@ -183,7 +186,7 @@ export function transformSheetRowToProperty(row: RawGoogleSheetsPropertyRow, ind
     capacityStandard: (row as any)['Standard Room Capacity'] || (row as any)['Standard Capacity'] || 'Max 3 guests (2 Adults + 1 Child)',
     capacityDeluxe: (row as any)['Deluxe Room Capacity'] || (row as any)['Deluxe Capacity'] || 'Max 3 guests (2 Adults + 1 Child)',
     capacityPresidential: (row as any)['Presidential Suite Capacity'] || (row as any)['Presidential Capacity'] || 'Max 5 guests (4 Adults + 1 Child)',
-    capacityPrivateVilla: isEcoResort
+    capacityPrivateVilla: hasPrivateVilla
       ? ((row as any)['Private Villa Capacity'] || (row as any)['Villa Capacity'] || 'Max 6 guests (4 Adults + 2 Children)')
       : undefined
   };

@@ -99,8 +99,8 @@ export const Header: React.FC<HeaderProps> = ({ currentPath, onNavigate }) => {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-[#666666]/30 px-6 py-8 space-y-6 shadow-2xl animate-in slide-in-from-top duration-300">
-          <div className="flex flex-col space-y-4">
+        <div className="md:hidden bg-white/98 backdrop-blur-xl border-b border-[#88B2AB]/30 px-6 py-6 space-y-5 shadow-2xl animate-in slide-in-from-top-2 duration-300">
+          <div className="flex flex-col space-y-1">
             {navItems.map((item) => {
               const isActive =
                 item.path === '/'
@@ -111,22 +111,26 @@ export const Header: React.FC<HeaderProps> = ({ currentPath, onNavigate }) => {
                 <button
                   key={item.name}
                   onClick={() => handleLinkClick(item.path)}
-                  className={`nav-link text-left text-xs font-semibold tracking-widest py-2 border-b border-[#666666]/20 uppercase ${
-                    isActive ? 'text-[#51867E] font-bold' : 'text-[#2C3744]'
+                  className={`nav-link text-left text-xs font-semibold tracking-[0.2em] py-3 px-3 rounded-xl uppercase transition-all flex items-center justify-between ${
+                    isActive ? 'text-[#51867E] bg-[#EAF2F1] font-bold' : 'text-[#2C3744] hover:bg-gray-50'
                   }`}
                 >
-                  {item.name}
+                  <span>{item.name}</span>
+                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#51867E]" />}
                 </button>
               );
             })}
 
             {/* Mobile BOOK NOW */}
-            <button
-              onClick={() => handleLinkClick('/book-now')}
-              className="book-now-button cta-button mt-4 w-full py-3.5 px-6 text-center text-xs font-bold tracking-widest uppercase text-white bg-[#51867E] rounded-full hover:bg-[#3f6d66] border border-[#51867E]/30 transition-colors cursor-pointer"
-            >
-              BOOK NOW
-            </button>
+            <div className="pt-2">
+              <button
+                onClick={() => handleLinkClick('/book-now')}
+                className="book-now-button cta-button w-full py-3 px-6 text-center text-xs font-bold tracking-[0.2em] uppercase text-white bg-[#51867E] active:bg-[#3f6d66] rounded-full shadow-md border border-[#88B2AB]/40 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>Book Now</span>
+                <span>→</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

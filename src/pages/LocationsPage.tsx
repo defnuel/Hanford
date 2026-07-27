@@ -13,7 +13,6 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
   const [dataSource, setDataSource] = useState<'google_sheets' | 'mock_fallback'>('mock_fallback');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedContinent, setSelectedContinent] = useState('All');
-  const [selectedStatus, setSelectedStatus] = useState('All');
 
   const loadProperties = async () => {
     setLoading(true);
@@ -38,18 +37,11 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
       const matchesContinent =
         selectedContinent === 'All' || p.continent.toLowerCase() === selectedContinent.toLowerCase();
 
-      const isLiveProperty = p.status === 'Live' || p.status === 'Active';
-      const matchesStatus =
-        selectedStatus === 'All' ||
-        (selectedStatus === 'Live' && isLiveProperty) ||
-        (selectedStatus === 'Coming Soon' && p.status === 'Coming Soon');
-
-      return matchesSearch && matchesContinent && matchesStatus;
+      return matchesSearch && matchesContinent;
     });
-  }, [properties, searchQuery, selectedContinent, selectedStatus]);
+  }, [properties, searchQuery, selectedContinent]);
 
   const continents = ['All', 'Asia', 'Europe', 'America', 'Australia'];
-  const statuses = ['All', 'Live', 'Coming Soon'];
 
   return (
     <div className="bg-[#FFFFFF] text-[#2C3744] pt-24 sm:pt-32 pb-16 sm:pb-24 min-h-screen">
@@ -103,28 +95,6 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
               ))}
             </div>
           </div>
-
-          {/* Status Filter */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <span className="text-[10px] font-bold tracking-widest text-[#3A4F67] uppercase shrink-0">
-              Status:
-            </span>
-            <div className="flex flex-wrap gap-1">
-              {statuses.map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setSelectedStatus(status)}
-                  className={`px-3 py-1 text-xs font-bold rounded-full tracking-wider transition-colors ${
-                    selectedStatus === status
-                      ? 'bg-[#51867E] text-white'
-                      : 'bg-white text-[#2C3744] hover:bg-[#51867E]/10 border border-[#88B2AB]/20'
-                  }`}
-                >
-                  {status}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 
@@ -147,7 +117,6 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
               onClick={() => {
                 setSearchQuery('');
                 setSelectedContinent('All');
-                setSelectedStatus('All');
               }}
               className="px-6 py-2.5 bg-[#51867E] text-white rounded-full text-xs font-bold tracking-widest uppercase hover:bg-[#3f6d66] transition-colors border border-[#88B2AB]/30 cursor-pointer"
             >

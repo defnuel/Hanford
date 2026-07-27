@@ -83,7 +83,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
               {/* Description */}
               <p className="max-w-xl text-xs sm:text-lg leading-relaxed text-[#EAF2F1] font-normal font-sans drop-shadow-lg">
-                Founded in Vancouver, Canada in 1920, Hanford Hotels & Resorts operates two distinct collections — Hanford Grand Hotel in leading city capitals and Hanford Eco Resort in extraordinary natural coastal landscapes.
+                Hanford Hotels & Resorts operates two distinct collections — Hanford Grand Hotel in leading city capitals and Hanford Eco Resort in extraordinary natural coastal landscapes.
               </p>
 
               {/* Primary Buttons */}
