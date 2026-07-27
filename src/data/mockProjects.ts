@@ -5,9 +5,10 @@ export const SINGLE_REAL_PROJECT: Project = {
   slug: '7inchesunder',
   projectName: '7 Inches Under',
   projectType: 'Collaboration',
-  partnerName: '7 Inches Under (@7inchesunder)',
-  location: '',
-  date: '',
+  partnerName: '7 Inches Under',
+  xUsername: '@7inchesunder',
+  location: 'Hanford Hotel Tokyo',
+  date: 'Jan 2026',
   status: 'Active',
   description: 'Official collaboration project with 7 Inches Under (@7inchesunder).',
   detailsHtml: `

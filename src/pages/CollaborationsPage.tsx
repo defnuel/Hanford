@@ -13,7 +13,6 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
   const [dataSource, setDataSource] = useState<'google_sheets' | 'mock_fallback'>('google_sheets');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState('ALL');
-  const [selectedStatus, setSelectedStatus] = useState('ALL');
 
   useEffect(() => {
     let isMounted = true;
@@ -34,7 +33,6 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
 
   // Extract unique project types for filter pills
   const availableTypes: string[] = ['ALL', ...Array.from(new Set(projects.map((p) => p.projectType))).filter((t): t is string => Boolean(t))];
-  const availableStatuses: string[] = ['ALL', ...Array.from(new Set(projects.map((p) => p.status))).filter((s): s is string => Boolean(s))];
 
   // Filter projects
   const filteredProjects = projects.filter((project) => {
@@ -47,10 +45,7 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
     const matchesType =
       selectedType === 'ALL' || project.projectType.toLowerCase() === selectedType.toLowerCase();
 
-    const matchesStatus =
-      selectedStatus === 'ALL' || project.status.toLowerCase() === selectedStatus.toLowerCase();
-
-    return matchesSearch && matchesType && matchesStatus;
+    return matchesSearch && matchesType;
   });
 
   return (
@@ -84,7 +79,7 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
               <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-[#3A4F67]" />
               <input
                 type="text"
-                placeholder="Search project, partner, or location..."
+                placeholder="Search project, location..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-11 pr-4 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] placeholder-[#4A5568] focus:outline-none focus:border-[#51867E] font-medium transition-colors"
@@ -130,31 +125,6 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
               })}
             </div>
           </div>
-
-          {/* Status Filter Pills */}
-          <div className="space-y-2">
-            <label className="text-[10px] font-bold tracking-[0.2em] text-[#51867E] uppercase block">
-              Filter by Status
-            </label>
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-              {availableStatuses.map((status) => {
-                const isActive = selectedStatus.toLowerCase() === status.toLowerCase();
-                return (
-                  <button
-                    key={status}
-                    onClick={() => setSelectedStatus(status)}
-                    className={`px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-[10px] font-semibold tracking-wider transition-all focus:outline-none uppercase cursor-pointer ${
-                      isActive
-                        ? 'bg-[#51867E] text-white font-bold shadow-sm'
-                        : 'bg-white text-[#2C3744] hover:bg-[#EAF2F1] border border-[#88B2AB]/30'
-                    }`}
-                  >
-                    {status}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
         </div>
       </section>
 
@@ -174,7 +144,6 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
               onClick={() => {
                 setSearchQuery('');
                 setSelectedType('ALL');
-                setSelectedStatus('ALL');
               }}
               className="px-6 py-2.5 bg-[#51867E] text-white rounded-full text-xs font-semibold uppercase tracking-wider hover:bg-[#3f6d66] cursor-pointer"
             >
@@ -191,33 +160,35 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
               >
                 <div>
                   {/* Card Image Wrapper */}
-                  <div className="relative aspect-[16/10] bg-[#3A4F67] overflow-hidden">
+                  <div className="relative aspect-[16/10] sm:aspect-[4/3] bg-[#2C3744] overflow-hidden flex items-center justify-center p-2 sm:p-3">
+                    {/* Soft ambient blurred background matching the image colors */}
+                    <img
+                      src={project.heroImage}
+                      alt=""
+                      className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-35 pointer-events-none"
+                      aria-hidden="true"
+                    />
+
+                    {/* Main Image - uncropped and adjusting to natural aspect ratio */}
                     <img
                       src={project.heroImage}
                       alt={project.projectName}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95"
+                      className="relative z-10 max-w-full max-h-full w-auto h-auto object-contain group-hover:scale-105 transition-transform duration-500 rounded-lg shadow-sm"
                       loading="lazy"
                     />
 
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+                    {/* Gradient Overlay for text contrast */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none z-10" />
 
                     {/* Top Badges */}
-                    <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between gap-2">
+                    <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between gap-2 z-20">
                       <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 bg-[#EAF2F1]/90 backdrop-blur-md text-[#3A4F67] text-[9px] font-bold tracking-widest uppercase rounded-full shadow-sm border border-[#88B2AB]/30">
                         {project.projectType}
-                      </span>
-                      <span className={`px-2.5 sm:px-3 py-0.5 sm:py-1 text-[9px] font-bold tracking-widest uppercase rounded-full shadow-sm border ${
-                        project.status.toLowerCase() === 'completed'
-                          ? 'bg-[#3A4F67] text-white border-[#88B2AB]/40'
-                          : 'bg-[#51867E] text-white border-white/20'
-                      }`}>
-                        {project.status}
                       </span>
                     </div>
 
                     {/* Bottom Metadata Overlay */}
-                    <div className="absolute bottom-3 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between text-white text-[10px] sm:text-[11px] font-light">
+                    <div className="absolute bottom-3 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between text-white text-[10px] sm:text-[11px] font-light z-20">
                       <div className="flex items-center gap-1.5 truncate max-w-[60%]">
                         <MapPin className="w-3.5 h-3.5 text-[#88B2AB] shrink-0" />
                         <span className="truncate">{project.location}</span>
@@ -235,14 +206,17 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
                       <h3 className="text-lg sm:text-xl font-serif font-medium text-[#3A4F67] group-hover:text-[#51867E] transition-colors leading-snug">
                         {project.projectName}
                       </h3>
-                      <div className="flex items-center gap-2 text-xs font-semibold text-[#51867E]">
+                      <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-[#51867E]">
                         <Sparkles className="w-3.5 h-3.5" />
-                        <span>Partner: {project.partnerName}</span>
+                        <span>with: {project.partnerName}</span>
+                        {project.xUsername && (
+                          <span className="text-[11px] font-normal text-[#3A4F67]">({project.xUsername})</span>
+                        )}
                       </div>
                     </div>
 
                     <p className="text-xs text-[#2C3744]/80 font-light leading-relaxed line-clamp-3">
-                      {project.description}
+                      {project.shortDescription || project.description}
                     </p>
                   </div>
                 </div>

@@ -31,9 +31,19 @@ export interface RawGoogleSheetsPropertyRow {
 }
 
 export interface RawGoogleSheetsProjectRow {
+  "Project_ID"?: string;
+  "Project ID"?: string;
   "Project Name"?: string;
+  "Project_Name"?: string;
   "Project Type"?: string;
+  "Project_Type"?: string;
   "Partner Name"?: string;
+  "Partner_Name"?: string;
+  "X Username"?: string;
+  "X_Username"?: string;
+  "Twitter Username"?: string;
+  "Short Description"?: string;
+  "Short_Description"?: string;
   Location?: string;
   Date?: string;
   Status?: ProjectStatus | string;
@@ -41,6 +51,10 @@ export interface RawGoogleSheetsProjectRow {
   Details?: string; // May contain full HTML content
   Gallery?: string;
   "Main Picture"?: string;
+  "Main_Picture"?: string;
+  Logo?: string;
+  "X Link"?: string;
+  "X_Link"?: string;
   "Picture's Folder"?: string;
   "Picture's folder"?: string;
   Source?: string; // Internal only - MUST NEVER be displayed publicly
@@ -89,9 +103,12 @@ export interface Project {
   projectName: string;
   projectType: string;
   partnerName: string;
+  xUsername?: string;
+  xLink?: string;
   location: string;
   date: string;
-  status: ProjectStatus;
+  status: ProjectStatus | string;
+  shortDescription?: string;
   description: string;
   detailsHtml: string;
   heroImage: string;

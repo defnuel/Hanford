@@ -197,45 +197,86 @@ export function transformSheetRowToProperty(row: RawGoogleSheetsPropertyRow, ind
  * Internal columns like "Picture's folder" and "Source" are deliberately omitted/ignored.
  */
 export function transformSheetRowToProject(row: RawGoogleSheetsProjectRow, index: number): Project {
-  const rawName = row['Project Name'] || row.Name || row.Tagline || '';
-  const projectName = rawName.trim() || '7 Inches Under';
+  const rawId = row['Project_ID'] || row['Project ID'] || (row as any).id || '';
+  const rawName = row['Project Name'] || row['Project_Name'] || row.Name || row.Tagline || '';
+  const projectName = rawName.trim() || `Hanford Collaboration #${index + 1}`;
   const slug = createSlug(projectName);
-  const projectType = (row['Project Type'] || 'Collaboration').trim();
-  const partnerName = (row['Partner Name'] || '7 Inches Under (@7inchesunder)').trim();
+  const projectType = (row['Project Type'] || row['Project_Type'] || 'Collaboration').trim();
+  const partnerName = (row['Partner Name'] || row['Partner_Name'] || 'Hanford Partner').trim();
+  const rawXUser = row['X Username'] || row['X_Username'] || row['Twitter Username'] || (row as any)['xUsername'] || (row as any)['Twitter'] || '';
+  const xUsername = rawXUser ? (rawXUser.startsWith('@') ? rawXUser : `@${rawXUser.trim()}`) : '';
+  const xLink = (row['X Link'] || row['X_Link'] || (row as any)['xLink'] || '').trim();
   const location = (row.Location || '').trim();
   const date = (row.Date || '').trim();
   const statusStr = (row.Status || 'Active').trim();
-  const description = (row.Description || 'Official collaboration project with 7 Inches Under (@7inchesunder).').trim();
-  const detailsHtml = row.Details || `
-    <div>
-      <h1>7 Inches Under</h1>
-      <h4><em>Official Collaboration with Hanford Hotels & Resorts</em></h4>
-      <p>Hanford Hotels & Resorts is proud to present our collaboration with 7 Inches Under (@7inchesunder).</p>
-      <p>Discover updates, creative highlights, and official coverage directly on X:</p>
-      <p style="margin-top: 16px;">
-        <a href="https://x.com/7inchesunder/status/2038247095371792521?s=20" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 24px; background-color: #510F23; color: #ffffff; border-radius: 9999px; font-weight: 600; text-decoration: none; font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase;">
-          View Official Post on X (@7inchesunder)
-        </a>
-      </p>
-    </div>
-  `;
+  const shortDescription = (row['Short Description'] || row['Short_Description'] || '').trim();
+  const rawDescription = (row.Description || shortDescription || '').trim();
 
-  const galleryUrls = parseGalleryUrls(row.Gallery || row['Main Picture']);
+  // Strip HTML tags for clean card description preview
+  const cleanDescription = rawDescription.includes('<') && rawDescription.includes('>')
+    ? rawDescription.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+    : rawDescription;
+
+  const mainPicUrls = parseGalleryUrls(row['Main Picture'] || row['Main_Picture'] || row['Logo']);
+  const galleryUrls = parseGalleryUrls(row.Gallery);
+  const combinedGallery = Array.from(new Set([...mainPicUrls, ...galleryUrls]));
+
   const defaultHero = 'https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=1800&q=85';
+  const heroImage = combinedGallery.length > 0 ? combinedGallery[0] : defaultHero;
+  const galleryImages = combinedGallery.length > 0 ? combinedGallery : [heroImage];
 
-  const heroImage = galleryUrls.length > 0 ? galleryUrls[0] : defaultHero;
-  const galleryImages = galleryUrls.length > 0 ? galleryUrls : [heroImage];
+  const finalXLink = xLink || (xUsername ? `https://x.com/${xUsername.replace(/^@/, '')}` : '');
+
+  let detailsHtml = row.Details || '';
+  if (!detailsHtml) {
+    if (rawDescription.includes('<p>') || rawDescription.includes('<div>') || rawDescription.includes('<h')) {
+      detailsHtml = rawDescription;
+    } else {
+      detailsHtml = `
+        <div style="font-family: inherit; color: #2C3744; line-height: 1.7;">
+          <h1 style="font-family: serif; font-size: 28px; font-weight: 300; color: #3A4F67; margin-bottom: 8px;">${projectName}</h1>
+          <h4 style="font-size: 14px; font-weight: 600; color: #51867E; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 24px;">
+            ${projectType} &bull; ${partnerName} ${xUsername ? `(${xUsername})` : ''}
+          </h4>
+
+          ${shortDescription ? `
+            <div style="padding: 16px 20px; background-color: #EAF2F1; border-left: 3px solid #51867E; border-radius: 8px; margin-bottom: 24px;">
+              <p style="font-size: 14px; font-weight: 500; color: #3A4F67; margin: 0;">${shortDescription}</p>
+            </div>
+          ` : ''}
+
+          <div style="font-size: 15px; color: #2C3744; margin-bottom: 28px;">
+            <p style="white-space: pre-line;">${cleanDescription}</p>
+          </div>
+
+          ${location ? `<p style="font-size: 13px; color: #3A4F67; margin-bottom: 8px;"><strong>Location:</strong> ${location}</p>` : ''}
+          ${date ? `<p style="font-size: 13px; color: #3A4F67; margin-bottom: 24px;"><strong>Date / Timeline:</strong> ${date}</p>` : ''}
+
+          ${finalXLink ? `
+            <p style="margin-top: 24px;">
+              <a href="${finalXLink}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 24px; background-color: #51867E; color: #ffffff; border-radius: 9999px; font-weight: 600; text-decoration: none; font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase;">
+                View Official Account / Link on X ${xUsername ? `(${xUsername})` : ''} &rarr;
+              </a>
+            </p>
+          ` : ''}
+        </div>
+      `;
+    }
+  }
 
   return {
-    id: `sheet-proj-${index}-${slug}`,
+    id: rawId || `sheet-proj-${index}-${slug}`,
     slug,
     projectName,
     projectType,
     partnerName,
+    xUsername,
+    xLink: finalXLink,
     location,
     date,
     status: statusStr,
-    description,
+    shortDescription,
+    description: cleanDescription || shortDescription || `Official collaboration project with ${partnerName}.`,
     detailsHtml,
     heroImage,
     galleryImages
@@ -368,100 +409,88 @@ export async function getProjectsFromSource(): Promise<{
   message?: string;
 }> {
   const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID || DEFAULT_SPREADSHEET_ID;
-  const tabName = process.env.GOOGLE_SHEETS_PROJECTS_TAB || 'Projects';
+  const configuredTab = process.env.GOOGLE_SHEETS_PROJECTS_TAB;
+  const tabsToTry = configuredTab ? [configuredTab, 'Collaborations', 'Projects'] : ['Collaborations', 'Projects'];
 
-  try {
-    const gvizUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(tabName)}&tqx=out:json`;
-    const res = await fetch(gvizUrl);
-    if (!res.ok) {
-      throw new Error(`gviz Projects endpoint returned status HTTP ${res.status}`);
-    }
+  const endpointsToTry = [
+    { url: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?gid=1717332833&tqx=out:json`, name: 'GID 1717332833' },
+    ...tabsToTry.map((tab) => ({
+      url: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(tab)}&tqx=out:json`,
+      name: `Sheet '${tab}'`
+    }))
+  ];
 
-    const text = await res.text();
-    const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);?/);
-    if (!jsonMatch) {
-      throw new Error('Failed to parse google.visualization Query response');
-    }
+  for (const endpoint of endpointsToTry) {
+    try {
+      const res = await fetch(endpoint.url);
+      if (!res.ok) continue;
 
-    const data = JSON.parse(jsonMatch[1]);
-    const tableRows = data.table?.rows || [];
+      const text = await res.text();
+      const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);?/);
+      if (!jsonMatch) continue;
 
-    if (!tableRows || tableRows.length === 0) {
-      return {
-        projects: MOCK_PROJECTS,
-        source: 'mock_fallback',
-        spreadsheetIdConfigured: true,
-        message: 'Google Sheets Projects tab contains no data. Serving curated mock projects.'
-      };
-    }
+      const data = JSON.parse(jsonMatch[1]);
+      const tableRows = data.table?.rows || [];
+      if (!tableRows || tableRows.length === 0) continue;
 
-    // Get headers from cols or row 0
-    let headers: string[] = [];
-    if (data.table.cols && data.table.cols.some((c: any) => c && c.label)) {
-      headers = data.table.cols.map((c: any) => (c && c.label ? String(c.label).trim() : ''));
-    }
+      // Determine headers and data rows cleanly
+      let headers: string[] = [];
+      let dataSlice = tableRows;
 
-    let dataSlice = tableRows;
-    // Check if row 0 has header text (e.g. 'Project Name' or 'Name')
-    if (tableRows[0] && tableRows[0].c && tableRows[0].c.some((cell: any) => cell && cell.v && String(cell.v).toLowerCase().includes('name'))) {
-      headers = tableRows[0].c.map((cell: any) => (cell && cell.v ? String(cell.v).trim() : ''));
-      dataSlice = tableRows.slice(1);
-    }
+      const colsHasLabels = data.table?.cols && data.table.cols.some((c: any) => c && c.label && String(c.label).trim() !== '');
+      if (colsHasLabels) {
+        headers = data.table.cols.map((c: any) => (c && c.label ? String(c.label).trim() : ''));
+        dataSlice = tableRows; // tableRows[0] is actual data row
+      } else if (tableRows[0] && tableRows[0].c) {
+        headers = tableRows[0].c.map((cell: any) => (cell && (cell.f || cell.v) ? String(cell.f || cell.v).trim() : ''));
+        dataSlice = tableRows.slice(1);
+      }
 
-    if (dataSlice.length === 0) {
-      return {
-        projects: MOCK_PROJECTS,
-        source: 'mock_fallback',
-        spreadsheetIdConfigured: true,
-        message: 'Google Sheets Projects tab has no data rows. Serving curated mock projects.'
-      };
-    }
+      if (headers.length === 0 || dataSlice.length === 0) continue;
 
-    const projectRows: RawGoogleSheetsProjectRow[] = dataSlice.map((row: any) => {
-      const obj: Record<string, string> = {};
-      headers.forEach((header, i) => {
-        if (header) {
-          const cellVal = row.c && row.c[i] && row.c[i].v !== null && row.c[i].v !== undefined ? String(row.c[i].v) : '';
-          obj[header] = cellVal;
-        }
+      const projectRows: RawGoogleSheetsProjectRow[] = dataSlice.map((row: any) => {
+        const obj: Record<string, string> = {};
+        headers.forEach((header, i) => {
+          if (header && row.c && row.c[i]) {
+            const cell = row.c[i];
+            const val = cell.f !== undefined && cell.f !== null ? String(cell.f) : (cell.v !== undefined && cell.v !== null ? String(cell.v) : '');
+            obj[header] = val;
+          }
+        });
+        return obj as unknown as RawGoogleSheetsProjectRow;
       });
-      return obj as unknown as RawGoogleSheetsProjectRow;
-    });
 
-    // Filter project rows: exclude cloned location entries that aren't real project entries
-    const realProjectRows = projectRows.filter((r) => {
-      const name = (r['Project Name'] || r.Name || '').toLowerCase();
-      const partner = (r['Partner Name'] || '').toLowerCase();
-      const source = (r.Source || '').toLowerCase();
+      // Filter project rows: keep non-empty entries
+      const realProjectRows = projectRows.filter((r) => {
+        const name = (r['Project Name'] || r['Project_Name'] || r.Name || '').trim();
+        const partner = (r['Partner Name'] || r['Partner_Name'] || '').trim();
+        const projId = (r['Project_ID'] || r['Project ID'] || '').trim();
+        const shortDesc = (r['Short Description'] || r['Short_Description'] || '').trim();
+        const desc = (r['Description'] || '').trim();
 
-      if (name.includes('7inchesunder') || name.includes('7 inches under') || partner.includes('7 inches under') || source.includes('2038247095371792521')) {
-        return true;
+        return Boolean(name || partner || projId || shortDesc || desc);
+      });
+
+      if (realProjectRows.length > 0) {
+        const parsedProjects = realProjectRows.map((r, idx) => transformSheetRowToProject(r, idx));
+        return {
+          projects: parsedProjects,
+          source: 'google_sheets',
+          spreadsheetIdConfigured: true,
+          message: `Successfully loaded ${parsedProjects.length} collaboration project(s) from Google Sheets (${endpoint.name}).`
+        };
       }
-      // If the row is a cloned location entry, filter it out
-      if (name.startsWith('hanford eco resort') || name.startsWith('hanford grand hotel') || name.startsWith('hanford hotel')) {
-        return false;
-      }
-      return Boolean(r['Project Name'] || r['Partner Name']);
-    });
-
-    const parsedProjects = realProjectRows.map((r, idx) => transformSheetRowToProject(r, idx));
-    const finalProjects = parsedProjects.length > 0 ? parsedProjects : MOCK_PROJECTS;
-
-    return {
-      projects: finalProjects,
-      source: 'google_sheets',
-      spreadsheetIdConfigured: true,
-      message: `Successfully loaded ${finalProjects.length} project(s) from Google Sheets 'Projects' tab.`
-    };
-  } catch (err: any) {
-    console.warn('[GoogleSheetsService] Error fetching Projects from Google Sheets:', err?.message || err);
-    return {
-      projects: MOCK_PROJECTS,
-      source: 'mock_fallback',
-      spreadsheetIdConfigured: true,
-      message: `Error fetching Projects sheet. Serving curated mock projects.`
-    };
+    } catch (err: any) {
+      console.warn(`[GoogleSheetsService] Failed fetching endpoint '${endpoint.name}':`, err?.message || err);
+    }
   }
+
+  return {
+    projects: MOCK_PROJECTS,
+    source: 'mock_fallback',
+    spreadsheetIdConfigured: true,
+    message: `Could not fetch data from Collaborations tab. Serving curated mock projects.`
+  };
 }
 
 /**

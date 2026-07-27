@@ -195,7 +195,7 @@ export const CleanPropertyDetails: React.FC<CleanPropertyDetailsProps> = ({ deta
           >
             <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.3em] text-[#51867E] uppercase">
               <Compass className="w-4 h-4 text-[#51867E]" />
-              <span>SANCTUARY OVERVIEW</span>
+              <span>OVERVIEW</span>
             </div>
 
             <div className="flex items-center gap-2">

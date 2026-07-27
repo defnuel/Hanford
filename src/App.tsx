@@ -36,9 +36,11 @@ export default function App() {
     document.body.scrollTop = 0;
   };
 
-  // Extract query parameters if present (e.g., /book-now?property=hanford-sanctuary-kyoto)
+  // Extract query parameters if present (e.g., /book-now?property=hanford-eco-resort-santa-barbara)
   const getQueryParam = (paramName: string) => {
-    const params = new URLSearchParams(window.location.search);
+    const urlStr = currentPath.includes('?') ? currentPath : window.location.search;
+    const searchPart = urlStr.includes('?') ? urlStr.substring(urlStr.indexOf('?')) : urlStr;
+    const params = new URLSearchParams(searchPart);
     return params.get(paramName) || undefined;
   };
 
@@ -82,7 +84,7 @@ export default function App() {
     }
 
     if (path.startsWith('/book-now') || path.startsWith('/book')) {
-      const propertySlug = getQueryParam('property');
+      const propertySlug = getQueryParam('property') || getQueryParam('location');
       return <BookNowPage initialPropertySlug={propertySlug} onNavigate={navigate} />;
     }
 

@@ -83,9 +83,53 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
       setLoadingLocations(false);
 
       if (initialPropertySlug) {
-        const matched = res.data.find(
-          (p) => p.slug.toLowerCase() === initialPropertySlug.toLowerCase()
+        const rawTarget = decodeURIComponent(initialPropertySlug).toLowerCase().trim();
+
+        // 1. Exact slug match
+        let matched = res.data.find(
+          (p) => p.slug.toLowerCase() === rawTarget
         );
+
+        // 2. Exact property name match
+        if (!matched) {
+          matched = res.data.find(
+            (p) => p.name.toLowerCase() === rawTarget
+          );
+        }
+
+        // 3. Name or slug partial match
+        if (!matched) {
+          matched = res.data.find(
+            (p) =>
+              p.name.toLowerCase().includes(rawTarget) ||
+              rawTarget.includes(p.name.toLowerCase()) ||
+              p.slug.toLowerCase().includes(rawTarget) ||
+              rawTarget.includes(p.slug.toLowerCase())
+          );
+        }
+
+        // 4. Keyword / Location / Address word overlap
+        if (!matched) {
+          const targetWords = rawTarget
+            .split(/[\s,:-]+/)
+            .filter((w) => w.length > 2 && !['and', 'the', 'resort', 'hotel', 'sanctuary', 'hanford', 'usa', 'california'].includes(w));
+
+          if (targetWords.length > 0) {
+            matched = res.data.find((p) => {
+              const propText = `${p.name} ${p.address || ''} ${p.country || ''}`.toLowerCase();
+              return targetWords.some((word) => propText.includes(word));
+            });
+          }
+        }
+
+        // 5. Fallback: match any city/location word
+        if (!matched) {
+          matched = res.data.find((p) => {
+            const propText = `${p.name} ${p.address || ''} ${p.country || ''}`.toLowerCase();
+            return rawTarget.split(/[\s,:-]+/).some((w) => w.length > 3 && propText.includes(w));
+          });
+        }
+
         if (matched) {
           setFormData((prev) => ({
             ...prev,

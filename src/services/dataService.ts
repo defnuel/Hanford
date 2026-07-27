@@ -277,112 +277,159 @@ export async function fetchPropertyBySlug(slug: string): Promise<ApiResponse<Pro
  * Direct client-side fetcher for Google Sheets 'Projects' tab via gviz endpoint.
  */
 async function fetchProjectsClientDirect(): Promise<Project[]> {
-  const gvizUrl = `https://docs.google.com/spreadsheets/d/${DEFAULT_SPREADSHEET_ID}/gviz/tq?sheet=Projects&tqx=out:json`;
-  const res = await fetch(gvizUrl);
-  if (!res.ok) {
-    throw new Error(`Google Sheets Projects endpoint HTTP ${res.status}`);
-  }
+  const gvizUrls = [
+    `https://docs.google.com/spreadsheets/d/${DEFAULT_SPREADSHEET_ID}/gviz/tq?gid=1717332833&tqx=out:json`,
+    `https://docs.google.com/spreadsheets/d/${DEFAULT_SPREADSHEET_ID}/gviz/tq?sheet=Collaborations&tqx=out:json`,
+    `https://docs.google.com/spreadsheets/d/${DEFAULT_SPREADSHEET_ID}/gviz/tq?sheet=Projects&tqx=out:json`
+  ];
 
-  const text = await res.text();
-  const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);?/);
-  if (!jsonMatch) {
-    throw new Error('Invalid Google Visualization Query response');
-  }
+  for (const gvizUrl of gvizUrls) {
+    try {
+      const res = await fetch(gvizUrl);
+      if (!res.ok) continue;
 
-  const data = JSON.parse(jsonMatch[1]);
-  const tableRows = data.table?.rows || [];
+      const text = await res.text();
+      const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);?/);
+      if (!jsonMatch) continue;
 
-  if (!tableRows || tableRows.length === 0) {
-    return MOCK_PROJECTS;
-  }
+      const data = JSON.parse(jsonMatch[1]);
+      const tableRows = data.table?.rows || [];
+      if (!tableRows || tableRows.length === 0) continue;
 
-  let headers: string[] = [];
-  if (data.table.cols && data.table.cols.some((c: any) => c && c.label)) {
-    headers = data.table.cols.map((c: any) => (c && c.label ? String(c.label).trim() : ''));
-  }
+      let headers: string[] = [];
+      let dataSlice = tableRows;
 
-  let dataSlice = tableRows;
-  if (tableRows[0] && tableRows[0].c && tableRows[0].c.some((cell: any) => cell && cell.v && String(cell.v).toLowerCase().includes('name'))) {
-    headers = tableRows[0].c.map((cell: any) => (cell && cell.v ? String(cell.v).trim() : ''));
-    dataSlice = tableRows.slice(1);
-  }
-
-  if (dataSlice.length === 0) {
-    return MOCK_PROJECTS;
-  }
-
-  const defaultHero = 'https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=1800&q=85';
-
-  const rawRows: Record<string, string>[] = dataSlice.map((row: any) => {
-    const rowObj: Record<string, string> = {};
-    headers.forEach((header, i) => {
-      if (header) {
-        const cellVal = row.c && row.c[i] && row.c[i].v !== null && row.c[i].v !== undefined ? String(row.c[i].v) : '';
-        rowObj[header] = cellVal;
+      const colsHasLabels = data.table?.cols && data.table.cols.some((c: any) => c && c.label && String(c.label).trim() !== '');
+      if (colsHasLabels) {
+        headers = data.table.cols.map((c: any) => (c && c.label ? String(c.label).trim() : ''));
+        dataSlice = tableRows;
+      } else if (tableRows[0] && tableRows[0].c) {
+        headers = tableRows[0].c.map((cell: any) => (cell && (cell.f || cell.v) ? String(cell.f || cell.v).trim() : ''));
+        dataSlice = tableRows.slice(1);
       }
-    });
-    return rowObj;
-  });
 
-  const filteredRows = rawRows.filter((r) => {
-    const name = (r['Project Name'] || r.Name || '').toLowerCase();
-    const partner = (r['Partner Name'] || '').toLowerCase();
-    const source = (r.Source || '').toLowerCase();
+      if (headers.length === 0 || dataSlice.length === 0) continue;
 
-    if (name.includes('7inchesunder') || name.includes('7 inches under') || partner.includes('7 inches under') || source.includes('2038247095371792521')) {
-      return true;
+      const defaultHero = 'https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=1800&q=85';
+
+      const rawRows: Record<string, string>[] = dataSlice.map((row: any) => {
+        const rowObj: Record<string, string> = {};
+        headers.forEach((header, i) => {
+          if (header && row.c && row.c[i]) {
+            const cell = row.c[i];
+            const val = cell.f !== undefined && cell.f !== null ? String(cell.f) : (cell.v !== undefined && cell.v !== null ? String(cell.v) : '');
+            rowObj[header] = val;
+          }
+        });
+        return rowObj;
+      });
+
+      const filteredRows = rawRows.filter((r) => {
+        const name = (r['Project Name'] || r['Project_Name'] || r.Name || '').trim();
+        const partner = (r['Partner Name'] || r['Partner_Name'] || '').trim();
+        const projId = (r['Project_ID'] || r['Project ID'] || '').trim();
+        const shortDesc = (r['Short Description'] || r['Short_Description'] || '').trim();
+        const desc = (r['Description'] || '').trim();
+
+        return Boolean(name || partner || projId || shortDesc || desc);
+      });
+
+      if (filteredRows.length === 0) continue;
+
+      const parsedProjects: Project[] = filteredRows.map((rowObj: Record<string, string>, index: number) => {
+        const rawId = rowObj['Project_ID'] || rowObj['Project ID'] || rowObj.id || '';
+        const rawName = rowObj['Project Name'] || rowObj['Project_Name'] || rowObj.Name || rowObj.Tagline || '';
+        const projectName = rawName.trim() || `Hanford Collaboration #${index + 1}`;
+        const slug = createSlug(projectName);
+        const projectType = (rowObj['Project Type'] || rowObj['Project_Type'] || 'Collaboration').trim();
+        const partnerName = (rowObj['Partner Name'] || rowObj['Partner_Name'] || 'Hanford Partner').trim();
+        const rawXUser = rowObj['X Username'] || rowObj['X_Username'] || rowObj['Twitter Username'] || rowObj.xUsername || rowObj.Twitter || '';
+        const xUsername = rawXUser ? (rawXUser.startsWith('@') ? rawXUser : `@${rawXUser.trim()}`) : '';
+        const xLink = (rowObj['X Link'] || rowObj['X_Link'] || rowObj.xLink || '').trim();
+        const location = (rowObj.Location || '').trim();
+        const date = (rowObj.Date || '').trim();
+        const status = (rowObj.Status || 'Active').trim();
+        const shortDescription = (rowObj['Short Description'] || rowObj['Short_Description'] || '').trim();
+        const rawDescription = (rowObj.Description || shortDescription || '').trim();
+
+        const cleanDescription = rawDescription.includes('<') && rawDescription.includes('>')
+          ? rawDescription.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+          : rawDescription;
+
+        const mainPicUrls = parseGalleryUrls(rowObj['Main Picture'] || rowObj['Main_Picture'] || rowObj.Logo);
+        const galleryUrls = parseGalleryUrls(rowObj.Gallery);
+        const combinedGallery = Array.from(new Set([...mainPicUrls, ...galleryUrls]));
+
+        const heroImage = combinedGallery.length > 0 ? combinedGallery[0] : defaultHero;
+        const galleryImages = combinedGallery.length > 0 ? combinedGallery : [heroImage];
+
+        const finalXLink = xLink || (xUsername ? `https://x.com/${xUsername.replace(/^@/, '')}` : '');
+
+        let detailsHtml = rowObj.Details || '';
+        if (!detailsHtml) {
+          if (rawDescription.includes('<p>') || rawDescription.includes('<div>') || rawDescription.includes('<h')) {
+            detailsHtml = rawDescription;
+          } else {
+            detailsHtml = `
+              <div style="font-family: inherit; color: #2C3744; line-height: 1.7;">
+                <h1 style="font-family: serif; font-size: 28px; font-weight: 300; color: #3A4F67; margin-bottom: 8px;">${projectName}</h1>
+                <h4 style="font-size: 14px; font-weight: 600; color: #51867E; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 24px;">
+                  ${projectType} &bull; ${partnerName} ${xUsername ? `(${xUsername})` : ''}
+                </h4>
+
+                ${shortDescription ? `
+                  <div style="padding: 16px 20px; background-color: #EAF2F1; border-left: 3px solid #51867E; border-radius: 8px; margin-bottom: 24px;">
+                    <p style="font-size: 14px; font-weight: 500; color: #3A4F67; margin: 0;">${shortDescription}</p>
+                  </div>
+                ` : ''}
+
+                <div style="font-size: 15px; color: #2C3744; margin-bottom: 28px;">
+                  <p style="white-space: pre-line;">${cleanDescription}</p>
+                </div>
+
+                ${location ? `<p style="font-size: 13px; color: #3A4F67; margin-bottom: 8px;"><strong>Location:</strong> ${location}</p>` : ''}
+                ${date ? `<p style="font-size: 13px; color: #3A4F67; margin-bottom: 24px;"><strong>Date / Timeline:</strong> ${date}</p>` : ''}
+
+                ${finalXLink ? `
+                  <p style="margin-top: 24px;">
+                    <a href="${finalXLink}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 24px; background-color: #51867E; color: #ffffff; border-radius: 9999px; font-weight: 600; text-decoration: none; font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase;">
+                      View Official Account / Link on X ${xUsername ? `(${xUsername})` : ''} &rarr;
+                    </a>
+                  </p>
+                ` : ''}
+              </div>
+            `;
+          }
+        }
+
+        return {
+          id: rawId || `sheet-proj-${index}-${slug}`,
+          slug,
+          projectName,
+          projectType,
+          partnerName,
+          xUsername,
+          xLink: finalXLink,
+          location,
+          date,
+          status,
+          shortDescription,
+          description: cleanDescription || shortDescription || `Official collaboration project with ${partnerName}.`,
+          detailsHtml,
+          heroImage,
+          galleryImages
+        };
+      });
+
+      if (parsedProjects.length > 0) {
+        return parsedProjects;
+      }
+    } catch (err) {
+      console.warn('[dataService] fetchProjectsClientDirect warning:', err);
     }
-    if (name.startsWith('hanford eco resort') || name.startsWith('hanford grand hotel') || name.startsWith('hanford hotel')) {
-      return false;
-    }
-    return Boolean(r['Project Name'] || r['Partner Name']);
-  });
+  }
 
-  const parsedProjects: Project[] = filteredRows.map((rowObj: Record<string, string>, index: number) => {
-    const rawName = rowObj['Project Name'] || rowObj.Name || rowObj.Tagline || '';
-    const projectName = rawName.trim() || '7 Inches Under';
-    const slug = createSlug(projectName);
-    const projectType = (rowObj['Project Type'] || 'Collaboration').trim();
-    const partnerName = (rowObj['Partner Name'] || '7 Inches Under (@7inchesunder)').trim();
-    const location = (rowObj.Location || '').trim();
-    const date = (rowObj.Date || '').trim();
-    const status = (rowObj.Status || 'Active').trim();
-    const description = (rowObj.Description || 'Official collaboration project with 7 Inches Under (@7inchesunder).').trim();
-    const detailsHtml = rowObj.Details || `
-      <div>
-        <h1>7 Inches Under</h1>
-        <h4><em>Official Collaboration with Hanford Hotels & Resorts</em></h4>
-        <p>Hanford Hotels & Resorts is proud to present our collaboration with 7 Inches Under (@7inchesunder).</p>
-        <p>Discover updates, creative highlights, and official coverage directly on X:</p>
-        <p style="margin-top: 16px;">
-          <a href="https://x.com/7inchesunder/status/2038247095371792521?s=20" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 24px; background-color: #510F23; color: #ffffff; border-radius: 9999px; font-weight: 600; text-decoration: none; font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase;">
-            View Official Post on X (@7inchesunder)
-          </a>
-        </p>
-      </div>
-    `;
-
-    const galleryUrls = parseGalleryUrls(rowObj.Gallery || rowObj['Main Picture']);
-    const heroImage = galleryUrls.length > 0 ? galleryUrls[0] : defaultHero;
-    const galleryImages = galleryUrls.length > 0 ? galleryUrls : [heroImage];
-
-    return {
-      id: `sheet-proj-${index}-${slug}`,
-      slug,
-      projectName,
-      projectType,
-      partnerName,
-      location,
-      date,
-      status,
-      description,
-      detailsHtml,
-      heroImage,
-      galleryImages
-    };
-  });
-
-  return parsedProjects.length > 0 ? parsedProjects : MOCK_PROJECTS;
+  return MOCK_PROJECTS;
 }
 
 /**
