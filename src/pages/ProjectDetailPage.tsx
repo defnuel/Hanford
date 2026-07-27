@@ -249,11 +249,6 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
                 </div>
 
                 <div className="flex items-start justify-between border-b border-[#88B2AB]/20 pb-3">
-                  <span className="text-[#3A4F67] font-semibold uppercase tracking-wider">Type</span>
-                  <span className="font-semibold text-[#2C3744] text-right">{project.projectType}</span>
-                </div>
-
-                <div className="flex items-start justify-between border-b border-[#88B2AB]/20 pb-3">
                   <span className="text-[#3A4F67] font-semibold uppercase tracking-wider">Location</span>
                   <span className="font-semibold text-[#2C3744] text-right">{project.location}</span>
                 </div>
