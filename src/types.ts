@@ -175,3 +175,15 @@ export interface ApiResponse<T> {
     activeTab: string;
   };
 }
+
+export interface AdminUser {
+  id: string;
+  username: string;
+  email: string;
+  fullName: string;
+  role: 'Super Admin' | 'Admin';
+  status: 'Approved' | 'Pending' | 'Rejected';
+  createdAt: string;
+  department?: string;
+  password?: string;
+}

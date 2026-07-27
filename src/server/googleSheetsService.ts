@@ -254,8 +254,9 @@ export function transformSheetRowToProject(row: RawGoogleSheetsProjectRow, index
 
           ${finalXLink ? `
             <p style="margin-top: 24px;">
-              <a href="${finalXLink}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 24px; background-color: #51867E; color: #ffffff; border-radius: 9999px; font-weight: 600; text-decoration: none; font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase;">
-                View Official Account / Link on X ${xUsername ? `(${xUsername})` : ''} &rarr;
+              <a href="${finalXLink}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; max-width: 100%; padding: 12px 20px; background-color: #51867E; color: #ffffff; border-radius: 9999px; font-weight: 600; text-decoration: none; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; box-sizing: border-box; word-break: break-word;">
+                <span>View Official Account / Link on X ${xUsername ? `(${xUsername})` : ''}</span>
+                <span style="font-size: 14px; flex-shrink: 0;">&rarr;</span>
               </a>
             </p>
           ` : ''}

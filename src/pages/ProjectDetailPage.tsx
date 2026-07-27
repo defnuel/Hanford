@@ -265,10 +265,12 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
                     href={project.xLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-3 bg-[#3A4F67] text-white hover:bg-[#2C3744] rounded-full text-xs font-semibold tracking-wider uppercase transition-colors text-center flex items-center justify-center gap-2 shadow-sm"
+                    className="w-full px-5 py-3.5 bg-[#3A4F67] text-white hover:bg-[#2C3744] rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase transition-all flex items-center justify-center gap-2 shadow-sm text-center border border-white/10"
                   >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    <span>View Post on X {project.xUsername ? `(${project.xUsername})` : ''}</span>
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0 text-[#88B2AB]" />
+                    <span className="truncate max-w-full">
+                      View Post on X {project.xUsername ? `(${project.xUsername})` : ''}
+                    </span>
                   </a>
                 )}
 
@@ -277,7 +279,7 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
                     const targetQuery = matchedPropertySlug || project.location || project.projectName;
                     onNavigate(`/book-now?property=${encodeURIComponent(targetQuery)}`);
                   }}
-                  className="w-full py-3.5 bg-[#51867E] text-white hover:bg-[#3f6d66] rounded-full text-xs font-bold tracking-widest uppercase transition-colors shadow-md border border-[#88B2AB]/30 text-center block cursor-pointer"
+                  className="w-full px-5 py-3.5 bg-[#51867E] text-white hover:bg-[#3f6d66] rounded-full text-xs font-bold tracking-widest uppercase transition-colors shadow-md border border-[#88B2AB]/30 text-center block cursor-pointer"
                 >
                   Book Stay At Sanctuary
                 </button>
@@ -286,10 +288,10 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
                   href="https://x.com/Hanford_HnR"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-3 bg-white text-[#3A4F67] hover:bg-[#EAF2F1] rounded-full text-xs font-semibold tracking-wider uppercase transition-colors border border-[#88B2AB]/40 text-center flex items-center justify-center gap-2"
+                  className="w-full px-5 py-3.5 bg-white text-[#3A4F67] hover:bg-[#EAF2F1] rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase transition-colors border border-[#88B2AB]/40 text-center flex items-center justify-center gap-2"
                 >
-                  <MessageSquare className="w-3.5 h-3.5 text-[#51867E]" />
-                  <span>Inquire For Partnerships</span>
+                  <MessageSquare className="w-3.5 h-3.5 shrink-0 text-[#51867E]" />
+                  <span className="truncate">Inquire For Partnerships</span>
                 </a>
               </div>
             </div>

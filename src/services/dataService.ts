@@ -1,4 +1,4 @@
-import { Property, Project, BookingInquiry, ApiResponse } from '../types';
+import { Property, Project, BookingInquiry, ApiResponse, AdminUser } from '../types';
 import { MOCK_PROPERTIES, createSlug } from '../data/mockProperties';
 import { MOCK_PROJECTS } from '../data/mockProjects';
 
@@ -185,6 +185,25 @@ async function fetchGoogleSheetsClientDirect(): Promise<Property[]> {
  * Communicates with the Express backend (/api/*) or fetches directly from Google Sheets client-side.
  */
 export async function fetchLocations(): Promise<ApiResponse<Property[]>> {
+  // 1. Check local admin storage first
+  try {
+    const saved = localStorage.getItem('hanford_admin_properties');
+    if (saved) {
+      const parsed: Property[] = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        cachedProperties = parsed;
+        return {
+          success: true,
+          data: parsed,
+          source: 'google_sheets',
+          message: 'Loaded from local admin database'
+        };
+      }
+    }
+  } catch (e) {
+    console.warn('[dataService] Local properties parse warning:', e);
+  }
+
   try {
     const res = await fetch('/api/locations');
     if (res.ok) {
@@ -392,8 +411,9 @@ async function fetchProjectsClientDirect(): Promise<Project[]> {
 
                 ${finalXLink ? `
                   <p style="margin-top: 24px;">
-                    <a href="${finalXLink}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 24px; background-color: #51867E; color: #ffffff; border-radius: 9999px; font-weight: 600; text-decoration: none; font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase;">
-                      View Official Account / Link on X ${xUsername ? `(${xUsername})` : ''} &rarr;
+                    <a href="${finalXLink}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; max-width: 100%; padding: 12px 20px; background-color: #51867E; color: #ffffff; border-radius: 9999px; font-weight: 600; text-decoration: none; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; box-sizing: border-box; word-break: break-word;">
+                      <span>View Official Account / Link on X ${xUsername ? `(${xUsername})` : ''}</span>
+                      <span style="font-size: 14px; flex-shrink: 0;">&rarr;</span>
                     </a>
                   </p>
                 ` : ''}
@@ -436,6 +456,25 @@ async function fetchProjectsClientDirect(): Promise<Project[]> {
  * Client data fetching layer for Projects / Collaborations.
  */
 export async function fetchProjects(): Promise<ApiResponse<Project[]>> {
+  // 1. Check local admin storage first
+  try {
+    const saved = localStorage.getItem('hanford_admin_projects');
+    if (saved) {
+      const parsed: Project[] = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        cachedProjects = parsed;
+        return {
+          success: true,
+          data: parsed,
+          source: 'google_sheets',
+          message: 'Loaded from local admin projects database'
+        };
+      }
+    }
+  } catch (e) {
+    console.warn('[dataService] Local projects parse warning:', e);
+  }
+
   try {
     const res = await fetch('/api/projects');
     if (res.ok) {
@@ -653,3 +692,236 @@ export async function submitBooking(inquiry: BookingInquiry): Promise<{
     return await handleStaticBookingSubmission(inquiry);
   }
 }
+
+/* ============================================================================
+ * ADMIN SERVICE HELPERS (Locations, Projects, Bookings, Admin Users)
+ * ============================================================================ */
+
+export function saveAdminProperties(properties: Property[]) {
+  try {
+    localStorage.setItem('hanford_admin_properties', JSON.stringify(properties));
+    cachedProperties = properties;
+  } catch (e) {
+    console.error('Error saving admin properties:', e);
+  }
+}
+
+export function saveAdminProjects(projects: Project[]) {
+  try {
+    localStorage.setItem('hanford_admin_projects', JSON.stringify(projects));
+    cachedProjects = projects;
+  } catch (e) {
+    console.error('Error saving admin projects:', e);
+  }
+}
+
+export function fetchBookingsFromStorage(): BookingInquiry[] {
+  try {
+    const raw = localStorage.getItem('hanford_booking_requests');
+    if (!raw) return [];
+    const list: BookingInquiry[] = JSON.parse(raw);
+    return Array.isArray(list) ? list : [];
+  } catch (e) {
+    console.error('Error reading booking requests:', e);
+    return [];
+  }
+}
+
+export function saveBookingsToStorage(bookings: BookingInquiry[]) {
+  try {
+    localStorage.setItem('hanford_booking_requests', JSON.stringify(bookings));
+  } catch (e) {
+    console.error('Error saving booking requests:', e);
+  }
+}
+
+export function updateBookingPaymentStatus(bookingId: string, paymentStatus: 'UNPAID' | 'PAID'): BookingInquiry | null {
+  const bookings = fetchBookingsFromStorage();
+  const index = bookings.findIndex((b) => (b.bookingId || b.id) === bookingId);
+  if (index !== -1) {
+    bookings[index] = {
+      ...bookings[index],
+      paymentStatus,
+      status: paymentStatus === 'PAID' ? 'Confirmed' : bookings[index].status || 'Pending'
+    };
+    saveBookingsToStorage(bookings);
+    return bookings[index];
+  }
+  return null;
+}
+
+export function updateBookingDetails(updated: BookingInquiry): boolean {
+  const bookings = fetchBookingsFromStorage();
+  const id = updated.bookingId || updated.id;
+  const index = bookings.findIndex((b) => (b.bookingId || b.id) === id);
+  if (index !== -1) {
+    bookings[index] = updated;
+    saveBookingsToStorage(bookings);
+    return true;
+  }
+  return false;
+}
+
+export function deleteBookingInquiry(bookingId: string): boolean {
+  const bookings = fetchBookingsFromStorage();
+  const filtered = bookings.filter((b) => (b.bookingId || b.id) !== bookingId);
+  if (filtered.length !== bookings.length) {
+    saveBookingsToStorage(filtered);
+    return true;
+  }
+  return false;
+}
+
+const DEFAULT_SUPER_ADMIN: AdminUser = {
+  id: 'admin-super-001',
+  username: 'admin',
+  email: 'admin@hanfordresorts.com',
+  fullName: 'Super Admin Hanford',
+  role: 'Super Admin',
+  status: 'Approved',
+  createdAt: new Date().toISOString(),
+  department: 'Executive Management',
+  password: 'admin123'
+};
+
+export function getAdminUsers(): AdminUser[] {
+  try {
+    const raw = localStorage.getItem('hanford_admin_users');
+    if (!raw) {
+      const initial = [DEFAULT_SUPER_ADMIN];
+      localStorage.setItem('hanford_admin_users', JSON.stringify(initial));
+      return initial;
+    }
+    const parsed: AdminUser[] = JSON.parse(raw);
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      const initial = [DEFAULT_SUPER_ADMIN];
+      localStorage.setItem('hanford_admin_users', JSON.stringify(initial));
+      return initial;
+    }
+    return parsed;
+  } catch (e) {
+    console.error('Error getting admin users:', e);
+    return [DEFAULT_SUPER_ADMIN];
+  }
+}
+
+export function saveAdminUsers(users: AdminUser[]) {
+  try {
+    localStorage.setItem('hanford_admin_users', JSON.stringify(users));
+  } catch (e) {
+    console.error('Error saving admin users:', e);
+  }
+}
+
+export function registerAdminRequest(req: {
+  fullName: string;
+  email: string;
+  username: string;
+  password?: string;
+  department?: string;
+}): { success: boolean; message: string } {
+  const users = getAdminUsers();
+
+  const lowerEmail = req.email.toLowerCase().trim();
+  const lowerUsername = req.username.toLowerCase().trim();
+
+  const exists = users.some(
+    (u) => u.email.toLowerCase().trim() === lowerEmail || u.username.toLowerCase().trim() === lowerUsername
+  );
+
+  if (exists) {
+    return {
+      success: false,
+      message: 'Username atau Email sudah terdaftar dalam sistem Admin.'
+    };
+  }
+
+  const newUser: AdminUser = {
+    id: `admin-user-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    fullName: req.fullName,
+    email: req.email,
+    username: req.username,
+    role: 'Admin',
+    status: 'Pending',
+    createdAt: new Date().toISOString(),
+    department: req.department || 'Operations',
+    password: req.password || 'admin123'
+  };
+
+  users.push(newUser);
+  saveAdminUsers(users);
+
+  return {
+    success: true,
+    message: 'Pendaftaran admin berhasil diajukan! Akun Anda sedang menunggu persetujuan (Accept) dari Super Admin.'
+  };
+}
+
+export function approveAdminUser(userId: string): boolean {
+  const users = getAdminUsers();
+  const idx = users.findIndex((u) => u.id === userId);
+  if (idx !== -1) {
+    users[idx].status = 'Approved';
+    saveAdminUsers(users);
+    return true;
+  }
+  return false;
+}
+
+export function rejectAdminUser(userId: string): boolean {
+  const users = getAdminUsers();
+  const filtered = users.filter((u) => u.id !== userId);
+  if (filtered.length !== users.length) {
+    saveAdminUsers(filtered);
+    return true;
+  }
+  return false;
+}
+
+export function authenticateAdmin(usernameOrEmail: string, passwordAttempt: string): {
+  success: boolean;
+  user?: AdminUser;
+  message: string;
+} {
+  const users = getAdminUsers();
+  const target = usernameOrEmail.toLowerCase().trim();
+
+  const matched = users.find(
+    (u) => u.username.toLowerCase().trim() === target || u.email.toLowerCase().trim() === target
+  );
+
+  if (!matched) {
+    return {
+      success: false,
+      message: 'Username atau Email admin tidak ditemukan.'
+    };
+  }
+
+  if (matched.password && matched.password !== passwordAttempt) {
+    return {
+      success: false,
+      message: 'Password yang Anda masukkan salah.'
+    };
+  }
+
+  if (matched.status === 'Pending') {
+    return {
+      success: false,
+      message: 'Akun Anda masih dalam status PENDING (Menunggu persetujuan / Accept dari Super Admin).'
+    };
+  }
+
+  if (matched.status === 'Rejected') {
+    return {
+      success: false,
+      message: 'Permohonan pendaftaran akun Anda telah ditolak oleh Super Admin.'
+    };
+  }
+
+  return {
+    success: true,
+    user: matched,
+    message: 'Login berhasil.'
+  };
+}
+

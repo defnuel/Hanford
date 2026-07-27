@@ -8,6 +8,7 @@ import { PropertyDetailPage } from './pages/PropertyDetailPage';
 import { CollaborationsPage } from './pages/CollaborationsPage';
 import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { BookNowPage } from './pages/BookNowPage';
+import { AdminPage } from './pages/AdminPage';
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState<string>(() => {
@@ -36,7 +37,7 @@ export default function App() {
     document.body.scrollTop = 0;
   };
 
-  // Extract query parameters if present (e.g., /book-now?property=hanford-eco-resort-santa-barbara)
+  // Extract query parameters if present
   const getQueryParam = (paramName: string) => {
     const urlStr = currentPath.includes('?') ? currentPath : window.location.search;
     const searchPart = urlStr.includes('?') ? urlStr.substring(urlStr.indexOf('?')) : urlStr;
@@ -44,9 +45,15 @@ export default function App() {
     return params.get(paramName) || undefined;
   };
 
+  const isAdminRoute = currentPath.toLowerCase().startsWith('/admin');
+
   // Route matching
   const renderRoute = () => {
     const path = currentPath.toLowerCase();
+
+    if (path.startsWith('/admin')) {
+      return <AdminPage onNavigate={navigate} />;
+    }
 
     if (path === '/' || path === '') {
       return <HomePage onNavigate={navigate} />;
@@ -92,6 +99,10 @@ export default function App() {
     return <HomePage onNavigate={navigate} />;
   };
 
+  if (isAdminRoute) {
+    return <AdminPage onNavigate={navigate} />;
+  }
+
   return (
     <div className="min-h-screen flex flex-col font-sans bg-[#FFFFFF] text-[#2C2C2C] antialiased">
       {/* Primary Brand Navigation */}
@@ -105,3 +116,4 @@ export default function App() {
     </div>
   );
 }
+
