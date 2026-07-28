@@ -3,7 +3,7 @@ import { AdminUser, Property, Project, BookingInquiry } from '../types';
 import {
   fetchLocations,
   fetchProjects,
-  fetchBookingsFromStorage,
+  fetchBookings,
   getAdminUsers
 } from '../services/dataService';
 import { AdminLoginForm } from '../components/admin/AdminLoginForm';
@@ -46,7 +46,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       const projs = await fetchProjects();
       setProjects(projs.data || []);
 
-      const bks = fetchBookingsFromStorage();
+      const bks = await fetchBookings();
       setBookings(bks);
 
       const users = getAdminUsers();

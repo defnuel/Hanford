@@ -12,7 +12,7 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
 
   // Login State
   const [loginIdentifier, setLoginIdentifier] = useState('admin');
-  const [loginPassword, setLoginPassword] = useState('admin123');
+  const [loginPassword, setLoginPassword] = useState('hanfordhnr');
   const [loginError, setLoginError] = useState('');
 
   // Register State
@@ -137,7 +137,7 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
               </div>
               <div className="text-slate-300 font-mono text-[11px] flex justify-between pt-1">
                 <span>Username: <strong className="text-white">admin</strong></span>
-                <span>Password: <strong className="text-white">admin123</strong></span>
+                <span>Password: <strong className="text-white">hanfordhnr</strong></span>
               </div>
             </div>
 

@@ -495,6 +495,186 @@ export async function getProjectsFromSource(): Promise<{
 }
 
 /**
+ * Normalizes raw Google Sheets row data into clean BookingInquiry objects.
+ */
+export function transformSheetRowToBooking(row: Record<string, string>, index: number): BookingInquiry {
+  const getVal = (...keys: string[]): string => {
+    for (const key of keys) {
+      const foundKey = Object.keys(row).find((k) => k.trim().toLowerCase() === key.toLowerCase());
+      if (foundKey && row[foundKey] !== undefined && row[foundKey] !== null) {
+        const val = String(row[foundKey]).trim();
+        if (val) return val;
+      }
+    }
+    return '';
+  };
+
+  const bookingId = getVal('booking id', 'booking_id', 'id', 'invoice id') || `HNF-2026-S${String(index + 1).padStart(4, '0')}`;
+  const createdAt = getVal('timestamp', 'created at', 'createdat', 'tanggal', 'date') || new Date().toISOString();
+  const propertyName = getVal('location', 'property', 'property name', 'nama properti', 'nama resort') || 'Hanford Estate';
+  const guestName = getVal('name', 'guest name', 'nama', 'nama tamu', 'customer') || `Guest #${index + 1}`;
+  const xUsername = getVal('x username', 'x_username', 'twitter', 'username', 'x handle') || 'N/A';
+  const bookOptionRaw = getVal('book option', 'option', 'tipe booking', 'booking type') || 'room';
+
+  const parseNum = (valStr: string): number => {
+    const num = parseInt(valStr.replace(/[^0-9]/g, ''), 10);
+    return isNaN(num) ? 0 : num;
+  };
+
+  const parseMoney = (valStr: string): number => {
+    const num = parseFloat(valStr.replace(/[^0-9.]/g, ''));
+    return isNaN(num) ? 0 : num;
+  };
+
+  const standardRooms = parseNum(getVal('standard rooms', 'standard'));
+  const deluxeRooms = parseNum(getVal('deluxe rooms', 'deluxe'));
+  const presidentialSuites = parseNum(getVal('presidential suites', 'presidential'));
+  const privateVillas = parseNum(getVal('private villas', 'private villa', 'villa'));
+
+  const eventAttendees = parseNum(getVal('event attendees (pax)', 'event attendees', 'pax', 'attendees'));
+  const cateringPax = parseNum(getVal('catering pax', 'catering'));
+  
+  let eventAddons: 'none' | 'catering' | 'decoration' | 'both' = 'none';
+  const addonsRaw = getVal('event add-ons', 'event addons', 'addons').toLowerCase();
+  if (addonsRaw.includes('catering') && addonsRaw.includes('decor')) eventAddons = 'both';
+  else if (addonsRaw.includes('catering')) eventAddons = 'catering';
+  else if (addonsRaw.includes('decor')) eventAddons = 'decoration';
+  else if (addonsRaw.includes('both')) eventAddons = 'both';
+
+  const checkInDate = getVal('check-in date', 'check-in', 'checkin', 'check in') || '';
+  const checkOutDate = getVal('check-out date', 'check-out', 'checkout', 'check out') || '';
+  const eventDate = getVal('event date', 'tanggal event', 'eventdate') || '';
+  const notes = getVal('keterangan / notes', 'keterangan', 'notes', 'catatan', 'pesan') || '';
+
+  const totalAmount = parseMoney(getVal('total invoice ($)', 'total invoice', 'total amount', 'total', 'invoice', 'harga'));
+  const paymentStatusRaw = getVal('payment status', 'status payment', 'status', 'payment').toUpperCase();
+  const paymentStatus: 'PAID' | 'UNPAID' = (paymentStatusRaw.includes('PAID') && !paymentStatusRaw.includes('UNPAID')) || paymentStatusRaw === 'CONFIRMED' || paymentStatusRaw === 'LUNAS' ? 'PAID' : 'UNPAID';
+
+  let bookOption: 'room' | 'event' | 'both' | 'meeting' | 'room_meeting' = 'room';
+  const optLower = bookOptionRaw.toLowerCase();
+  if (optLower.includes('both') || optLower.includes('keduanya')) bookOption = 'both';
+  else if (optLower.includes('event')) bookOption = 'event';
+  else if (optLower.includes('meeting')) bookOption = 'meeting';
+
+  return {
+    id: bookingId,
+    bookingId,
+    createdAt,
+    propertySlug: createSlug(propertyName),
+    propertyName,
+    guestName,
+    xUsername,
+    guestEmail: `${guestName.toLowerCase().replace(/[^a-z0-9]/g, '.')}@example.com`,
+    bookOption,
+    standardRooms: standardRooms || undefined,
+    deluxeRooms: deluxeRooms || undefined,
+    presidentialSuites: presidentialSuites || undefined,
+    privateVillas: privateVillas || undefined,
+    eventAttendees: eventAttendees || undefined,
+    eventAddons,
+    cateringPax: cateringPax || undefined,
+    checkInDate,
+    checkOutDate,
+    eventDate,
+    notes,
+    totalAmount: totalAmount || 2500,
+    paymentStatus,
+    status: paymentStatus === 'PAID' ? 'Confirmed' : 'Pending'
+  };
+}
+
+/**
+ * Retrieves booking inquiries from Google Sheets 'Bookings' tab (gid=1881675892) or in-memory store.
+ */
+export async function getBookingsFromSource(): Promise<{
+  bookings: BookingInquiry[];
+  source: 'google_sheets' | 'mock_fallback';
+  spreadsheetIdConfigured: boolean;
+  message?: string;
+}> {
+  const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID || DEFAULT_SPREADSHEET_ID;
+  const configuredTab = process.env.GOOGLE_SHEETS_BOOKINGS_TAB || 'Bookings';
+  
+  const endpointsToTry = [
+    { url: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?gid=1881675892&tqx=out:json`, name: 'GID 1881675892 (Bookings)' },
+    { url: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(configuredTab)}&tqx=out:json`, name: `Sheet '${configuredTab}'` },
+    { url: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=Bookings&tqx=out:json`, name: "Sheet 'Bookings'" }
+  ];
+
+  for (const endpoint of endpointsToTry) {
+    try {
+      const res = await fetch(endpoint.url);
+      if (!res.ok) continue;
+
+      const text = await res.text();
+      const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);?/);
+      if (!jsonMatch) continue;
+
+      const data = JSON.parse(jsonMatch[1]);
+      const tableRows = data.table?.rows || [];
+      if (!tableRows || tableRows.length === 0) continue;
+
+      let headers: string[] = [];
+      let dataSlice = tableRows;
+
+      const colsHasLabels = data.table?.cols && data.table.cols.some((c: any) => c && c.label && String(c.label).trim() !== '');
+      if (colsHasLabels) {
+        headers = data.table.cols.map((c: any) => (c && c.label ? String(c.label).trim() : ''));
+        dataSlice = tableRows;
+      } else if (tableRows[0] && tableRows[0].c) {
+        headers = tableRows[0].c.map((cell: any) => (cell && (cell.f || cell.v) ? String(cell.f || cell.v).trim() : ''));
+        dataSlice = tableRows.slice(1);
+      }
+
+      if (headers.length === 0 || dataSlice.length === 0) continue;
+
+      const sheetBookings: BookingInquiry[] = [];
+      dataSlice.forEach((row: any, idx: number) => {
+        const obj: Record<string, string> = {};
+        headers.forEach((header, i) => {
+          if (header && row.c && row.c[i]) {
+            const cell = row.c[i];
+            const val = cell.f !== undefined && cell.f !== null ? String(cell.f) : (cell.v !== undefined && cell.v !== null ? String(cell.v) : '');
+            obj[header] = val;
+          }
+        });
+
+        // Ensure row has at least guest name or booking ID
+        if (Object.values(obj).some((v) => v.trim().length > 0)) {
+          sheetBookings.push(transformSheetRowToBooking(obj, idx));
+        }
+      });
+
+      if (sheetBookings.length > 0) {
+        // Merge with in-memory mockBookingsStore
+        const combined = [...sheetBookings];
+        mockBookingsStore.forEach((mb) => {
+          if (!combined.some((b) => (b.bookingId || b.id) === (mb.bookingId || mb.id))) {
+            combined.unshift(mb);
+          }
+        });
+
+        return {
+          bookings: combined,
+          source: 'google_sheets',
+          spreadsheetIdConfigured: true,
+          message: `Successfully loaded ${combined.length} booking request(s) from Google Sheets (${endpoint.name}).`
+        };
+      }
+    } catch (err: any) {
+      console.warn(`[GoogleSheetsService] Failed fetching bookings endpoint '${endpoint.name}':`, err?.message || err);
+    }
+  }
+
+  return {
+    bookings: mockBookingsStore,
+    source: 'mock_fallback',
+    spreadsheetIdConfigured: true,
+    message: 'Could not fetch data directly from Google Sheets Bookings tab. Serving local bookings.'
+  };
+}
+
+/**
  * Appends booking inquiry to Google Sheets or local store.
  */
 export async function appendBookingInquiry(inquiry: BookingInquiry): Promise<{

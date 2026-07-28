@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
-import { getPropertiesFromSource, getProjectsFromSource, appendBookingInquiry } from './src/server/googleSheetsService';
+import { getPropertiesFromSource, getProjectsFromSource, getBookingsFromSource, appendBookingInquiry } from './src/server/googleSheetsService';
 import { BookingInquiry } from './src/types';
 
 async function startServer() {
@@ -140,6 +140,26 @@ async function startServer() {
       res.status(500).json({
         success: false,
         error: 'Failed to retrieve project details'
+      });
+    }
+  });
+
+  // GET /api/bookings - Fetch all booking inquiries from Google Sheets
+  app.get('/api/bookings', async (req: Request, res: Response) => {
+    try {
+      const result = await getBookingsFromSource();
+      res.json({
+        success: true,
+        data: result.bookings,
+        source: result.source,
+        message: result.message
+      });
+    } catch (error: any) {
+      console.error('Error in /api/bookings:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve bookings data',
+        details: error?.message
       });
     }
   });

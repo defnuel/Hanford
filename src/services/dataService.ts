@@ -658,6 +658,28 @@ export async function submitBooking(inquiry: BookingInquiry): Promise<{
   message: string;
   source?: 'google_sheets' | 'mock_fallback';
 }> {
+  // Always save booking inquiry to client-side localStorage so it appears immediately in Admin Dashboard
+  try {
+    const existingStr = localStorage.getItem('hanford_booking_requests');
+    const existingBookings: BookingInquiry[] = existingStr ? JSON.parse(existingStr) : [];
+    const finalId = inquiry.bookingId || inquiry.id || `HNF-2026-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+    const formattedInquiry: BookingInquiry = {
+      ...inquiry,
+      id: finalId,
+      bookingId: finalId,
+      createdAt: inquiry.createdAt || new Date().toISOString(),
+      paymentStatus: inquiry.paymentStatus || 'UNPAID',
+      status: inquiry.status || 'Pending'
+    };
+
+    if (!existingBookings.some((b) => (b.bookingId || b.id) === finalId)) {
+      existingBookings.unshift(formattedInquiry);
+      localStorage.setItem('hanford_booking_requests', JSON.stringify(existingBookings));
+    }
+  } catch (e) {
+    console.warn('[dataService] Unable to save booking inquiry to localStorage:', e);
+  }
+
   try {
     const res = await fetch('/api/book', {
       method: 'POST',
@@ -715,15 +737,125 @@ export function saveAdminProjects(projects: Project[]) {
   }
 }
 
+const DEFAULT_MOCK_BOOKINGS: BookingInquiry[] = [
+  {
+    id: 'HNF-2026-X8921',
+    bookingId: 'HNF-2026-X8921',
+    createdAt: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
+    propertySlug: 'hanford-resort-spa-aspen',
+    propertyName: 'Hanford Resort & Spa Aspen',
+    guestName: 'Alexander Wright',
+    xUsername: '@alexwright_x',
+    guestEmail: 'alex.wright@example.com',
+    bookOption: 'room',
+    standardRooms: 1,
+    deluxeRooms: 1,
+    checkInDate: '2026-08-10',
+    checkOutDate: '2026-08-14',
+    numberOfNights: 4,
+    totalAmount: 3250,
+    paymentStatus: 'UNPAID',
+    status: 'Pending',
+    notes: 'Requires mountain view and early check-in if available.'
+  },
+  {
+    id: 'HNF-2026-M4109',
+    bookingId: 'HNF-2026-M4109',
+    createdAt: new Date(Date.now() - 3600000 * 24 * 4).toISOString(),
+    propertySlug: 'hanford-grand-hotel-tokyo',
+    propertyName: 'Hanford Grand Hotel Tokyo',
+    guestName: 'Eleanor Vance',
+    xUsername: '@eleanor_vance',
+    guestEmail: 'eleanor.vance@tokyogroup.jp',
+    bookOption: 'event',
+    eventAttendees: 80,
+    eventAddons: 'catering',
+    cateringPax: 80,
+    eventDate: '2026-09-01',
+    totalAmount: 8500,
+    paymentStatus: 'PAID',
+    status: 'Confirmed',
+    notes: 'Corporate networking evening with customized menu.'
+  },
+  {
+    id: 'HNF-2026-K7304',
+    bookingId: 'HNF-2026-K7304',
+    createdAt: new Date(Date.now() - 3600000 * 24 * 6).toISOString(),
+    propertySlug: 'hanford-eco-resort-bali',
+    propertyName: 'Hanford Eco Resort Bali',
+    guestName: 'Davenport Luxury Group',
+    xUsername: '@davenport_co',
+    guestEmail: 'contact@davenport.com',
+    bookOption: 'both',
+    deluxeRooms: 2,
+    privateVillas: 1,
+    checkInDate: '2026-08-20',
+    checkOutDate: '2026-08-25',
+    numberOfNights: 5,
+    eventAttendees: 25,
+    eventAddons: 'both',
+    cateringPax: 25,
+    eventDate: '2026-08-22',
+    totalAmount: 14200,
+    paymentStatus: 'UNPAID',
+    status: 'Pending',
+    notes: 'VIP guest retreat and private villa welcome ceremony.'
+  }
+];
+
+export async function fetchBookings(): Promise<BookingInquiry[]> {
+  try {
+    const res = await fetch('/api/bookings');
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        const localBookings = fetchBookingsFromStorage();
+        const sheetBookings: BookingInquiry[] = json.data;
+
+        const merged: BookingInquiry[] = sheetBookings.map((sb) => {
+          const matchedLocal = localBookings.find((lb) => (lb.bookingId || lb.id) === (sb.bookingId || sb.id));
+          if (matchedLocal) {
+            return {
+              ...sb,
+              paymentStatus: matchedLocal.paymentStatus || sb.paymentStatus,
+              status: matchedLocal.status || sb.status
+            };
+          }
+          return sb;
+        });
+
+        localBookings.forEach((lb) => {
+          if (!merged.some((m) => (m.bookingId || m.id) === (lb.bookingId || lb.id))) {
+            merged.unshift(lb);
+          }
+        });
+
+        saveBookingsToStorage(merged);
+        return merged;
+      }
+    }
+  } catch (e) {
+    console.warn('[dataService] Failed to fetch /api/bookings, falling back to local storage:', e);
+  }
+  return fetchBookingsFromStorage();
+}
+
 export function fetchBookingsFromStorage(): BookingInquiry[] {
   try {
     const raw = localStorage.getItem('hanford_booking_requests');
-    if (!raw) return [];
+    if (!raw) {
+      localStorage.setItem('hanford_booking_requests', JSON.stringify(DEFAULT_MOCK_BOOKINGS));
+      return DEFAULT_MOCK_BOOKINGS;
+    }
     const list: BookingInquiry[] = JSON.parse(raw);
-    return Array.isArray(list) ? list : [];
+    if (!Array.isArray(list) || list.length === 0) {
+      localStorage.setItem('hanford_booking_requests', JSON.stringify(DEFAULT_MOCK_BOOKINGS));
+      return DEFAULT_MOCK_BOOKINGS;
+    }
+    return list;
   } catch (e) {
     console.error('Error reading booking requests:', e);
-    return [];
+    return DEFAULT_MOCK_BOOKINGS;
   }
 }
 
@@ -781,7 +913,7 @@ const DEFAULT_SUPER_ADMIN: AdminUser = {
   status: 'Approved',
   createdAt: new Date().toISOString(),
   department: 'Executive Management',
-  password: 'admin123'
+  password: 'hanfordhnr'
 };
 
 export function getAdminUsers(): AdminUser[] {
@@ -798,7 +930,20 @@ export function getAdminUsers(): AdminUser[] {
       localStorage.setItem('hanford_admin_users', JSON.stringify(initial));
       return initial;
     }
-    return parsed;
+    let updated = false;
+    const syncedUsers = parsed.map((u) => {
+      if (u.username.toLowerCase() === 'admin' || u.id === 'admin-super-001') {
+        if (u.password !== 'hanfordhnr') {
+          updated = true;
+          return { ...u, password: 'hanfordhnr', status: 'Approved' as const };
+        }
+      }
+      return u;
+    });
+    if (updated) {
+      localStorage.setItem('hanford_admin_users', JSON.stringify(syncedUsers));
+    }
+    return syncedUsers;
   } catch (e) {
     console.error('Error getting admin users:', e);
     return [DEFAULT_SUPER_ADMIN];
