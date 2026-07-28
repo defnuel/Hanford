@@ -586,6 +586,73 @@ export async function fetchProjectBySlug(slug: string): Promise<ApiResponse<Proj
 
 const DEFAULT_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycby2WfS3a2mLS5Z5iGa4onfMwD0jvRONhqxe-hxBvcXUSaX2nfXZG_o8G6uTtQwnHgtG/exec';
 
+function build32ColumnRowValues(inquiry: BookingInquiry, finalBookingId: string, createdAt: string): string[] {
+  let bookOptionText = 'Room Only';
+  if (inquiry.bookOption === 'event') bookOptionText = 'Event Location Only';
+  if (inquiry.bookOption === 'both') bookOptionText = 'Both Room & Event Location';
+  if (inquiry.bookOption === 'meeting') bookOptionText = 'Meeting Only';
+  if (inquiry.bookOption === 'room_meeting') bookOptionText = 'Room & Meeting';
+
+  let eventAddonsText = 'N/A';
+  if (inquiry.bookOption === 'event' || inquiry.bookOption === 'both' || inquiry.bookOption === 'meeting' || inquiry.bookOption === 'room_meeting') {
+    if (inquiry.eventAddons === 'catering') eventAddonsText = 'With Catering';
+    else if (inquiry.eventAddons === 'decoration') eventAddonsText = 'With Decoration';
+    else if (inquiry.eventAddons === 'both') eventAddonsText = 'With Catering & Decoration';
+    else if (inquiry.eventAddons === 'none') eventAddonsText = 'Venue / Room Only (No Catering/Decoration)';
+  }
+
+  const priceStandardText = inquiry.priceStandardRoom ? `$${inquiry.priceStandardRoom}` : '$0';
+  const priceDeluxeText = inquiry.priceDeluxeRoom ? `$${inquiry.priceDeluxeRoom}` : '$0';
+  const pricePresidentialText = inquiry.pricePresidentialSuite ? `$${inquiry.pricePresidentialSuite}` : '$0';
+  const priceVillaText = inquiry.pricePrivateVilla ? `$${inquiry.pricePrivateVilla}` : '$0';
+  const priceMeetingText = inquiry.priceMeetingRoom ? `$${inquiry.priceMeetingRoom}` : '$0';
+  const priceEventHallText = inquiry.priceEventHall ? `$${inquiry.priceEventHall}` : '$0';
+  const priceCateringText = inquiry.priceCateringPerPax ? `$${inquiry.priceCateringPerPax}` : '$0';
+
+  const totalRooms = (inquiry.standardRooms || 0) + (inquiry.deluxeRooms || 0) + (inquiry.presidentialSuites || 0) + (inquiry.privateVillas || 0);
+  const totalInvoiceText = inquiry.totalAmount ? `$${inquiry.totalAmount.toLocaleString()}` : '$0';
+  const subtotalText = inquiry.subtotalBeforeTax ? `$${inquiry.subtotalBeforeTax.toLocaleString()}` : '$0';
+  const taxText = inquiry.taxAmount ? `$${inquiry.taxAmount.toLocaleString()}` : '$0';
+  const discountCodeText = inquiry.discountCode || 'N/A';
+  const discountPercentText = inquiry.discountPercent ? `${inquiry.discountPercent}%` : '0%';
+  const ratesSnapshotText = inquiry.itemRatesSnapshot || 'N/A';
+
+  return [
+    finalBookingId,
+    createdAt,
+    inquiry.propertyName || inquiry.propertySlug || 'Hanford Sanctuary',
+    inquiry.guestName || 'Guest',
+    inquiry.xUsername || 'N/A',
+    bookOptionText,
+    inquiry.standardRooms ? `${inquiry.standardRooms}` : '0',
+    inquiry.deluxeRooms ? `${inquiry.deluxeRooms}` : '0',
+    inquiry.presidentialSuites ? `${inquiry.presidentialSuites}` : '0',
+    inquiry.privateVillas ? `${inquiry.privateVillas}` : '0',
+    totalRooms > 0 ? `${totalRooms} Room(s)` : (inquiry.roomsCount ? `${inquiry.roomsCount}` : '0'),
+    inquiry.eventAttendees ? `${inquiry.eventAttendees} Pax` : 'N/A',
+    eventAddonsText,
+    inquiry.cateringPax ? `${inquiry.cateringPax} Pax` : 'N/A',
+    inquiry.checkInDate || 'N/A',
+    inquiry.checkOutDate || 'N/A',
+    inquiry.eventDate || 'N/A',
+    inquiry.notes || 'N/A',
+    priceStandardText,
+    priceDeluxeText,
+    pricePresidentialText,
+    priceVillaText,
+    priceMeetingText,
+    priceEventHallText,
+    priceCateringText,
+    ratesSnapshotText,
+    discountCodeText,
+    discountPercentText,
+    subtotalText,
+    taxText,
+    totalInvoiceText,
+    inquiry.paymentStatus || 'UNPAID'
+  ];
+}
+
 /**
  * Fallback handler for static deployments (e.g. Netlify, Vercel Static, GitHub Pages)
  * where backend Express server (/api/book) is not available (returns HTTP 404).
@@ -620,48 +687,30 @@ async function handleStaticBookingSubmission(inquiry: BookingInquiry): Promise<{
   const webhookUrl = (import.meta as any).env?.VITE_GOOGLE_SHEETS_WEBHOOK_URL || DEFAULT_WEBHOOK_URL;
   if (webhookUrl) {
     try {
-      const bookOptionText =
-        inquiry.bookOption === 'both' ? 'Room + Event Space' : inquiry.bookOption === 'event' ? 'Event Space Only' : 'Room Only';
-      const totalRooms =
-        (inquiry.standardRooms || 0) + (inquiry.deluxeRooms || 0) + (inquiry.presidentialSuites || 0) + (inquiry.privateVillas || 0);
+      const rowValues = build32ColumnRowValues(inquiry, finalBookingId, createdAt);
 
       const payload = {
+        spreadsheetId: DEFAULT_SPREADSHEET_ID,
+        tabName: 'Bookings',
         bookingId: finalBookingId,
         createdAt,
         propertyName: inquiry.propertyName || inquiry.propertySlug,
         guestName: inquiry.guestName,
         xUsername: inquiry.xUsername || 'N/A',
-        bookOptionText,
-        rowValues: [
-          finalBookingId,
-          createdAt,
-          inquiry.propertyName || inquiry.propertySlug,
-          inquiry.guestName,
-          inquiry.xUsername || 'N/A',
-          bookOptionText,
-          String(inquiry.standardRooms || 0),
-          String(inquiry.deluxeRooms || 0),
-          String(inquiry.presidentialSuites || 0),
-          String(inquiry.privateVillas || 0),
-          `${totalRooms} Room(s)`,
-          inquiry.eventAttendees ? String(inquiry.eventAttendees) : 'N/A',
-          inquiry.eventAddons || 'N/A',
-          inquiry.cateringPax ? String(inquiry.cateringPax) : 'N/A',
-          inquiry.checkInDate || 'N/A',
-          inquiry.checkOutDate || 'N/A',
-          inquiry.eventDate || 'N/A',
-          inquiry.notes || 'N/A',
-          inquiry.totalAmount ? `$${inquiry.totalAmount.toLocaleString()}` : 'N/A'
-        ]
+        bookOptionText: rowValues[5],
+        rowValues,
+        booking: newInquiry
       };
 
-      // Direct POST to Google Sheets Apps Script Webhook
+      // Direct POST to Google Sheets Apps Script Webhook with text/plain (avoids CORS preflight rejection in browsers)
       await fetch(webhookUrl, {
         method: 'POST',
         mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(payload)
-      }).catch(() => {});
+      }).catch((e) => {
+        console.warn('[dataService] Webhook post failed:', e);
+      });
     } catch (err) {
       console.warn('[dataService] Webhook client dispatch skipped:', err);
     }
@@ -824,6 +873,171 @@ const DEFAULT_MOCK_BOOKINGS: BookingInquiry[] = [
   }
 ];
 
+function transformSheetRowToBookingClient(row: Record<string, string>, index: number): BookingInquiry {
+  const getVal = (...keys: string[]): string => {
+    for (const key of keys) {
+      const foundKey = Object.keys(row).find((k) => k.trim().toLowerCase() === key.toLowerCase());
+      if (foundKey && row[foundKey] !== undefined && row[foundKey] !== null) {
+        const val = String(row[foundKey]).trim();
+        if (val) return val;
+      }
+    }
+    return '';
+  };
+
+  const bookingId = getVal('booking id', 'booking_id', 'id', 'invoice id') || `HNF-2026-S${String(index + 1).padStart(4, '0')}`;
+  const createdAt = getVal('timestamp', 'created at', 'createdat', 'tanggal', 'date') || new Date().toISOString();
+  const propertyName = getVal('location', 'property', 'property name', 'nama properti', 'nama resort') || 'Hanford Estate';
+  const guestName = getVal('name', 'guest name', 'nama', 'nama tamu', 'customer') || `Guest #${index + 1}`;
+  const xUsername = getVal('x username', 'x_username', 'twitter', 'username', 'x handle') || 'N/A';
+  const bookOptionRaw = getVal('book option', 'option', 'tipe booking', 'booking type') || 'room';
+
+  const parseNum = (valStr: string): number => {
+    const num = parseInt(valStr.replace(/[^0-9]/g, ''), 10);
+    return isNaN(num) ? 0 : num;
+  };
+
+  const parseMoney = (valStr: string): number => {
+    const num = parseFloat(valStr.replace(/[^0-9.]/g, ''));
+    return isNaN(num) ? 0 : num;
+  };
+
+  const standardRooms = parseNum(getVal('standard rooms', 'standard'));
+  const deluxeRooms = parseNum(getVal('deluxe rooms', 'deluxe'));
+  const presidentialSuites = parseNum(getVal('presidential suites', 'presidential'));
+  const privateVillas = parseNum(getVal('private villas', 'private villa', 'villa'));
+
+  const eventAttendees = parseNum(getVal('event attendees (pax)', 'event attendees', 'pax', 'attendees'));
+  const cateringPax = parseNum(getVal('catering pax', 'catering'));
+
+  let eventAddons: 'none' | 'catering' | 'decoration' | 'both' = 'none';
+  const addonsRaw = getVal('event add-ons', 'event addons', 'addons').toLowerCase();
+  if (addonsRaw.includes('catering') && addonsRaw.includes('decor')) eventAddons = 'both';
+  else if (addonsRaw.includes('catering')) eventAddons = 'catering';
+  else if (addonsRaw.includes('decor')) eventAddons = 'decoration';
+  else if (addonsRaw.includes('both')) eventAddons = 'both';
+
+  const checkInDate = getVal('check-in date', 'check-in', 'checkin', 'check in') || '';
+  const checkOutDate = getVal('check-out date', 'check-out', 'checkout', 'check out') || '';
+  const eventDate = getVal('event date', 'tanggal event', 'eventdate') || '';
+  const notes = getVal('keterangan / notes', 'keterangan', 'notes', 'catatan', 'pesan') || '';
+
+  const totalAmount = parseMoney(getVal('total invoice ($)', 'total invoice', 'total amount', 'total', 'invoice', 'harga'));
+  const paymentStatusRaw = getVal('payment status', 'status payment', 'status', 'payment').toUpperCase();
+  const paymentStatus: 'PAID' | 'UNPAID' = (paymentStatusRaw.includes('PAID') && !paymentStatusRaw.includes('UNPAID')) || paymentStatusRaw === 'CONFIRMED' || paymentStatusRaw === 'LUNAS' ? 'PAID' : 'UNPAID';
+
+  let bookOption: 'room' | 'event' | 'both' | 'meeting' | 'room_meeting' = 'room';
+  const optLower = bookOptionRaw.toLowerCase();
+  const hasRooms = Boolean(standardRooms || deluxeRooms || presidentialSuites || privateVillas);
+  const hasEvents = Boolean(eventAttendees || cateringPax);
+
+  if (
+    optLower.includes('both') ||
+    optLower.includes('keduanya') ||
+    optLower.includes('&') ||
+    optLower.includes('+') ||
+    optLower.includes('and') ||
+    optLower.includes(',') ||
+    (optLower.includes('room') && optLower.includes('event')) ||
+    (hasRooms && hasEvents)
+  ) {
+    bookOption = 'both';
+  } else if (optLower.includes('room_meeting') || (optLower.includes('room') && optLower.includes('meeting'))) {
+    bookOption = 'room_meeting';
+  } else if (optLower.includes('event')) {
+    bookOption = 'event';
+  } else if (optLower.includes('meeting')) {
+    bookOption = 'meeting';
+  }
+
+  return {
+    id: bookingId,
+    bookingId,
+    createdAt,
+    propertySlug: createSlug(propertyName),
+    propertyName,
+    guestName,
+    xUsername,
+    guestEmail: `${guestName.toLowerCase().replace(/[^a-z0-9]/g, '.')}@example.com`,
+    bookOption,
+    standardRooms: standardRooms || undefined,
+    deluxeRooms: deluxeRooms || undefined,
+    presidentialSuites: presidentialSuites || undefined,
+    privateVillas: privateVillas || undefined,
+    eventAttendees: eventAttendees || undefined,
+    eventAddons,
+    cateringPax: cateringPax || undefined,
+    checkInDate,
+    checkOutDate,
+    eventDate,
+    notes,
+    totalAmount: totalAmount || 2500,
+    paymentStatus,
+    status: paymentStatus === 'PAID' ? 'Confirmed' : 'Pending'
+  };
+}
+
+async function fetchGoogleSheetsBookingsClientDirect(): Promise<BookingInquiry[]> {
+  const spreadsheetId = DEFAULT_SPREADSHEET_ID;
+  const endpoints = [
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?gid=1881675892&tqx=out:json`,
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=Bookings&tqx=out:json`
+  ];
+
+  for (const url of endpoints) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) continue;
+
+      const text = await res.text();
+      const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);?/);
+      if (!jsonMatch) continue;
+
+      const data = JSON.parse(jsonMatch[1]);
+      const tableRows = data.table?.rows || [];
+      if (!tableRows || tableRows.length === 0) continue;
+
+      let headers: string[] = [];
+      let dataSlice = tableRows;
+
+      const colsHasLabels = data.table?.cols && data.table.cols.some((c: any) => c && c.label && String(c.label).trim() !== '');
+      if (colsHasLabels) {
+        headers = data.table.cols.map((c: any) => (c && c.label ? String(c.label).trim() : ''));
+        dataSlice = tableRows;
+      } else if (tableRows[0] && tableRows[0].c) {
+        headers = tableRows[0].c.map((cell: any) => (cell && (cell.f || cell.v) ? String(cell.f || cell.v).trim() : ''));
+        dataSlice = tableRows.slice(1);
+      }
+
+      if (headers.length === 0 || dataSlice.length === 0) continue;
+
+      const sheetBookings: BookingInquiry[] = [];
+      dataSlice.forEach((row: any, idx: number) => {
+        const obj: Record<string, string> = {};
+        headers.forEach((header, i) => {
+          if (header && row.c && row.c[i]) {
+            const cell = row.c[i];
+            const val = cell.f !== undefined && cell.f !== null ? String(cell.f) : (cell.v !== undefined && cell.v !== null ? String(cell.v) : '');
+            obj[header] = val;
+          }
+        });
+
+        if (Object.values(obj).some((v) => v.trim().length > 0)) {
+          sheetBookings.push(transformSheetRowToBookingClient(obj, idx));
+        }
+      });
+
+      if (sheetBookings.length > 0) {
+        return sheetBookings;
+      }
+    } catch (e) {
+      console.warn('[dataService] fetchGoogleSheetsBookingsClientDirect endpoint failed:', e);
+    }
+  }
+
+  return [];
+}
+
 export async function fetchBookings(): Promise<BookingInquiry[]> {
   try {
     const res = await fetch('/api/bookings');
@@ -856,8 +1070,39 @@ export async function fetchBookings(): Promise<BookingInquiry[]> {
       }
     }
   } catch (e) {
-    console.warn('[dataService] Failed to fetch /api/bookings, falling back to local storage:', e);
+    console.warn('[dataService] Failed to fetch /api/bookings, trying client direct fetch:', e);
   }
+
+  // Direct Google Sheets gviz fetch for client-side static environments (e.g. Netlify)
+  try {
+    const sheetBookings = await fetchGoogleSheetsBookingsClientDirect();
+    if (sheetBookings && sheetBookings.length > 0) {
+      const localBookings = fetchBookingsFromStorage();
+      const merged: BookingInquiry[] = sheetBookings.map((sb) => {
+        const matchedLocal = localBookings.find((lb) => (lb.bookingId || lb.id) === (sb.bookingId || sb.id));
+        if (matchedLocal) {
+          return {
+            ...sb,
+            paymentStatus: matchedLocal.paymentStatus || sb.paymentStatus,
+            status: matchedLocal.status || sb.status
+          };
+        }
+        return sb;
+      });
+
+      localBookings.forEach((lb) => {
+        if (!merged.some((m) => (m.bookingId || m.id) === (lb.bookingId || lb.id))) {
+          merged.unshift(lb);
+        }
+      });
+
+      saveBookingsToStorage(merged);
+      return merged;
+    }
+  } catch (err) {
+    console.warn('[dataService] Direct Google Sheets client fetch failed, falling back to local storage:', err);
+  }
+
   return fetchBookingsFromStorage();
 }
 
