@@ -22,34 +22,34 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           </div>
 
           {/* Quick Navigation */}
-          <div>
-            <h4 className="text-[10px] font-bold tracking-[0.25em] sm:tracking-[0.3em] text-[#88B2AB] mb-3 sm:mb-4 uppercase">
+          <div className="text-left">
+            <h4 className="text-[10px] font-bold tracking-[0.25em] sm:tracking-[0.3em] text-[#88B2AB] mb-3 sm:mb-4 uppercase text-left">
               Brand Navigation
             </h4>
-            <ul className="space-y-2 sm:space-y-2.5 text-xs text-[#EAF2F1] font-normal tracking-wider">
-              <li>
-                <button onClick={() => onNavigate('/')} className="hover:text-[#88B2AB] font-semibold transition-colors cursor-pointer">
+            <ul className="space-y-2 sm:space-y-2.5 text-xs text-[#EAF2F1] font-normal tracking-wider text-left">
+              <li className="text-left">
+                <button onClick={() => onNavigate('/')} className="hover:text-[#88B2AB] font-semibold transition-colors cursor-pointer text-left">
                   HOME
                 </button>
               </li>
-              <li>
-                <button onClick={() => onNavigate('/locations')} className="hover:text-[#88B2AB] transition-colors cursor-pointer">
-                  LOCATIONS & SANCTUARIES
+              <li className="text-left">
+                <button onClick={() => onNavigate('/locations')} className="hover:text-[#88B2AB] transition-colors cursor-pointer text-left">
+                  LOCATIONS
                 </button>
               </li>
-              <li>
-                <button onClick={() => onNavigate('/collaborations')} className="hover:text-[#88B2AB] transition-colors cursor-pointer">
-                  COLLABORATIONS & PROJECTS
+              <li className="text-left">
+                <button onClick={() => onNavigate('/collaborations')} className="hover:text-[#88B2AB] transition-colors cursor-pointer text-left">
+                  COLLABORATIONS
                 </button>
               </li>
-              <li>
-                <button onClick={() => onNavigate('/about')} className="hover:text-[#88B2AB] transition-colors cursor-pointer">
+              <li className="text-left">
+                <button onClick={() => onNavigate('/about')} className="hover:text-[#88B2AB] transition-colors cursor-pointer text-left">
                   ABOUT HANFORD
                 </button>
               </li>
-              <li>
-                <button onClick={() => onNavigate('/book-now')} className="hover:text-white transition-colors font-bold text-[#88B2AB] cursor-pointer">
-                  RESERVATIONS & INQUIRIES
+              <li className="text-left">
+                <button onClick={() => onNavigate('/book-now')} className="hover:text-white transition-colors font-bold text-[#88B2AB] cursor-pointer text-left">
+                  RESERVATIONS
                 </button>
               </li>
             </ul>

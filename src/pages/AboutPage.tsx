@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Award, Building2, Trees, HeartHandshake, Sparkles, ChevronLeft, ChevronRight, UserCheck } from 'lucide-react';
+import { Award, Building2, Trees, HeartHandshake, Sparkles, ChevronLeft, ChevronRight, UserCheck, Hotel } from 'lucide-react';
 import { fetchLocations } from '../services/dataService';
 import { Property } from '../types';
 
@@ -155,13 +155,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
 
           <div className="space-y-4 sm:space-y-6 text-[#2C3744] font-light leading-relaxed text-xs sm:text-base">
             <p>
-              A tradition of warmth, elegance, and genuine hospitality to create unforgettable stays. What started as a single grand hotel has grown over more than a century into an international collection of luxury hotels and destination resorts, guided by four generations of the Hanford family.
+              A tradition of warmth, elegance, and genuine hospitality that creates unforgettable stays. What began as a single grand hotel more than a century ago has grown into an international collection of luxury hotels and resorts, proudly guided by four generations of the Hanford family.
             </p>
             <p>
-              Throughout its history, Hanford Hotels & Resorts has remained committed to timeless hospitality while embracing the evolving needs of modern travelers. Each property reflects the culture, architecture, and character of its destination, combining refined accommodations, exceptional service, and thoughtfully curated experiences that create lasting memories for guests from around the world.
+              Throughout its history, Hanford Hotels & Resorts has remained steadfast in its commitment to timeless hospitality while thoughtfully evolving to meet the needs of today’s travelers. Each property is deeply rooted in the culture, architecture, and spirit of its destination — offering refined accommodations, exceptional service, and curated experiences that leave lasting memories.
             </p>
             <p>
-              With properties spanning North America, Europe, and Asia, Hanford Hotels & Resorts continues to welcome business travelers, families, dignitaries, and leisure guests through a legacy built on trust, excellence, and enduring relationships. Every destination shares the same commitment to thoughtful service, timeless elegance, and experiences that celebrate both the people and the places that make each journey unique.
+              Spanning North America, Europe, and Asia, Hanford Hotels & Resorts welcomes business travelers, families, dignitaries, and leisure guests alike. Every stay reflects the same core values: trust, excellence, and a genuine dedication to both the people and places that make each journey unique.
             </p>
           </div>
         </div>
@@ -212,13 +212,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
               <div className="w-12 sm:w-16 h-[1px] bg-[#88B2AB] mx-auto lg:mx-0" />
 
               <p className="text-xs sm:text-base text-[#2C3744] font-light leading-relaxed">
-                Trevor Finn Hanford serves as the Chief Executive Officer of Hanford Hotels & Resorts, leading the group’s vision for thoughtful hospitality, distinctive destinations, and sustainable growth. With a background that bridges science, innovation, and hospitality, Trevor brings a forward-thinking perspective to the development of Hanford’s growing portfolio of luxury hotels and eco-resorts across the world.
+                Trevor Finn Hanford serves as Chief Executive Officer of Hanford Hotels & Resorts, guiding the group’s vision for exceptional hospitality, distinctive experiences, and sustainable luxury. With a unique background that spans science, innovation, and hospitality, he brings a forward-thinking approach to curating and expanding the group’s portfolio of refined properties worldwide.
               </p>
 
-              <div className="pt-2 flex items-center justify-center lg:justify-start gap-3 text-xs font-serif italic text-[#3A4F67]">
-                <span className="w-2 h-2 rounded-full bg-[#88B2AB] shrink-0" />
-                <span>Steering the global expansion of Hanford Grand Hotels & Eco Resorts</span>
-              </div>
+              <p className="text-xs sm:text-sm text-[#2C3744]/80 font-light leading-relaxed">
+                He is currently steering the global expansion of Hanford’s three distinct collections: Hanford Grand Hotel, Hanford Hotel & Resort, and Hanford Eco Resort.
+              </p>
             </div>
           </div>
         </div>
@@ -234,13 +233,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             Our Collections
           </h2>
           <p className="text-xs text-[#2C3744] font-medium mt-1.5 sm:mt-2">
-            Today, Hanford Hotels & Resorts operates two distinct collections tailored to every traveler.
+            Today, Hanford Hotels & Resorts operates three distinct collections tailored to every traveler.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {/* Hanford Grand Hotel */}
-          <div className="p-6 sm:p-10 bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl space-y-4 sm:space-y-6 flex flex-col justify-between shadow-sm hover:border-[#51867E] transition-colors">
+          <div className="p-6 sm:p-8 bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl space-y-4 sm:space-y-6 flex flex-col justify-between shadow-sm hover:border-[#51867E] transition-colors">
             <div className="space-y-3 sm:space-y-4">
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-[#88B2AB]/40 flex items-center justify-center text-[#88B2AB] bg-[#51867E]">
                 <Building2 className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -252,7 +251,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
                 Hanford Grand Hotel
               </h3>
               <p className="text-xs sm:text-sm text-[#2C3744] font-light leading-relaxed">
-                A collection of luxury five-star hotels located in the world's leading cities. Positioned within prestigious business districts and cultural landmarks, each property offers refined accommodations, award-winning dining, grand event venues, wellness facilities, and personalized service for business and leisure travelers alike.
+                A collection of luxury five-star hotels located in the world’s leading cities. Positioned within prestigious business districts and cultural landmarks, each property offers refined accommodations, award-winning dining, grand event venues, wellness facilities, and personalized service for business and leisure travelers alike.
               </p>
             </div>
             <div className="pt-3 sm:pt-4 border-t border-[#88B2AB]/20 flex items-center justify-end text-xs font-medium text-[#3A4F67]">
@@ -260,8 +259,29 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             </div>
           </div>
 
+          {/* Hanford Hotel & Resort */}
+          <div className="p-6 sm:p-8 bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl space-y-4 sm:space-y-6 flex flex-col justify-between shadow-sm hover:border-[#51867E] transition-colors">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-[#88B2AB]/40 flex items-center justify-center text-[#88B2AB] bg-[#51867E]">
+                <Hotel className="w-5 h-5 sm:w-6 sm:h-6" />
+              </div>
+              <span className="text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#3A4F67] uppercase block">
+                PREMIER DESTINATIONS
+              </span>
+              <h3 className="font-serif italic text-2xl sm:text-3xl text-[#3A4F67] font-light">
+                Hanford Hotel & Resort
+              </h3>
+              <p className="text-xs sm:text-sm text-[#2C3744] font-light leading-relaxed">
+                A collection of sophisticated hotels and resorts in select premier destinations worldwide. Offering the perfect balance of urban convenience and resort serenity, each property delivers elegant accommodations, exceptional dining, versatile event spaces, and attentive service for discerning travelers.
+              </p>
+            </div>
+            <div className="pt-3 sm:pt-4 border-t border-[#88B2AB]/20 flex items-center justify-end text-xs font-medium text-[#3A4F67]">
+              <span className="font-mono text-[10px] uppercase text-[#3A4F67] font-semibold">Sophisticated All-Around Luxury</span>
+            </div>
+          </div>
+
           {/* Hanford Eco Resort */}
-          <div className="p-6 sm:p-10 bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl space-y-4 sm:space-y-6 flex flex-col justify-between shadow-sm hover:border-[#51867E] transition-colors">
+          <div className="p-6 sm:p-8 bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl space-y-4 sm:space-y-6 flex flex-col justify-between shadow-sm hover:border-[#51867E] transition-colors">
             <div className="space-y-3 sm:space-y-4">
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-[#88B2AB]/40 flex items-center justify-center text-[#88B2AB] bg-[#51867E]">
                 <Trees className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -305,7 +325,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           </h2>
           <div className="w-12 sm:w-16 h-[1px] bg-[#88B2AB] mx-auto" />
           <p className="font-serif italic text-base sm:text-2xl text-white font-normal leading-relaxed max-w-3xl mx-auto drop-shadow-sm">
-            "For more than a century, Hanford Hotels & Resorts has remained dedicated to creating places where every journey feels meaningful. From vibrant city skylines to breathtaking coastlines, every Hanford destination reflects a legacy of hospitality that continues to grow while staying true to the values on which it was founded in 1920."
+            “For more than a century since 1920, Hanford Hotels & Resorts has remained committed to creating meaningful journeys. Across iconic city landmarks and pristine coastal destinations, we honor our founding values by delivering authentic hospitality that stands the test of time.”
           </p>
         </div>
       </section>

@@ -240,7 +240,7 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
                     Starting From
                   </span>
                   <span className="font-serif italic text-2xl sm:text-3xl text-white font-light">
-                    ${property.priceFrom}
+                    ${(property.priceStandard || property.priceFrom)?.toLocaleString()}
                   </span>
                   <span className="text-xs text-[#EAF2F1]/80 font-light"> / night</span>
                 </div>

@@ -126,26 +126,38 @@ export function transformSheetRowToProperty(row: RawGoogleSheetsPropertyRow, ind
   const isGrandHotel = nameLower.includes('grand hotel') && !nameLower.includes('resort');
   const hasPrivateVilla = !isGrandHotel;
 
-  const priceRaw = row.Price || (row as any)['price'] || (row as any)['PriceFrom'] || (row as any)['Price/night'] || (row as any)['Rate'];
-  let priceFrom = 850 + (index * 150);
-  const parsedPriceFrom = parsePriceNumber(priceRaw);
-  if (parsedPriceFrom) {
-    priceFrom = parsedPriceFrom;
-  }
+  const getRowVal = (...keys: string[]): string | undefined => {
+    for (const k of keys) {
+      const kLower = k.toLowerCase().trim();
+      for (const [rowKey, val] of Object.entries(row)) {
+        if (rowKey.toLowerCase().trim() === kLower) {
+          if (val !== undefined && val !== null && String(val).trim() !== '') {
+            return String(val).trim();
+          }
+        }
+      }
+    }
+    return undefined;
+  };
 
-  // Parse room and event specific pricing columns from row object
-  const priceStandard = parsePriceNumber(row.Price || (row as any)['Standard Room'] || (row as any)['Standard']) || priceFrom;
-  const priceDeluxe = parsePriceNumber(row['Deluxe Room'] || row.Deluxe) || Math.round(priceStandard * 1.45);
-  const pricePresidential = parsePriceNumber(row['Presidential Suite'] || row.Presidential) || Math.round(priceStandard * 3.8);
+  // Extract room and event specific pricing columns from row object
+  // Standard Room column is the primary source for starting rate / cheapest room
+  const rawStandardVal = getRowVal('Standard Room', 'Standard Room Rate', 'Standard Room ($)', 'Standard', 'Standard Rate', 'Price', 'price', 'PriceFrom', 'Price/night', 'Rate');
+  const parsedStandard = parsePriceNumber(rawStandardVal);
+  const priceStandard = parsedStandard || (850 + index * 150);
+  const priceFrom = priceStandard; // Starting rate takes from Standard Room column
+
+  const priceDeluxe = parsePriceNumber(getRowVal('Deluxe Room', 'Deluxe Room Rate', 'Deluxe Room ($)', 'Deluxe', 'Deluxe Rate')) || Math.round(priceStandard * 1.45);
+  const pricePresidential = parsePriceNumber(getRowVal('Presidential Suite', 'Presidential Suite Rate', 'Presidential Suite ($)', 'Presidential', 'Presidential Rate')) || Math.round(priceStandard * 3.8);
   
   // Private Villa appears for Eco Resorts and Hotel & Resorts (only absent for Grand Hotels)
   const pricePrivateVilla = hasPrivateVilla
-    ? (parsePriceNumber(row['Private Villa'] || row.Villa) || Math.round(priceStandard * 5.2))
+    ? (parsePriceNumber(getRowVal('Private Villa', 'Villa', 'Private Villa Rate')) || Math.round(priceStandard * 5.2))
     : undefined;
 
-  const priceMeetingRoom = parsePriceNumber(row['Meeting Room'] || row.Meeting) || 120;
-  const priceEventHall = parsePriceNumber(row['Event Hall'] || row.Hall) || 3200;
-  const priceCateringPerPax = parsePriceNumber(row['Catering Per Pax'] || row.Catering) || 75;
+  const priceMeetingRoom = parsePriceNumber(getRowVal('Meeting Room', 'Meeting Room Rate', 'Meeting')) || 120;
+  const priceEventHall = parsePriceNumber(getRowVal('Event Hall', 'Event Hall Rate', 'Hall')) || 3200;
+  const priceCateringPerPax = parsePriceNumber(getRowVal('Catering Per Pax', 'Catering Rate', 'Catering')) || 75;
 
   const amenitiesRaw = row.Amenities || (row as any)['amenities'] || (row as any)['Privileges'] || (row as any)['Services'];
   let amenitiesList: string[] = [];
@@ -158,6 +170,10 @@ export function transformSheetRowToProperty(row: RawGoogleSheetsPropertyRow, ind
   if (amenitiesList.length === 0) {
     amenitiesList = ['Bespoke Butler', 'Thermal Spa', 'Private Dining', 'Concierge Fleet'];
   }
+
+  const discountCode = getRowVal('Discount Code', 'DiscountCode', 'Coupon Code', 'Kupon', 'Discount code', 'discount_code', 'Kode Diskon', 'Kode Promo');
+  const rawDiscountPercent = getRowVal('Discount (%)', 'Discount %', 'DiscountPercent', 'Discount', 'Diskon', 'Discount percent', 'Besaran Diskon');
+  const discountPercent = rawDiscountPercent !== undefined ? rawDiscountPercent : undefined;
 
   return {
     id: `sheet-prop-${index}-${slug}`,
@@ -188,7 +204,9 @@ export function transformSheetRowToProperty(row: RawGoogleSheetsPropertyRow, ind
     capacityPresidential: (row as any)['Presidential Suite Capacity'] || (row as any)['Presidential Capacity'] || 'Max 5 guests (4 Adults + 1 Child)',
     capacityPrivateVilla: hasPrivateVilla
       ? ((row as any)['Private Villa Capacity'] || (row as any)['Villa Capacity'] || 'Max 6 guests (4 Adults + 2 Children)')
-      : undefined
+      : undefined,
+    discountCode,
+    discountPercent
   };
 }
 
@@ -546,15 +564,52 @@ export function transformSheetRowToBooking(row: Record<string, string>, index: n
   const eventDate = getVal('event date', 'tanggal event', 'eventdate') || '';
   const notes = getVal('keterangan / notes', 'keterangan', 'notes', 'catatan', 'pesan') || '';
 
+  const priceStandardRoom = parseMoney(getVal('price standard room ($)', 'price standard room', 'standard room price', 'price standard'));
+  const priceDeluxeRoom = parseMoney(getVal('price deluxe room ($)', 'price deluxe room', 'deluxe room price', 'price deluxe'));
+  const pricePresidentialSuite = parseMoney(getVal('price presidential suite ($)', 'price presidential suite', 'presidential suite price', 'price presidential'));
+  const pricePrivateVilla = parseMoney(getVal('price private villa ($)', 'price private villa', 'private villa price', 'price villa'));
+  const priceMeetingRoom = parseMoney(getVal('price meeting room ($)', 'price meeting room', 'meeting room price', 'price meeting'));
+  const priceEventHall = parseMoney(getVal('price event hall ($)', 'price event hall', 'event hall price', 'price event'));
+  const priceCateringPerPax = parseMoney(getVal('price catering per pax ($)', 'price catering per pax', 'catering per pax price', 'price catering'));
+
+  const itemRatesSnapshot = getVal('rates snapshot', 'item rates', 'rates', 'harga snapshot') || undefined;
+  const discountCode = getVal('discount code', 'coupon code', 'kode diskon', 'kupon') || undefined;
+  const discountPercent = parseNum(getVal('discount (%)', 'discount %', 'discount', 'diskon'));
+  const subtotalBeforeTax = parseMoney(getVal('subtotal before tax ($)', 'subtotal before tax', 'subtotal'));
+  const taxAmount = parseMoney(getVal('tax 10% ($)', 'tax 10%', 'tax', 'pajak'));
   const totalAmount = parseMoney(getVal('total invoice ($)', 'total invoice', 'total amount', 'total', 'invoice', 'harga'));
   const paymentStatusRaw = getVal('payment status', 'status payment', 'status', 'payment').toUpperCase();
   const paymentStatus: 'PAID' | 'UNPAID' = (paymentStatusRaw.includes('PAID') && !paymentStatusRaw.includes('UNPAID')) || paymentStatusRaw === 'CONFIRMED' || paymentStatusRaw === 'LUNAS' ? 'PAID' : 'UNPAID';
 
   let bookOption: 'room' | 'event' | 'both' | 'meeting' | 'room_meeting' = 'room';
   const optLower = bookOptionRaw.toLowerCase();
-  if (optLower.includes('both') || optLower.includes('keduanya')) bookOption = 'both';
-  else if (optLower.includes('event')) bookOption = 'event';
-  else if (optLower.includes('meeting')) bookOption = 'meeting';
+  const hasRooms = Boolean(standardRooms || deluxeRooms || presidentialSuites || privateVillas);
+  const hasEvents = Boolean(eventAttendees || cateringPax);
+
+  if (
+    optLower.includes('both') ||
+    optLower.includes('keduanya') ||
+    optLower.includes('&') ||
+    optLower.includes('+') ||
+    optLower.includes('and') ||
+    optLower.includes(',') ||
+    (optLower.includes('room') && optLower.includes('event')) ||
+    (optLower.includes('kamar') && optLower.includes('event')) ||
+    (hasRooms && hasEvents)
+  ) {
+    bookOption = 'both';
+  } else if (
+    optLower.includes('room_meeting') ||
+    (optLower.includes('room') && optLower.includes('meeting'))
+  ) {
+    bookOption = 'room_meeting';
+  } else if (optLower.includes('event')) {
+    bookOption = 'event';
+  } else if (optLower.includes('meeting')) {
+    bookOption = 'meeting';
+  } else if (optLower.includes('room') || optLower.includes('kamar') || optLower.includes('stay')) {
+    bookOption = 'room';
+  }
 
   return {
     id: bookingId,
@@ -577,6 +632,18 @@ export function transformSheetRowToBooking(row: Record<string, string>, index: n
     checkOutDate,
     eventDate,
     notes,
+    priceStandardRoom: priceStandardRoom || undefined,
+    priceDeluxeRoom: priceDeluxeRoom || undefined,
+    pricePresidentialSuite: pricePresidentialSuite || undefined,
+    pricePrivateVilla: pricePrivateVilla || undefined,
+    priceMeetingRoom: priceMeetingRoom || undefined,
+    priceEventHall: priceEventHall || undefined,
+    priceCateringPerPax: priceCateringPerPax || undefined,
+    itemRatesSnapshot,
+    discountCode,
+    discountPercent: discountPercent || undefined,
+    subtotalBeforeTax: subtotalBeforeTax || undefined,
+    taxAmount: taxAmount || undefined,
     totalAmount: totalAmount || 2500,
     paymentStatus,
     status: paymentStatus === 'PAID' ? 'Confirmed' : 'Pending'
@@ -719,12 +786,26 @@ export async function appendBookingInquiry(inquiry: BookingInquiry): Promise<{
     else if (inquiry.eventAddons === 'none') eventAddonsText = 'Venue / Room Only (No Catering/Decoration)';
   }
 
-  // Compute total rooms
+  // Price strings
+  const priceStandardText = inquiry.priceStandardRoom ? `$${inquiry.priceStandardRoom}` : '$0';
+  const priceDeluxeText = inquiry.priceDeluxeRoom ? `$${inquiry.priceDeluxeRoom}` : '$0';
+  const pricePresidentialText = inquiry.pricePresidentialSuite ? `$${inquiry.pricePresidentialSuite}` : '$0';
+  const priceVillaText = inquiry.pricePrivateVilla ? `$${inquiry.pricePrivateVilla}` : '$0';
+  const priceMeetingText = inquiry.priceMeetingRoom ? `$${inquiry.priceMeetingRoom}` : '$0';
+  const priceEventHallText = inquiry.priceEventHall ? `$${inquiry.priceEventHall}` : '$0';
+  const priceCateringText = inquiry.priceCateringPerPax ? `$${inquiry.priceCateringPerPax}` : '$0';
+
+  // Compute total rooms and formatted values
   const totalRooms = (inquiry.standardRooms || 0) + (inquiry.deluxeRooms || 0) + (inquiry.presidentialSuites || 0) + (inquiry.privateVillas || 0);
   const totalInvoiceText = inquiry.totalAmount ? `$${inquiry.totalAmount.toLocaleString()}` : '$0';
+  const subtotalText = inquiry.subtotalBeforeTax ? `$${inquiry.subtotalBeforeTax.toLocaleString()}` : '$0';
+  const taxText = inquiry.taxAmount ? `$${inquiry.taxAmount.toLocaleString()}` : '$0';
+  const discountCodeText = inquiry.discountCode || 'N/A';
+  const discountPercentText = inquiry.discountPercent ? `${inquiry.discountPercent}%` : '0%';
+  const ratesSnapshotText = inquiry.itemRatesSnapshot || 'N/A';
 
-  // Row values matching Google Sheet columns (including Booking ID and Total Invoice):
-  // [Booking ID, Timestamp, Location, Name, X Username, Book Option, Standard Rooms, Deluxe Rooms, Presidential Suites, Private Villas, Total Rooms, Event Attendees (Pax), Event Add-ons, Catering Pax, Check-In Date, Check-Out Date, Event Date, Keterangan / Notes, Total Invoice ($)]
+  // Row values matching Google Sheet columns:
+  // [Booking ID, Timestamp, Location, Name, X Username, Book Option, Standard Rooms, Deluxe Rooms, Presidential Suites, Private Villas, Total Rooms, Event Attendees (Pax), Event Add-ons, Catering Pax, Check-In Date, Check-Out Date, Event Date, Keterangan / Notes, Price Standard Room ($), Price Deluxe Room ($), Price Presidential Suite ($), Price Private Villa ($), Price Meeting Room ($), Price Event Hall ($), Price Catering Per Pax ($), Rates Snapshot, Discount Code, Discount (%), Subtotal Before Tax ($), Tax 10% ($), Total Invoice ($), Payment Status]
   const rowValues = [
     finalBookingId,
     newInquiry.createdAt,
@@ -744,7 +825,20 @@ export async function appendBookingInquiry(inquiry: BookingInquiry): Promise<{
     inquiry.checkOutDate || 'N/A',
     inquiry.eventDate || 'N/A',
     inquiry.notes || 'N/A',
-    totalInvoiceText
+    priceStandardText,
+    priceDeluxeText,
+    pricePresidentialText,
+    priceVillaText,
+    priceMeetingText,
+    priceEventHallText,
+    priceCateringText,
+    ratesSnapshotText,
+    discountCodeText,
+    discountPercentText,
+    subtotalText,
+    taxText,
+    totalInvoiceText,
+    inquiry.paymentStatus || 'UNPAID'
   ];
 
   const errorsLogged: string[] = [];

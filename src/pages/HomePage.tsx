@@ -72,18 +72,20 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-1.5 bg-[#1E293B]/90 backdrop-blur-md border border-[#88B2AB]/80 rounded-full shadow-lg">
                 <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#88B2AB]" />
                 <span className="text-[9px] sm:text-[11px] font-bold tracking-[0.25em] sm:tracking-[0.35em] uppercase text-white">
-                  Est. 1920
+                  EST 1920
                 </span>
               </div>
 
-              {/* Title */}
-              <h1 className="text-[38px] min-[375px]:text-[44px] min-[414px]:text-[48px] sm:text-7xl md:text-[88px] lg:text-[100px] leading-[0.92] sm:leading-[0.88] font-light italic font-serif text-white tracking-tight drop-shadow-2xl">
-                Refined<br />Sanctuary
-              </h1>
+              {/* Main Title Heading */}
+              <div>
+                <h1 className="text-[34px] min-[375px]:text-[40px] min-[414px]:text-[44px] sm:text-6xl md:text-[72px] lg:text-[84px] leading-[1.05] font-light italic font-serif text-white tracking-tight drop-shadow-2xl">
+                  An Elevated<br />Way of Staying
+                </h1>
+              </div>
 
               {/* Description */}
-              <p className="max-w-xl text-xs sm:text-lg leading-relaxed text-[#EAF2F1] font-normal font-sans drop-shadow-lg">
-                Hanford Hotels & Resorts operates two distinct collections — Hanford Grand Hotel in leading city capitals and Hanford Eco Resort in extraordinary natural coastal landscapes.
+              <p className="max-w-xl text-xs sm:text-base leading-relaxed text-[#EAF2F1] font-normal font-sans drop-shadow-lg">
+                Hanford Hotels & Resorts operates three distinct collections — Hanford Grand Hotel in leading city capitals, Hanford Hotel and Resort in premier destinations, and Hanford Eco Resort in extraordinary natural coastal landscapes.
               </p>
 
               {/* Primary Buttons */}
@@ -92,7 +94,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                   onClick={() => onNavigate('/locations')}
                   className="bg-[#51867E] text-white hover:bg-[#3f6d66] px-5 sm:px-7 py-3 sm:py-3.5 rounded-full text-[10px] sm:text-[11px] font-bold tracking-widest uppercase shadow-lg border border-[#88B2AB]/50 inline-flex items-center gap-2 group transition-all cursor-pointer"
                 >
-                  <span>EXPLORE ALL COLLECTIONS</span>
+                  <span>EXPLORE ALL LOCATIONS</span>
                   <ArrowRight className="w-3.5 h-3.5 text-[#88B2AB] group-hover:translate-x-1 transition-transform" />
                 </button>
 
@@ -226,7 +228,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
                   <div className="pt-4 border-t border-[#666666]/20 flex items-center justify-between">
                     <span className="text-xs font-bold tracking-wider text-[#3A4F67]">
-                      From ${property.priceFrom} <span className="text-[#3A4F67] font-medium">/ night</span>
+                      From ${(property.priceStandard || property.priceFrom)?.toLocaleString()} <span className="text-[#3A4F67] font-medium">/ night</span>
                     </span>
                     <button
                       className="cta-button bg-[#51867E] text-white px-4 sm:px-5 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase hover:bg-[#3f6d66] transition-colors inline-flex items-center gap-1 border border-[#51867E]/30 cursor-pointer"
@@ -265,7 +267,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </h2>
           <div className="w-12 sm:w-16 h-[1px] bg-[#51867E] mx-auto" />
           <p className="text-xs sm:text-sm font-light text-[#2C3744] leading-relaxed max-w-2xl mx-auto font-sans">
-            Guiding business travelers, families, dignitaries, and leisure guests through a century-long legacy built on trust, excellence, and enduring relationships since 1920.
+            Guiding business travelers, families, dignitaries, and leisure guests through a century-long legacy built on trust and excellence.
           </p>
           <div className="pt-2 sm:pt-4">
             <button
@@ -285,7 +287,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             UNRIVALED STANDARD
           </span>
           <h2 className="font-serif text-2xl sm:text-5xl font-light italic text-[#3A4F67]">
-            Bespoke Elements of Hanford
+            Signature Elements of Hanford
           </h2>
         </div>
 
@@ -296,7 +298,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             </div>
             <h3 className="font-serif text-lg sm:text-xl font-light italic text-[#3A4F67]">St. James Butler Service</h3>
             <p className="text-xs text-[#2C3744] leading-relaxed font-light">
-              Intuitive 24-hour white-glove attention trained in the traditions of British and Japanese hospitality.
+              Intuitive 24-hour white-glove service rooted in the finest traditions of world-class hospitality.
             </p>
           </div>
 
@@ -306,7 +308,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             </div>
             <h3 className="font-serif text-lg sm:text-xl font-light italic text-[#3A4F67]">Michelin-Starred Dining</h3>
             <p className="text-xs text-[#2C3744] leading-relaxed font-light">
-              Hyper-local seasonal gastronomy crafted by renowned international master chefs and master sommelier pairings.
+              Hyper-local and seasonal gastronomy crafted by renowned international master chefs, complemented by expert sommelier pairings.
             </p>
           </div>
 
@@ -316,7 +318,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             </div>
             <h3 className="font-serif text-lg sm:text-xl font-light italic text-[#3A4F67]">Holistic Thermal Spas</h3>
             <p className="text-xs text-[#2C3744] leading-relaxed font-light">
-              Natural thermal springs, hydrotherapy marble pools, and bespoke herbal wellness treatments.
+              Natural thermal springs, elegant hydrotherapy marble pools, and personalized herbal wellness treatments.
             </p>
           </div>
 
@@ -324,9 +326,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#51867E] border border-[#88B2AB]/30 flex items-center justify-center mx-auto text-[#88B2AB]">
               <MapPin className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <h3 className="font-serif text-lg sm:text-xl font-light italic text-[#3A4F67]">Rare Global Sanctuaries</h3>
+            <h3 className="font-serif text-lg sm:text-xl font-light italic text-[#3A4F67]">Rare Global Destinations</h3>
             <p className="text-xs text-[#2C3744] leading-relaxed font-light">
-              Carefully chosen locations offering maximum privacy, breathtaking natural beauty, and cultural resonance.
+              Carefully selected locations that offer unparalleled privacy, breathtaking natural beauty, and deep cultural resonance.
             </p>
           </div>
         </div>
@@ -337,13 +339,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 text-center md:text-left">
           <div>
             <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.3em] sm:tracking-[0.4em] uppercase text-[#3A4F67] block mb-1">
-              RESERVATIONS REGISTER
+              RESERVATIONS
             </span>
             <h3 className="font-serif text-2xl sm:text-4xl font-light italic text-[#3A4F67]">
-              Ready to Reserve Your Sanctuary?
+              Ready to Reserve Your Stay?
             </h3>
             <p className="text-xs text-[#2C3744] font-light tracking-wider mt-1">
-              Submit your itinerary directly to Hanford Central Reservations.
+              Submit your booking request directly to our Central Reservations team.
             </p>
           </div>
           <button

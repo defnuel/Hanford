@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Property, BookingInquiry, BookOption, EventAddonOption } from '../types';
 import { fetchLocations, submitBooking } from '../services/dataService';
+import { validatePropertyCoupon } from '../utils/couponUtils';
 import { PropertySearchSelect } from '../components/PropertySearchSelect';
 import { toPng } from 'html-to-image';
 import {
@@ -23,12 +24,40 @@ import {
   Clock,
   ShieldCheck,
   DollarSign,
-  Briefcase
+  Briefcase,
+  Tag
 } from 'lucide-react';
 
 interface BookNowPageProps {
   initialPropertySlug?: string;
   onNavigate: (path: string) => void;
+}
+
+function getBookingCategoryLabel(inquiry: BookingInquiry): string {
+  const opt = (inquiry.bookOption || '').toLowerCase().trim();
+  const totalRooms = (inquiry.standardRooms || 0) + (inquiry.deluxeRooms || 0) + (inquiry.presidentialSuites || 0) + (inquiry.privateVillas || 0);
+  const hasRooms = totalRooms > 0;
+  const hasEvents = Boolean(inquiry.eventAttendees || inquiry.cateringPax);
+
+  if (opt === 'both' || opt.includes('both') || opt.includes('keduanya') || (opt.includes('room') && opt.includes('event')) || opt.includes('& event') || opt.includes('+ event') || (hasRooms && hasEvents)) {
+    return 'Room & Event';
+  }
+  if (opt === 'room_meeting' || (opt.includes('room') && opt.includes('meeting'))) {
+    return 'Room & Meeting';
+  }
+  if (opt === 'meeting') {
+    return 'Meeting / Venue';
+  }
+  if (opt === 'event') {
+    return 'Event';
+  }
+  if (opt === 'room') {
+    return 'Room / Accommodation';
+  }
+  if (opt) {
+    return opt.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  }
+  return 'Room & Event';
 }
 
 export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, onNavigate }) => {
@@ -293,8 +322,38 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
   }
 
   const currentRawSubtotal = currentRoomSubtotal + currentEventSubtotal;
-  const currentTaxAmount = Math.round(currentRawSubtotal * 0.1);
-  const currentGrandTotal = currentRawSubtotal + currentTaxAmount;
+
+  // Rates snapshot string
+  const snapshotRatesArr: string[] = [];
+  if (showRoomsAndDates) {
+    if (formData.standardRooms) snapshotRatesArr.push(`Standard: $${priceStandard}/night`);
+    if (formData.deluxeRooms) snapshotRatesArr.push(`Deluxe: $${priceDeluxe}/night`);
+    if (formData.presidentialSuites) snapshotRatesArr.push(`Presidential: $${pricePresidential}/night`);
+    if (isEcoResort && formData.privateVillas) snapshotRatesArr.push(`Villa: $${pricePrivateVilla}/night`);
+  }
+  if (showVenueSettings) {
+    if (formData.bookOption === 'meeting') {
+      const multiplier = getVenueMultiplier(formData.venueRentalRate);
+      snapshotRatesArr.push(`Meeting Rate: $${Math.round(priceMeetingRoom * multiplier)}/pax`);
+    } else {
+      snapshotRatesArr.push(`Event Hall: $${priceEventHall}/event`);
+      if (formData.eventAddons === 'catering' || formData.eventAddons === 'both') {
+        snapshotRatesArr.push(`Catering: $${priceCateringPerPax}/pax`);
+      }
+    }
+  }
+  const itemRatesSnapshotStr = snapshotRatesArr.join(' | ') || `Standard: $${priceStandard}/night`;
+
+  // Discount Code & Calculation (Validated against selected property's active coupons)
+  const couponResult = validatePropertyCoupon(selectedProperty, formData.discountCode);
+  const appliedDiscountPercent = couponResult.percent;
+  const appliedDiscountCode = couponResult.isValid
+    ? couponResult.matchedCode!
+    : (formData.discountCode?.trim() ? formData.discountCode.trim().toUpperCase() : '');
+  const currentDiscountAmount = appliedDiscountPercent > 0 ? Math.round(currentRawSubtotal * (appliedDiscountPercent / 100)) : 0;
+  const currentSubtotalBeforeTax = Math.max(0, currentRawSubtotal - currentDiscountAmount);
+  const currentTaxAmount = Math.round(currentSubtotalBeforeTax * 0.1);
+  const currentGrandTotal = currentSubtotalBeforeTax + currentTaxAmount;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -368,6 +427,19 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
       bookingId,
       roomSubtotal: currentRoomSubtotal,
       eventSubtotal: currentEventSubtotal,
+      priceStandardRoom: priceStandard,
+      priceDeluxeRoom: priceDeluxe,
+      pricePresidentialSuite: pricePresidential,
+      pricePrivateVilla: isEcoResort ? pricePrivateVilla : undefined,
+      priceMeetingRoom: priceMeetingRoom,
+      priceEventHall: priceEventHall,
+      priceCateringPerPax: priceCateringPerPax,
+      itemRatesSnapshot: itemRatesSnapshotStr,
+      discountCode: appliedDiscountCode || undefined,
+      discountPercent: appliedDiscountPercent || undefined,
+      discountAmount: currentDiscountAmount || undefined,
+      subtotalBeforeDiscount: currentRawSubtotal,
+      subtotalBeforeTax: currentSubtotalBeforeTax,
       taxAmount: currentTaxAmount,
       totalAmount: currentGrandTotal,
       numberOfNights: showRoomsAndDates ? currentNights : 0,
@@ -447,12 +519,12 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
             <span>CENTRAL RESERVATIONS & BOOKING SYSTEM</span>
           </div>
           <h1 className="font-serif italic text-3xl sm:text-6xl text-[#3A4F67] font-light">
-            Reserve Your Experience
+            Book Your Experience
           </h1>
           <p className="text-xs sm:text-sm text-[#2C3744] max-w-xl mx-auto font-light leading-relaxed">
-            Real-time hotel booking application connected directly with Hanford Central Register.
+            Real-time hotel booking application.
             <span className="block text-[10px] sm:text-[11px] text-[#3A4F67] font-medium italic mt-0.5">
-              Sistem reservasi hotel real-time terhubung langsung ke Central Register.
+              Sistem reservasi hotel real-time.
             </span>
           </p>
 
@@ -567,7 +639,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     {confirmedBooking.property.address && (
                       <div><strong>Address:</strong> {confirmedBooking.property.address}</div>
                     )}
-                    <div><strong>Booking Category:</strong> <span className="uppercase font-semibold text-[#3A4F67]">{confirmedBooking.inquiry.bookOption.replace('_', ' ')}</span></div>
+                    <div><strong>Booking Category:</strong> <span className="font-semibold text-[#3A4F67]">{getBookingCategoryLabel(confirmedBooking.inquiry)}</span></div>
                     
                     {confirmedBooking.inquiry.bookOption === 'meeting' && (
                       <>
@@ -757,6 +829,18 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         </>
                       )}
 
+                      {/* Subtotal & Discount */}
+                      {confirmedBooking.inquiry.discountAmount! > 0 && (
+                        <div className="px-2.5 py-2 sm:px-4 sm:py-2.5 grid grid-cols-12 text-left bg-emerald-50/60 items-center text-[#51867E]">
+                          <div className="col-span-9 font-semibold text-xs">
+                            Discount Coupon ({confirmedBooking.inquiry.discountCode || 'PROMO'} - {confirmedBooking.inquiry.discountPercent}% OFF)
+                          </div>
+                          <div className="col-span-3 text-right font-bold text-xs">
+                            -${confirmedBooking.inquiry.discountAmount?.toLocaleString()}
+                          </div>
+                        </div>
+                      )}
+
                       {/* Service Tax */}
                       <div className="px-2.5 py-2 sm:px-4 sm:py-3 grid grid-cols-12 text-left bg-[#EAF2F1]/30 items-center">
                         <div className="col-span-9 font-semibold text-[#3A4F67]">
@@ -851,7 +935,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
               <div>
                 <h4 className="font-bold text-[#3A4F67] uppercase tracking-wider flex items-center gap-2 border-b border-[#88B2AB]/30 pb-1.5 text-xs sm:text-sm">
                   <CreditCard className="w-4 h-4 text-[#51867E]" />
-                  Payment & Confirmation Instructions Booking
+                  Payment & Confirmation Instructions
                 </h4>
                 <p className="text-[11px] text-[#5A6E82] italic leading-tight mt-1">
                   Instruksi Pembayaran dan Konfirmasi Booking
@@ -979,7 +1063,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   <div className="flex items-center justify-between border-b border-[#88B2AB]/20 pb-2">
                     <span className="font-bold text-[#3A4F67] flex items-center gap-1.5 text-[11px] sm:text-xs">
                       <DollarSign className="w-3.5 h-3.5 text-[#51867E]" />
-                      Official Rates & Pricing Breakdown
+                      Rates & Pricing
                     </span>
                     <span className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full font-bold bg-[#EAF2F1] text-[#3A4F67] border border-[#88B2AB]/30 uppercase">
                       {propertyTypeLabel}
@@ -1722,6 +1806,51 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 </span>
               </div>
 
+              {/* Discount / Coupon Code Input */}
+              <div className="bg-[#2C3744]/70 p-2.5 sm:p-3 rounded-xl border border-[#88B2AB]/30 space-y-2">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-xs">
+                    <Tag className="w-4 h-4 text-[#88B2AB] shrink-0" />
+                    <div>
+                      <span className="font-bold text-white block text-[11px] sm:text-xs">Coupon Code (for discount)</span>
+                      <span className="text-[9.5px] text-[#88B2AB] block">
+                        Put your coupon code here
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <input
+                      type="text"
+                      placeholder="Enter coupon code..."
+                      value={formData.discountCode || ''}
+                      onChange={(e) => {
+                        const code = e.target.value;
+                        setFormData({
+                          ...formData,
+                          discountCode: code
+                        });
+                      }}
+                      className="w-28 sm:w-36 px-3 py-1.5 bg-white text-[#2C3744] font-bold text-xs uppercase rounded-lg focus:outline-none focus:ring-2 focus:ring-[#88B2AB]"
+                    />
+                    {couponResult.isValid && (
+                      <span className="bg-[#88B2AB] text-[#1E293B] font-extrabold text-[10px] px-2 py-1 rounded-lg shrink-0">
+                        -{couponResult.percent}% OFF
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {formData.discountCode && formData.discountCode.trim() !== '' && (
+                  <div className={`text-[10px] font-semibold px-2 py-1 rounded-md ${
+                    couponResult.isValid 
+                      ? 'bg-[#88B2AB]/20 text-[#88B2AB] border border-[#88B2AB]/40' 
+                      : 'bg-red-500/20 text-red-300 border border-red-500/30'
+                  }`}>
+                    {couponResult.message}
+                  </div>
+                )}
+              </div>
+
               <div className="space-y-1.5 text-[11px] sm:text-xs">
                 {showRoomsAndDates && currentRoomSubtotal > 0 && (
                   <div className="flex justify-between text-[#EAF2F1]">
@@ -1740,6 +1869,23 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     <strong className="font-mono text-white shrink-0">${currentEventSubtotal.toLocaleString()}</strong>
                   </div>
                 )}
+
+                <div className="flex justify-between text-[#EAF2F1]">
+                  <span>Subtotal Before Discount & Tax:</span>
+                  <strong className="font-mono text-white">${currentRawSubtotal.toLocaleString()}</strong>
+                </div>
+
+                {appliedDiscountPercent > 0 && (
+                  <div className="flex justify-between text-[#88B2AB] font-semibold">
+                    <span>Discount Coupon ({appliedDiscountCode || 'PROMO'} - {appliedDiscountPercent}%):</span>
+                    <strong className="font-mono text-[#88B2AB]">-${currentDiscountAmount.toLocaleString()}</strong>
+                  </div>
+                )}
+
+                <div className="flex justify-between text-[#EAF2F1]">
+                  <span>Subtotal Before Tax:</span>
+                  <strong className="font-mono text-white">${currentSubtotalBeforeTax.toLocaleString()}</strong>
+                </div>
 
                 <div className="flex justify-between text-[#EAF2F1]">
                   <span>Tax & Service Fee (10%):</span>

@@ -109,23 +109,36 @@ async function fetchGoogleSheetsClientDirect(): Promise<Property[]> {
     const isGrandHotel = nameLower.includes('grand hotel') && !nameLower.includes('resort');
     const hasPrivateVilla = !isGrandHotel;
 
-    const priceRaw = rowObj.Price || rowObj.price || rowObj.PriceFrom || rowObj['Price/night'] || rowObj.Rate;
-    let priceFrom = 850 + index * 150;
-    const parsedPriceFrom = parsePriceNumber(priceRaw);
-    if (parsedPriceFrom) {
-      priceFrom = parsedPriceFrom;
-    }
+    const getRowObjVal = (...keys: string[]): string | undefined => {
+      for (const k of keys) {
+        const kLower = k.toLowerCase().trim();
+        for (const [rowKey, val] of Object.entries(rowObj)) {
+          if (rowKey.toLowerCase().trim() === kLower) {
+            if (val !== undefined && val !== null && String(val).trim() !== '') {
+              return String(val).trim();
+            }
+          }
+        }
+      }
+      return undefined;
+    };
 
-    const priceStandard = parsePriceNumber(rowObj.Price || rowObj['Standard Room'] || rowObj.Standard) || priceFrom;
-    const priceDeluxe = parsePriceNumber(rowObj['Deluxe Room'] || rowObj.Deluxe) || Math.round(priceStandard * 1.45);
-    const pricePresidential = parsePriceNumber(rowObj['Presidential Suite'] || rowObj.Presidential) || Math.round(priceStandard * 3.8);
+    // Extract room and event specific pricing columns from row object
+    // Standard Room column is the primary source for starting rate / cheapest room
+    const rawStandardVal = getRowObjVal('Standard Room', 'Standard Room Rate', 'Standard Room ($)', 'Standard', 'Standard Rate', 'Price', 'price', 'PriceFrom', 'Price/night', 'Rate');
+    const parsedStandard = parsePriceNumber(rawStandardVal);
+    const priceStandard = parsedStandard || (850 + index * 150);
+    const priceFrom = priceStandard; // Starting rate takes from Standard Room column
+
+    const priceDeluxe = parsePriceNumber(getRowObjVal('Deluxe Room', 'Deluxe Room Rate', 'Deluxe Room ($)', 'Deluxe', 'Deluxe Rate')) || Math.round(priceStandard * 1.45);
+    const pricePresidential = parsePriceNumber(getRowObjVal('Presidential Suite', 'Presidential Suite Rate', 'Presidential Suite ($)', 'Presidential', 'Presidential Rate')) || Math.round(priceStandard * 3.8);
     const pricePrivateVilla = hasPrivateVilla
-      ? (parsePriceNumber(rowObj['Private Villa'] || rowObj.Villa) || Math.round(priceStandard * 5.2))
+      ? (parsePriceNumber(getRowObjVal('Private Villa', 'Villa', 'Private Villa Rate')) || Math.round(priceStandard * 5.2))
       : undefined;
 
-    const priceMeetingRoom = parsePriceNumber(rowObj['Meeting Room'] || rowObj.Meeting) || 120;
-    const priceEventHall = parsePriceNumber(rowObj['Event Hall'] || rowObj.Hall) || 3200;
-    const priceCateringPerPax = parsePriceNumber(rowObj['Catering Per Pax'] || rowObj.Catering) || 75;
+    const priceMeetingRoom = parsePriceNumber(getRowObjVal('Meeting Room', 'Meeting Room Rate', 'Meeting')) || 120;
+    const priceEventHall = parsePriceNumber(getRowObjVal('Event Hall', 'Event Hall Rate', 'Hall')) || 3200;
+    const priceCateringPerPax = parsePriceNumber(getRowObjVal('Catering Per Pax', 'Catering Rate', 'Catering')) || 75;
 
     const amenitiesRaw = rowObj.Amenities || rowObj.amenities || rowObj.Privileges || rowObj.Services;
     let amenitiesList: string[] = [];
@@ -145,6 +158,10 @@ async function fetchGoogleSheetsClientDirect(): Promise<Property[]> {
     const capacityPrivateVilla = hasPrivateVilla
       ? (rowObj['Private Villa Capacity'] || rowObj['Villa Capacity'] || 'Max 6 guests (4 Adults + 2 Children)')
       : undefined;
+
+    const discountCode = getRowObjVal('Discount Code', 'DiscountCode', 'Coupon Code', 'Kupon', 'Discount code', 'discount_code', 'Kode Diskon', 'Kode Promo');
+    const rawDiscountPercent = getRowObjVal('Discount (%)', 'Discount %', 'DiscountPercent', 'Discount', 'Diskon', 'Discount percent', 'Besaran Diskon');
+    const discountPercent = rawDiscountPercent !== undefined ? rawDiscountPercent : undefined;
 
     return {
       id: `sheet-prop-${index}-${slug}`,
@@ -173,7 +190,9 @@ async function fetchGoogleSheetsClientDirect(): Promise<Property[]> {
       capacityStandard,
       capacityDeluxe,
       capacityPresidential,
-      capacityPrivateVilla
+      capacityPrivateVilla,
+      discountCode,
+      discountPercent
     };
   });
 
@@ -185,7 +204,35 @@ async function fetchGoogleSheetsClientDirect(): Promise<Property[]> {
  * Communicates with the Express backend (/api/*) or fetches directly from Google Sheets client-side.
  */
 export async function fetchLocations(): Promise<ApiResponse<Property[]>> {
-  // 1. Check local admin storage first
+  // 1. Try server endpoint first for live Google Sheets data
+  try {
+    const res = await fetch('/api/locations');
+    if (res.ok) {
+      const json: ApiResponse<Property[]> = await res.json();
+      if (json.success && json.data && json.data.length > 0) {
+        cachedProperties = json.data;
+        return json;
+      }
+    }
+  } catch {
+    // API endpoint unavailable or running on static Netlify host
+  }
+
+  // 2. Fallback to direct client-side Google Sheets fetching
+  try {
+    const properties = await fetchGoogleSheetsClientDirect();
+    cachedProperties = properties;
+    return {
+      success: true,
+      data: properties,
+      source: 'google_sheets',
+      message: 'Fetched directly from Google Sheets database.'
+    };
+  } catch (err: any) {
+    console.warn('[dataService] Direct Google Sheets fetch error:', err);
+  }
+
+  // 3. Check local admin storage fallback
   try {
     const saved = localStorage.getItem('hanford_admin_properties');
     if (saved) {
@@ -204,39 +251,13 @@ export async function fetchLocations(): Promise<ApiResponse<Property[]>> {
     console.warn('[dataService] Local properties parse warning:', e);
   }
 
-  try {
-    const res = await fetch('/api/locations');
-    if (res.ok) {
-      const json: ApiResponse<Property[]> = await res.json();
-      if (json.success && json.data && json.data.length > 0) {
-        cachedProperties = json.data;
-        return json;
-      }
-    }
-  } catch {
-    // API endpoint unavailable or running on static Netlify host
-  }
-
-  // Fallback to direct client-side Google Sheets fetching
-  try {
-    const properties = await fetchGoogleSheetsClientDirect();
-    cachedProperties = properties;
-    return {
-      success: true,
-      data: properties,
-      source: 'google_sheets',
-      message: 'Fetched directly from Google Sheets database.'
-    };
-  } catch (err: any) {
-    console.warn('[dataService] Direct Google Sheets fetch error, using local dataset:', err);
-    cachedProperties = MOCK_PROPERTIES;
-    return {
-      success: true,
-      data: MOCK_PROPERTIES,
-      source: 'mock_fallback',
-      message: 'Serving fallback dataset.'
-    };
-  }
+  cachedProperties = MOCK_PROPERTIES;
+  return {
+    success: true,
+    data: MOCK_PROPERTIES,
+    source: 'mock_fallback',
+    message: 'Serving fallback dataset.'
+  };
 }
 
 export async function fetchPropertyBySlug(slug: string): Promise<ApiResponse<Property | null>> {

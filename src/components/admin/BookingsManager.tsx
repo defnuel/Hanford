@@ -158,14 +158,21 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({ bookings, onRe
                           <Building className="w-3.5 h-3.5 text-[#51867E]" />
                           <span>{b.propertyName}</span>
                         </div>
-                        <div className="text-[10px] text-slate-500 capitalize">
-                          {b.bookOption.replace('_', ' ')}
+                        <div className="text-[10px] text-slate-500">
+                          {b.bookOption === 'both' ? 'Room & Event' : b.bookOption === 'room_meeting' ? 'Room & Meeting' : b.bookOption.replace('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
                           {b.checkInDate ? ` (${b.checkInDate})` : ''}
                         </div>
                       </td>
 
-                      <td className="py-3.5 px-4 text-right font-mono font-bold text-xs text-[#3A4F67]">
-                        ${b.totalAmount ? b.totalAmount.toLocaleString() : '0'}
+                      <td className="py-3.5 px-4 text-right">
+                        <div className="font-mono font-bold text-xs text-[#3A4F67]">
+                          ${b.totalAmount ? b.totalAmount.toLocaleString() : '0'}
+                        </div>
+                        {b.discountCode && (
+                          <div className="text-[9.5px] font-semibold text-[#51867E]">
+                            {b.discountCode} ({b.discountPercent || 0}% OFF)
+                          </div>
+                        )}
                       </td>
 
                       <td className="py-3.5 px-4 text-center">

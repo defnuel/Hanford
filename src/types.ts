@@ -95,6 +95,10 @@ export interface Property {
   capacityDeluxe?: string;
   capacityPresidential?: string;
   capacityPrivateVilla?: string;
+
+  // Discount code from location sheet
+  discountCode?: string;
+  discountPercent?: number | string;
 }
 
 export interface Project {
@@ -153,10 +157,23 @@ export interface BookingInquiry {
   eventDate?: string;
   notes?: string; // Keterangan & booking details
   
-  // Calculation breakdown
+  // Calculation breakdown & Price Snapshots
   numberOfNights?: number;
   roomSubtotal?: number;
   eventSubtotal?: number;
+  priceStandardRoom?: number;
+  priceDeluxeRoom?: number;
+  pricePresidentialSuite?: number;
+  pricePrivateVilla?: number;
+  priceMeetingRoom?: number;
+  priceEventHall?: number;
+  priceCateringPerPax?: number;
+  itemRatesSnapshot?: string;
+  discountCode?: string;
+  discountPercent?: number;
+  discountAmount?: number;
+  subtotalBeforeDiscount?: number;
+  subtotalBeforeTax?: number;
   taxAmount?: number;
   totalAmount?: number;
   paymentStatus?: 'UNPAID' | 'PAID';

@@ -57,13 +57,13 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
             <div className="max-w-3xl space-y-3 sm:space-y-4">
               <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1 rounded-full bg-[#51867E]/10 border border-[#51867E]/20 text-[#51867E] text-[9px] sm:text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.25em] uppercase">
                 <Sparkles className="w-3 h-3 text-[#88B2AB]" />
-                <span>Executive Partnerships & Creative Initiatives</span>
+                <span>Collaborations</span>
               </div>
-              <h1 className="text-2xl sm:text-5xl font-serif font-light text-[#3A4F67] tracking-wide leading-tight">
-                Collaborations & Creative Projects
+              <h1 className="text-2xl sm:text-5xl font-serif font-light text-[#3A4F67] tracking-wide leading-tight font-serif italic">
+                Collaborations, Projects, and News
               </h1>
               <p className="text-sm sm:text-base text-[#2C3744]/80 font-light leading-relaxed">
-                Explore bespoke partnerships with world-renowned models, fashion houses, master artisans, artists, and visionary brands across our global Hanford sanctuaries.
+                Explore Hanford’s partnerships with world-renowned artists, models, fashion houses, master artisans, and visionary brands across our global properties.
               </p>
             </div>
           </div>

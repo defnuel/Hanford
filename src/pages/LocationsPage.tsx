@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { Property } from '../types';
 import { fetchLocations } from '../services/dataService';
-import { Search, MapPin, ExternalLink, ArrowRight } from 'lucide-react';
+import { Search, MapPin, ExternalLink, ArrowRight, ChevronDown, X, Building2 } from 'lucide-react';
 
 interface LocationsPageProps {
   onNavigate: (path: string) => void;
@@ -13,6 +13,10 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
   const [dataSource, setDataSource] = useState<'google_sheets' | 'mock_fallback'>('mock_fallback');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedContinent, setSelectedContinent] = useState('All');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const loadProperties = async () => {
     setLoading(true);
@@ -26,13 +30,41 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
     loadProperties();
   }, []);
 
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Close on escape key
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   // Filter logic
   const filteredProperties = useMemo(() => {
     return properties.filter((p) => {
       const matchesSearch =
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.country.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.tagline.toLowerCase().includes(searchQuery.toLowerCase());
+        p.tagline.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.continent.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (p.address && p.address.toLowerCase().includes(searchQuery.toLowerCase()));
 
       const matchesContinent =
         selectedContinent === 'All' || p.continent.toLowerCase() === selectedContinent.toLowerCase();
@@ -53,7 +85,7 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
               <span>GLOBAL FOOTPRINT</span>
             </div>
             <h1 className="font-serif italic text-3xl sm:text-6xl text-[#3A4F67] font-light">
-              Sanctuaries & Destinations
+              Our Locations
             </h1>
           </div>
         </div>
@@ -62,16 +94,124 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
       {/* Filter & Search Bar */}
       <section className="max-w-7xl mx-auto px-4 sm:px-8 mb-8 sm:mb-12">
         <div className="bg-[#EAF2F1] p-4 sm:p-6 border border-[#88B2AB]/30 rounded-2xl flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 sm:gap-6 shadow-sm">
-          {/* Search Box */}
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-[#3A4F67]" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by property name, tagline, or country..."
-              className="w-full pl-11 pr-4 py-2.5 bg-white border border-[#88B2AB]/30 rounded-full text-xs text-[#2C3744] placeholder-[#4A5568] focus:outline-none focus:border-[#51867E] font-medium"
-            />
+          {/* Search Box with Searchable Dropdown */}
+          <div className="relative flex-1" ref={dropdownRef}>
+            <div className="relative flex items-center">
+              <Search className="w-4 h-4 absolute left-4 text-[#51867E] pointer-events-none z-10" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onFocus={() => setIsDropdownOpen(true)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setIsDropdownOpen(true);
+                }}
+                placeholder="Search location by property name, country, or city..."
+                className="w-full pl-11 pr-20 py-3 bg-white border border-[#88B2AB]/40 rounded-full text-xs text-[#2C3744] placeholder-[#4A5568] focus:outline-none focus:border-[#51867E] focus:ring-2 focus:ring-[#51867E]/20 font-medium transition-all shadow-xs"
+              />
+              <div className="absolute right-3 flex items-center gap-1.5 z-10">
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery('');
+                      setIsDropdownOpen(true);
+                    }}
+                    className="p-1 rounded-full text-gray-400 hover:text-red-500 hover:bg-gray-100 transition-colors"
+                    title="Clear search"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="p-1 rounded-full text-[#51867E] hover:bg-gray-100 transition-colors"
+                >
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+              </div>
+            </div>
+
+            {/* Dropdown Results List */}
+            {isDropdownOpen && (
+              <div className="absolute left-0 right-0 top-full mt-2 bg-white border border-[#88B2AB]/40 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                {/* Header info bar */}
+                <div className="px-4 py-2.5 border-b border-[#88B2AB]/20 bg-[#EAF2F1]/60 flex items-center justify-between text-[10.5px] font-bold text-[#3A4F67] uppercase tracking-wider">
+                  <span>Matched Sanctuaries ({filteredProperties.length})</span>
+                  <span className="text-[9.5px] text-[#51867E] font-medium lowercase italic">click location to view details</span>
+                </div>
+
+                {/* Properties List */}
+                <div className="max-h-80 overflow-y-auto divide-y divide-[#88B2AB]/15 p-1.5">
+                  {filteredProperties.length === 0 ? (
+                    <div className="p-6 text-center text-xs text-[#2C3744] space-y-1">
+                      <MapPin className="w-6 h-6 text-[#51867E] mx-auto opacity-70" />
+                      <p className="font-bold text-[#3A4F67]">No locations found</p>
+                      <p className="text-[11px] text-gray-500">
+                        Try searching for a different country or hotel name (e.g. "Greece", "Jeju", "Jakarta").
+                      </p>
+                    </div>
+                  ) : (
+                    filteredProperties.map((property) => {
+                      const isLive = property.status === 'Live' || property.status === 'Active';
+                      const startPrice = property.priceStandard || property.priceFrom;
+
+                      return (
+                        <button
+                          key={property.id || property.slug}
+                          type="button"
+                          onClick={() => {
+                            setIsDropdownOpen(false);
+                            if (isLive) {
+                              onNavigate(`/locations/${property.slug}`);
+                            }
+                          }}
+                          className="w-full text-left p-2.5 sm:p-3 rounded-xl hover:bg-[#EAF2F1]/80 transition-all flex items-center justify-between gap-3 group cursor-pointer"
+                        >
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            {/* Property Thumbnail */}
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden shrink-0 bg-[#3A4F67] border border-[#88B2AB]/30 shadow-xs">
+                              <img
+                                src={property.heroImage}
+                                alt={property.name}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                referrerPolicy="no-referrer"
+                              />
+                            </div>
+
+                            {/* Property Info */}
+                            <div className="min-w-0 flex-1">
+                              <div className="font-bold text-xs sm:text-sm text-[#2C3744] group-hover:text-[#51867E] transition-colors truncate">
+                                {property.name}
+                              </div>
+                              <div className="text-[10.5px] sm:text-[11px] text-[#51867E] font-medium flex items-center gap-1.5 flex-wrap truncate mt-0.5">
+                                <span className="font-semibold">📍 {property.country}</span>
+                                <span className="text-gray-300 font-light">•</span>
+                                <span className="text-[#3A4F67] font-normal">{property.continent}</span>
+                                {startPrice ? (
+                                  <>
+                                    <span className="text-gray-300 font-light">•</span>
+                                    <span className="text-[#2C3744] font-bold">From ${startPrice.toLocaleString()} / night</span>
+                                  </>
+                                ) : null}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Action badge */}
+                          <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#51867E] uppercase tracking-wider shrink-0 bg-white px-3 py-1.5 rounded-full border border-[#88B2AB]/30 group-hover:bg-[#51867E] group-hover:text-white transition-all shadow-xs">
+                            <span>Details</span>
+                            <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                          </div>
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Continent Filter */}
