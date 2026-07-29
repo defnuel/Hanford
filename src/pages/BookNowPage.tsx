@@ -255,10 +255,10 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
     });
   };
 
-  // Helper: venue rental multiplier
+  // Helper: venue rental multiplier (Half Day = 40%, Full Day = 100%, Full Board = 120%)
   const getVenueMultiplier = (rate?: string) => {
-    if (rate === 'half_day') return 0.6;
-    if (rate === 'full_board') return 1.5;
+    if (rate === 'half_day') return 0.4;
+    if (rate === 'full_board') return 1.2;
     return 1.0; // full_day
   };
 
@@ -294,6 +294,11 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
     formData.bookOption === 'meeting' ||
     formData.bookOption === 'room_meeting';
 
+  // Effective rate per pax for catering & meeting based on selected package rate
+  const cateringMultiplier = getVenueMultiplier(formData.venueRentalRate);
+  const effectiveCateringPerPax = Math.round(priceCateringPerPax * cateringMultiplier);
+  const effectiveMeetingRoomRate = Math.round(priceMeetingRoom * cateringMultiplier);
+
   // Calculate live room subtotal
   let currentRoomSubtotal = 0;
   if (showRoomsAndDates) {
@@ -308,14 +313,12 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
   let currentEventSubtotal = 0;
   if (showVenueSettings) {
     if (formData.bookOption === 'meeting') {
-      const multiplier = getVenueMultiplier(formData.venueRentalRate);
-      const ratePerPax = priceMeetingRoom * multiplier;
-      currentEventSubtotal = Math.round((formData.eventAttendees || 1) * ratePerPax);
+      currentEventSubtotal = Math.round((formData.eventAttendees || 1) * effectiveMeetingRoomRate);
     } else {
       const venueCost = priceEventHall;
       const hasCatering = formData.eventAddons === 'catering' || formData.eventAddons === 'both';
       const cateringCost = hasCatering
-        ? (formData.cateringPax || formData.eventAttendees || 1) * priceCateringPerPax
+        ? (formData.cateringPax || formData.eventAttendees || 1) * effectiveCateringPerPax
         : 0;
       currentEventSubtotal = venueCost + cateringCost;
     }
@@ -333,12 +336,11 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
   }
   if (showVenueSettings) {
     if (formData.bookOption === 'meeting') {
-      const multiplier = getVenueMultiplier(formData.venueRentalRate);
-      snapshotRatesArr.push(`Meeting Rate: $${Math.round(priceMeetingRoom * multiplier)}/pax`);
+      snapshotRatesArr.push(`Meeting Package (${getVenueRateLabel(formData.venueRentalRate)}): $${effectiveMeetingRoomRate}/pax`);
     } else {
       snapshotRatesArr.push(`Event Hall: $${priceEventHall}/event`);
       if (formData.eventAddons === 'catering' || formData.eventAddons === 'both') {
-        snapshotRatesArr.push(`Catering: $${priceCateringPerPax}/pax`);
+        snapshotRatesArr.push(`Catering (${getVenueRateLabel(formData.venueRentalRate)}): $${effectiveCateringPerPax}/pax`);
       }
     }
   }
@@ -431,9 +433,9 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
       priceDeluxeRoom: priceDeluxe,
       pricePresidentialSuite: pricePresidential,
       pricePrivateVilla: isEcoResort ? pricePrivateVilla : undefined,
-      priceMeetingRoom: priceMeetingRoom,
+      priceMeetingRoom: effectiveMeetingRoomRate,
       priceEventHall: priceEventHall,
-      priceCateringPerPax: priceCateringPerPax,
+      priceCateringPerPax: effectiveCateringPerPax,
       itemRatesSnapshot: itemRatesSnapshotStr,
       discountCode: appliedDiscountCode || undefined,
       discountPercent: appliedDiscountPercent || undefined,
@@ -814,13 +816,13 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                                     Event Catering Package
                                   </div>
                                   <div className="col-span-3 text-center text-[#3A4F67] font-medium">
-                                    ${priceCateringPerPax.toLocaleString()} / pax
+                                    ${(confirmedBooking.inquiry.priceCateringPerPax || effectiveCateringPerPax).toLocaleString()} / pax
                                   </div>
                                   <div className="col-span-2 text-center text-[#3A4F67]">
                                     {confirmedBooking.inquiry.cateringPax || confirmedBooking.inquiry.eventAttendees} Pax
                                   </div>
                                   <div className="col-span-3 text-right font-bold text-[#2C3744]">
-                                    ${((confirmedBooking.inquiry.cateringPax || confirmedBooking.inquiry.eventAttendees || 1) * priceCateringPerPax).toLocaleString()}
+                                    ${((confirmedBooking.inquiry.cateringPax || confirmedBooking.inquiry.eventAttendees || 1) * (confirmedBooking.inquiry.priceCateringPerPax || effectiveCateringPerPax)).toLocaleString()}
                                   </div>
                                 </div>
                               )}
@@ -1330,11 +1332,11 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
               </div>
             )}
 
-            {/* 3.2 VENUE RENTAL RATE (Only for Meeting Room) */}
+            {/* 3.2 MEETING PACKAGE PER PAX (Only for Meeting Room) */}
             {formData.bookOption === 'meeting' && (
               <div className="space-y-3 pt-3 sm:pt-4 border-t border-[#88B2AB]/30 animate-in fade-in duration-300">
                 <label className="block text-[11px] sm:text-xs font-bold tracking-[0.15em] sm:tracking-[0.2em] text-[#3A4F67] uppercase">
-                  VENUE RENTAL RATE *
+                  MEETING PACKAGE PER PAX *
                   <span className="block text-[9.5px] sm:text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
                     pilih paket durasi dan layanan venue meeting room
                   </span>
@@ -1353,7 +1355,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   >
                     <div className="flex items-center justify-between gap-1">
                       <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider">
-                        HALF DAY (${Math.round(priceMeetingRoom * 0.6).toLocaleString()} / pax)
+                        HALF DAY (${Math.round(priceMeetingRoom * 0.4).toLocaleString()} / pax)
                       </span>
                       {formData.venueRentalRate === 'half_day' && <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-white" />}
                     </div>
@@ -1401,7 +1403,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   >
                     <div className="flex items-center justify-between gap-1">
                       <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider">
-                        FULL BOARD (${Math.round(priceMeetingRoom * 1.5).toLocaleString()} / pax)
+                        FULL BOARD (${Math.round(priceMeetingRoom * 1.2).toLocaleString()} / pax)
                       </span>
                       {formData.venueRentalRate === 'full_board' && <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-white" />}
                     </div>
@@ -1576,8 +1578,8 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       >
                         <option value="" disabled hidden>-- Select Catering Option --</option>
                         <option value="none">Venue Only (No Catering)</option>
-                        <option value="catering">Include Gourmet Catering (+${priceCateringPerPax}/pax)</option>
-                        <option value="both">Include Catering & Deluxe Decoration (+${priceCateringPerPax}/pax)</option>
+                        <option value="catering">Include Gourmet Catering (+${effectiveCateringPerPax}/pax)</option>
+                        <option value="both">Include Catering & Deluxe Decoration (+${effectiveCateringPerPax}/pax)</option>
                       </select>
                     </div>
                   )}

@@ -95,9 +95,23 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
   const priceDeluxe = booking.priceDeluxeRoom || matchedProperty?.priceDeluxe || Math.round(priceStandard * 1.45);
   const pricePresidential = booking.pricePresidentialSuite || matchedProperty?.pricePresidential || Math.round(priceStandard * 3.8);
   const pricePrivateVilla = booking.pricePrivateVilla || matchedProperty?.pricePrivateVilla || Math.round(priceStandard * 5.2);
-  const priceMeetingRoom = booking.priceMeetingRoom || matchedProperty?.priceMeetingRoom || 120;
+  const getVenueMultiplier = (rate?: string) => {
+    if (rate === 'half_day') return 0.4;
+    if (rate === 'full_board') return 1.2;
+    return 1.0;
+  };
+
+  const baseCatering = matchedProperty?.priceCateringPerPax || 75;
+  const baseMeetingRoom = matchedProperty?.priceMeetingRoom || 120;
+
+  const priceMeetingRoom = booking.priceMeetingRoom !== undefined && booking.priceMeetingRoom > 0
+    ? booking.priceMeetingRoom
+    : Math.round(baseMeetingRoom * getVenueMultiplier(booking.venueRentalRate));
+
+  const priceCateringPerPax = booking.priceCateringPerPax !== undefined && booking.priceCateringPerPax > 0
+    ? booking.priceCateringPerPax
+    : Math.round(baseCatering * getVenueMultiplier(booking.venueRentalRate));
   const priceEventHall = booking.priceEventHall || matchedProperty?.priceEventHall || 3200;
-  const priceCateringPerPax = booking.priceCateringPerPax || matchedProperty?.priceCateringPerPax || 75;
 
   const nights = booking.numberOfNights || calculateNights(booking.checkInDate, booking.checkOutDate);
 
