@@ -12,12 +12,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           {/* Brand Column */}
           <div className="md:col-span-1 space-y-3 sm:space-y-4">
             <div className="flex items-center gap-3">
-              <img
-                src="/logo.png"
-                alt="Hanford HR Logo"
-                className="h-8 sm:h-9 w-auto object-contain"
-                referrerPolicy="no-referrer"
-              />
               <span className="font-serif text-2xl sm:text-3xl tracking-[0.2em] sm:tracking-[0.25em] text-[#88B2AB] font-light uppercase">
                 HANFORD
               </span>
