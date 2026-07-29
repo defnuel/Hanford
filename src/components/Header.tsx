@@ -46,8 +46,14 @@ export const Header: React.FC<HeaderProps> = ({ currentPath, onNavigate }) => {
         {/* Brand Logo */}
         <button
           onClick={() => handleLinkClick('/')}
-          className="text-left group flex items-center gap-3 focus:outline-none"
+          className="text-left group flex items-center gap-2.5 sm:gap-3 focus:outline-none"
         >
+          <img
+            src="/logo.png"
+            alt="Hanford HR Logo"
+            className="h-8 sm:h-10 w-auto object-contain transition-transform group-hover:scale-105 drop-shadow-sm"
+            referrerPolicy="no-referrer"
+          />
           <div className="site-logo text-xl sm:text-3xl font-light tracking-[0.2em] sm:tracking-[0.3em] uppercase text-[#3A4F67] font-serif flex items-center gap-1.5 sm:gap-2">
             <span>Hanford</span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#88B2AB]" />

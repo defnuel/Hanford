@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420" width="16" height="16">
+  <!-- Outer Maroon Capsule -->
+  <rect x="8" y="8" width="284" height="404" rx="142" ry="142" fill="#651322" stroke="#E3C77D" stroke-width="12" />
+  <!-- Inner Gold Oval Ring -->
+  <rect x="26" y="26" width="248" height="368" rx="124" ry="124" fill="none" stroke="#E3C77D" stroke-width="7" />
+
+  <!-- HR Monogram -->
+  <g fill="#F5E2AC">
+    <!-- H Left Stem -->
+    <rect x="76" y="150" width="20" height="120" />
+    <!-- H Left Serifs -->
+    <rect x="60" y="144" width="52" height="10" rx="2" />
+    <rect x="60" y="266" width="52" height="10" rx="2" />
+
+    <!-- H Right Stem / R Left Stem -->
+    <rect x="142" y="150" width="20" height="120" />
+    <!-- H Right Serifs -->
+    <rect x="126" y="144" width="52" height="10" rx="2" />
+    <rect x="126" y="266" width="52" height="10" rx="2" />
+
+    <!-- H Crossbar -->
+    <rect x="96" y="202" width="85" height="16" />
+
+    <!-- R Bowl Outer Curve -->
+    <path d="M 160 150 C 230 150 240 212 172 216 L 160 216 Z" />
+    <!-- R Bowl Inner Cutout -->
+    <path d="M 162 166 C 205 166 210 198 162 200 Z" fill="#651322" />
+
+    <!-- R Leg -->
+    <path d="M 168 208 L 226 266 L 250 266 C 242 250 214 220 195 208 Z" />
+    <!-- R Leg End Serif -->
+    <rect x="216" y="266" width="38" height="10" rx="2" />
+  </g>
+</svg>

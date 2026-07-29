@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420" width="300" height="420">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&amp;display=swap');
+    </style>
+  </defs>
+  <!-- Outer Maroon Capsule -->
+  <rect x="8" y="8" width="284" height="404" rx="142" ry="142" fill="#651322" stroke="#E3C77D" stroke-width="7" />
+  <!-- Inner Gold Oval Ring -->
+  <rect x="22" y="22" width="256" height="376" rx="128" ry="128" fill="none" stroke="#E3C77D" stroke-width="4" />
+
+  <!-- HR Monogram -->
+  <g fill="#F5E2AC">
+    <!-- H Left Stem -->
+    <rect x="80" y="152" width="16" height="116" />
+    <!-- H Left Serifs -->
+    <rect x="66" y="148" width="44" height="6" rx="1" />
+    <rect x="66" y="264" width="44" height="6" rx="1" />
+
+    <!-- H Right Stem / R Left Stem -->
+    <rect x="144" y="152" width="16" height="116" />
+    <!-- H Right Serifs -->
+    <rect x="130" y="148" width="44" height="6" rx="1" />
+    <rect x="130" y="264" width="44" height="6" rx="1" />
+
+    <!-- H Crossbar / Intersecting Line -->
+    <rect x="96" y="204" width="85" height="12" />
+
+    <!-- R Bowl Outer Curve -->
+    <path d="M 160 152 C 220 152 230 208 172 212 L 160 212 Z" />
+    <!-- R Bowl Inner Cutout -->
+    <path d="M 160 164 C 200 164 205 198 160 200 Z" fill="#651322" />
+
+    <!-- R Leg -->
+    <path d="M 168 208 L 222 264 L 244 264 C 238 250 212 222 195 208 Z" />
+    <!-- R Leg End Serif -->
+    <rect x="216" y="264" width="32" height="6" rx="1" />
+  </g>
+</svg>
