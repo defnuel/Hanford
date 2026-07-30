@@ -27,7 +27,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPath, onNavigate }) => {
     { name: 'LOCATIONS', path: '/locations' },
     { name: 'COLLABORATIONS', path: '/collaborations' },
     { name: 'ABOUT US', path: '/about' },
-    { name: 'IC GUIDELINES', path: '/ic-guidelines' },
+    { name: 'GUIDELINES', path: '/guidelines' },
   ];
 
   const handleLinkClick = (path: string) => {

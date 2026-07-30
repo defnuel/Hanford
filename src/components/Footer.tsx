@@ -48,8 +48,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 </button>
               </li>
               <li className="text-left">
-                <button onClick={() => onNavigate('/ic-guidelines')} className="hover:text-[#88B2AB] transition-colors cursor-pointer text-left">
-                  IC GUIDELINES
+                <button onClick={() => onNavigate('/guidelines')} className="hover:text-[#88B2AB] transition-colors cursor-pointer text-left">
+                  GUIDELINES
                 </button>
               </li>
               <li className="text-left">

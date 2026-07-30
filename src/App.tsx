@@ -8,7 +8,7 @@ import { PropertyDetailPage } from './pages/PropertyDetailPage';
 import { CollaborationsPage } from './pages/CollaborationsPage';
 import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { BookNowPage } from './pages/BookNowPage';
-import { ICGuidelinesPage } from './pages/ICGuidelinesPage';
+import { GuidelinesPage } from './pages/GuidelinesPage';
 import { AdminPage } from './pages/AdminPage';
 
 export default function App() {
@@ -64,8 +64,12 @@ export default function App() {
       return <AboutPage onNavigate={navigate} />;
     }
 
-    if (path === '/ic-guidelines' || path === '/ic-guidelines/' || path === '/guidelines' || path === '/guidelines/') {
-      return <ICGuidelinesPage onNavigate={navigate} />;
+    if (path === '/ic-guidelines' || path === '/ic-guidelines/') {
+      return <GuidelinesPage onNavigate={navigate} defaultTab="ic" />;
+    }
+
+    if (path === '/guidelines' || path === '/guidelines/' || path === '/guest-guidelines' || path === '/venue-guidelines') {
+      return <GuidelinesPage onNavigate={navigate} defaultTab="guest-venue" />;
     }
 
     if (path === '/locations' || path === '/locations/') {
