@@ -898,7 +898,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   </div>
                   <div>
                     <span className="text-gray-500 text-[10px] block">Account Number:</span>
-                    <span className="text-[#51867E] font-mono font-bold text-xs sm:text-sm">12048328598</span>
+                    <span className="text-[#51867E] font-mono font-bold text-xs sm:text-sm">3076 6324 4788 9928</span>
                   </div>
                 </div>
               </div>
@@ -968,7 +968,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       <div className="space-y-1 text-xs pt-2.5 border-t border-[#88B2AB]/20 mt-2">
                         <div>Bank Name: <strong className="text-[#3A4F67]">CHOBANK</strong></div>
                         <div>Account Name: <strong className="text-[#3A4F67]">Hanford Hotels and Resorts</strong></div>
-                        <div>Account Number: <strong className="text-[#51867E] font-mono font-bold text-sm">12048328598</strong></div>
+                        <div>Account Number: <strong className="text-[#51867E] font-mono font-bold text-sm">3076 6324 4788 9928</strong></div>
                       </div>
                     </div>
                     <div className="text-[10.5px] text-[#5A6E82] italic pt-1 border-t border-[#88B2AB]/20">
