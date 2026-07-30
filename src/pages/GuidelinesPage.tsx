@@ -53,7 +53,7 @@ export const GuidelinesPage: React.FC<GuidelinesPageProps> = ({ onNavigate, defa
       <div className="max-w-4xl mx-auto px-4 sm:px-8 text-center space-y-6 mb-10 sm:mb-14">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#51867E]/10 border border-[#51867E]/20 text-[#51867E] rounded-full text-xs font-bold uppercase tracking-widest">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Hanford Policy & Guidelines</span>
+          <span>HANFORD H&R GUIDELINES</span>
         </div>
 
         <h1 className="text-3xl sm:text-5xl font-serif font-light text-[#3A4F67] tracking-tight">
@@ -63,30 +63,30 @@ export const GuidelinesPage: React.FC<GuidelinesPageProps> = ({ onNavigate, defa
         <div className="w-16 h-0.5 bg-[#88B2AB] mx-auto rounded-full" />
 
         {/* Tab Selector Buttons */}
-        <div className="pt-2 flex items-center justify-center">
-          <div className="inline-flex p-1.5 bg-slate-200/70 border border-slate-300/80 rounded-2xl sm:rounded-full gap-1 shadow-inner max-w-full overflow-x-auto">
+        <div className="pt-2 flex items-center justify-center w-full">
+          <div className="grid grid-cols-2 p-1.5 bg-slate-200/70 border border-slate-300/80 rounded-2xl sm:rounded-full gap-1.5 shadow-inner w-full max-w-lg">
             <button
               onClick={() => setActiveTab('guest-venue')}
-              className={`px-5 py-2.5 rounded-xl sm:rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
+              className={`px-2 sm:px-5 py-2.5 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 text-center ${
                 activeTab === 'guest-venue'
                   ? 'bg-[#3A4F67] text-white shadow-md'
                   : 'text-slate-600 hover:text-[#3A4F67] hover:bg-white/50'
               }`}
             >
-              <Building2 className="w-4 h-4 text-[#88B2AB]" />
-              <span>Guest & Venue Guidelines</span>
+              <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#88B2AB] shrink-0" />
+              <span className="leading-tight">Guest & Venue Guidelines</span>
             </button>
 
             <button
               onClick={() => setActiveTab('ic')}
-              className={`px-5 py-2.5 rounded-xl sm:rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
+              className={`px-2 sm:px-5 py-2.5 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 text-center ${
                 activeTab === 'ic'
                   ? 'bg-[#51867E] text-white shadow-md'
                   : 'text-slate-600 hover:text-[#51867E] hover:bg-white/50'
               }`}
             >
-              <Sparkles className="w-4 h-4 text-emerald-200" />
-              <span>IC Guidelines</span>
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-200 shrink-0" />
+              <span className="leading-tight">Writer's Guidelines</span>
             </button>
           </div>
         </div>
@@ -518,9 +518,9 @@ const GuestVenueGuidelinesSection: React.FC<{ onNavigate: (path: string) => void
               </button>
             </div>
 
-            <div className="py-2">
-              <div className="inline-block px-6 py-2.5 bg-white/10 border border-white/20 rounded-2xl backdrop-blur-sm text-center">
-                <span className="font-serif text-base sm:text-lg text-[#88B2AB] tracking-[0.2em] font-light uppercase">
+            <div className="py-1">
+              <div className="inline-block px-4 py-1.5 bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm text-center">
+                <span className="font-serif text-xs sm:text-sm text-[#88B2AB] tracking-[0.2em] font-light uppercase">
                   Stay. Dine. Gather. Explore.
                 </span>
               </div>
@@ -789,9 +789,9 @@ const ICGuidelinesSection: React.FC<{ onNavigate: (path: string) => void }> = ({
               Gunakan Hanford H&R untuk mengembangkan cerita, membangun karakter, dan menciptakan pengalaman kalian sendiri.
             </p>
 
-            <div className="py-2">
-              <div className="inline-block px-6 py-3 bg-white/10 border border-white/20 rounded-2xl backdrop-blur-sm text-center">
-                <span className="font-serif text-lg sm:text-xl text-[#88B2AB] tracking-[0.2em] font-light uppercase">
+            <div className="py-1">
+              <div className="inline-block px-4 py-1.5 bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm text-center">
+                <span className="font-serif text-xs sm:text-sm text-[#88B2AB] tracking-[0.2em] font-light uppercase">
                   Stay. Dine. Gather. Explore.
                 </span>
               </div>

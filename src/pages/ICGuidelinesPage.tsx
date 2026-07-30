@@ -27,11 +27,11 @@ export const ICGuidelinesPage: React.FC<ICGuidelinesPageProps> = ({ onNavigate }
       <div className="max-w-4xl mx-auto px-4 sm:px-8 text-center space-y-4 mb-12 sm:mb-16">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#51867E]/10 border border-[#51867E]/20 text-[#51867E] rounded-full text-xs font-bold uppercase tracking-widest">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Roleplay & IC Guidelines</span>
+          <span>Roleplay & Writer's Guidelines</span>
         </div>
 
         <h1 className="text-3xl sm:text-5xl font-serif font-light text-[#3A4F67] tracking-tight">
-          IC Guidelines
+          Writer's Guidelines
         </h1>
 
         <div className="w-16 h-0.5 bg-[#88B2AB] mx-auto rounded-full" />
@@ -294,9 +294,9 @@ export const ICGuidelinesPage: React.FC<ICGuidelinesPageProps> = ({ onNavigate }
                 Gunakan Hanford H&R untuk mengembangkan cerita, membangun karakter, dan menciptakan pengalaman kalian sendiri.
               </p>
 
-              <div className="py-2">
-                <div className="inline-block px-6 py-3 bg-white/10 border border-white/20 rounded-2xl backdrop-blur-sm text-center">
-                  <span className="font-serif text-lg sm:text-xl text-[#88B2AB] tracking-[0.2em] font-light uppercase">
+              <div className="py-1">
+                <div className="inline-block px-4 py-1.5 bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm text-center">
+                  <span className="font-serif text-xs sm:text-sm text-[#88B2AB] tracking-[0.2em] font-light uppercase">
                     Stay. Dine. Gather. Explore.
                   </span>
                 </div>
