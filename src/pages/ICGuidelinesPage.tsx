@@ -27,7 +27,7 @@ export const ICGuidelinesPage: React.FC<ICGuidelinesPageProps> = ({ onNavigate }
       <div className="max-w-4xl mx-auto px-4 sm:px-8 text-center space-y-4 mb-12 sm:mb-16">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#51867E]/10 border border-[#51867E]/20 text-[#51867E] rounded-full text-xs font-bold uppercase tracking-widest">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Roleplayer & Plot Guidelines</span>
+          <span>Roleplayer & IC Guidelines</span>
         </div>
 
         <h1 className="text-3xl sm:text-5xl font-serif font-light text-[#3A4F67] tracking-tight">
