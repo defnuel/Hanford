@@ -27,6 +27,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPath, onNavigate }) => {
     { name: 'LOCATIONS', path: '/locations' },
     { name: 'COLLABORATIONS', path: '/collaborations' },
     { name: 'ABOUT US', path: '/about' },
+    { name: 'IC GUIDELINES', path: '/ic-guidelines' },
   ];
 
   const handleLinkClick = (path: string) => {
@@ -54,8 +55,8 @@ export const Header: React.FC<HeaderProps> = ({ currentPath, onNavigate }) => {
           </div>
         </button>
 
-        {/* Primary Desktop Navigation: HOME | LOCATIONS | COLLABORATIONS | ABOUT US */}
-        <nav className="hidden md:flex items-center space-x-10">
+        {/* Primary Desktop Navigation: HOME | LOCATIONS | COLLABORATIONS | ABOUT US | IC GUIDELINES */}
+        <nav className="hidden md:flex items-center space-x-5 lg:space-x-8">
           {navItems.map((item) => {
             const isActive =
               item.path === '/'

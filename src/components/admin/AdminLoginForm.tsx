@@ -11,8 +11,8 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
 
   // Login State
-  const [loginIdentifier, setLoginIdentifier] = useState('admin');
-  const [loginPassword, setLoginPassword] = useState('hanfordhnr');
+  const [loginIdentifier, setLoginIdentifier] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
 
   // Register State
@@ -128,18 +128,6 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
         {/* LOGIN FORM */}
         {activeTab === 'login' && (
           <form onSubmit={handleLoginSubmit} className="space-y-4 pt-2">
-            
-            {/* Super Admin Credentials Preset Card */}
-            <div className="p-3 bg-[#51867E]/10 border border-[#51867E]/30 rounded-xl text-xs space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-[#88B2AB] uppercase tracking-wider text-[10px]">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Default Super Admin Credentials:</span>
-              </div>
-              <div className="text-slate-300 font-mono text-[11px] flex justify-between pt-1">
-                <span>Username: <strong className="text-white">admin</strong></span>
-                <span>Password: <strong className="text-white">hanfordhnr</strong></span>
-              </div>
-            </div>
 
             {loginError && (
               <div className="p-3 bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded-xl text-xs flex items-start gap-2">

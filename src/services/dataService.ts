@@ -1038,7 +1038,29 @@ async function fetchGoogleSheetsBookingsClientDirect(): Promise<BookingInquiry[]
   return [];
 }
 
+export function getDeletedBookingIds(): string[] {
+  try {
+    const raw = localStorage.getItem('hanford_deleted_booking_ids');
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function addDeletedBookingId(bookingId: string) {
+  try {
+    const deleted = getDeletedBookingIds();
+    if (!deleted.includes(bookingId)) {
+      deleted.push(bookingId);
+      localStorage.setItem('hanford_deleted_booking_ids', JSON.stringify(deleted));
+    }
+  } catch (e) {
+    console.error('Error adding deleted booking id:', e);
+  }
+}
+
 export async function fetchBookings(): Promise<BookingInquiry[]> {
+  const deletedIds = getDeletedBookingIds();
   try {
     const res = await fetch('/api/bookings');
     if (res.ok) {
@@ -1065,8 +1087,9 @@ export async function fetchBookings(): Promise<BookingInquiry[]> {
           }
         });
 
-        saveBookingsToStorage(merged);
-        return merged;
+        const activeMerged = merged.filter((b) => !deletedIds.includes(b.bookingId || b.id || ''));
+        saveBookingsToStorage(activeMerged);
+        return activeMerged;
       }
     }
   } catch (e) {
@@ -1096,8 +1119,9 @@ export async function fetchBookings(): Promise<BookingInquiry[]> {
         }
       });
 
-      saveBookingsToStorage(merged);
-      return merged;
+      const activeMerged = merged.filter((b) => !deletedIds.includes(b.bookingId || b.id || ''));
+      saveBookingsToStorage(activeMerged);
+      return activeMerged;
     }
   } catch (err) {
     console.warn('[dataService] Direct Google Sheets client fetch failed, falling back to local storage:', err);
@@ -1107,21 +1131,24 @@ export async function fetchBookings(): Promise<BookingInquiry[]> {
 }
 
 export function fetchBookingsFromStorage(): BookingInquiry[] {
+  const deletedIds = getDeletedBookingIds();
   try {
     const raw = localStorage.getItem('hanford_booking_requests');
     if (!raw) {
-      localStorage.setItem('hanford_booking_requests', JSON.stringify(DEFAULT_MOCK_BOOKINGS));
-      return DEFAULT_MOCK_BOOKINGS;
+      const filteredDefault = DEFAULT_MOCK_BOOKINGS.filter((b) => !deletedIds.includes(b.bookingId || b.id || ''));
+      localStorage.setItem('hanford_booking_requests', JSON.stringify(filteredDefault));
+      return filteredDefault;
     }
     const list: BookingInquiry[] = JSON.parse(raw);
     if (!Array.isArray(list) || list.length === 0) {
-      localStorage.setItem('hanford_booking_requests', JSON.stringify(DEFAULT_MOCK_BOOKINGS));
-      return DEFAULT_MOCK_BOOKINGS;
+      const filteredDefault = DEFAULT_MOCK_BOOKINGS.filter((b) => !deletedIds.includes(b.bookingId || b.id || ''));
+      localStorage.setItem('hanford_booking_requests', JSON.stringify(filteredDefault));
+      return filteredDefault;
     }
-    return list;
+    return list.filter((b) => !deletedIds.includes(b.bookingId || b.id || ''));
   } catch (e) {
     console.error('Error reading booking requests:', e);
-    return DEFAULT_MOCK_BOOKINGS;
+    return DEFAULT_MOCK_BOOKINGS.filter((b) => !deletedIds.includes(b.bookingId || b.id || ''));
   }
 }
 
@@ -1161,13 +1188,11 @@ export function updateBookingDetails(updated: BookingInquiry): boolean {
 }
 
 export function deleteBookingInquiry(bookingId: string): boolean {
+  addDeletedBookingId(bookingId);
   const bookings = fetchBookingsFromStorage();
   const filtered = bookings.filter((b) => (b.bookingId || b.id) !== bookingId);
-  if (filtered.length !== bookings.length) {
-    saveBookingsToStorage(filtered);
-    return true;
-  }
-  return false;
+  saveBookingsToStorage(filtered);
+  return true;
 }
 
 const DEFAULT_SUPER_ADMIN: AdminUser = {

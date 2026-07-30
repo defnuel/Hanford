@@ -24,16 +24,16 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
   return (
     <div className="space-y-8">
       {/* Welcome Banner */}
-      <div className="p-6 sm:p-8 bg-gradient-to-r from-[#3A4F67] to-[#2C3744] text-white rounded-2xl shadow-lg border border-slate-700 relative overflow-hidden">
+      <div className="p-5 sm:p-8 bg-gradient-to-r from-[#3A4F67] to-[#2C3744] text-white rounded-2xl shadow-lg border border-slate-700 relative overflow-hidden">
         <div className="relative z-10 space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#51867E]/30 text-[#88B2AB] rounded-full text-[10px] font-bold uppercase tracking-widest border border-[#51867E]/40">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Central Admin Workspace</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-serif font-light tracking-wide">
+          <h2 className="text-xl sm:text-3xl font-serif font-light tracking-wide text-white">
             Hanford Management Portal
           </h2>
-          <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+          <p className="text-xs text-slate-200 max-w-2xl leading-relaxed">
             Manage your luxury sanctuaries, brand collaboration projects, booking inquiries, and guest paid invoices from one central console.
           </p>
         </div>

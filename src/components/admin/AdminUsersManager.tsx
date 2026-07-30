@@ -165,14 +165,51 @@ export const AdminUsersManager: React.FC<AdminUsersManagerProps> = ({
       )}
 
       {/* APPROVED ADMINS LIST */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-4 p-6">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm space-y-4 p-4 sm:p-6">
         <h3 className="font-bold text-sm uppercase tracking-wider text-[#3A4F67] flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-[#51867E]" />
           <span>Akun Admin Aktif ({approvedUsers.length})</span>
         </h3>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+        {/* Mobile Card List (screens < md) */}
+        <div className="md:hidden space-y-3">
+          {approvedUsers.map((u) => (
+            <div key={u.id} className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <div className="font-bold text-slate-900 text-sm flex flex-wrap items-center gap-1.5">
+                    <span>{u.fullName}</span>
+                    {u.role === 'Super Admin' && (
+                      <span className="px-1.5 py-0.5 bg-[#51867E]/10 text-[#51867E] text-[9px] font-bold uppercase rounded">
+                        Super Admin
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[11px] text-slate-500 font-mono">@{u.username}</div>
+                </div>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-[10px] font-bold uppercase shrink-0">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                  <span>Approved</span>
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-[11px] pt-1 border-t border-slate-200/60">
+                <div>
+                  <span className="text-slate-400 block text-[9.5px] uppercase font-bold">Email</span>
+                  <span className="font-mono text-slate-700 truncate block">{u.email}</span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-[9.5px] uppercase font-bold">Dept & Role</span>
+                  <span className="text-slate-700 font-medium">{u.department || 'Central'} ({u.role})</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Table View (screens >= md) */}
+        <div className="hidden md:block overflow-x-auto w-full border border-slate-200 rounded-xl">
+          <table className="w-full text-left text-xs min-w-[650px]">
             <thead className="bg-slate-50 text-slate-600 uppercase tracking-wider text-[10px] border-b border-slate-200">
               <tr>
                 <th className="py-3 px-4">Nama Lengkap & Username</th>

@@ -8,6 +8,7 @@ import { PropertyDetailPage } from './pages/PropertyDetailPage';
 import { CollaborationsPage } from './pages/CollaborationsPage';
 import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { BookNowPage } from './pages/BookNowPage';
+import { ICGuidelinesPage } from './pages/ICGuidelinesPage';
 import { AdminPage } from './pages/AdminPage';
 
 export default function App() {
@@ -61,6 +62,10 @@ export default function App() {
 
     if (path === '/about' || path === '/about/') {
       return <AboutPage onNavigate={navigate} />;
+    }
+
+    if (path === '/ic-guidelines' || path === '/ic-guidelines/' || path === '/guidelines' || path === '/guidelines/') {
+      return <ICGuidelinesPage onNavigate={navigate} />;
     }
 
     if (path === '/locations' || path === '/locations/') {

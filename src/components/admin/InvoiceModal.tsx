@@ -250,11 +250,15 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               <p className="text-[11px] font-semibold text-[#51867E] uppercase tracking-widest mt-1">
                 HOTELS & RESORTS &bull; CENTRAL RESERVATIONS
               </p>
-              <p className="text-xs text-slate-500 mt-2 max-w-sm leading-relaxed">
-                Global Luxury Accommodations & Event Venues
-                <br />
-                x.com/Hanford_HnR
+              <p className="text-xs text-slate-600 mt-1.5 font-medium italic">
+                An Elevated Way of Staying
               </p>
+              <div className="flex items-center gap-1.5 mt-1 text-xs text-slate-500 font-medium">
+                <svg className="w-3.5 h-3.5 fill-current text-slate-800 shrink-0" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+                <span>x.com/Hanford_HnR</span>
+              </div>
             </div>
 
             <div className="sm:text-right space-y-1">
@@ -283,23 +287,28 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
 
           {/* Guest & Property Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 my-8 text-xs">
-            {/* Bill To */}
+            {/* Guest Details */}
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1.5">
               <span className="text-[10px] font-bold text-[#51867E] uppercase tracking-wider block">
-                Billed To (Guest Details)
+                Guest Details
               </span>
-              <div className="font-bold text-sm text-[#3A4F67]">{booking.guestName}</div>
+              <div className="font-bold text-sm text-[#3A4F67] uppercase">{booking.guestName}</div>
+              {booking.businessName && (
+                <div className="text-slate-600 font-medium">{booking.businessName}</div>
+              )}
               {booking.xUsername && (
-                <div className="text-slate-600">X Handle: <strong className="text-[#51867E]">{booking.xUsername}</strong></div>
+                <div className="text-slate-600 flex items-center gap-1.5 pt-0.5">
+                  <svg className="w-3 h-3 fill-current text-slate-700 shrink-0" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                  <span>X Handle: <strong className="text-[#51867E]">{booking.xUsername}</strong></span>
+                </div>
               )}
               {booking.guestEmail && (
                 <div className="text-slate-600">Email: {booking.guestEmail}</div>
               )}
               {booking.guestPhone && (
                 <div className="text-slate-600">Phone: {booking.guestPhone}</div>
-              )}
-              {booking.businessName && (
-                <div className="text-slate-600">Organization: {booking.businessName}</div>
               )}
             </div>
 
@@ -337,8 +346,113 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             </div>
           </div>
 
-          {/* Breakdown Table */}
-          <div className="border border-slate-200 rounded-xl overflow-hidden mb-8">
+          {/* Mobile Breakdown List (No horizontal scroll on mobile) */}
+          <div className="sm:hidden space-y-2.5 mb-6">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 pb-1 border-b border-slate-200">
+              Breakdown Item & Layanan
+            </div>
+
+            {booking.standardRooms ? (
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
+                <div>
+                  <div className="font-bold text-slate-800">Standard Room</div>
+                  <div className="text-[10px] text-slate-500">
+                    ${priceStandard.toLocaleString()} / night &bull; {booking.standardRooms} Room(s) &times; {nights} N
+                  </div>
+                </div>
+                <div className="font-mono font-bold text-[#3A4F67] text-xs">
+                  ${standardAmt.toLocaleString()}
+                </div>
+              </div>
+            ) : null}
+
+            {booking.deluxeRooms ? (
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
+                <div>
+                  <div className="font-bold text-slate-800">Deluxe Room</div>
+                  <div className="text-[10px] text-slate-500">
+                    ${priceDeluxe.toLocaleString()} / night &bull; {booking.deluxeRooms} Room(s) &times; {nights} N
+                  </div>
+                </div>
+                <div className="font-mono font-bold text-[#3A4F67] text-xs">
+                  ${deluxeAmt.toLocaleString()}
+                </div>
+              </div>
+            ) : null}
+
+            {booking.presidentialSuites ? (
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
+                <div>
+                  <div className="font-bold text-slate-800">Presidential Suite</div>
+                  <div className="text-[10px] text-slate-500">
+                    ${pricePresidential.toLocaleString()} / night &bull; {booking.presidentialSuites} Suite(s) &times; {nights} N
+                  </div>
+                </div>
+                <div className="font-mono font-bold text-[#3A4F67] text-xs">
+                  ${presidentialAmt.toLocaleString()}
+                </div>
+              </div>
+            ) : null}
+
+            {booking.privateVillas ? (
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
+                <div>
+                  <div className="font-bold text-slate-800">Private Villa</div>
+                  <div className="text-[10px] text-slate-500">
+                    ${pricePrivateVilla.toLocaleString()} / night &bull; {booking.privateVillas} Villa(s) &times; {nights} N
+                  </div>
+                </div>
+                <div className="font-mono font-bold text-[#3A4F67] text-xs">
+                  ${villaAmt.toLocaleString()}
+                </div>
+              </div>
+            ) : null}
+
+            {booking.eventAttendees ? (
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
+                <div>
+                  <div className="font-bold text-slate-800">Event Space Rental</div>
+                  <div className="text-[10px] text-slate-500">
+                    {booking.bookOption === 'meeting' ? `$${priceMeetingRoom.toLocaleString()} / pax` : `$${priceEventHall.toLocaleString()} / hall`} &bull; {booking.eventAttendees} Attendees
+                  </div>
+                </div>
+                <div className="font-mono font-bold text-[#3A4F67] text-xs">
+                  ${eventAmt.toLocaleString()}
+                </div>
+              </div>
+            ) : null}
+
+            {booking.cateringPax ? (
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
+                <div>
+                  <div className="font-bold text-slate-800">Catering Service</div>
+                  <div className="text-[10px] text-slate-500">
+                    ${priceCateringPerPax.toLocaleString()} / pax &bull; {booking.cateringPax} Pax
+                  </div>
+                </div>
+                <div className="font-mono font-bold text-[#3A4F67] text-xs">
+                  ${cateringAmt.toLocaleString()}
+                </div>
+              </div>
+            ) : null}
+
+            {totalRooms === 0 && !booking.eventAttendees && (
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
+                <div>
+                  <div className="font-bold text-slate-800">Room Reservation</div>
+                  <div className="text-[10px] text-slate-500">
+                    ${priceStandard.toLocaleString()} / night &bull; 1 Reservation
+                  </div>
+                </div>
+                <div className="font-mono font-bold text-[#3A4F67] text-xs">
+                  ${(booking.totalAmount ? Math.round(booking.totalAmount / 1.1) : priceStandard).toLocaleString()}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Breakdown Table */}
+          <div className="hidden sm:block border border-slate-200 rounded-xl overflow-hidden mb-8 w-full">
             <table className="w-full text-left text-xs">
               <thead className="bg-[#3A4F67] text-white uppercase tracking-wider text-[10px]">
                 <tr>

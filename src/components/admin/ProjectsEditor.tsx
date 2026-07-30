@@ -118,7 +118,7 @@ export const ProjectsEditor: React.FC<ProjectsEditorProps> = ({ projects, onRefr
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-serif font-light text-[#3A4F67]">
+          <h2 className="text-lg sm:text-xl font-serif font-light text-[#3A4F67]">
             Collaborations & Projects ({projects.length})
           </h2>
           <p className="text-xs text-slate-500">
@@ -126,7 +126,7 @@ export const ProjectsEditor: React.FC<ProjectsEditorProps> = ({ projects, onRefr
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="relative flex-grow sm:w-64">
             <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
             <input
@@ -140,7 +140,7 @@ export const ProjectsEditor: React.FC<ProjectsEditorProps> = ({ projects, onRefr
 
           <button
             onClick={handleStartCreate}
-            className="px-4 py-2 bg-[#51867E] hover:bg-[#3f6d66] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer shadow-sm"
+            className="px-4 py-2 bg-[#51867E] hover:bg-[#3f6d66] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-colors flex items-center justify-center gap-1.5 shrink-0 cursor-pointer shadow-sm w-full sm:w-auto"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Projek</span>
