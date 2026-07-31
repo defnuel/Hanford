@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BookingInquiry, Property } from '../../types';
 import { Search, Printer, CheckCircle, Clock, Trash2, FileText, Building, Plus, AlertTriangle, CheckCircle2, X } from 'lucide-react';
 import { updateBookingPaymentStatus, deleteBookingInquiry } from '../../services/dataService';
+import { getBookingTypeLabel } from '../../utils/bookingUtils';
 import { InvoiceModal } from './InvoiceModal';
 import { CreateInvoiceModal } from './CreateInvoiceModal';
 
@@ -230,7 +231,7 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({ bookings, prop
                         <span>{b.propertyName}</span>
                       </div>
                       <div className="text-[11px] text-slate-500">
-                        {b.bookOption === 'both' ? 'Room & Event' : b.bookOption === 'room_meeting' ? 'Room & Meeting' : b.bookOption.replace('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+                        {getBookingTypeLabel(b)}
                         {b.checkInDate ? ` (${b.checkInDate})` : ''}
                       </div>
                     </div>
@@ -319,7 +320,7 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({ bookings, prop
                             <span>{b.propertyName}</span>
                           </div>
                           <div className="text-[10px] text-slate-500">
-                            {b.bookOption === 'both' ? 'Room & Event' : b.bookOption === 'room_meeting' ? 'Room & Meeting' : b.bookOption.replace('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+                            {getBookingTypeLabel(b)}
                             {b.checkInDate ? ` (${b.checkInDate})` : ''}
                           </div>
                         </td>

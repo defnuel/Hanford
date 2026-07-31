@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Property, BookingInquiry, BookOption, EventAddonOption } from '../types';
 import { fetchLocations, submitBooking } from '../services/dataService';
 import { validatePropertyCoupon } from '../utils/couponUtils';
+import { getBookingCategoryLabel } from '../utils/bookingUtils';
 import { PropertySearchSelect } from '../components/PropertySearchSelect';
 import { toPng } from 'html-to-image';
 import {
@@ -25,39 +26,13 @@ import {
   ShieldCheck,
   DollarSign,
   Briefcase,
-  Tag
+  Tag,
+  MapPin
 } from 'lucide-react';
 
 interface BookNowPageProps {
   initialPropertySlug?: string;
   onNavigate: (path: string) => void;
-}
-
-function getBookingCategoryLabel(inquiry: BookingInquiry): string {
-  const opt = (inquiry.bookOption || '').toLowerCase().trim();
-  const totalRooms = (inquiry.standardRooms || 0) + (inquiry.deluxeRooms || 0) + (inquiry.presidentialSuites || 0) + (inquiry.privateVillas || 0);
-  const hasRooms = totalRooms > 0;
-  const hasEvents = Boolean(inquiry.eventAttendees || inquiry.cateringPax);
-
-  if (opt === 'both' || opt.includes('both') || opt.includes('keduanya') || (opt.includes('room') && opt.includes('event')) || opt.includes('& event') || opt.includes('+ event') || (hasRooms && hasEvents)) {
-    return 'Room & Event';
-  }
-  if (opt === 'room_meeting' || (opt.includes('room') && opt.includes('meeting'))) {
-    return 'Room & Meeting';
-  }
-  if (opt === 'meeting') {
-    return 'Meeting / Venue';
-  }
-  if (opt === 'event') {
-    return 'Event';
-  }
-  if (opt === 'room') {
-    return 'Room / Accommodation';
-  }
-  if (opt) {
-    return opt.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-  }
-  return 'Room & Event';
 }
 
 export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, onNavigate }) => {
@@ -105,6 +80,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const invoiceRef = useRef<HTMLDivElement>(null);
+  const exportInvoiceRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchLocations().then((res) => {
@@ -486,14 +462,17 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
   };
 
   const handleDownloadInvoice = async () => {
-    if (!invoiceRef.current) return;
+    const targetEl = exportInvoiceRef.current || invoiceRef.current;
+    if (!targetEl) return;
     try {
       setIsGeneratingImage(true);
-      const dataUrl = await toPng(invoiceRef.current, {
+      const dataUrl = await toPng(targetEl, {
         cacheBust: true,
         quality: 1.0,
         pixelRatio: 2,
-        backgroundColor: '#FFFFFF'
+        backgroundColor: '#FFFFFF',
+        skipFonts: true,
+        fontEmbedCSS: ''
       });
       const link = document.createElement('a');
       link.download = `Hanford_Invoice_${confirmedBooking?.bookingId || 'HNF-2026'}.png`;
@@ -575,341 +554,671 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
             {/* Downloadable Invoice Card */}
             <div
               ref={invoiceRef}
-              className="bg-[#FFFFFF] border-2 border-[#3A4F67] rounded-2xl p-4 sm:p-10 shadow-2xl space-y-5 sm:space-y-8 relative overflow-hidden w-full"
+              className="bg-[#FFFFFF] border-2 border-[#3A4F67]/30 rounded-2xl p-4 sm:p-8 shadow-2xl space-y-3 sm:space-y-4 relative overflow-hidden w-full text-left"
             >
               {/* Invoice Header */}
-              <div className="border-b-2 border-[#3A4F67]/20 pb-4 sm:pb-6 text-left flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+              <div className="border-b border-slate-200 pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-[#3A4F67]">
-                    <Sparkles className="w-4 h-4 text-[#51867E]" />
-                    <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] sm:tracking-[0.25em] uppercase">
-                      HANFORD HOTELS & RESORTS
+                  <div className="flex items-center gap-2">
+                    <span className="font-serif text-2xl sm:text-3xl font-bold tracking-wider text-[#3A4F67]">
+                      HANFORD
                     </span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#51867E] inline-block"></span>
                   </div>
-                  <h2 className="font-serif italic text-2xl sm:text-3xl text-[#3A4F67]">Official Booking Invoice</h2>
-                  <p className="text-[11px] sm:text-xs text-[#2C3744] font-medium">
-                    Booking ID: <strong className="text-[#3A4F67]">{confirmedBooking.bookingId}</strong> | Date: {new Date().toLocaleDateString()}
-                  </p>
-                </div>
-
-                {/* UNPAID Badge */}
-                <div className="self-start sm:self-auto border-2 border-rose-600 text-rose-700 bg-rose-50/90 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full font-bold text-[10px] sm:text-xs tracking-[0.2em] sm:tracking-[0.25em] uppercase shadow-sm flex items-center gap-1.5 shrink-0">
-                  <Clock className="w-3.5 h-3.5 text-rose-600" />
-                  <span>UNPAID</span>
-                </div>
-              </div>
-
-              {/* Prominent Payment Callout - Compact */}
-              <div className="bg-[#EAF2F1] border border-[#88B2AB] p-3 sm:p-4 rounded-xl text-center space-y-1 shadow-inner">
-                <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#3A4F67] uppercase block">
-                  PAYMENT REQUIRED / AMOUNT DUE
-                </span>
-                <div className="text-xl sm:text-3xl font-serif font-bold text-[#3A4F67] tracking-tight">
-                  NEED TO PAY ${confirmedBooking.grandTotal.toLocaleString()}
-                </div>
-                <p className="text-[9px] sm:text-[10px] text-[#2C3744] italic font-light">
-                  Status: <strong className="text-rose-700 uppercase font-bold">UNPAID</strong> — Please complete payment before 48 hours.
-                </p>
-              </div>
-
-              {/* Guest, Property & Schedule Details */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 pt-1">
-                
-                {/* Guest Information */}
-                <div className="bg-[#EAF2F1]/40 border border-[#88B2AB]/30 p-3.5 sm:p-4 rounded-xl space-y-2 text-left">
-                  <h4 className="text-[11px] sm:text-xs font-bold text-[#3A4F67] uppercase tracking-wider border-b border-[#88B2AB]/20 pb-1 flex items-center gap-1.5">
-                    <User className="w-3.5 h-3.5 text-[#51867E]" />
-                    Guest Information
-                  </h4>
-                  <div className="text-[10.5px] sm:text-xs space-y-1 text-[#2C3744]">
-                    <div><strong>Name:</strong> {confirmedBooking.inquiry.guestName}</div>
-                    <div><strong>X Username:</strong> <span className="text-[#51867E] font-medium">@{confirmedBooking.inquiry.xUsername.replace(/^@/, '')}</span></div>
-                    {confirmedBooking.inquiry.businessName && confirmedBooking.inquiry.businessName.trim() !== '' && (
-                      <div><strong>Business Name:</strong> {confirmedBooking.inquiry.businessName.trim()}</div>
-                    )}
+                  <div className="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] text-[#51867E] uppercase">
+                    HOTELS & RESORTS • CENTRAL RESERVATIONS
                   </div>
-                </div>
-
-                {/* Kotak PERTAMA: Property & Venue Details */}
-                <div className="bg-[#EAF2F1]/40 border border-[#88B2AB]/30 p-3.5 sm:p-4 rounded-xl space-y-2 text-left">
-                  <h4 className="text-[11px] sm:text-xs font-bold text-[#3A4F67] uppercase tracking-wider border-b border-[#88B2AB]/20 pb-1 flex items-center gap-1.5">
-                    <Building2 className="w-3.5 h-3.5 text-[#51867E]" />
-                    Property & Venue Details
-                  </h4>
-                  <div className="text-[10.5px] sm:text-xs space-y-1 text-[#2C3744]">
-                    <div><strong>Destination:</strong> {confirmedBooking.property.name} ({confirmedBooking.property.country})</div>
-                    {confirmedBooking.property.address && (
-                      <div><strong>Address:</strong> {confirmedBooking.property.address}</div>
-                    )}
-                    <div><strong>Booking Category:</strong> <span className="font-semibold text-[#3A4F67]">{getBookingCategoryLabel(confirmedBooking.inquiry)}</span></div>
-                    
-                    {confirmedBooking.inquiry.bookOption === 'meeting' && (
-                      <>
-                        <div>
-                          <strong>Accommodation:</strong>{' '}
-                          <span className="uppercase font-semibold text-[#51867E]">
-                            {confirmedBooking.inquiry.accommodationOption === 'with' ? 'WITH ACCOMMODATION' : 'WITHOUT ACCOMMODATION'}
-                          </span>
-                        </div>
-                        <div>
-                          <strong>Venue Rate:</strong>{' '}
-                          <span className="uppercase font-medium text-[#3A4F67]">
-                            {getVenueRateLabel(confirmedBooking.inquiry.venueRentalRate)}
-                          </span>
-                        </div>
-                      </>
-                    )}
-
-                    {showVenueSettings && (
-                      <div><strong>Attendees:</strong> {confirmedBooking.inquiry.eventAttendees} Pax</div>
-                    )}
+                  <div className="text-xs sm:text-sm italic font-serif text-slate-500 pt-0.5">
+                    An Elevated Way of Staying
                   </div>
+                  <a
+                    href="https://x.com/Hanford_HnR"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-[#51867E] pt-0.5 transition-colors"
+                  >
+                    <svg className="w-3.5 h-3.5 fill-current text-slate-700 shrink-0" viewBox="0 0 24 24">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    <span className="underline font-medium">x.com/Hanford_HnR</span>
+                  </a>
                 </div>
 
-                {/* Kotak KEDUA: Schedule & Stay Dates */}
-                <div className="bg-[#EAF2F1]/40 border border-[#88B2AB]/30 p-3.5 sm:p-4 rounded-xl space-y-2 text-left">
-                  <h4 className="text-[11px] sm:text-xs font-bold text-[#3A4F67] uppercase tracking-wider border-b border-[#88B2AB]/20 pb-1 flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-[#51867E]" />
-                    Schedule & Stay Dates
-                  </h4>
-                  <div className="text-[10.5px] sm:text-xs space-y-1 text-[#2C3744]">
-                    {confirmedBooking.nights > 0 ? (
-                      <>
-                        <div><strong>Dates:</strong> {confirmedBooking.inquiry.checkInDate} to {confirmedBooking.inquiry.checkOutDate}</div>
-                        <div><strong>Duration:</strong> {confirmedBooking.nights} Night(s)</div>
-                      </>
-                    ) : (
-                      <div><strong>Duration:</strong> Single Day Event</div>
-                    )}
+                <div className="flex flex-col sm:items-end space-y-1">
+                  <span className="px-2.5 py-0.5 bg-slate-100 text-slate-600 rounded-full text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider inline-block self-start sm:self-auto">
+                    OFFICIAL RECEIPT / INVOICE
+                  </span>
+                  <div className="text-sm sm:text-base font-bold text-[#3A4F67]">
+                    Invoice No: <span className="font-mono text-[#3A4F67]">{confirmedBooking.bookingId}</span>
+                  </div>
+                  <div className="text-xs text-slate-500">
+                    Date Issued: {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </div>
 
-                    {showVenueSettings && confirmedBooking.inquiry.eventDate && (
-                      <div><strong>Event Date:</strong> {confirmedBooking.inquiry.eventDate}</div>
-                    )}
+                  <div className="px-3 py-1 bg-amber-50/80 border border-amber-500/80 text-amber-800 rounded-full text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5 shadow-2xs mt-1 self-start sm:self-auto">
+                    <Clock className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                    <span>UNPAID - INVOICE PENDING</span>
                   </div>
                 </div>
               </div>
 
-              {/* Itemized Price Breakdown Table (No Horizontal Scrolling) */}
-              <div className="space-y-2 sm:space-y-3 pt-1">
-                <h4 className="text-xs sm:text-sm font-bold text-[#3A4F67] uppercase tracking-wider text-left flex items-center gap-1.5">
-                  <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#51867E]" />
-                  Itemized Pricing Breakdown
-                </h4>
-
-                <div className="border border-[#88B2AB]/40 rounded-xl shadow-sm text-[9px] sm:text-xs w-full bg-white overflow-hidden">
-                  <div className="w-full">
-                    <div className="bg-[#3A4F67] text-white px-2.5 py-2 sm:px-4 sm:py-3 font-bold grid grid-cols-12 text-left items-center tracking-wider text-[9px] sm:text-xs uppercase">
-                      <div className="col-span-4">Item Description</div>
-                      <div className="col-span-3 text-center">Rate / Unit</div>
-                      <div className="col-span-2 text-center">Qty / Pax</div>
-                      <div className="col-span-3 text-right">Total Amount</div>
+              {/* Guest Details & Property / Location Cards Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 my-3 text-xs">
+                {/* Guest Details */}
+                <div className="bg-slate-50/80 p-3.5 sm:p-4 rounded-xl border border-slate-100 space-y-1">
+                  <span className="text-[10px] font-bold text-[#51867E] uppercase tracking-wider block">
+                    GUEST DETAILS
+                  </span>
+                  <div className="font-bold text-sm text-[#3A4F67] uppercase tracking-wide">
+                    {confirmedBooking.inquiry.guestName || 'TREVOR'}
+                  </div>
+                  <div className="space-y-0.5 text-slate-600">
+                    <div className="flex items-center gap-1.5">
+                      <svg className="w-3.5 h-3.5 fill-current text-slate-700 shrink-0" viewBox="0 0 24 24">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                      </svg>
+                      <span>X Handle: <strong className="text-[#51867E]">@{confirmedBooking.inquiry.xUsername ? confirmedBooking.inquiry.xUsername.replace(/^@/, '') : 'def'}</strong></span>
                     </div>
+                    {confirmedBooking.inquiry.businessName && confirmedBooking.inquiry.businessName.trim() !== '' && (
+                      <div>Business Name: <strong className="text-slate-700">{confirmedBooking.inquiry.businessName.trim()}</strong></div>
+                    )}
+                    {confirmedBooking.inquiry.guestEmail && (
+                      <div>Email: <span className="text-slate-600">{confirmedBooking.inquiry.guestEmail}</span></div>
+                    )}
+                  </div>
+                </div>
 
-                    <div className="divide-y divide-[#88B2AB]/20 bg-white">
-                      {/* Room Breakdown */}
-                      {confirmedBooking.inquiry.standardRooms! > 0 && (
-                        <div className="px-2.5 py-2 sm:px-4 sm:py-3 grid grid-cols-12 text-left items-center hover:bg-[#EAF2F1]/20 transition-colors">
-                          <div className="col-span-4 font-semibold text-[#2C3744] pr-1 truncate">
-                            Standard Room
+                {/* Property / Location Details */}
+                <div className="bg-slate-50/80 p-3.5 sm:p-4 rounded-xl border border-slate-100 space-y-1">
+                  <span className="text-[10px] font-bold text-[#51867E] uppercase tracking-wider block">
+                    PROPERTY / LOCATION
+                  </span>
+                  <div className="font-bold text-sm text-[#3A4F67] flex items-center gap-1.5">
+                    <Building2 className="w-4 h-4 text-[#51867E] shrink-0" />
+                    <span>{confirmedBooking.property.name}</span>
+                  </div>
+                  <div className="text-slate-500 text-xs flex items-start gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+                    <span>{confirmedBooking.property.address || confirmedBooking.property.country}</span>
+                  </div>
+                  <div className="space-y-0.5 pt-1 text-slate-600 border-t border-slate-100 mt-1">
+                    <div>Booking Type: <strong className="text-[#3A4F67]">{getBookingCategoryLabel(confirmedBooking.inquiry)}</strong></div>
+                    <div>
+                      Stay Dates: <strong className="text-[#3A4F67]">{confirmedBooking.inquiry.checkInDate}</strong> to <strong className="text-[#3A4F67]">{confirmedBooking.inquiry.checkOutDate}</strong> ({confirmedBooking.nights} night{confirmedBooking.nights !== 1 ? 's' : ''})
+                    </div>
+                    {showVenueSettings && confirmedBooking.inquiry.eventDate && (
+                      <div>Event Date: <strong className="text-[#3A4F67]">{confirmedBooking.inquiry.eventDate}</strong></div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Itemized Price Breakdown Table */}
+              <div className="rounded-xl overflow-hidden border border-slate-200 my-3 shadow-2xs w-full">
+                <div className="bg-[#3A4F67] text-white px-3 sm:px-4 py-2 font-bold grid grid-cols-12 text-left items-center tracking-wider text-[10px] sm:text-xs uppercase gap-1">
+                  <div className="col-span-6 min-w-0 leading-tight">ITEM / SERVICE DESCRIPTION</div>
+                  <div className="col-span-3 text-center min-w-0 leading-tight">QTY / PAX</div>
+                  <div className="col-span-3 text-right min-w-0 leading-tight">AMOUNT</div>
+                </div>
+
+                <div className="divide-y divide-slate-100 bg-white text-xs">
+                  {/* Room Breakdown */}
+                  {confirmedBooking.inquiry.standardRooms! > 0 && (
+                    <div className="px-3 sm:px-4 py-2 sm:py-2.5 grid grid-cols-12 text-left items-center hover:bg-slate-50/50 transition-colors gap-1">
+                      <div className="col-span-6 min-w-0 pr-1">
+                        <div className="font-semibold text-slate-800 leading-snug break-words">Standard Room</div>
+                        <div className="text-[10px] sm:text-[11px] text-slate-500 font-mono leading-tight mt-0.5">${priceStandard.toLocaleString()} / night</div>
+                      </div>
+                      <div className="col-span-3 text-center min-w-0 text-slate-600 font-mono text-xs sm:text-xs leading-snug break-words">
+                        {confirmedBooking.inquiry.standardRooms} Room(s) × {confirmedBooking.nights} Night(s)
+                      </div>
+                      <div className="col-span-3 text-right min-w-0 font-bold text-slate-900 font-mono text-xs sm:text-sm leading-snug break-words">
+                        ${((confirmedBooking.inquiry.standardRooms || 0) * priceStandard * confirmedBooking.nights).toLocaleString()}
+                      </div>
+                    </div>
+                  )}
+
+                  {confirmedBooking.inquiry.deluxeRooms! > 0 && (
+                    <div className="px-3 sm:px-4 py-2 sm:py-2.5 grid grid-cols-12 text-left items-center hover:bg-slate-50/50 transition-colors gap-1">
+                      <div className="col-span-6 min-w-0 pr-1">
+                        <div className="font-semibold text-slate-800 leading-snug break-words">Deluxe Room</div>
+                        <div className="text-[10px] sm:text-[11px] text-slate-500 font-mono leading-tight mt-0.5">${priceDeluxe.toLocaleString()} / night</div>
+                      </div>
+                      <div className="col-span-3 text-center min-w-0 text-slate-600 font-mono text-xs sm:text-xs leading-snug break-words">
+                        {confirmedBooking.inquiry.deluxeRooms} Room(s) × {confirmedBooking.nights} Night(s)
+                      </div>
+                      <div className="col-span-3 text-right min-w-0 font-bold text-slate-900 font-mono text-xs sm:text-sm leading-snug break-words">
+                        ${((confirmedBooking.inquiry.deluxeRooms || 0) * priceDeluxe * confirmedBooking.nights).toLocaleString()}
+                      </div>
+                    </div>
+                  )}
+
+                  {confirmedBooking.inquiry.presidentialSuites! > 0 && (
+                    <div className="px-3 sm:px-4 py-2 sm:py-2.5 grid grid-cols-12 text-left items-center hover:bg-slate-50/50 transition-colors gap-1">
+                      <div className="col-span-6 min-w-0 pr-1">
+                        <div className="font-semibold text-slate-800 leading-snug break-words">Presidential Suite</div>
+                        <div className="text-[10px] sm:text-[11px] text-slate-500 font-mono leading-tight mt-0.5">${pricePresidential.toLocaleString()} / night</div>
+                      </div>
+                      <div className="col-span-3 text-center min-w-0 text-slate-600 font-mono text-xs sm:text-xs leading-snug break-words">
+                        {confirmedBooking.inquiry.presidentialSuites} Suite(s) × {confirmedBooking.nights} Night(s)
+                      </div>
+                      <div className="col-span-3 text-right min-w-0 font-bold text-slate-900 font-mono text-xs sm:text-sm leading-snug break-words">
+                        ${((confirmedBooking.inquiry.presidentialSuites || 0) * pricePresidential * confirmedBooking.nights).toLocaleString()}
+                      </div>
+                    </div>
+                  )}
+
+                  {confirmedBooking.inquiry.privateVillas! > 0 && pricePrivateVilla && (
+                    <div className="px-3 sm:px-4 py-2 sm:py-2.5 grid grid-cols-12 text-left items-center hover:bg-slate-50/50 transition-colors gap-1">
+                      <div className="col-span-6 min-w-0 pr-1">
+                        <div className="font-semibold text-slate-800 leading-snug break-words">Private Villa</div>
+                        <div className="text-[10px] sm:text-[11px] text-slate-500 font-mono leading-tight mt-0.5">${pricePrivateVilla.toLocaleString()} / night</div>
+                      </div>
+                      <div className="col-span-3 text-center min-w-0 text-slate-600 font-mono text-xs sm:text-xs leading-snug break-words">
+                        {confirmedBooking.inquiry.privateVillas} Villa(s) × {confirmedBooking.nights} Night(s)
+                      </div>
+                      <div className="col-span-3 text-right min-w-0 font-bold text-slate-900 font-mono text-xs sm:text-sm leading-snug break-words">
+                        ${((confirmedBooking.inquiry.privateVillas || 0) * pricePrivateVilla * confirmedBooking.nights).toLocaleString()}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Event / Meeting Venue Breakdown */}
+                  {confirmedBooking.eventSubtotal > 0 && (
+                    <>
+                      {confirmedBooking.inquiry.bookOption === 'meeting' ? (
+                        <div className="px-3 sm:px-4 py-2 sm:py-2.5 grid grid-cols-12 text-left items-center hover:bg-slate-50/50 transition-colors gap-1">
+                          <div className="col-span-6 min-w-0 pr-1">
+                            <div className="font-semibold text-slate-800 leading-snug break-words">
+                              Meeting Package ({getVenueRateLabel(confirmedBooking.inquiry.venueRentalRate)})
+                            </div>
+                            <div className="text-[10px] sm:text-[11px] text-slate-500 font-mono leading-tight mt-0.5">
+                              ${Math.round(priceMeetingRoom * getVenueMultiplier(confirmedBooking.inquiry.venueRentalRate)).toLocaleString()} / pax
+                            </div>
                           </div>
-                          <div className="col-span-3 text-center text-[#3A4F67] font-medium">
-                            ${priceStandard.toLocaleString()} / night
+                          <div className="col-span-3 text-center min-w-0 text-slate-600 font-mono text-xs sm:text-xs leading-snug break-words">
+                            {confirmedBooking.inquiry.eventAttendees} Pax
                           </div>
-                          <div className="col-span-2 text-center text-[#3A4F67]">
-                            {confirmedBooking.inquiry.standardRooms} Rm × {confirmedBooking.nights} N
-                          </div>
-                          <div className="col-span-3 text-right font-bold text-[#2C3744]">
-                            ${((confirmedBooking.inquiry.standardRooms || 0) * priceStandard * confirmedBooking.nights).toLocaleString()}
+                          <div className="col-span-3 text-right min-w-0 font-bold text-slate-900 font-mono text-xs sm:text-sm leading-snug break-words">
+                            ${confirmedBooking.eventSubtotal.toLocaleString()}
                           </div>
                         </div>
-                      )}
-
-                      {confirmedBooking.inquiry.deluxeRooms! > 0 && (
-                        <div className="px-2.5 py-2 sm:px-4 sm:py-3 grid grid-cols-12 text-left items-center hover:bg-[#EAF2F1]/20 transition-colors">
-                          <div className="col-span-4 font-semibold text-[#2C3744] pr-1 truncate">
-                            Deluxe Room
-                          </div>
-                          <div className="col-span-3 text-center text-[#3A4F67] font-medium">
-                            ${priceDeluxe.toLocaleString()} / night
-                          </div>
-                          <div className="col-span-2 text-center text-[#3A4F67]">
-                            {confirmedBooking.inquiry.deluxeRooms} Rm × {confirmedBooking.nights} N
-                          </div>
-                          <div className="col-span-3 text-right font-bold text-[#2C3744]">
-                            ${((confirmedBooking.inquiry.deluxeRooms || 0) * priceDeluxe * confirmedBooking.nights).toLocaleString()}
-                          </div>
-                        </div>
-                      )}
-
-                      {confirmedBooking.inquiry.presidentialSuites! > 0 && (
-                        <div className="px-2.5 py-2 sm:px-4 sm:py-3 grid grid-cols-12 text-left items-center hover:bg-[#EAF2F1]/20 transition-colors">
-                          <div className="col-span-4 font-semibold text-[#2C3744] pr-1 truncate">
-                            Presidential Suite
-                          </div>
-                          <div className="col-span-3 text-center text-[#3A4F67] font-medium">
-                            ${pricePresidential.toLocaleString()} / night
-                          </div>
-                          <div className="col-span-2 text-center text-[#3A4F67]">
-                            {confirmedBooking.inquiry.presidentialSuites} Ste × {confirmedBooking.nights} N
-                          </div>
-                          <div className="col-span-3 text-right font-bold text-[#2C3744]">
-                            ${((confirmedBooking.inquiry.presidentialSuites || 0) * pricePresidential * confirmedBooking.nights).toLocaleString()}
-                          </div>
-                        </div>
-                      )}
-
-                      {confirmedBooking.inquiry.privateVillas! > 0 && pricePrivateVilla && (
-                        <div className="px-2.5 py-2 sm:px-4 sm:py-3 grid grid-cols-12 text-left items-center hover:bg-[#EAF2F1]/20 transition-colors">
-                          <div className="col-span-4 font-semibold text-[#2C3744] pr-1 truncate">
-                            Private Villa
-                          </div>
-                          <div className="col-span-3 text-center text-[#3A4F67] font-medium">
-                            ${pricePrivateVilla.toLocaleString()} / night
-                          </div>
-                          <div className="col-span-2 text-center text-[#3A4F67]">
-                            {confirmedBooking.inquiry.privateVillas} Villa × {confirmedBooking.nights} N
-                          </div>
-                          <div className="col-span-3 text-right font-bold text-[#2C3744]">
-                            ${((confirmedBooking.inquiry.privateVillas || 0) * pricePrivateVilla * confirmedBooking.nights).toLocaleString()}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Event / Meeting Venue Breakdown */}
-                      {confirmedBooking.eventSubtotal > 0 && (
+                      ) : (
                         <>
-                          {confirmedBooking.inquiry.bookOption === 'meeting' ? (
-                            <div className="px-2.5 py-2 sm:px-4 sm:py-3 grid grid-cols-12 text-left items-center hover:bg-[#EAF2F1]/20 transition-colors">
-                              <div className="col-span-4 font-semibold text-[#2C3744] pr-1">
-                                Meeting Package ({getVenueRateLabel(confirmedBooking.inquiry.venueRentalRate)})
+                          <div className="px-3 sm:px-4 py-2 sm:py-2.5 grid grid-cols-12 text-left items-center hover:bg-slate-50/50 transition-colors gap-1">
+                            <div className="col-span-6 min-w-0 pr-1">
+                              <div className="font-semibold text-slate-800 leading-snug break-words">
+                                Event Space Rental
                               </div>
-                              <div className="col-span-3 text-center text-[#3A4F67] font-medium">
-                                ${Math.round(priceMeetingRoom * getVenueMultiplier(confirmedBooking.inquiry.venueRentalRate)).toLocaleString()} / pax
-                              </div>
-                              <div className="col-span-2 text-center text-[#3A4F67]">
-                                {confirmedBooking.inquiry.eventAttendees} Pax
-                              </div>
-                              <div className="col-span-3 text-right font-bold text-[#2C3744]">
-                                ${confirmedBooking.eventSubtotal.toLocaleString()}
+                              <div className="text-[10px] sm:text-[11px] text-slate-500 font-mono leading-tight mt-0.5">
+                                ${priceEventHall.toLocaleString()} / hall
                               </div>
                             </div>
-                          ) : (
-                            <>
-                              <div className="px-2.5 py-2 sm:px-4 sm:py-3 grid grid-cols-12 text-left items-center hover:bg-[#EAF2F1]/20 transition-colors">
-                                <div className="col-span-4 font-semibold text-[#2C3744] pr-1">
-                                  Event Hall Rental
+                            <div className="col-span-3 text-center min-w-0 text-slate-600 font-mono text-xs sm:text-xs leading-snug break-words">
+                              {confirmedBooking.inquiry.eventAttendees} Attendees
+                            </div>
+                            <div className="col-span-3 text-right min-w-0 font-bold text-slate-900 font-mono text-xs sm:text-sm leading-snug break-words">
+                              ${priceEventHall.toLocaleString()}
+                            </div>
+                          </div>
+
+                          {(confirmedBooking.inquiry.eventAddons === 'catering' || confirmedBooking.inquiry.eventAddons === 'both') && (
+                            <div className="px-3 sm:px-4 py-2 sm:py-2.5 grid grid-cols-12 text-left items-center hover:bg-slate-50/50 transition-colors gap-1">
+                              <div className="col-span-6 min-w-0 pr-1">
+                                <div className="font-semibold text-slate-800 leading-snug break-words">
+                                  Catering Service
                                 </div>
-                                <div className="col-span-3 text-center text-[#3A4F67] font-medium">
-                                  ${priceEventHall.toLocaleString()} / event
-                                </div>
-                                <div className="col-span-2 text-center text-[#3A4F67]">
-                                  {confirmedBooking.inquiry.eventAttendees} Pax
-                                </div>
-                                <div className="col-span-3 text-right font-bold text-[#2C3744]">
-                                  ${priceEventHall.toLocaleString()}
+                                <div className="text-[10px] sm:text-[11px] text-slate-500 font-mono leading-tight mt-0.5">
+                                  ${(confirmedBooking.inquiry.priceCateringPerPax || effectiveCateringPerPax).toLocaleString()} / pax
                                 </div>
                               </div>
-
-                              {(confirmedBooking.inquiry.eventAddons === 'catering' || confirmedBooking.inquiry.eventAddons === 'both') && (
-                                <div className="px-2.5 py-2 sm:px-4 sm:py-3 grid grid-cols-12 text-left items-center hover:bg-[#EAF2F1]/20 transition-colors">
-                                  <div className="col-span-4 font-semibold text-[#2C3744] pr-1">
-                                    Event Catering Package
-                                  </div>
-                                  <div className="col-span-3 text-center text-[#3A4F67] font-medium">
-                                    ${(confirmedBooking.inquiry.priceCateringPerPax || effectiveCateringPerPax).toLocaleString()} / pax
-                                  </div>
-                                  <div className="col-span-2 text-center text-[#3A4F67]">
-                                    {confirmedBooking.inquiry.cateringPax || confirmedBooking.inquiry.eventAttendees} Pax
-                                  </div>
-                                  <div className="col-span-3 text-right font-bold text-[#2C3744]">
-                                    ${((confirmedBooking.inquiry.cateringPax || confirmedBooking.inquiry.eventAttendees || 1) * (confirmedBooking.inquiry.priceCateringPerPax || effectiveCateringPerPax)).toLocaleString()}
-                                  </div>
-                                </div>
-                              )}
-                            </>
+                              <div className="col-span-3 text-center min-w-0 text-slate-600 font-mono text-xs sm:text-xs leading-snug break-words">
+                                {confirmedBooking.inquiry.cateringPax || confirmedBooking.inquiry.eventAttendees} Pax
+                              </div>
+                              <div className="col-span-3 text-right min-w-0 font-bold text-slate-900 font-mono text-xs sm:text-sm leading-snug break-words">
+                                ${((confirmedBooking.inquiry.cateringPax || confirmedBooking.inquiry.eventAttendees || 1) * (confirmedBooking.inquiry.priceCateringPerPax || effectiveCateringPerPax)).toLocaleString()}
+                              </div>
+                            </div>
                           )}
                         </>
                       )}
+                    </>
+                  )}
+                </div>
+              </div>
 
-                      {/* Subtotal & Discount */}
-                      {confirmedBooking.inquiry.discountAmount! > 0 && (
-                        <div className="px-2.5 py-2 sm:px-4 sm:py-2.5 grid grid-cols-12 text-left bg-emerald-50/60 items-center text-[#51867E]">
-                          <div className="col-span-9 font-semibold text-xs">
-                            Discount Coupon ({confirmedBooking.inquiry.discountCode || 'PROMO'} - {confirmedBooking.inquiry.discountPercent}% OFF)
-                          </div>
-                          <div className="col-span-3 text-right font-bold text-xs">
-                            -${confirmedBooking.inquiry.discountAmount?.toLocaleString()}
-                          </div>
-                        </div>
-                      )}
+              {/* Notes & Totals Calculation */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-6 my-3 text-left items-start">
+                {/* Notes / Instructions */}
+                <div className="sm:col-span-6 space-y-1">
+                  <span className="text-[10px] font-bold text-[#3A4F67] uppercase tracking-wider block">
+                    NOTES / INSTRUCTIONS:
+                  </span>
+                  <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap">
+                    {confirmedBooking.inquiry.notes && confirmedBooking.inquiry.notes.trim() !== ''
+                      ? confirmedBooking.inquiry.notes.trim()
+                      : 'Lets play'}
+                  </p>
+                </div>
 
-                      {/* Service Tax */}
-                      <div className="px-2.5 py-2 sm:px-4 sm:py-3 grid grid-cols-12 text-left bg-[#EAF2F1]/30 items-center">
-                        <div className="col-span-9 font-semibold text-[#3A4F67]">
-                          Tax & Service Fee (10%)
-                        </div>
-                        <div className="col-span-3 text-right font-bold text-[#3A4F67]">
-                          ${confirmedBooking.taxAmount.toLocaleString()}
-                        </div>
-                      </div>
+                {/* Summary Calculation */}
+                <div className="sm:col-span-6 space-y-1.5 text-xs font-medium text-slate-600 text-right">
+                  <div className="flex justify-between items-center sm:justify-end sm:gap-8">
+                    <span>Subtotal Before Discount:</span>
+                    <span className="font-mono text-slate-800 font-semibold">${(confirmedBooking.roomSubtotal + confirmedBooking.eventSubtotal).toLocaleString()}</span>
+                  </div>
 
-                      {/* Grand Total */}
-                      <div className="px-2.5 py-2.5 sm:px-4 sm:py-3.5 grid grid-cols-12 text-left bg-[#3A4F67] text-white font-bold text-xs sm:text-sm items-center">
-                        <div className="col-span-6 uppercase tracking-wider">TOTAL AMOUNT DUE</div>
-                        <div className="col-span-6 text-right text-xs sm:text-base text-[#88B2AB]">
-                          ${confirmedBooking.grandTotal.toLocaleString()} USD
-                        </div>
-                      </div>
+                  {confirmedBooking.inquiry.discountAmount! > 0 && (
+                    <div className="flex justify-between items-center sm:justify-end sm:gap-8 text-emerald-600 font-semibold">
+                      <span>Discount ({confirmedBooking.inquiry.discountCode || 'PROMO'} - {confirmedBooking.inquiry.discountPercent}%):</span>
+                      <span className="font-mono">-${confirmedBooking.inquiry.discountAmount?.toLocaleString()}</span>
                     </div>
+                  )}
+
+                  <div className="flex justify-between items-center sm:justify-end sm:gap-8">
+                    <span>Subtotal Before Tax:</span>
+                    <span className="font-mono text-slate-800 font-semibold">${(confirmedBooking.roomSubtotal + confirmedBooking.eventSubtotal - (confirmedBooking.inquiry.discountAmount || 0)).toLocaleString()}</span>
+                  </div>
+
+                  <div className="flex justify-between items-center sm:justify-end sm:gap-8">
+                    <span>Taxes & Fees (10%):</span>
+                    <span className="font-mono text-slate-800 font-semibold">${confirmedBooking.taxAmount.toLocaleString()}</span>
+                  </div>
+
+                  <div className="flex justify-between items-center sm:justify-end sm:gap-8 pt-2 border-t border-slate-200 text-sm sm:text-base font-bold text-[#3A4F67]">
+                    <span className="uppercase tracking-wider">Total Invoice:</span>
+                    <span className="font-mono text-lg sm:text-xl text-[#3A4F67]">${confirmedBooking.grandTotal.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Dedicated Notes Box */}
-              {confirmedBooking.inquiry.notes && confirmedBooking.inquiry.notes.trim() !== '' && (
-                <div className="bg-[#EAF2F1]/40 border border-[#88B2AB]/30 p-3 sm:p-4 rounded-xl space-y-1 text-left">
-                  <h4 className="text-[10px] sm:text-[11px] font-bold text-[#3A4F67] uppercase tracking-wider border-b border-[#88B2AB]/20 pb-1 flex items-center gap-1.5">
-                    <FileText className="w-3.5 h-3.5 text-[#51867E]" />
-                    Additional Notes
-                  </h4>
-                  <p className="text-[11px] text-[#2C3744] whitespace-pre-wrap leading-relaxed pt-0.5">
-                    {confirmedBooking.inquiry.notes.trim()}
-                  </p>
-                </div>
-              )}
+              {/* Thank you note */}
+              <div className="py-2 border-t border-slate-100 text-center text-[11px] text-slate-400 italic">
+                Thank you for choosing Hanford Hotels & Resorts. For questions regarding this invoice, contact central reservations at @Hanford_HnR on X.
+              </div>
 
-              {/* Compact Payment Details inside Downloadable Invoice Card */}
-              <div className="bg-[#EAF2F1]/60 border border-[#88B2AB]/30 p-3 sm:p-4 rounded-xl text-left space-y-2 text-xs">
-                <h4 className="font-bold text-[#3A4F67] uppercase tracking-wider flex items-center gap-1.5 border-b border-[#88B2AB]/30 pb-1.5 text-[10.5px] sm:text-xs">
-                  <CreditCard className="w-3.5 h-3.5 text-[#51867E]" />
-                  Payment Details / Detail Pembayaran
-                </h4>
-                <p className="text-[10px] sm:text-[11px] text-[#2C3744] font-medium">
+              {/* Payment Details / Detail Pembayaran Card */}
+              <div className="bg-[#F2F7F6] border border-[#88B2AB]/30 p-3.5 sm:p-4 rounded-xl text-left space-y-2 mt-3 shadow-2xs">
+                <div className="flex items-center gap-2 border-b border-[#88B2AB]/20 pb-1.5">
+                  <CreditCard className="w-4 h-4 text-[#51867E]" />
+                  <span className="text-xs font-bold text-[#3A4F67] uppercase tracking-wider">
+                    PAYMENT DETAILS / DETAIL PEMBAYARAN
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-600 font-medium">
                   Please process your payment to / Silakan lakukan pembayaran ke:
                 </p>
-                <div className="bg-white p-2.5 sm:p-3 rounded-lg border border-[#88B2AB]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[10.5px] sm:text-xs">
+
+                <div className="bg-white p-3 sm:p-4 rounded-xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 text-xs items-center shadow-2xs">
                   <div>
-                    <span className="text-[#3A4F67] font-bold block uppercase text-[10px]">Bank Transfer</span>
-                    <span className="text-[#2C3744] font-semibold">Bank Name: <strong>CHOBANK</strong></span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                      BANK TRANSFER
+                    </span>
+                    <span className="text-xs sm:text-sm text-slate-700 font-semibold">
+                      Bank Name: <strong className="text-[#3A4F67] font-bold">CHOBANK</strong>
+                    </span>
                   </div>
+
                   <div>
-                    <span className="text-gray-500 text-[10px] block">Account Name:</span>
-                    <span className="text-[#3A4F67] font-bold">Hanford Hotels and Resorts</span>
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
+                      Account Name:
+                    </span>
+                    <span className="text-xs sm:text-sm text-[#3A4F67] font-bold">
+                      Hanford Hotels and Resorts
+                    </span>
                   </div>
+
                   <div>
-                    <span className="text-gray-500 text-[10px] block">Account Number:</span>
-                    <span className="text-[#51867E] font-mono font-bold text-xs sm:text-sm">3076 6324 4788 9928</span>
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
+                      Account Number:
+                    </span>
+                    <span className="text-[#51867E] font-mono font-bold text-sm sm:text-base tracking-wider">
+                      3076 6324 4788 9928
+                    </span>
                   </div>
                 </div>
               </div>
 
               {/* Footer Stamp */}
-              <div className="pt-3 sm:pt-4 border-t border-[#88B2AB]/20 text-center text-[10px] text-[#3A4F67] font-light flex items-center justify-between">
+              <div className="pt-3 border-t border-slate-200/80 mt-3 text-center text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-2">
                 <span>© 2026 Hanford Hotels & Resorts Central Register</span>
-                <span className="flex items-center gap-1 font-semibold text-[#51867E]">
-                  <ShieldCheck className="w-3.5 h-3.5" />
+                <span className="flex items-center gap-1.5 font-semibold text-[#51867E]">
+                  <ShieldCheck className="w-4 h-4" />
                   Verified Reservation
                 </span>
+              </div>
+            </div>
+
+            {/* Hidden Offscreen Container for High-Res Desktop-Width PNG Download */}
+            <div className="fixed -left-[9999px] -top-[9999px] pointer-events-none opacity-0 overflow-hidden" aria-hidden="true">
+              <div
+                ref={exportInvoiceRef}
+                className="bg-[#FFFFFF] border-2 border-[#3A4F67]/30 rounded-2xl p-8 space-y-4 relative w-[800px] text-left"
+              >
+                {/* Invoice Header (Desktop Side-by-Side) */}
+                <div className="border-b border-slate-200 pb-4 flex flex-row items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-serif text-3xl font-bold tracking-wider text-[#3A4F67]">
+                        HANFORD
+                      </span>
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#51867E] inline-block"></span>
+                    </div>
+                    <div className="text-[11px] font-bold tracking-[0.2em] text-[#51867E] uppercase">
+                      HOTELS & RESORTS • CENTRAL RESERVATIONS
+                    </div>
+                    <div className="text-sm italic font-serif text-slate-500 pt-0.5">
+                      An Elevated Way of Staying
+                    </div>
+                    <div className="inline-flex items-center gap-1.5 text-xs text-slate-600 pt-0.5">
+                      <svg className="w-3.5 h-3.5 fill-current text-slate-700 shrink-0" viewBox="0 0 24 24">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                      </svg>
+                      <span className="underline font-medium">x.com/Hanford_HnR</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-end space-y-1 text-right">
+                    <span className="px-2.5 py-0.5 bg-slate-100 text-slate-600 rounded-full text-[10px] font-bold uppercase tracking-wider inline-block">
+                      OFFICIAL RECEIPT / INVOICE
+                    </span>
+                    <div className="text-base font-bold text-[#3A4F67]">
+                      Invoice No: <span className="font-mono text-[#3A4F67]">{confirmedBooking.bookingId}</span>
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      Date Issued: {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </div>
+
+                    <div className="px-3 py-1 bg-amber-50/80 border border-amber-500/80 text-amber-800 rounded-full text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5 shadow-2xs mt-1">
+                      <Clock className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                      <span>UNPAID - INVOICE PENDING</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Guest Details & Property / Location Cards Grid (Desktop 2 Columns) */}
+                <div className="grid grid-cols-2 gap-4 my-3 text-xs">
+                  {/* Guest Details */}
+                  <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-100 space-y-1">
+                    <span className="text-[10px] font-bold text-[#51867E] uppercase tracking-wider block">
+                      GUEST DETAILS
+                    </span>
+                    <div className="font-bold text-sm text-[#3A4F67] uppercase tracking-wide">
+                      {confirmedBooking.inquiry.guestName || 'TREVOR'}
+                    </div>
+                    <div className="space-y-0.5 text-slate-600">
+                      <div className="flex items-center gap-1.5">
+                        <svg className="w-3.5 h-3.5 fill-current text-slate-700 shrink-0" viewBox="0 0 24 24">
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                        <span>X Handle: <strong className="text-[#51867E]">@{confirmedBooking.inquiry.xUsername ? confirmedBooking.inquiry.xUsername.replace(/^@/, '') : 'def'}</strong></span>
+                      </div>
+                      {confirmedBooking.inquiry.businessName && confirmedBooking.inquiry.businessName.trim() !== '' && (
+                        <div>Business Name: <strong className="text-slate-700">{confirmedBooking.inquiry.businessName.trim()}</strong></div>
+                      )}
+                      {confirmedBooking.inquiry.guestEmail && (
+                        <div>Email: <span className="text-slate-600">{confirmedBooking.inquiry.guestEmail}</span></div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Property / Location Details */}
+                  <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-100 space-y-1">
+                    <span className="text-[10px] font-bold text-[#51867E] uppercase tracking-wider block">
+                      PROPERTY / LOCATION
+                    </span>
+                    <div className="font-bold text-sm text-[#3A4F67] flex items-center gap-1.5">
+                      <Building2 className="w-4 h-4 text-[#51867E] shrink-0" />
+                      <span>{confirmedBooking.property.name}</span>
+                    </div>
+                    <div className="text-slate-500 text-xs flex items-start gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+                      <span>{confirmedBooking.property.address || confirmedBooking.property.country}</span>
+                    </div>
+                    <div className="space-y-0.5 pt-1 text-slate-600 border-t border-slate-100 mt-1">
+                      <div>Booking Type: <strong className="text-[#3A4F67]">{getBookingCategoryLabel(confirmedBooking.inquiry)}</strong></div>
+                      <div>
+                        Stay Dates: <strong className="text-[#3A4F67]">{confirmedBooking.inquiry.checkInDate}</strong> to <strong className="text-[#3A4F67]">{confirmedBooking.inquiry.checkOutDate}</strong> ({confirmedBooking.nights} night{confirmedBooking.nights !== 1 ? 's' : ''})
+                      </div>
+                      {showVenueSettings && confirmedBooking.inquiry.eventDate && (
+                        <div>Event Date: <strong className="text-[#3A4F67]">{confirmedBooking.inquiry.eventDate}</strong></div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Itemized Price Breakdown Table */}
+                <div className="rounded-xl overflow-hidden border border-slate-200 my-3 shadow-2xs w-full">
+                  <div className="bg-[#3A4F67] text-white px-4 py-2 font-bold grid grid-cols-12 text-left items-center tracking-wider text-xs uppercase gap-1">
+                    <div className="col-span-6 min-w-0 leading-tight">ITEM / SERVICE DESCRIPTION</div>
+                    <div className="col-span-3 text-center min-w-0 leading-tight">QTY / PAX</div>
+                    <div className="col-span-3 text-right min-w-0 leading-tight">AMOUNT</div>
+                  </div>
+
+                  <div className="divide-y divide-slate-100 bg-white text-xs">
+                    {confirmedBooking.inquiry.standardRooms! > 0 && (
+                      <div className="px-4 py-2.5 grid grid-cols-12 text-left items-center gap-1">
+                        <div className="col-span-6 min-w-0 pr-1">
+                          <div className="font-semibold text-slate-800 leading-snug">Standard Room</div>
+                          <div className="text-[11px] text-slate-500 font-mono mt-0.5">${priceStandard.toLocaleString()} / night</div>
+                        </div>
+                        <div className="col-span-3 text-center text-slate-600 font-mono">
+                          {confirmedBooking.inquiry.standardRooms} Room(s) × {confirmedBooking.nights} Night(s)
+                        </div>
+                        <div className="col-span-3 text-right font-bold text-slate-900 font-mono text-sm">
+                          ${((confirmedBooking.inquiry.standardRooms || 0) * priceStandard * confirmedBooking.nights).toLocaleString()}
+                        </div>
+                      </div>
+                    )}
+
+                    {confirmedBooking.inquiry.deluxeRooms! > 0 && (
+                      <div className="px-4 py-2.5 grid grid-cols-12 text-left items-center gap-1">
+                        <div className="col-span-6 min-w-0 pr-1">
+                          <div className="font-semibold text-slate-800 leading-snug">Deluxe Room</div>
+                          <div className="text-[11px] text-slate-500 font-mono mt-0.5">${priceDeluxe.toLocaleString()} / night</div>
+                        </div>
+                        <div className="col-span-3 text-center text-slate-600 font-mono">
+                          {confirmedBooking.inquiry.deluxeRooms} Room(s) × {confirmedBooking.nights} Night(s)
+                        </div>
+                        <div className="col-span-3 text-right font-bold text-slate-900 font-mono text-sm">
+                          ${((confirmedBooking.inquiry.deluxeRooms || 0) * priceDeluxe * confirmedBooking.nights).toLocaleString()}
+                        </div>
+                      </div>
+                    )}
+
+                    {confirmedBooking.inquiry.presidentialSuites! > 0 && (
+                      <div className="px-4 py-2.5 grid grid-cols-12 text-left items-center gap-1">
+                        <div className="col-span-6 min-w-0 pr-1">
+                          <div className="font-semibold text-slate-800 leading-snug">Presidential Suite</div>
+                          <div className="text-[11px] text-slate-500 font-mono mt-0.5">${pricePresidential.toLocaleString()} / night</div>
+                        </div>
+                        <div className="col-span-3 text-center text-slate-600 font-mono">
+                          {confirmedBooking.inquiry.presidentialSuites} Suite(s) × {confirmedBooking.nights} Night(s)
+                        </div>
+                        <div className="col-span-3 text-right font-bold text-slate-900 font-mono text-sm">
+                          ${((confirmedBooking.inquiry.presidentialSuites || 0) * pricePresidential * confirmedBooking.nights).toLocaleString()}
+                        </div>
+                      </div>
+                    )}
+
+                    {confirmedBooking.inquiry.privateVillas! > 0 && pricePrivateVilla && (
+                      <div className="px-4 py-2.5 grid grid-cols-12 text-left items-center gap-1">
+                        <div className="col-span-6 min-w-0 pr-1">
+                          <div className="font-semibold text-slate-800 leading-snug">Private Villa</div>
+                          <div className="text-[11px] text-slate-500 font-mono mt-0.5">${pricePrivateVilla.toLocaleString()} / night</div>
+                        </div>
+                        <div className="col-span-3 text-center text-slate-600 font-mono">
+                          {confirmedBooking.inquiry.privateVillas} Villa(s) × {confirmedBooking.nights} Night(s)
+                        </div>
+                        <div className="col-span-3 text-right font-bold text-slate-900 font-mono text-sm">
+                          ${((confirmedBooking.inquiry.privateVillas || 0) * pricePrivateVilla * confirmedBooking.nights).toLocaleString()}
+                        </div>
+                      </div>
+                    )}
+
+                    {confirmedBooking.eventSubtotal > 0 && (
+                      <>
+                        {confirmedBooking.inquiry.bookOption === 'meeting' ? (
+                          <div className="px-4 py-2.5 grid grid-cols-12 text-left items-center gap-1">
+                            <div className="col-span-6 min-w-0 pr-1">
+                              <div className="font-semibold text-slate-800 leading-snug">
+                                Meeting Package ({getVenueRateLabel(confirmedBooking.inquiry.venueRentalRate)})
+                              </div>
+                              <div className="text-[11px] text-slate-500 font-mono mt-0.5">
+                                ${Math.round(priceMeetingRoom * getVenueMultiplier(confirmedBooking.inquiry.venueRentalRate)).toLocaleString()} / pax
+                              </div>
+                            </div>
+                            <div className="col-span-3 text-center text-slate-600 font-mono">
+                              {confirmedBooking.inquiry.eventAttendees} Pax
+                            </div>
+                            <div className="col-span-3 text-right font-bold text-slate-900 font-mono text-sm">
+                              ${confirmedBooking.eventSubtotal.toLocaleString()}
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="px-4 py-2.5 grid grid-cols-12 text-left items-center gap-1">
+                              <div className="col-span-6 min-w-0 pr-1">
+                                <div className="font-semibold text-slate-800 leading-snug">
+                                  Event Space Rental
+                                </div>
+                                <div className="text-[11px] text-slate-500 font-mono mt-0.5">
+                                  ${priceEventHall.toLocaleString()} / hall
+                                </div>
+                              </div>
+                              <div className="col-span-3 text-center text-slate-600 font-mono">
+                                {confirmedBooking.inquiry.eventAttendees} Attendees
+                              </div>
+                              <div className="col-span-3 text-right font-bold text-slate-900 font-mono text-sm">
+                                ${priceEventHall.toLocaleString()}
+                              </div>
+                            </div>
+
+                            {(confirmedBooking.inquiry.eventAddons === 'catering' || confirmedBooking.inquiry.eventAddons === 'both') && (
+                              <div className="px-4 py-2.5 grid grid-cols-12 text-left items-center gap-1">
+                                <div className="col-span-6 min-w-0 pr-1">
+                                  <div className="font-semibold text-slate-800 leading-snug">
+                                    Catering Service
+                                  </div>
+                                  <div className="text-[11px] text-slate-500 font-mono mt-0.5">
+                                    ${(confirmedBooking.inquiry.priceCateringPerPax || effectiveCateringPerPax).toLocaleString()} / pax
+                                  </div>
+                                </div>
+                                <div className="col-span-3 text-center text-slate-600 font-mono">
+                                  {confirmedBooking.inquiry.cateringPax || confirmedBooking.inquiry.eventAttendees} Pax
+                                </div>
+                                <div className="col-span-3 text-right font-bold text-slate-900 font-mono text-sm">
+                                  ${((confirmedBooking.inquiry.cateringPax || confirmedBooking.inquiry.eventAttendees || 1) * (confirmedBooking.inquiry.priceCateringPerPax || effectiveCateringPerPax)).toLocaleString()}
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Notes & Totals Calculation */}
+                <div className="grid grid-cols-12 gap-6 my-3 text-left items-start">
+                  <div className="col-span-6 space-y-1">
+                    <span className="text-[10px] font-bold text-[#3A4F67] uppercase tracking-wider block">
+                      NOTES / INSTRUCTIONS:
+                    </span>
+                    <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap">
+                      {confirmedBooking.inquiry.notes && confirmedBooking.inquiry.notes.trim() !== ''
+                        ? confirmedBooking.inquiry.notes.trim()
+                        : 'Lets play'}
+                    </p>
+                  </div>
+
+                  <div className="col-span-6 space-y-1.5 text-xs font-medium text-slate-600 text-right">
+                    <div className="flex justify-between items-center gap-8">
+                      <span>Subtotal Before Discount:</span>
+                      <span className="font-mono text-slate-800 font-semibold">${(confirmedBooking.roomSubtotal + confirmedBooking.eventSubtotal).toLocaleString()}</span>
+                    </div>
+
+                    {confirmedBooking.inquiry.discountAmount! > 0 && (
+                      <div className="flex justify-between items-center gap-8 text-emerald-600 font-semibold">
+                        <span>Discount ({confirmedBooking.inquiry.discountCode || 'PROMO'} - {confirmedBooking.inquiry.discountPercent}%):</span>
+                        <span className="font-mono">-${confirmedBooking.inquiry.discountAmount?.toLocaleString()}</span>
+                      </div>
+                    )}
+
+                    <div className="flex justify-between items-center gap-8">
+                      <span>Subtotal Before Tax:</span>
+                      <span className="font-mono text-slate-800 font-semibold">${(confirmedBooking.roomSubtotal + confirmedBooking.eventSubtotal - (confirmedBooking.inquiry.discountAmount || 0)).toLocaleString()}</span>
+                    </div>
+
+                    <div className="flex justify-between items-center gap-8">
+                      <span>Taxes & Fees (10%):</span>
+                      <span className="font-mono text-slate-800 font-semibold">${confirmedBooking.taxAmount.toLocaleString()}</span>
+                    </div>
+
+                    <div className="flex justify-between items-center gap-8 pt-2 border-t border-slate-200 text-base font-bold text-[#3A4F67]">
+                      <span className="uppercase tracking-wider">Total Invoice:</span>
+                      <span className="font-mono text-xl text-[#3A4F67]">${confirmedBooking.grandTotal.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Thank you note */}
+                <div className="py-2 border-t border-slate-100 text-center text-[11px] text-slate-400 italic">
+                  Thank you for choosing Hanford Hotels & Resorts. For questions regarding this invoice, contact central reservations at @Hanford_HnR on X.
+                </div>
+
+                {/* Payment Details Card */}
+                <div className="bg-[#F2F7F6] border border-[#88B2AB]/30 p-4 rounded-xl text-left space-y-2 mt-3 shadow-2xs">
+                  <div className="flex items-center gap-2 border-b border-[#88B2AB]/20 pb-1.5">
+                    <CreditCard className="w-4 h-4 text-[#51867E]" />
+                    <span className="text-xs font-bold text-[#3A4F67] uppercase tracking-wider">
+                      PAYMENT DETAILS / DETAIL PEMBAYARAN
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-600 font-medium">
+                    Please process your payment to / Silakan lakukan pembayaran ke:
+                  </p>
+
+                  <div className="bg-white p-4 rounded-xl border border-slate-200/80 grid grid-cols-3 gap-4 text-xs items-center shadow-2xs">
+                    <div>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                        BANK TRANSFER
+                      </span>
+                      <span className="text-sm text-slate-700 font-semibold">
+                        Bank Name: <strong className="text-[#3A4F67] font-bold">CHOBANK</strong>
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
+                        Account Name:
+                      </span>
+                      <span className="text-sm text-[#3A4F67] font-bold">
+                        Hanford Hotels and Resorts
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
+                        Account Number:
+                      </span>
+                      <span className="text-[#51867E] font-mono font-bold text-base tracking-wider">
+                        3076 6324 4788 9928
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer Stamp */}
+                <div className="pt-3 border-t border-slate-200/80 mt-3 text-center text-xs text-slate-400 flex flex-row items-center justify-between gap-2">
+                  <span>© 2026 Hanford Hotels & Resorts Central Register</span>
+                  <span className="flex items-center gap-1.5 font-semibold text-[#51867E]">
+                    <ShieldCheck className="w-4 h-4" />
+                    Verified Reservation
+                  </span>
+                </div>
               </div>
             </div>
 

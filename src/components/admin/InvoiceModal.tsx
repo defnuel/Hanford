@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BookingInquiry, Property } from '../../types';
 import { fetchLocations } from '../../services/dataService';
+import { getBookingTypeLabel } from '../../utils/bookingUtils';
 import { X, CheckCircle, Clock, FileText, Building, Download, Image as ImageIcon, Loader2, MapPin } from 'lucide-react';
 import { toPng } from 'html-to-image';
 
@@ -8,33 +9,6 @@ interface InvoiceModalProps {
   booking: BookingInquiry;
   onClose: () => void;
   onTogglePaymentStatus: (bookingId: string, currentStatus: 'UNPAID' | 'PAID') => void;
-}
-
-function getBookingTypeLabel(booking: BookingInquiry): string {
-  const opt = (booking.bookOption || '').toLowerCase().trim();
-  const totalRooms = (booking.standardRooms || 0) + (booking.deluxeRooms || 0) + (booking.presidentialSuites || 0) + (booking.privateVillas || 0);
-  const hasRooms = totalRooms > 0;
-  const hasEvents = Boolean(booking.eventAttendees || booking.cateringPax);
-
-  if (opt === 'both' || opt.includes('both') || opt.includes('keduanya') || (opt.includes('room') && opt.includes('event')) || opt.includes('& event') || opt.includes('+ event') || (hasRooms && hasEvents)) {
-    return 'Room & Event';
-  }
-  if (opt === 'room_meeting' || (opt.includes('room') && opt.includes('meeting'))) {
-    return 'Room & Meeting';
-  }
-  if (opt === 'meeting') {
-    return 'Meeting';
-  }
-  if (opt === 'event') {
-    return 'Event';
-  }
-  if (opt === 'room') {
-    return 'Room';
-  }
-  if (opt) {
-    return opt.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-  }
-  return 'Room';
 }
 
 function calculateNights(checkIn?: string, checkOut?: string): number {
@@ -55,6 +29,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
   const [matchedProperty, setMatchedProperty] = useState<Property | null>(null);
   const [isDownloadingImage, setIsDownloadingImage] = useState(false);
   const invoiceRef = useRef<HTMLDivElement>(null);
+  const exportInvoiceRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -171,13 +146,16 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
       : subtotalBeforeTax + finalTax;
 
   const handleDownloadImage = async () => {
-    if (!invoiceRef.current) return;
+    const targetEl = exportInvoiceRef.current || invoiceRef.current;
+    if (!targetEl) return;
     try {
       setIsDownloadingImage(true);
-      const dataUrl = await toPng(invoiceRef.current, {
+      const dataUrl = await toPng(targetEl, {
         cacheBust: true,
         pixelRatio: 2,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        skipFonts: true,
+        fontEmbedCSS: ''
       });
       const link = document.createElement('a');
       link.download = `Invoice-${bookingId}.png`;
@@ -288,28 +266,25 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
           {/* Guest & Property Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 my-8 text-xs">
             {/* Guest Details */}
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1.5">
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1.5 text-xs text-left">
               <span className="text-[10px] font-bold text-[#51867E] uppercase tracking-wider block">
-                Guest Details
+                Guest Information
               </span>
-              <div className="font-bold text-sm text-[#3A4F67] uppercase">{booking.guestName}</div>
-              {booking.businessName && (
-                <div className="text-slate-600 font-medium">{booking.businessName}</div>
-              )}
-              {booking.xUsername && (
-                <div className="text-slate-600 flex items-center gap-1.5 pt-0.5">
-                  <svg className="w-3 h-3 fill-current text-slate-700 shrink-0" viewBox="0 0 24 24">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                  </svg>
-                  <span>X Handle: <strong className="text-[#51867E]">{booking.xUsername}</strong></span>
+              <div className="space-y-1 text-[#2C3744]">
+                <div><strong>Name:</strong> {booking.guestName || 'Trevor'}</div>
+                <div>
+                  <strong>X Username:</strong>{' '}
+                  <span className="text-[#51867E] font-medium font-mono">
+                    @{booking.xUsername ? booking.xUsername.replace(/^@/, '') : 'DEF'}
+                  </span>
                 </div>
-              )}
-              {booking.guestEmail && (
-                <div className="text-slate-600">Email: {booking.guestEmail}</div>
-              )}
-              {booking.guestPhone && (
-                <div className="text-slate-600">Phone: {booking.guestPhone}</div>
-              )}
+                <div>
+                  <strong>Business Name:</strong>{' '}
+                  {booking.businessName && booking.businessName.trim()
+                    ? booking.businessName.trim()
+                    : 'HANFORD'}
+                </div>
+              </div>
             </div>
 
             {/* Property Details */}
@@ -357,7 +332,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 <div>
                   <div className="font-bold text-slate-800">Standard Room</div>
                   <div className="text-[10px] text-slate-500">
-                    ${priceStandard.toLocaleString()} / night &bull; {booking.standardRooms} Room(s) &times; {nights} N
+                    ${priceStandard.toLocaleString()} / night &bull; {booking.standardRooms} Room(s) &times; {nights} Night(s)
                   </div>
                 </div>
                 <div className="font-mono font-bold text-[#3A4F67] text-xs">
@@ -371,7 +346,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 <div>
                   <div className="font-bold text-slate-800">Deluxe Room</div>
                   <div className="text-[10px] text-slate-500">
-                    ${priceDeluxe.toLocaleString()} / night &bull; {booking.deluxeRooms} Room(s) &times; {nights} N
+                    ${priceDeluxe.toLocaleString()} / night &bull; {booking.deluxeRooms} Room(s) &times; {nights} Night(s)
                   </div>
                 </div>
                 <div className="font-mono font-bold text-[#3A4F67] text-xs">
@@ -385,7 +360,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 <div>
                   <div className="font-bold text-slate-800">Presidential Suite</div>
                   <div className="text-[10px] text-slate-500">
-                    ${pricePresidential.toLocaleString()} / night &bull; {booking.presidentialSuites} Suite(s) &times; {nights} N
+                    ${pricePresidential.toLocaleString()} / night &bull; {booking.presidentialSuites} Suite(s) &times; {nights} Night(s)
                   </div>
                 </div>
                 <div className="font-mono font-bold text-[#3A4F67] text-xs">
@@ -399,7 +374,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 <div>
                   <div className="font-bold text-slate-800">Private Villa</div>
                   <div className="text-[10px] text-slate-500">
-                    ${pricePrivateVilla.toLocaleString()} / night &bull; {booking.privateVillas} Villa(s) &times; {nights} N
+                    ${pricePrivateVilla.toLocaleString()} / night &bull; {booking.privateVillas} Villa(s) &times; {nights} Night(s)
                   </div>
                 </div>
                 <div className="font-mono font-bold text-[#3A4F67] text-xs">
@@ -456,54 +431,63 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             <table className="w-full text-left text-xs">
               <thead className="bg-[#3A4F67] text-white uppercase tracking-wider text-[10px]">
                 <tr>
-                  <th className="py-3 px-4">Item / Service Description</th>
-                  <th className="py-3 px-4 text-center">Rate / Unit</th>
-                  <th className="py-3 px-4 text-center">Qty / Pax</th>
-                  <th className="py-3 px-4 text-right">Amount</th>
+                  <th className="py-3 px-4 w-1/2">Item / Service Description</th>
+                  <th className="py-3 px-4 text-center w-1/4">Qty / Pax</th>
+                  <th className="py-3 px-4 text-right w-1/4">Amount</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
                 {booking.standardRooms ? (
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-800">Standard Room</td>
-                    <td className="py-3 px-4 text-center font-mono text-slate-600">${priceStandard.toLocaleString()} / night</td>
-                    <td className="py-3 px-4 text-center">{booking.standardRooms} Room(s) × {nights} N</td>
+                    <td className="py-3 px-4">
+                      <div className="font-semibold text-slate-800">Standard Room</div>
+                      <div className="text-[11px] text-slate-500 font-mono mt-0.5">${priceStandard.toLocaleString()} / night</div>
+                    </td>
+                    <td className="py-3 px-4 text-center">{booking.standardRooms} Room(s) × {nights} Night(s)</td>
                     <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">${standardAmt.toLocaleString()}</td>
                   </tr>
                 ) : null}
 
                 {booking.deluxeRooms ? (
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-800">Deluxe Room</td>
-                    <td className="py-3 px-4 text-center font-mono text-slate-600">${priceDeluxe.toLocaleString()} / night</td>
-                    <td className="py-3 px-4 text-center">{booking.deluxeRooms} Room(s) × {nights} N</td>
+                    <td className="py-3 px-4">
+                      <div className="font-semibold text-slate-800">Deluxe Room</div>
+                      <div className="text-[11px] text-slate-500 font-mono mt-0.5">${priceDeluxe.toLocaleString()} / night</div>
+                    </td>
+                    <td className="py-3 px-4 text-center">{booking.deluxeRooms} Room(s) × {nights} Night(s)</td>
                     <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">${deluxeAmt.toLocaleString()}</td>
                   </tr>
                 ) : null}
 
                 {booking.presidentialSuites ? (
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-800">Presidential Suite</td>
-                    <td className="py-3 px-4 text-center font-mono text-slate-600">${pricePresidential.toLocaleString()} / night</td>
-                    <td className="py-3 px-4 text-center">{booking.presidentialSuites} Suite(s) × {nights} N</td>
+                    <td className="py-3 px-4">
+                      <div className="font-semibold text-slate-800">Presidential Suite</div>
+                      <div className="text-[11px] text-slate-500 font-mono mt-0.5">${pricePresidential.toLocaleString()} / night</div>
+                    </td>
+                    <td className="py-3 px-4 text-center">{booking.presidentialSuites} Suite(s) × {nights} Night(s)</td>
                     <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">${presidentialAmt.toLocaleString()}</td>
                   </tr>
                 ) : null}
 
                 {booking.privateVillas ? (
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-800">Private Villa</td>
-                    <td className="py-3 px-4 text-center font-mono text-slate-600">${pricePrivateVilla.toLocaleString()} / night</td>
-                    <td className="py-3 px-4 text-center">{booking.privateVillas} Villa(s) × {nights} N</td>
+                    <td className="py-3 px-4">
+                      <div className="font-semibold text-slate-800">Private Villa</div>
+                      <div className="text-[11px] text-slate-500 font-mono mt-0.5">${pricePrivateVilla.toLocaleString()} / night</div>
+                    </td>
+                    <td className="py-3 px-4 text-center">{booking.privateVillas} Villa(s) × {nights} Night(s)</td>
                     <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">${villaAmt.toLocaleString()}</td>
                   </tr>
                 ) : null}
 
                 {booking.eventAttendees ? (
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-800">Event Space Rental</td>
-                    <td className="py-3 px-4 text-center font-mono text-slate-600">
-                      {booking.bookOption === 'meeting' ? `$${priceMeetingRoom.toLocaleString()} / pax` : `$${priceEventHall.toLocaleString()} / hall`}
+                    <td className="py-3 px-4">
+                      <div className="font-semibold text-slate-800">Event Space Rental</div>
+                      <div className="text-[11px] text-slate-500 font-mono mt-0.5">
+                        {booking.bookOption === 'meeting' ? `$${priceMeetingRoom.toLocaleString()} / pax` : `$${priceEventHall.toLocaleString()} / hall`}
+                      </div>
                     </td>
                     <td className="py-3 px-4 text-center">{booking.eventAttendees} Attendees</td>
                     <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">${eventAmt.toLocaleString()}</td>
@@ -512,8 +496,10 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
 
                 {booking.cateringPax ? (
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-800">Catering Service</td>
-                    <td className="py-3 px-4 text-center font-mono text-slate-600">${priceCateringPerPax.toLocaleString()} / pax</td>
+                    <td className="py-3 px-4">
+                      <div className="font-semibold text-slate-800">Catering Service</div>
+                      <div className="text-[11px] text-slate-500 font-mono mt-0.5">${priceCateringPerPax.toLocaleString()} / pax</div>
+                    </td>
                     <td className="py-3 px-4 text-center">{booking.cateringPax} Pax</td>
                     <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">${cateringAmt.toLocaleString()}</td>
                   </tr>
@@ -521,8 +507,10 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
 
                 {totalRooms === 0 && !booking.eventAttendees && (
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-800">Room Reservation</td>
-                    <td className="py-3 px-4 text-center font-mono text-slate-600">${priceStandard.toLocaleString()} / night</td>
+                    <td className="py-3 px-4">
+                      <div className="font-semibold text-slate-800">Room Reservation</div>
+                      <div className="text-[11px] text-slate-500 font-mono mt-0.5">${priceStandard.toLocaleString()} / night</div>
+                    </td>
                     <td className="py-3 px-4 text-center">1 Reservation</td>
                     <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">
                       ${(booking.totalAmount ? Math.round(booking.totalAmount / 1.1) : priceStandard).toLocaleString()}
@@ -575,6 +563,251 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             Thank you for choosing Hanford Hotels & Resorts. For questions regarding this invoice, contact central reservations at @Hanford_HnR on X.
           </div>
 
+        </div>
+
+        {/* Offscreen Hidden Container for Desktop-Width (800px) PNG Download */}
+        <div className="fixed -left-[9999px] -top-[9999px] pointer-events-none opacity-0 overflow-hidden" aria-hidden="true">
+          <div className="p-10 bg-white text-[#2C3744] w-[800px] text-left" ref={exportInvoiceRef}>
+            {/* Header & Logo */}
+            <div className="flex flex-row justify-between items-start border-b border-slate-200 pb-8 gap-6">
+              <div>
+                <div className="text-3xl font-serif font-light text-[#3A4F67] tracking-[0.2em] uppercase flex items-center gap-2">
+                  <span>HANFORD</span>
+                  <span className="w-2 h-2 rounded-full bg-[#51867E]" />
+                </div>
+                <p className="text-[11px] font-semibold text-[#51867E] uppercase tracking-widest mt-1">
+                  HOTELS & RESORTS &bull; CENTRAL RESERVATIONS
+                </p>
+                <p className="text-xs text-slate-600 mt-1.5 font-medium italic">
+                  An Elevated Way of Staying
+                </p>
+                <div className="flex items-center gap-1.5 mt-1 text-xs text-slate-500 font-medium">
+                  <svg className="w-3.5 h-3.5 fill-current text-slate-800 shrink-0" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                  <span>x.com/Hanford_HnR</span>
+                </div>
+              </div>
+
+              <div className="text-right space-y-1">
+                <div className="inline-block px-3 py-1 bg-slate-100 rounded-lg text-slate-600 font-mono text-xs font-bold uppercase tracking-wider mb-2">
+                  OFFICIAL RECEIPT / INVOICE
+                </div>
+                <div className="text-sm font-bold text-[#3A4F67]">Invoice No: <span className="font-mono">{bookingId}</span></div>
+                <div className="text-xs text-slate-500">Date Issued: {dateStr}</div>
+
+                {/* Status Stamp */}
+                <div className="pt-2">
+                  {isPaid ? (
+                    <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#51867E]/10 border-2 border-[#51867E] text-[#51867E] rounded-md font-bold text-xs uppercase tracking-widest">
+                      <CheckCircle className="w-4 h-4 text-[#51867E]" />
+                      <span>PAID IN FULL</span>
+                    </div>
+                  ) : (
+                    <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-amber-50 border-2 border-amber-500 text-amber-700 rounded-md font-bold text-xs uppercase tracking-widest">
+                      <Clock className="w-4 h-4 text-amber-600" />
+                      <span>UNPAID - INVOICE PENDING</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Guest & Property Grid (2 columns) */}
+            <div className="grid grid-cols-2 gap-8 my-8 text-xs">
+              {/* Guest Details */}
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1.5 text-xs text-left">
+                <span className="text-[10px] font-bold text-[#51867E] uppercase tracking-wider block">
+                  Guest Information
+                </span>
+                <div className="space-y-1 text-[#2C3744]">
+                  <div><strong>Name:</strong> {booking.guestName || 'Trevor'}</div>
+                  <div>
+                    <strong>X Username:</strong>{' '}
+                    <span className="text-[#51867E] font-medium font-mono">
+                      @{booking.xUsername ? booking.xUsername.replace(/^@/, '') : 'DEF'}
+                    </span>
+                  </div>
+                  <div>
+                    <strong>Business Name:</strong>{' '}
+                    {booking.businessName && booking.businessName.trim()
+                      ? booking.businessName.trim()
+                      : 'HANFORD'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Property Details */}
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1.5">
+                <span className="text-[10px] font-bold text-[#51867E] uppercase tracking-wider block">
+                  Property / Location
+                </span>
+                <div className="font-bold text-sm text-[#3A4F67] flex items-center gap-1.5">
+                  <Building className="w-4 h-4 text-[#51867E]" />
+                  <span>{booking.propertyName}</span>
+                </div>
+                <div className="text-slate-600 flex items-start gap-1.5 text-xs">
+                  <MapPin className="w-3.5 h-3.5 text-[#51867E] mt-0.5 shrink-0" />
+                  <span>
+                    {matchedProperty?.address
+                      ? `${matchedProperty.address}${matchedProperty.country ? `, ${matchedProperty.country}` : ''}`
+                      : 'Hanford Central Estate & Hospitality Precinct'}
+                  </span>
+                </div>
+                <div className="text-slate-600 pt-0.5">
+                  Booking Type: <strong className="text-slate-800">{getBookingTypeLabel(booking)}</strong>
+                </div>
+                {booking.checkInDate && (
+                  <div className="text-slate-600">
+                    Stay Dates: <strong>{booking.checkInDate}</strong> to <strong>{booking.checkOutDate || 'TBD'}</strong>
+                    {nights ? ` (${nights} night${nights > 1 ? 's' : ''})` : ''}
+                  </div>
+                )}
+                {booking.eventDate && (
+                  <div className="text-slate-600">
+                    Event Date: <strong>{booking.eventDate}</strong>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Desktop Table Breakdown */}
+            <div className="overflow-hidden rounded-xl border border-slate-200 my-6 shadow-2xs">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-[#3A4F67] text-white uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="py-3 px-4 w-1/2">Item / Service Description</th>
+                    <th className="py-3 px-4 text-center w-1/4">Qty / Pax</th>
+                    <th className="py-3 px-4 text-right w-1/4">Amount</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                  {booking.standardRooms ? (
+                    <tr>
+                      <td className="py-3 px-4">
+                        <div className="font-semibold text-slate-800">Standard Room</div>
+                        <div className="text-[11px] text-slate-500 font-mono mt-0.5">${priceStandard.toLocaleString()} / night</div>
+                      </td>
+                      <td className="py-3 px-4 text-center">{booking.standardRooms} Room(s) × {nights} Night(s)</td>
+                      <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">${standardAmt.toLocaleString()}</td>
+                    </tr>
+                  ) : null}
+
+                  {booking.deluxeRooms ? (
+                    <tr>
+                      <td className="py-3 px-4">
+                        <div className="font-semibold text-slate-800">Deluxe Room</div>
+                        <div className="text-[11px] text-slate-500 font-mono mt-0.5">${priceDeluxe.toLocaleString()} / night</div>
+                      </td>
+                      <td className="py-3 px-4 text-center">{booking.deluxeRooms} Room(s) × {nights} Night(s)</td>
+                      <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">${deluxeAmt.toLocaleString()}</td>
+                    </tr>
+                  ) : null}
+
+                  {booking.presidentialSuites ? (
+                    <tr>
+                      <td className="py-3 px-4">
+                        <div className="font-semibold text-slate-800">Presidential Suite</div>
+                        <div className="text-[11px] text-slate-500 font-mono mt-0.5">${pricePresidential.toLocaleString()} / night</div>
+                      </td>
+                      <td className="py-3 px-4 text-center">{booking.presidentialSuites} Suite(s) × {nights} Night(s)</td>
+                      <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">${presidentialAmt.toLocaleString()}</td>
+                    </tr>
+                  ) : null}
+
+                  {booking.privateVillas ? (
+                    <tr>
+                      <td className="py-3 px-4">
+                        <div className="font-semibold text-slate-800">Private Villa</div>
+                        <div className="text-[11px] text-slate-500 font-mono mt-0.5">${pricePrivateVilla.toLocaleString()} / night</div>
+                      </td>
+                      <td className="py-3 px-4 text-center">{booking.privateVillas} Villa(s) × {nights} Night(s)</td>
+                      <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">${villaAmt.toLocaleString()}</td>
+                    </tr>
+                  ) : null}
+
+                  {booking.eventAttendees ? (
+                    <tr>
+                      <td className="py-3 px-4">
+                        <div className="font-semibold text-slate-800">Event Space Rental</div>
+                        <div className="text-[11px] text-slate-500 font-mono mt-0.5">
+                          {booking.bookOption === 'meeting' ? `$${priceMeetingRoom.toLocaleString()} / pax` : `$${priceEventHall.toLocaleString()} / hall`}
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-center">{booking.eventAttendees} Attendees</td>
+                      <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">${eventAmt.toLocaleString()}</td>
+                    </tr>
+                  ) : null}
+
+                  {booking.cateringPax ? (
+                    <tr>
+                      <td className="py-3 px-4">
+                        <div className="font-semibold text-slate-800">Catering Service</div>
+                        <div className="text-[11px] text-slate-500 font-mono mt-0.5">${priceCateringPerPax.toLocaleString()} / pax</div>
+                      </td>
+                      <td className="py-3 px-4 text-center">{booking.cateringPax} Pax</td>
+                      <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">${cateringAmt.toLocaleString()}</td>
+                    </tr>
+                  ) : null}
+
+                  {totalRooms === 0 && !booking.eventAttendees && (
+                    <tr>
+                      <td className="py-3 px-4">
+                        <div className="font-semibold text-slate-800">Room Reservation</div>
+                        <div className="text-[11px] text-slate-500 font-mono mt-0.5">${priceStandard.toLocaleString()} / night</div>
+                      </td>
+                      <td className="py-3 px-4 text-center">1 Reservation</td>
+                      <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">
+                        ${(booking.totalAmount ? Math.round(booking.totalAmount / 1.1) : priceStandard).toLocaleString()}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pricing Summary */}
+            <div className="flex flex-row justify-between items-start gap-6 border-t border-slate-200 pt-6">
+              <div className="text-xs text-slate-500 space-y-1 max-w-xs text-left">
+                <div className="font-bold text-slate-700 uppercase tracking-wider text-[10px]">Notes / Instructions:</div>
+                <p>{booking.notes || 'Reservation is processed under Hanford Central Hospitality guidelines.'}</p>
+              </div>
+
+              <div className="w-72 space-y-2 text-xs text-right">
+                <div className="flex justify-between text-slate-600">
+                  <span>Subtotal Before Discount:</span>
+                  <span className="font-mono font-semibold">${rawSubtotal.toLocaleString()}</span>
+                </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-[#51867E] font-medium">
+                    <span>Discount ({discountCode || 'COUPON'} - {discountPercent}%):</span>
+                    <span className="font-mono font-bold">-${discountAmount.toLocaleString()}</span>
+                  </div>
+                )}
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-slate-600">
+                    <span>Subtotal Before Tax:</span>
+                    <span className="font-mono font-semibold">${subtotalBeforeTax.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-slate-600">
+                  <span>Taxes & Fees (10%):</span>
+                  <span className="font-mono font-semibold">${finalTax.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-sm font-bold text-[#3A4F67] border-t border-slate-200 pt-2">
+                  <span>Total Invoice:</span>
+                  <span className="font-mono text-[#51867E] text-base">
+                    ${finalGrandTotal.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Notice */}
+            <div className="mt-10 pt-6 border-t border-slate-100 text-center text-[10px] text-slate-400 font-light tracking-wider">
+              Thank you for choosing Hanford Hotels & Resorts. For questions regarding this invoice, contact central reservations at @Hanford_HnR on X.
+            </div>
+          </div>
         </div>
       </div>
     </div>
