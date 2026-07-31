@@ -5,7 +5,6 @@ import { validatePropertyCoupon } from '../utils/couponUtils';
 import { getBookingCategoryLabel } from '../utils/bookingUtils';
 import { PropertySearchSelect } from '../components/PropertySearchSelect';
 import { exportInvoiceAsImage } from '../utils/exportInvoiceImage';
-import { InvoicePreviewModal } from '../components/InvoicePreviewModal';
 import {
   CheckCircle2,
   AlertCircle,
@@ -80,17 +79,6 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
-  const [previewData, setPreviewData] = useState<{
-    isOpen: boolean;
-    dataUrl: string;
-    blobUrl: string;
-    fileName: string;
-  }>({
-    isOpen: false,
-    dataUrl: '',
-    blobUrl: '',
-    fileName: ''
-  });
   const invoiceRef = useRef<HTMLDivElement>(null);
   const exportInvoiceRef = useRef<HTMLDivElement>(null);
 
@@ -480,19 +468,11 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
       await exportInvoiceAsImage(
         exportInvoiceRef.current,
         invoiceRef.current,
-        fileName,
-        (dataUrl, blobUrl) => {
-          setPreviewData({
-            isOpen: true,
-            dataUrl,
-            blobUrl,
-            fileName
-          });
-        }
+        fileName
       );
     } catch (err) {
       console.error('Invoice image download error:', err);
-      alert('Tidak dapat memproses gambar invoice. Silakan coba screenshot atau cetak invoice.');
+      alert('Tidak dapat memproses gambar invoice. Silakan coba lagi.');
     } finally {
       setIsGeneratingImage(false);
     }
@@ -2284,15 +2264,6 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
             </button>
           </div>
         )}
-
-        {/* Invoice Image Preview Modal for Mobile & Desktop */}
-        <InvoicePreviewModal
-          isOpen={previewData.isOpen}
-          onClose={() => setPreviewData((prev) => ({ ...prev, isOpen: false }))}
-          dataUrl={previewData.dataUrl}
-          blobUrl={previewData.blobUrl}
-          fileName={previewData.fileName}
-        />
       </div>
     </div>
   );

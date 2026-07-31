@@ -25,7 +25,7 @@ export function dataUrlToBlob(dataUrl: string): Blob {
 }
 
 /**
- * Timeout wrapper to prevent html2canvas or toPng from spinning forever on Mobile browsers.
+ * Timeout wrapper to prevent rendering engines from hanging indefinitely on Mobile browsers.
  */
 function runWithTimeout<T>(promise: Promise<T>, ms: number, stepLabel: string): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -45,15 +45,14 @@ function runWithTimeout<T>(promise: Promise<T>, ms: number, stepLabel: string): 
 }
 
 /**
- * Robustly exports a DOM node as a PNG image for download on both Desktop & Mobile (Chrome/Safari).
+ * Exports the 800px desktop-format invoice layout as a PNG image for direct download on Mobile & Desktop.
  */
 export async function exportInvoiceAsImage(
   exportNode: HTMLElement | null,
   onscreenNode: HTMLElement | null,
-  fileName: string,
-  onShowPreview?: (dataUrl: string, blobUrl: string) => void
+  fileName: string
 ): Promise<ExportResult> {
-  // Always prioritize exportNode (800px desktop format layout) so the PNG is in desktop layout format
+  // Always target exportNode first to guarantee the wide 800px Desktop format layout
   const primaryNode = exportNode || onscreenNode;
   const secondaryNode = onscreenNode && onscreenNode !== primaryNode ? onscreenNode : null;
 
@@ -63,7 +62,7 @@ export async function exportInvoiceAsImage(
 
   let dataUrl = '';
 
-  // Strategy 1: html2canvas on primary node (desktop layout format)
+  // Strategy 1: html2canvas on Desktop-Format (800px) node
   try {
     const canvas = await runWithTimeout(
       html2canvas(primaryNode, {
@@ -80,6 +79,7 @@ export async function exportInvoiceAsImage(
           element.style.transform = 'none';
           element.style.opacity = '1';
           element.style.visibility = 'visible';
+          element.style.width = '800px';
         }
       }),
       4000,
@@ -103,7 +103,8 @@ export async function exportInvoiceAsImage(
             position: 'static',
             opacity: '1',
             visibility: 'visible',
-            transform: 'none'
+            transform: 'none',
+            width: '800px'
           }
         }),
         4000,
@@ -112,7 +113,7 @@ export async function exportInvoiceAsImage(
     } catch (err2) {
       console.warn('Strategy 2 (toPng primary) failed:', err2);
 
-      // Strategy 3: html2canvas on secondary node as last resort
+      // Strategy 3: Fallback on secondary node if available
       if (secondaryNode) {
         try {
           const canvas = await runWithTimeout(
@@ -136,20 +137,20 @@ export async function exportInvoiceAsImage(
   }
 
   if (!dataUrl || dataUrl.length < 100) {
-    throw new Error('Gagal merender gambar invoice. Silakan ambil screenshot atau cetak invoice.');
+    throw new Error('Gagal merender gambar invoice PNG.');
   }
 
   const blob = dataUrlToBlob(dataUrl);
   const blobUrl = URL.createObjectURL(blob);
 
-  // Detect mobile browsers
+  // Detect mobile device
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
     navigator.userAgent
   );
 
   let shared = false;
 
-  // Mobile Web Share API
+  // 1. Mobile Web Share API
   if (isMobile && navigator.canShare) {
     try {
       const file = new File([blob], fileName, { type: 'image/png' });
@@ -162,11 +163,11 @@ export async function exportInvoiceAsImage(
         shared = true;
       }
     } catch (shareErr) {
-      console.warn('Web Share was closed or failed:', shareErr);
+      console.warn('Web Share was cancelled or failed:', shareErr);
     }
   }
 
-  // Attempt standard anchor click download
+  // 2. Direct Anchor Click Download
   if (!shared) {
     try {
       const link = document.createElement('a');
@@ -178,17 +179,17 @@ export async function exportInvoiceAsImage(
       link.click();
       document.body.removeChild(link);
     } catch (dlErr) {
-      console.warn('Direct link click download failed:', dlErr);
+      console.warn('Direct anchor download failed, attempting window fallback:', dlErr);
+      if (isMobile) {
+        window.open(blobUrl, '_blank');
+      }
     }
   }
 
-  // Always invoke preview modal callback on mobile or when requested so user can see/save
-  if (onShowPreview) {
-    onShowPreview(dataUrl, blobUrl);
-  } else if (isMobile && !shared) {
-    // If no explicit callback supplied on mobile, open image directly in new tab or popup
-    window.open(blobUrl, '_blank');
-  }
+  // Revoke Blob URL after 30 seconds
+  setTimeout(() => {
+    URL.revokeObjectURL(blobUrl);
+  }, 30000);
 
   return { success: true, dataUrl, blobUrl, shared };
 }
