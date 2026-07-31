@@ -3,6 +3,7 @@ import { BookingInquiry, Property } from '../../types';
 import { fetchLocations } from '../../services/dataService';
 import { getBookingTypeLabel } from '../../utils/bookingUtils';
 import { exportInvoiceAsImage } from '../../utils/exportInvoiceImage';
+import { InvoicePreviewModal } from '../InvoicePreviewModal';
 import { X, CheckCircle, Clock, FileText, Building, Download, Image as ImageIcon, Loader2, MapPin } from 'lucide-react';
 
 interface InvoiceModalProps {
@@ -28,6 +29,17 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
 }) => {
   const [matchedProperty, setMatchedProperty] = useState<Property | null>(null);
   const [isDownloadingImage, setIsDownloadingImage] = useState(false);
+  const [previewData, setPreviewData] = useState<{
+    isOpen: boolean;
+    dataUrl: string;
+    blobUrl: string;
+    fileName: string;
+  }>({
+    isOpen: false,
+    dataUrl: '',
+    blobUrl: '',
+    fileName: ''
+  });
   const invoiceRef = useRef<HTMLDivElement>(null);
   const exportInvoiceRef = useRef<HTMLDivElement>(null);
 
@@ -149,7 +161,19 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
     try {
       setIsDownloadingImage(true);
       const fileName = `Invoice-${bookingId}.png`;
-      await exportInvoiceAsImage(exportInvoiceRef.current, invoiceRef.current, fileName);
+      await exportInvoiceAsImage(
+        exportInvoiceRef.current,
+        invoiceRef.current,
+        fileName,
+        (dataUrl, blobUrl) => {
+          setPreviewData({
+            isOpen: true,
+            dataUrl,
+            blobUrl,
+            fileName
+          });
+        }
+      );
     } catch (err) {
       console.error('Failed to download invoice image:', err);
       alert('Gagal mengunduh gambar invoice. Silakan coba lagi atau ambil screenshot.');
@@ -799,6 +823,15 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Invoice Image Preview Modal for Mobile & Desktop */}
+        <InvoicePreviewModal
+          isOpen={previewData.isOpen}
+          onClose={() => setPreviewData((prev) => ({ ...prev, isOpen: false }))}
+          dataUrl={previewData.dataUrl}
+          blobUrl={previewData.blobUrl}
+          fileName={previewData.fileName}
+        />
       </div>
     </div>
   );
