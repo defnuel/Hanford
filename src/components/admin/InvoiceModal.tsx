@@ -150,19 +150,51 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
     if (!targetEl) return;
     try {
       setIsDownloadingImage(true);
-      const dataUrl = await toPng(targetEl, {
-        cacheBust: true,
-        pixelRatio: 2,
-        backgroundColor: '#ffffff',
-        skipFonts: true,
-        fontEmbedCSS: ''
-      });
+      let dataUrl = '';
+      try {
+        dataUrl = await toPng(targetEl, {
+          cacheBust: true,
+          pixelRatio: 2,
+          backgroundColor: '#ffffff',
+          skipFonts: true,
+          fontEmbedCSS: '',
+          style: {
+            opacity: '1',
+            visibility: 'visible'
+          }
+        });
+      } catch (firstErr) {
+        console.warn('Offscreen invoice capture failed, attempting onscreen capture fallback:', firstErr);
+        if (invoiceRef.current) {
+          dataUrl = await toPng(invoiceRef.current, {
+            cacheBust: true,
+            pixelRatio: 2,
+            backgroundColor: '#ffffff',
+            skipFonts: true,
+            fontEmbedCSS: '',
+            style: {
+              opacity: '1',
+              visibility: 'visible'
+            }
+          });
+        } else {
+          throw firstErr;
+        }
+      }
+
+      if (!dataUrl) {
+        throw new Error('Empty data URL generated');
+      }
+
       const link = document.createElement('a');
       link.download = `Invoice-${bookingId}.png`;
       link.href = dataUrl;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     } catch (err) {
       console.error('Failed to download invoice image:', err);
+      alert('Gagal mengunduh gambar invoice. Silakan coba lagi atau ambil screenshot.');
     } finally {
       setIsDownloadingImage(false);
     }
@@ -566,7 +598,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
         </div>
 
         {/* Offscreen Hidden Container for Desktop-Width (800px) PNG Download */}
-        <div className="fixed -left-[9999px] -top-[9999px] pointer-events-none opacity-0 overflow-hidden" aria-hidden="true">
+        <div className="fixed -left-[9999px] top-0 pointer-events-none opacity-100 z-[-9999] overflow-hidden" aria-hidden="true">
           <div className="p-10 bg-white text-[#2C3744] w-[800px] text-left" ref={exportInvoiceRef}>
             {/* Header & Logo */}
             <div className="flex flex-row justify-between items-start border-b border-slate-200 pb-8 gap-6">

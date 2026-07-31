@@ -466,18 +466,50 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
     if (!targetEl) return;
     try {
       setIsGeneratingImage(true);
-      const dataUrl = await toPng(targetEl, {
-        cacheBust: true,
-        quality: 1.0,
-        pixelRatio: 2,
-        backgroundColor: '#FFFFFF',
-        skipFonts: true,
-        fontEmbedCSS: ''
-      });
+      let dataUrl = '';
+      try {
+        dataUrl = await toPng(targetEl, {
+          cacheBust: true,
+          quality: 0.95,
+          pixelRatio: 2,
+          backgroundColor: '#FFFFFF',
+          skipFonts: true,
+          fontEmbedCSS: '',
+          style: {
+            opacity: '1',
+            visibility: 'visible'
+          }
+        });
+      } catch (firstErr) {
+        console.warn('Offscreen export failed, attempting onscreen capture fallback:', firstErr);
+        if (invoiceRef.current) {
+          dataUrl = await toPng(invoiceRef.current, {
+            cacheBust: true,
+            quality: 0.95,
+            pixelRatio: 2,
+            backgroundColor: '#FFFFFF',
+            skipFonts: true,
+            fontEmbedCSS: '',
+            style: {
+              opacity: '1',
+              visibility: 'visible'
+            }
+          });
+        } else {
+          throw firstErr;
+        }
+      }
+
+      if (!dataUrl) {
+        throw new Error('Empty data URL generated');
+      }
+
       const link = document.createElement('a');
       link.download = `Hanford_Invoice_${confirmedBooking?.bookingId || 'HNF-2026'}.png`;
       link.href = dataUrl;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     } catch (err) {
       console.error('Invoice image download error:', err);
       alert('Could not generate invoice image. You can take a screenshot or try again.');
@@ -891,7 +923,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
             </div>
 
             {/* Hidden Offscreen Container for High-Res Desktop-Width PNG Download */}
-            <div className="fixed -left-[9999px] -top-[9999px] pointer-events-none opacity-0 overflow-hidden" aria-hidden="true">
+            <div className="fixed -left-[9999px] top-0 pointer-events-none opacity-100 z-[-9999] overflow-hidden" aria-hidden="true">
               <div
                 ref={exportInvoiceRef}
                 className="bg-[#FFFFFF] border-2 border-[#3A4F67]/30 rounded-2xl p-8 space-y-4 relative w-[800px] text-left"
