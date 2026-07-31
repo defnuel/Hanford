@@ -4,7 +4,7 @@ import { fetchLocations, submitBooking } from '../services/dataService';
 import { validatePropertyCoupon } from '../utils/couponUtils';
 import { getBookingCategoryLabel } from '../utils/bookingUtils';
 import { PropertySearchSelect } from '../components/PropertySearchSelect';
-import { toPng } from 'html-to-image';
+import { exportInvoiceAsImage } from '../utils/exportInvoiceImage';
 import {
   CheckCircle2,
   AlertCircle,
@@ -462,54 +462,10 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
   };
 
   const handleDownloadInvoice = async () => {
-    const targetEl = exportInvoiceRef.current || invoiceRef.current;
-    if (!targetEl) return;
     try {
       setIsGeneratingImage(true);
-      let dataUrl = '';
-      try {
-        dataUrl = await toPng(targetEl, {
-          cacheBust: true,
-          quality: 0.95,
-          pixelRatio: 2,
-          backgroundColor: '#FFFFFF',
-          skipFonts: true,
-          fontEmbedCSS: '',
-          style: {
-            opacity: '1',
-            visibility: 'visible'
-          }
-        });
-      } catch (firstErr) {
-        console.warn('Offscreen export failed, attempting onscreen capture fallback:', firstErr);
-        if (invoiceRef.current) {
-          dataUrl = await toPng(invoiceRef.current, {
-            cacheBust: true,
-            quality: 0.95,
-            pixelRatio: 2,
-            backgroundColor: '#FFFFFF',
-            skipFonts: true,
-            fontEmbedCSS: '',
-            style: {
-              opacity: '1',
-              visibility: 'visible'
-            }
-          });
-        } else {
-          throw firstErr;
-        }
-      }
-
-      if (!dataUrl) {
-        throw new Error('Empty data URL generated');
-      }
-
-      const link = document.createElement('a');
-      link.download = `Hanford_Invoice_${confirmedBooking?.bookingId || 'HNF-2026'}.png`;
-      link.href = dataUrl;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const fileName = `Hanford_Invoice_${confirmedBooking?.bookingId || 'HNF-2026'}.png`;
+      await exportInvoiceAsImage(exportInvoiceRef.current, invoiceRef.current, fileName);
     } catch (err) {
       console.error('Invoice image download error:', err);
       alert('Could not generate invoice image. You can take a screenshot or try again.');

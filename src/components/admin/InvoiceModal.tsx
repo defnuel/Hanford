@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { BookingInquiry, Property } from '../../types';
 import { fetchLocations } from '../../services/dataService';
 import { getBookingTypeLabel } from '../../utils/bookingUtils';
+import { exportInvoiceAsImage } from '../../utils/exportInvoiceImage';
 import { X, CheckCircle, Clock, FileText, Building, Download, Image as ImageIcon, Loader2, MapPin } from 'lucide-react';
-import { toPng } from 'html-to-image';
 
 interface InvoiceModalProps {
   booking: BookingInquiry;
@@ -146,52 +146,10 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
       : subtotalBeforeTax + finalTax;
 
   const handleDownloadImage = async () => {
-    const targetEl = exportInvoiceRef.current || invoiceRef.current;
-    if (!targetEl) return;
     try {
       setIsDownloadingImage(true);
-      let dataUrl = '';
-      try {
-        dataUrl = await toPng(targetEl, {
-          cacheBust: true,
-          pixelRatio: 2,
-          backgroundColor: '#ffffff',
-          skipFonts: true,
-          fontEmbedCSS: '',
-          style: {
-            opacity: '1',
-            visibility: 'visible'
-          }
-        });
-      } catch (firstErr) {
-        console.warn('Offscreen invoice capture failed, attempting onscreen capture fallback:', firstErr);
-        if (invoiceRef.current) {
-          dataUrl = await toPng(invoiceRef.current, {
-            cacheBust: true,
-            pixelRatio: 2,
-            backgroundColor: '#ffffff',
-            skipFonts: true,
-            fontEmbedCSS: '',
-            style: {
-              opacity: '1',
-              visibility: 'visible'
-            }
-          });
-        } else {
-          throw firstErr;
-        }
-      }
-
-      if (!dataUrl) {
-        throw new Error('Empty data URL generated');
-      }
-
-      const link = document.createElement('a');
-      link.download = `Invoice-${bookingId}.png`;
-      link.href = dataUrl;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const fileName = `Invoice-${bookingId}.png`;
+      await exportInvoiceAsImage(exportInvoiceRef.current, invoiceRef.current, fileName);
     } catch (err) {
       console.error('Failed to download invoice image:', err);
       alert('Gagal mengunduh gambar invoice. Silakan coba lagi atau ambil screenshot.');
