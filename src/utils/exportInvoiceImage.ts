@@ -53,9 +53,9 @@ export async function exportInvoiceAsImage(
   fileName: string,
   onShowPreview?: (dataUrl: string, blobUrl: string) => void
 ): Promise<ExportResult> {
-  // Always prioritize the visible onscreen node on mobile Chrome/Safari
-  const primaryNode = onscreenNode || exportNode;
-  const secondaryNode = exportNode && exportNode !== primaryNode ? exportNode : null;
+  // Always prioritize exportNode (800px desktop format layout) so the PNG is in desktop layout format
+  const primaryNode = exportNode || onscreenNode;
+  const secondaryNode = onscreenNode && onscreenNode !== primaryNode ? onscreenNode : null;
 
   if (!primaryNode) {
     throw new Error('Tidak ditemukan elemen invoice untuk diunduh.');
@@ -63,7 +63,7 @@ export async function exportInvoiceAsImage(
 
   let dataUrl = '';
 
-  // Strategy 1: html2canvas on visible primary node (fastest & most accurate layout)
+  // Strategy 1: html2canvas on primary node (desktop layout format)
   try {
     const canvas = await runWithTimeout(
       html2canvas(primaryNode, {
@@ -72,9 +72,17 @@ export async function exportInvoiceAsImage(
         allowTaint: true,
         backgroundColor: '#FFFFFF',
         logging: false,
-        imageTimeout: 1500,
+        imageTimeout: 2000,
+        onclone: (_, element) => {
+          element.style.position = 'static';
+          element.style.left = '0';
+          element.style.top = '0';
+          element.style.transform = 'none';
+          element.style.opacity = '1';
+          element.style.visibility = 'visible';
+        }
       }),
-      3500,
+      4000,
       'html2canvas primary'
     );
     dataUrl = canvas.toDataURL('image/png', 0.95);
@@ -91,14 +99,20 @@ export async function exportInvoiceAsImage(
           backgroundColor: '#FFFFFF',
           skipFonts: true,
           fontEmbedCSS: '',
+          style: {
+            position: 'static',
+            opacity: '1',
+            visibility: 'visible',
+            transform: 'none'
+          }
         }),
-        3500,
+        4000,
         'toPng primary'
       );
     } catch (err2) {
       console.warn('Strategy 2 (toPng primary) failed:', err2);
 
-      // Strategy 3: html2canvas on secondary node if present
+      // Strategy 3: html2canvas on secondary node as last resort
       if (secondaryNode) {
         try {
           const canvas = await runWithTimeout(
@@ -108,16 +122,9 @@ export async function exportInvoiceAsImage(
               allowTaint: true,
               backgroundColor: '#FFFFFF',
               logging: false,
-              imageTimeout: 1500,
-              onclone: (_, element) => {
-                element.style.opacity = '1';
-                element.style.visibility = 'visible';
-                element.style.position = 'relative';
-                element.style.left = '0';
-                element.style.top = '0';
-              }
+              imageTimeout: 2000,
             }),
-            3500,
+            4000,
             'html2canvas secondary'
           );
           dataUrl = canvas.toDataURL('image/png', 0.95);
