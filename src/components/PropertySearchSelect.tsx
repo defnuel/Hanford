@@ -81,11 +81,17 @@ export const PropertySearchSelect: React.FC<PropertySearchSelectProps> = ({
   return (
     <div className="relative w-full" ref={dropdownRef}>
       {/* Trigger Button */}
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={() => setIsOpen(!isOpen)}
-        className={`w-full px-4 sm:px-5 py-2.5 sm:py-3.5 bg-white border rounded-full text-xs text-left font-semibold transition-all flex items-center justify-between gap-2 shadow-xs cursor-pointer ${
+      <div
+        role="button"
+        tabIndex={disabled ? -1 : 0}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        onKeyDown={(e) => {
+          if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            setIsOpen(!isOpen);
+          }
+        }}
+        className={`w-full px-4 sm:px-5 py-2.5 sm:py-3.5 bg-white border rounded-full text-xs text-left font-semibold transition-all flex items-center justify-between gap-2 shadow-xs cursor-pointer select-none ${
           isOpen
             ? 'border-[#51867E] ring-2 ring-[#51867E]/20 text-[#2C3744]'
             : 'border-[#88B2AB]/40 hover:border-[#51867E] text-[#2C3744]'
@@ -107,17 +113,24 @@ export const PropertySearchSelect: React.FC<PropertySearchSelectProps> = ({
 
         <div className="flex items-center gap-1.5 shrink-0">
           {selectedProperty && (
-            <button
-              type="button"
+            <span
+              role="button"
+              tabIndex={0}
               onClick={(e) => {
                 e.stopPropagation();
                 onSelect('');
               }}
-              className="p-1 rounded-full text-gray-400 hover:text-red-500 hover:bg-gray-100 transition-colors"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.stopPropagation();
+                  onSelect('');
+                }
+              }}
+              className="p-1 rounded-full text-gray-400 hover:text-red-500 hover:bg-gray-100 transition-colors inline-flex items-center justify-center cursor-pointer"
               title="Clear selection"
             >
               <X className="w-3.5 h-3.5" />
-            </button>
+            </span>
           )}
           <ChevronDown
             className={`w-4 h-4 text-[#51867E] transition-transform duration-200 ${
@@ -125,7 +138,7 @@ export const PropertySearchSelect: React.FC<PropertySearchSelectProps> = ({
             }`}
           />
         </div>
-      </button>
+      </div>
 
       {/* Searchable Dropdown Popup */}
       {isOpen && (
