@@ -80,7 +80,7 @@ const CollapsibleSectionCard: React.FC<CollapsibleSectionCardProps> = ({ sec }) 
 };
 
 const AmenitiesPrivilegesCard: React.FC<{ amenities: string[] }> = ({ amenities }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   return (
     <div className="info-panel bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
@@ -115,8 +115,11 @@ const AmenitiesPrivilegesCard: React.FC<{ amenities: string[] }> = ({ amenities 
       </button>
 
       {isOpen && (
-        <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-2 border-t border-[#88B2AB]/20">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+        <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-2 border-t border-[#88B2AB]/20 space-y-3">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#3A4F67] block pt-1">
+            COMPLIMENTARY FACILITIES MAY INCLUDE:
+          </span>
+          <div className="flex flex-wrap gap-2 sm:gap-2.5">
             {amenities.map((amenity, i) => (
               <AmenityBadge key={i} name={amenity} />
             ))}

@@ -13,7 +13,15 @@ import {
   Users,
   PartyPopper,
   CheckCircle2,
-  Bookmark
+  Bookmark,
+  Flag,
+  Waves,
+  Utensils,
+  Sun,
+  Dumbbell,
+  Activity,
+  Anchor,
+  MoreHorizontal
 } from 'lucide-react';
 
 interface ICGuidelinesPageProps {
@@ -197,24 +205,29 @@ export const ICGuidelinesPage: React.FC<ICGuidelinesPageProps> = ({ onNavigate }
               </p>
 
               {/* Facility Pills */}
-              <div className="flex flex-wrap gap-2 pt-1">
+              <div className="flex flex-wrap gap-2 sm:gap-2.5 pt-1">
                 {[
-                  'Golf Course',
-                  'Villa',
-                  'Spa',
-                  'Swimming Pool',
-                  'Restaurant',
-                  'Beach Club',
-                  'Fitness Class',
-                  'dan fasilitas lainnya'
-                ].map((item) => (
-                  <span
-                    key={item}
-                    className="px-3 py-1 bg-slate-100 border border-slate-200 rounded-full text-xs font-semibold text-slate-700"
-                  >
-                    {item}
-                  </span>
-                ))}
+                  { name: 'Golf Course', icon: Flag },
+                  { name: 'Spa', icon: Sparkles },
+                  { name: 'Swimming Pool', icon: Waves },
+                  { name: 'Restaurant', icon: Utensils },
+                  { name: 'Beach Club', icon: Sun },
+                  { name: 'Fitness Class', icon: Dumbbell },
+                  { name: 'Pilates Class', icon: Activity },
+                  { name: 'Water Sport', icon: Anchor },
+                  { name: 'dan fasilitas lainnya', icon: MoreHorizontal }
+                ].map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <div
+                      key={item.name}
+                      className="px-3.5 py-1.5 bg-[#F0F4F8] border border-slate-200/90 rounded-full flex items-center gap-2 text-xs sm:text-sm shadow-2xs hover:bg-slate-200/60 transition-colors"
+                    >
+                      <Icon className="w-4 h-4 text-[#51867E] shrink-0" />
+                      <span className="font-semibold text-[#1E293B]">{item.name}</span>
+                    </div>
+                  );
+                })}
               </div>
 
               <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-2 text-xs text-slate-600">

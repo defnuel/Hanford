@@ -25,7 +25,13 @@ import {
   Utensils,
   Baby,
   Smile,
-  FileText
+  FileText,
+  Flag,
+  Waves,
+  Sun,
+  Activity,
+  Anchor,
+  MoreHorizontal
 } from 'lucide-react';
 
 interface GuidelinesPageProps {
@@ -381,24 +387,23 @@ const GuestVenueGuidelinesSection: React.FC<{ onNavigate: (path: string) => void
               <span className="text-xs font-bold uppercase tracking-wider text-[#3A4F67] block">Complimentary Facilities May Include:</span>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { en: 'Swimming Pool', id: 'Kolam Renang', icon: Smile },
-                  { en: 'Fitness Centre', id: 'Pusat Kebugaran', icon: Dumbbell },
-                  { en: 'Wi-Fi', id: 'Wi-Fi Gratis', icon: Wifi },
-                  { en: 'Breakfast', id: 'Sarapan', icon: Utensils },
-                  { en: 'Parking', id: 'Parkir Gratis', icon: Car },
-                  { en: "Kids' Facilities", id: 'Fasilitas Anak', icon: Baby },
-                  { en: 'Public Guest Areas', id: 'Area Publik Tamu', icon: Users }
+                  { name: 'Swimming Pool', icon: Waves },
+                  { name: 'Fitness Centre', icon: Dumbbell },
+                  { name: 'Wi-Fi', icon: Wifi },
+                  { name: 'Breakfast', icon: Utensils },
+                  { name: 'Parking', icon: Car },
+                  { name: "Kids' Facilities", icon: Baby },
+                  { name: 'Public Guest Areas', icon: Users }
                 ].map((item) => {
                   const Icon = item.icon;
                   return (
-                    <span
-                      key={item.en}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-full text-xs font-medium text-slate-800"
+                    <div
+                      key={item.name}
+                      className="px-3.5 py-1.5 bg-[#F0F4F8] border border-slate-200/90 rounded-full flex items-center gap-2 text-xs sm:text-sm shadow-2xs hover:bg-slate-200/60 transition-colors"
                     >
-                      <Icon className="w-3.5 h-3.5 text-[#51867E]" />
-                      <span>{item.en}</span>
-                      <span className="text-[10px] text-slate-400 italic">({item.id})</span>
-                    </span>
+                      <Icon className="w-4 h-4 text-[#51867E] shrink-0" />
+                      <span className="font-semibold text-[#1E293B]">{item.name}</span>
+                    </div>
                   );
                 })}
               </div>
@@ -694,24 +699,30 @@ const ICGuidelinesSection: React.FC<{ onNavigate: (path: string) => void }> = ({
               Kalian dapat menggunakan fasilitas yang tersedia sesuai dengan informasi pada masing-masing lokasi, seperti:
             </p>
 
-            <div className="flex flex-wrap gap-2 pt-1">
+            {/* Facility Pills */}
+            <div className="flex flex-wrap gap-2 sm:gap-2.5 pt-1">
               {[
-                'Golf Course',
-                'Villa',
-                'Spa',
-                'Swimming Pool',
-                'Restaurant',
-                'Beach Club',
-                'Fitness Class',
-                'dan fasilitas lainnya'
-              ].map((item) => (
-                <span
-                  key={item}
-                  className="px-3 py-1 bg-slate-100 border border-slate-200 rounded-full text-xs font-semibold text-slate-700"
-                >
-                  {item}
-                </span>
-              ))}
+                { name: 'Golf Course', icon: Flag },
+                { name: 'Spa', icon: Sparkles },
+                { name: 'Swimming Pool', icon: Waves },
+                { name: 'Restaurant', icon: Utensils },
+                { name: 'Beach Club', icon: Sun },
+                { name: 'Fitness Class', icon: Dumbbell },
+                { name: 'Pilates Class', icon: Activity },
+                { name: 'Water Sport', icon: Anchor },
+                { name: 'dan fasilitas lainnya', icon: MoreHorizontal }
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={item.name}
+                    className="px-3.5 py-1.5 bg-[#F0F4F8] border border-slate-200/90 rounded-full flex items-center gap-2 text-xs sm:text-sm shadow-2xs hover:bg-slate-200/60 transition-colors"
+                  >
+                    <Icon className="w-4 h-4 text-[#51867E] shrink-0" />
+                    <span className="font-semibold text-[#1E293B]">{item.name}</span>
+                  </div>
+                );
+              })}
             </div>
 
             <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-2 text-xs text-slate-600">
