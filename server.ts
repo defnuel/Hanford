@@ -169,11 +169,15 @@ async function startServer() {
     try {
       const payload: BookingInquiry = req.body;
 
-      if (!payload.guestName || !payload.xUsername || (!payload.propertySlug && !payload.propertyName)) {
+      if (!payload.guestName || (!payload.propertySlug && !payload.propertyName)) {
         return res.status(400).json({
           success: false,
-          error: 'Missing required booking parameters: Name, X Username, and Location are required.'
+          error: 'Missing required booking parameters: Guest Name and Property Location are required.'
         });
+      }
+
+      if (!payload.xUsername || !payload.xUsername.trim()) {
+        payload.xUsername = '@guest';
       }
 
       const response = await appendBookingInquiry(payload);

@@ -123,6 +123,16 @@ export type BookOption = 'room' | 'event' | 'both' | 'meeting' | 'room_meeting';
 export type EventTypeOption = 'hall' | 'meeting';
 export type EventAddonOption = 'none' | 'catering' | 'decoration' | 'both';
 
+export interface InvoiceLineItem {
+  id: string;
+  serviceDate?: string;
+  productService: string;
+  description?: string;
+  qty: number;
+  rate: number;
+  amount: number;
+}
+
 export interface BookingInquiry {
   id?: string;
   bookingId?: string;
@@ -144,6 +154,12 @@ export interface BookingInquiry {
   presidentialSuites?: number;
   privateVillas?: number;
   roomsCount?: number; // Total rooms count
+
+  // Custom Products & Services Line Items (QuickBooks Style)
+  customLineItems?: InvoiceLineItem[];
+  noteToCustomer?: string;
+  memoOnStatement?: string;
+  shippingFee?: number;
 
   // Event & Catering Details
   eventType?: EventTypeOption; // 'hall' | 'meeting'

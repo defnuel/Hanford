@@ -96,14 +96,10 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
   const villaAmt = (booking.privateVillas || 0) * pricePrivateVilla * nights;
 
   let eventAmt = 0;
-  if (booking.eventAttendees || booking.bookOption === 'event' || booking.bookOption === 'both' || booking.bookOption === 'meeting') {
-    if (booking.eventSubtotal && booking.eventSubtotal > 0) {
-      eventAmt = booking.eventSubtotal;
-    } else if (booking.bookOption === 'meeting') {
-      eventAmt = (booking.eventAttendees || 1) * priceMeetingRoom;
-    } else {
-      eventAmt = priceEventHall;
-    }
+  if (booking.bookOption === 'meeting' || booking.bookOption === 'room_meeting') {
+    eventAmt = (booking.eventAttendees || 1) * priceMeetingRoom;
+  } else if (booking.bookOption === 'event' || booking.bookOption === 'both' || booking.eventAttendees) {
+    eventAmt = priceEventHall;
   }
 
   let cateringAmt = 0;
@@ -112,38 +108,32 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
     cateringAmt = pax * priceCateringPerPax;
   }
 
-  const calculatedSubtotal = standardAmt + deluxeAmt + presidentialAmt + villaAmt + eventAmt + cateringAmt;
-  const rawSubtotal =
-    booking.subtotalBeforeDiscount ||
-    (calculatedSubtotal > 0
-      ? calculatedSubtotal
-      : booking.totalAmount
-      ? Math.round(booking.totalAmount / 1.1)
-      : 0);
+  const customItems = booking.customLineItems || [];
+  const customItemsAmt = customItems.reduce((acc, item) => acc + (item.amount || 0), 0);
+
+  const fallbackRoomAmt = (totalRooms === 0 && !booking.eventAttendees && customItems.length === 0)
+    ? (booking.totalAmount ? Math.round(booking.totalAmount / 1.1) : priceStandard)
+    : 0;
+
+  const calculatedSubtotal = standardAmt + deluxeAmt + presidentialAmt + villaAmt + eventAmt + cateringAmt + customItemsAmt + fallbackRoomAmt;
+  const shippingFee = booking.shippingFee || 0;
+
+  const rawSubtotal = calculatedSubtotal > 0
+    ? calculatedSubtotal
+    : (booking.subtotalBeforeDiscount || (booking.totalAmount ? Math.round(booking.totalAmount / 1.1) : 0));
 
   const discountCode = booking.discountCode || matchedProperty?.discountCode || '';
   const discountPercent = booking.discountPercent || (discountCode ? matchedProperty?.discountPercent || 0 : 0);
   const discountAmount =
-    booking.discountAmount !== undefined
+    booking.discountAmount !== undefined && booking.discountAmount >= 0
       ? booking.discountAmount
       : discountPercent > 0
       ? Math.round(rawSubtotal * (discountPercent / 100))
       : 0;
 
-  const subtotalBeforeTax =
-    booking.subtotalBeforeTax !== undefined
-      ? booking.subtotalBeforeTax
-      : Math.max(0, rawSubtotal - discountAmount);
-
-  const finalTax =
-    booking.taxAmount !== undefined
-      ? booking.taxAmount
-      : Math.round(subtotalBeforeTax * 0.1);
-
-  const finalGrandTotal =
-    booking.totalAmount !== undefined
-      ? booking.totalAmount
-      : subtotalBeforeTax + finalTax;
+  const subtotalBeforeTax = Math.max(0, rawSubtotal - discountAmount);
+  const finalTax = Math.round((subtotalBeforeTax + shippingFee) * 0.1);
+  const finalGrandTotal = subtotalBeforeTax + shippingFee + finalTax;
 
   const handleDownloadImage = async () => {
     try {
@@ -405,7 +395,23 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               </div>
             ) : null}
 
-            {totalRooms === 0 && !booking.eventAttendees && (
+            {customItems.length > 0 && customItems.map((item, idx) => (
+              <div key={item.id || idx} className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
+                <div>
+                  <div className="font-bold text-slate-800">{item.productService || 'Custom Product / Service'}</div>
+                  {item.description && <div className="text-[10px] text-slate-500">{item.description}</div>}
+                  <div className="text-[10px] text-slate-400">
+                    Qty: {item.qty} &bull; Rate: ${item.rate.toLocaleString()}
+                    {item.serviceDate ? ` &bull; Date: ${item.serviceDate}` : ''}
+                  </div>
+                </div>
+                <div className="font-mono font-bold text-[#3A4F67] text-xs">
+                  ${(item.amount || 0).toLocaleString()}
+                </div>
+              </div>
+            ))}
+
+            {totalRooms === 0 && !booking.eventAttendees && customItems.length === 0 && (
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
                 <div>
                   <div className="font-bold text-slate-800">Room Reservation</div>
@@ -499,7 +505,19 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                   </tr>
                 ) : null}
 
-                {totalRooms === 0 && !booking.eventAttendees && (
+                {customItems.length > 0 && customItems.map((item, idx) => (
+                  <tr key={item.id || idx}>
+                    <td className="py-3 px-4">
+                      <div className="font-semibold text-slate-800">{item.productService || 'Custom Service'}</div>
+                      {item.description && <div className="text-[11px] text-slate-500 font-normal mt-0.5">{item.description}</div>}
+                      {item.serviceDate && <div className="text-[10px] text-slate-400 font-mono mt-0.5">Date: {item.serviceDate}</div>}
+                    </td>
+                    <td className="py-3 px-4 text-center">{item.qty} Item(s) × ${item.rate.toLocaleString()}</td>
+                    <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">${(item.amount || 0).toLocaleString()}</td>
+                  </tr>
+                ))}
+
+                {totalRooms === 0 && !booking.eventAttendees && customItems.length === 0 && (
                   <tr>
                     <td className="py-3 px-4">
                       <div className="font-semibold text-slate-800">Room Reservation</div>
@@ -517,9 +535,15 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
 
           {/* Pricing Summary */}
           <div className="flex flex-col sm:flex-row justify-between items-start gap-6 border-t border-slate-200 pt-6">
-            <div className="text-xs text-slate-500 space-y-1 max-w-xs">
+            <div className="text-xs text-slate-500 space-y-2 max-w-xs text-left">
               <div className="font-bold text-slate-700 uppercase tracking-wider text-[10px]">Notes / Instructions:</div>
               <p>{booking.notes || 'Reservation is processed under Hanford Central Hospitality guidelines.'}</p>
+              {booking.noteToCustomer && (
+                <div className="p-2.5 bg-[#51867E]/5 border border-[#51867E]/20 rounded-xl text-xs">
+                  <div className="font-bold text-[#51867E] uppercase tracking-wider text-[9.5px]">Note to Customer:</div>
+                  <p className="text-slate-700 italic mt-0.5">{booking.noteToCustomer}</p>
+                </div>
+              )}
             </div>
 
             <div className="w-full sm:w-72 space-y-2 text-xs">
@@ -531,6 +555,12 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 <div className="flex justify-between text-[#51867E] font-medium">
                   <span>Discount ({discountCode || 'COUPON'} - {discountPercent}%):</span>
                   <span className="font-mono font-bold">-${discountAmount.toLocaleString()}</span>
+                </div>
+              )}
+              {shippingFee > 0 && (
+                <div className="flex justify-between text-slate-600">
+                  <span>Shipping / Extra Fee:</span>
+                  <span className="font-mono font-semibold">${shippingFee.toLocaleString()}</span>
                 </div>
               )}
               {discountAmount > 0 && (
@@ -744,7 +774,19 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                     </tr>
                   ) : null}
 
-                  {totalRooms === 0 && !booking.eventAttendees && (
+                  {customItems.length > 0 && customItems.map((item, idx) => (
+                    <tr key={item.id || idx}>
+                      <td className="py-3 px-4">
+                        <div className="font-semibold text-slate-800">{item.productService || 'Custom Service'}</div>
+                        {item.description && <div className="text-[11px] text-slate-500 font-normal mt-0.5">{item.description}</div>}
+                        {item.serviceDate && <div className="text-[10px] text-slate-400 font-mono mt-0.5">Date: {item.serviceDate}</div>}
+                      </td>
+                      <td className="py-3 px-4 text-center">{item.qty} Item(s) × ${item.rate.toLocaleString()}</td>
+                      <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">${(item.amount || 0).toLocaleString()}</td>
+                    </tr>
+                  ))}
+
+                  {totalRooms === 0 && !booking.eventAttendees && customItems.length === 0 && (
                     <tr>
                       <td className="py-3 px-4">
                         <div className="font-semibold text-slate-800">Room Reservation</div>
@@ -762,9 +804,15 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
 
             {/* Pricing Summary */}
             <div className="flex flex-row justify-between items-start gap-6 border-t border-slate-200 pt-6">
-              <div className="text-xs text-slate-500 space-y-1 max-w-xs text-left">
+              <div className="text-xs text-slate-500 space-y-2 max-w-xs text-left">
                 <div className="font-bold text-slate-700 uppercase tracking-wider text-[10px]">Notes / Instructions:</div>
                 <p>{booking.notes || 'Reservation is processed under Hanford Central Hospitality guidelines.'}</p>
+                {booking.noteToCustomer && (
+                  <div className="p-2.5 bg-[#51867E]/5 border border-[#51867E]/20 rounded-xl text-xs">
+                    <div className="font-bold text-[#51867E] uppercase tracking-wider text-[9.5px]">Note to Customer:</div>
+                    <p className="text-slate-700 italic mt-0.5">{booking.noteToCustomer}</p>
+                  </div>
+                )}
               </div>
 
               <div className="w-72 space-y-2 text-xs text-right">
@@ -776,6 +824,12 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                   <div className="flex justify-between text-[#51867E] font-medium">
                     <span>Discount ({discountCode || 'COUPON'} - {discountPercent}%):</span>
                     <span className="font-mono font-bold">-${discountAmount.toLocaleString()}</span>
+                  </div>
+                )}
+                {shippingFee > 0 && (
+                  <div className="flex justify-between text-slate-600">
+                    <span>Shipping / Extra Fee:</span>
+                    <span className="font-mono font-semibold">${shippingFee.toLocaleString()}</span>
                   </div>
                 )}
                 {discountAmount > 0 && (

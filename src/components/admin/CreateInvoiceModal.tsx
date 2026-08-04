@@ -1,22 +1,39 @@
-import React, { useState } from 'react';
-import { Property, BookingInquiry, BookOption, EventAddonOption } from '../../types';
-import { X, Plus, Calculator, Building, Calendar, User, Tag, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-react';
-import { submitBooking } from '../../services/dataService';
+import React, { useState, useEffect } from 'react';
+import { Property, BookingInquiry, BookOption, EventAddonOption, InvoiceLineItem } from '../../types';
+import { X, Plus, Calculator, Building, Calendar, User, Tag, Sparkles, CheckCircle2, ShieldCheck, GripVertical, Trash2, FileText, ArrowLeft } from 'lucide-react';
+import { submitBooking, fetchLocations } from '../../services/dataService';
+import { PropertySearchSelect } from '../PropertySearchSelect';
 
 interface CreateInvoiceModalProps {
   properties: Property[];
   onClose: () => void;
   onSuccess: () => void;
+  inline?: boolean;
 }
 
 export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
   properties,
   onClose,
-  onSuccess
+  onSuccess,
+  inline = false
 }) => {
-  const defaultProperty = properties[0] || {
+  const [loadedProperties, setLoadedProperties] = useState<Property[]>(properties || []);
+
+  useEffect(() => {
+    if (properties && properties.length > 0) {
+      setLoadedProperties(properties);
+    } else {
+      fetchLocations().then((res) => {
+        if (res.success && res.data && res.data.length > 0) {
+          setLoadedProperties(res.data);
+        }
+      });
+    }
+  }, [properties]);
+
+  const defaultProperty = loadedProperties[0] || {
     id: 'prop-1',
-    propertyName: 'Hanford Residence Los Angeles',
+    name: 'Hanford Residence Los Angeles',
     slug: 'los-angeles',
     priceStandard: 450,
     priceDeluxe: 650,
@@ -29,6 +46,12 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
 
   const [bookingId, setBookingId] = useState(() => `HNF-2026-${Math.random().toString(36).substring(2, 7).toUpperCase()}`);
   const [selectedPropertySlug, setSelectedPropertySlug] = useState(defaultProperty.slug || 'los-angeles');
+
+  useEffect(() => {
+    if (loadedProperties.length > 0 && !selectedPropertySlug) {
+      setSelectedPropertySlug(loadedProperties[0].slug);
+    }
+  }, [loadedProperties]);
   
   // Guest details
   const [guestName, setGuestName] = useState('');
@@ -59,6 +82,13 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
   const [eventAddons, setEventAddons] = useState<EventAddonOption>('none');
   const [cateringPax, setCateringPax] = useState(10);
 
+  // Custom Product or Service Line Items (QuickBooks style)
+  const [customLineItems, setCustomLineItems] = useState<InvoiceLineItem[]>([]);
+  const [noteToCustomer, setNoteToCustomer] = useState('');
+  const [memoOnStatement, setMemoOnStatement] = useState('');
+  const [shippingFee, setShippingFee] = useState<number>(0);
+  const [discountType, setDiscountType] = useState<'percent' | 'fixed'>('percent');
+
   // Financials & Notes
   const [discountCode, setDiscountCode] = useState('');
   const [discountPercent, setDiscountPercent] = useState(0);
@@ -68,8 +98,45 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Line item actions
+  const handleAddLineItem = () => {
+    const newItem: InvoiceLineItem = {
+      id: `item-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      serviceDate: new Date().toISOString().split('T')[0],
+      productService: '',
+      description: '',
+      qty: 1,
+      rate: 0,
+      amount: 0
+    };
+    setCustomLineItems((prev) => [...prev, newItem]);
+  };
+
+  const handleUpdateLineItem = (id: string, field: keyof InvoiceLineItem, value: any) => {
+    setCustomLineItems((prev) =>
+      prev.map((item) => {
+        if (item.id !== id) return item;
+        const updated = { ...item, [field]: value };
+        if (field === 'qty' || field === 'rate') {
+          const q = Number(field === 'qty' ? value : item.qty) || 0;
+          const r = Number(field === 'rate' ? value : item.rate) || 0;
+          updated.amount = Math.round(q * r * 100) / 100;
+        }
+        return updated;
+      })
+    );
+  };
+
+  const handleRemoveLineItem = (id: string) => {
+    setCustomLineItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const handleClearAllLines = () => {
+    setCustomLineItems([]);
+  };
+
   // Active property object
-  const activeProperty = properties.find((p) => p.slug === selectedPropertySlug) || defaultProperty;
+  const activeProperty = loadedProperties.find((p) => p.slug === selectedPropertySlug) || defaultProperty;
 
   // Nights calculation
   const calcNights = () => {
@@ -124,16 +191,26 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
     eventSubtotal = venueCost + cateringCost;
   }
 
-  const subtotalBeforeDiscount = roomSubtotal + eventSubtotal;
-  const discountAmount = Math.round((subtotalBeforeDiscount * (discountPercent || 0)) / 100);
+  // Custom Product or Service Subtotal
+  const customItemsSubtotal = customLineItems.reduce((acc, item) => acc + (Number(item.amount) || 0), 0);
+  const subtotalBeforeDiscount = roomSubtotal + eventSubtotal + customItemsSubtotal;
+
+  let discountAmount = 0;
+  if (discountType === 'percent') {
+    discountAmount = Math.round((subtotalBeforeDiscount * (discountPercent || 0)) / 100);
+  } else {
+    discountAmount = Math.min(subtotalBeforeDiscount, Number(discountPercent) || 0);
+  }
+
+  const shipping = Math.max(0, Number(shippingFee) || 0);
   const subtotalAfterDiscount = Math.max(0, subtotalBeforeDiscount - discountAmount);
-  const taxAmount = Math.round(subtotalAfterDiscount * 0.1);
-  const grandTotal = subtotalAfterDiscount + taxAmount;
+  const taxAmount = Math.round((subtotalAfterDiscount + shipping) * 0.1);
+  const grandTotal = subtotalAfterDiscount + shipping + taxAmount;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!guestName.trim()) {
-      setErrorMsg('Silakan isi Nama Guest / Tamu.');
+      setErrorMsg('Please enter Guest Full Name.');
       return;
     }
 
@@ -157,11 +234,22 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
         }
       }
     }
+    if (customLineItems.length > 0) {
+      customLineItems.forEach((item) => {
+        if (item.productService.trim() || item.amount > 0) {
+          itemRatesArr.push(`${item.productService || 'Service'}: $${item.amount}`);
+        }
+      });
+    }
+
+    const validCustomItems = customLineItems.filter(
+      (item) => item.productService.trim() !== '' || item.amount > 0
+    );
 
     const newInquiry: BookingInquiry = {
       id: bookingId,
       bookingId: bookingId,
-      propertyName: activeProperty.propertyName,
+      propertyName: activeProperty.name || (activeProperty as any).propertyName || 'Hanford Sanctuary',
       propertySlug: activeProperty.slug,
       guestName: guestName.trim(),
       businessName: businessName.trim() || undefined,
@@ -189,6 +277,10 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
       priceMeetingRoom: effectiveMeetingRate,
       priceEventHall: priceEventHall,
       priceCateringPerPax: effectiveCateringRate,
+      customLineItems: validCustomItems.length > 0 ? validCustomItems : undefined,
+      noteToCustomer: noteToCustomer.trim() || undefined,
+      memoOnStatement: memoOnStatement.trim() || undefined,
+      shippingFee: shipping > 0 ? shipping : undefined,
       itemRatesSnapshot: itemRatesArr.join(' | '),
       discountCode: discountCode.trim() || undefined,
       discountPercent: discountPercent || 0,
@@ -209,47 +301,53 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
       onSuccess();
     } catch (err) {
       console.error('Error creating invoice:', err);
-      setErrorMsg('Gagal menyimpan invoice. Silakan coba lagi.');
+      setErrorMsg('Failed to save invoice. Please try again.');
       setSubmitting(false);
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        
-        {/* QuickBooks Style Header */}
-        <div className="bg-[#3A4F67] text-white p-5 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-white/10 rounded-xl border border-white/20">
-              <Calculator className="w-5 h-5 text-[#88B2AB]" />
-            </div>
-            <div>
-              <div className="text-xs font-mono font-bold text-[#88B2AB] uppercase tracking-widest flex items-center gap-2">
-                <span>QUICKBOOKS STYLE INVOICE GENERATOR</span>
-              </div>
-              <h3 className="text-lg font-serif font-light tracking-wide text-white">
-                Create New Official Invoice
-              </h3>
-            </div>
+  const formContent = (
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 w-full flex flex-col overflow-hidden">
+      {/* Invoice Generator Header */}
+      <div className="bg-[#3A4F67] text-white p-4 sm:p-5 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-white/10 rounded-xl border border-white/20">
+            <Calculator className="w-5 h-5 text-[#88B2AB]" />
           </div>
-
-          <button
-            onClick={onClose}
-            className="p-2 text-slate-300 hover:text-white hover:bg-white/10 rounded-xl transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div>
+            <div className="text-xs font-mono font-bold text-[#88B2AB] uppercase tracking-widest flex items-center gap-2">
+              <span>INVOICE GENERATOR</span>
+            </div>
+            <h3 className="text-base sm:text-lg font-serif font-light tracking-wide text-white">
+              Create New Official Invoice
+            </h3>
+          </div>
         </div>
 
-        {/* Modal Body Form */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-6 flex-grow text-xs text-slate-700">
-          
-          {errorMsg && (
-            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl font-medium">
-              {errorMsg}
-            </div>
+        <button
+          onClick={onClose}
+          type="button"
+          className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
+        >
+          {inline ? (
+            <>
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Back to Invoices</span>
+            </>
+          ) : (
+            <X className="w-5 h-5" />
           )}
+        </button>
+      </div>
+
+      {/* Modal Body Form */}
+      <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-6 text-xs text-slate-700">
+        
+        {errorMsg && (
+          <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl font-medium">
+            {errorMsg}
+          </div>
+        )}
 
           {/* Top Bar: Invoice ID & Property Selection */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-200">
@@ -268,19 +366,13 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
 
             <div className="sm:col-span-2">
               <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                Select Sanctuary / Property *
+                Select Sanctuary / Property (SELECT FROM location name tab) *
               </label>
-              <select
-                value={selectedPropertySlug}
-                onChange={(e) => setSelectedPropertySlug(e.target.value)}
-                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-bold text-slate-800 outline-none focus:border-[#51867E]"
-              >
-                {properties.map((p) => (
-                  <option key={p.id} value={p.slug}>
-                    {p.propertyName} ({p.location || 'Hanford Sanctuary'})
-                  </option>
-                ))}
-              </select>
+              <PropertySearchSelect
+                properties={loadedProperties}
+                selectedSlug={selectedPropertySlug}
+                onSelect={(slug) => setSelectedPropertySlug(slug)}
+              />
             </div>
           </div>
 
@@ -296,7 +388,7 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
                 <label className="block text-[10px] font-semibold text-slate-600 mb-1">Guest Full Name *</label>
                 <input
                   type="text"
-                  placeholder="Contoh: TREVOR / Defict"
+                  placeholder="e.g. John Doe"
                   value={guestName}
                   onChange={(e) => setGuestName(e.target.value)}
                   className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-medium outline-none focus:border-[#51867E]"
@@ -308,7 +400,7 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
                 <label className="block text-[10px] font-semibold text-slate-600 mb-1">Business / Company Name</label>
                 <input
                   type="text"
-                  placeholder="Contoh: Hanford Group Corp"
+                  placeholder="e.g. Hanford Group Corp"
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
                   className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-medium outline-none focus:border-[#51867E]"
@@ -319,7 +411,7 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
                 <label className="block text-[10px] font-semibold text-slate-600 mb-1">X Handle / Twitter</label>
                 <input
                   type="text"
-                  placeholder="Contoh: @deflictive"
+                  placeholder="e.g. @johndoe"
                   value={xUsername}
                   onChange={(e) => setXUsername(e.target.value)}
                   className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-medium outline-none focus:border-[#51867E]"
@@ -355,8 +447,8 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
                   onChange={(e) => setPaymentStatus(e.target.value as 'UNPAID' | 'PAID')}
                   className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-bold outline-none focus:border-[#51867E]"
                 >
-                  <option value="UNPAID">UNPAID (Belum Lunas)</option>
-                  <option value="PAID">PAID (Sudah Lunas)</option>
+                  <option value="UNPAID">UNPAID</option>
+                  <option value="PAID">PAID</option>
                 </select>
               </div>
             </div>
@@ -371,11 +463,11 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
 
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               {[
-                { id: 'room', label: 'Room Stay', desc: 'Penginapan ksh' },
-                { id: 'event', label: 'Event Hall', desc: 'Sewa ballroom / venue' },
-                { id: 'both', label: 'Room & Event', desc: 'Penginapan & Event' },
+                { id: 'room', label: 'Room Stay', desc: 'Room accommodation' },
+                { id: 'event', label: 'Event Hall', desc: 'Event venue & ballroom' },
+                { id: 'both', label: 'Room & Event', desc: 'Room stay & event' },
                 { id: 'meeting', label: 'Meeting Room', desc: 'Meeting room per pax' },
-                { id: 'room_meeting', label: 'Room & Meeting', desc: 'Inap + Meeting' }
+                { id: 'room_meeting', label: 'Room & Meeting', desc: 'Room stay & meeting' }
               ].map((opt) => (
                 <button
                   key={opt.id}
@@ -561,93 +653,293 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
             </div>
           )}
 
-          {/* Section 5: Discount Code & Notes */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-[10px] font-semibold text-slate-600 mb-1">Discount Code</label>
-              <input
-                type="text"
-                placeholder="e.g. VIP20"
-                value={discountCode}
-                onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
-                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-mono uppercase font-bold outline-none focus:border-[#51867E]"
-              />
+          {/* Section 5: Product or service (QuickBooks Style Table) */}
+          <div className="space-y-3 pt-2">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+              <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#51867E]" />
+                Product or service
+              </h4>
+              <span className="text-[10px] text-slate-400 font-medium">
+                Add extra services outside room & venue reservation
+              </span>
             </div>
 
-            <div>
-              <label className="block text-[10px] font-semibold text-slate-600 mb-1">Discount Percentage (%)</label>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                value={discountPercent}
-                onChange={(e) => setDiscountPercent(Math.min(100, Math.max(0, parseInt(e.target.value) || 0)))}
-                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-bold outline-none focus:border-[#51867E]"
-              />
-            </div>
+            <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead className="bg-[#3A4F67]/5 text-slate-700 font-bold uppercase text-[9.5px] tracking-wider border-b border-slate-200">
+                    <tr>
+                      <th className="py-2.5 px-2 text-center w-8"></th>
+                      <th className="py-2.5 px-2 text-center w-8">#</th>
+                      <th className="py-2.5 px-3 min-w-[130px]">Service Date</th>
+                      <th className="py-2.5 px-3 min-w-[180px]">Product/service *</th>
+                      <th className="py-2.5 px-3 min-w-[200px]">Description</th>
+                      <th className="py-2.5 px-3 text-center w-20">Qty</th>
+                      <th className="py-2.5 px-3 text-right w-28">Rate ($)</th>
+                      <th className="py-2.5 px-3 text-right w-28">Amount ($)</th>
+                      <th className="py-2.5 px-2 text-center w-10"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium">
+                    {customLineItems.length === 0 ? (
+                      <tr>
+                        <td colSpan={9} className="py-6 text-center text-slate-400 text-xs italic">
+                          No extra products or services added yet. Click &quot;Add product or service&quot; below.
+                        </td>
+                      </tr>
+                    ) : (
+                      customLineItems.map((item, idx) => (
+                        <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
+                          <td className="py-2 px-2 text-center text-slate-300">
+                            <GripVertical className="w-3.5 h-3.5 mx-auto cursor-grab" />
+                          </td>
+                          <td className="py-2 px-2 text-center font-mono text-slate-400 font-bold text-[11px]">
+                            {idx + 1}
+                          </td>
+                          <td className="py-2 px-2">
+                            <input
+                              type="date"
+                              value={item.serviceDate || ''}
+                              onChange={(e) => handleUpdateLineItem(item.id, 'serviceDate', e.target.value)}
+                              className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-[#51867E]"
+                            />
+                          </td>
+                          <td className="py-2 px-2">
+                            <input
+                              type="text"
+                              placeholder="e.g. Airport Transfer, Spa, Yacht"
+                              value={item.productService}
+                              onChange={(e) => handleUpdateLineItem(item.id, 'productService', e.target.value)}
+                              className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 outline-none focus:border-[#51867E]"
+                            />
+                          </td>
+                          <td className="py-2 px-2">
+                            <input
+                              type="text"
+                              placeholder="Description of service"
+                              value={item.description || ''}
+                              onChange={(e) => handleUpdateLineItem(item.id, 'description', e.target.value)}
+                              className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-[#51867E]"
+                            />
+                          </td>
+                          <td className="py-2 px-2">
+                            <input
+                              type="number"
+                              min="1"
+                              value={item.qty}
+                              onChange={(e) => handleUpdateLineItem(item.id, 'qty', Math.max(1, parseInt(e.target.value) || 1))}
+                              className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs text-center font-bold outline-none focus:border-[#51867E]"
+                            />
+                          </td>
+                          <td className="py-2 px-2">
+                            <input
+                              type="number"
+                              min="0"
+                              step="any"
+                              placeholder="0.00"
+                              value={item.rate || ''}
+                              onChange={(e) => handleUpdateLineItem(item.id, 'rate', Math.max(0, parseFloat(e.target.value) || 0))}
+                              className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs text-right font-mono font-medium outline-none focus:border-[#51867E]"
+                            />
+                          </td>
+                          <td className="py-2 px-3 text-right font-mono font-bold text-[#3A4F67]">
+                            ${(item.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </td>
+                          <td className="py-2 px-2 text-center">
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveLineItem(item.id)}
+                              className="p-1 text-slate-400 hover:text-red-500 rounded transition-colors cursor-pointer"
+                              title="Remove item"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
 
-            <div>
-              <label className="block text-[10px] font-semibold text-slate-600 mb-1">Special Notes / Requests</label>
-              <input
-                type="text"
-                placeholder="Keterangan tambahan..."
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-medium outline-none focus:border-[#51867E]"
-              />
+              {/* Add & Clear Actions */}
+              <div className="p-2.5 bg-slate-50/80 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                <button
+                  type="button"
+                  onClick={handleAddLineItem}
+                  className="px-3 py-1.5 bg-white border border-slate-300 hover:border-[#51867E] hover:text-[#51867E] text-slate-700 text-xs font-bold rounded-xl shadow-2xs transition-all cursor-pointer flex items-center gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add product or service</span>
+                </button>
+
+                {customLineItems.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleClearAllLines}
+                    className="px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
+                  >
+                    Clear all lines
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* QuickBooks Style Line Item Summary Box */}
-          <div className="bg-[#3A4F67] text-white p-5 rounded-2xl space-y-3">
-            <div className="text-xs font-bold uppercase tracking-wider text-[#88B2AB] border-b border-slate-600 pb-2 flex items-center justify-between">
-              <span>Financial Calculation Summary</span>
-              <span>USD ($)</span>
+          {/* Section 6: Customer payment options & Notes + Financial Calculation Summary */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
+            
+            {/* Left: Customer payment options */}
+            <div className="space-y-3.5 bg-slate-50/70 p-4 rounded-2xl border border-slate-200">
+              <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-200 pb-2">
+                <FileText className="w-3.5 h-3.5 text-[#51867E]" />
+                Customer payment options & notes
+              </h4>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Note to customer
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="Thank you for your business."
+                  value={noteToCustomer}
+                  onChange={(e) => setNoteToCustomer(e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-[#51867E] resize-y"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Memo on statement (hidden)
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="This memo will not show up on your invoice, but will appear on the statement."
+                  value={memoOnStatement}
+                  onChange={(e) => setMemoOnStatement(e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-[#51867E] resize-y"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Special Notes / Requests (Internal)
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. High floor, quiet room away from elevator"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-[#51867E]"
+                />
+              </div>
             </div>
 
-            <div className="space-y-1.5 text-xs">
-              {roomSubtotal > 0 && (
-                <div className="flex justify-between text-slate-300">
-                  <span>Room Accommodation ({nights} Nights):</span>
-                  <span className="font-mono">${roomSubtotal.toLocaleString()}</span>
+            {/* Right: QuickBooks Style Financial Summary Box */}
+            <div className="bg-[#3A4F67] text-white p-5 rounded-2xl space-y-3 flex flex-col justify-between">
+              <div>
+                <div className="text-xs font-bold uppercase tracking-wider text-[#88B2AB] border-b border-slate-600 pb-2 flex items-center justify-between">
+                  <span>Financial Calculation Summary</span>
+                  <span>USD ($)</span>
                 </div>
-              )}
-              {eventSubtotal > 0 && (
-                <div className="flex justify-between text-slate-300">
-                  <span>Venue & Meeting Service ({venueRentalRate.replace('_', ' ')}):</span>
-                  <span className="font-mono">${eventSubtotal.toLocaleString()}</span>
+
+                <div className="space-y-2 text-xs pt-3">
+                  {roomSubtotal > 0 && (
+                    <div className="flex justify-between text-slate-300">
+                      <span>Room Accommodation ({nights} Nights):</span>
+                      <span className="font-mono">${roomSubtotal.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {eventSubtotal > 0 && (
+                    <div className="flex justify-between text-slate-300">
+                      <span>Venue & Meeting Service ({venueRentalRate.replace('_', ' ')}):</span>
+                      <span className="font-mono">${eventSubtotal.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {customItemsSubtotal > 0 && (
+                    <div className="flex justify-between text-emerald-300 font-semibold">
+                      <span>Custom Products & Services ({customLineItems.length} items):</span>
+                      <span className="font-mono">${customItemsSubtotal.toLocaleString()}</span>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between text-slate-200 pt-1.5 border-t border-slate-600/60 font-medium">
+                    <span>Subtotal:</span>
+                    <span className="font-mono font-bold">${subtotalBeforeDiscount.toLocaleString()}</span>
+                  </div>
+
+                  {/* Discount row with toggle */}
+                  <div className="flex items-center justify-between text-amber-300 text-xs">
+                    <div className="flex items-center gap-2">
+                      <span>Discount:</span>
+                      <div className="inline-flex rounded-lg bg-slate-800 p-0.5 border border-slate-600">
+                        <button
+                          type="button"
+                          onClick={() => setDiscountType('percent')}
+                          className={`px-1.5 py-0.5 text-[10px] font-bold rounded ${discountType === 'percent' ? 'bg-[#51867E] text-white' : 'text-slate-400'}`}
+                        >
+                          %
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDiscountType('fixed')}
+                          className={`px-1.5 py-0.5 text-[10px] font-bold rounded ${discountType === 'fixed' ? 'bg-[#51867E] text-white' : 'text-slate-400'}`}
+                        >
+                          $
+                        </button>
+                      </div>
+                      <input
+                        type="number"
+                        min="0"
+                        placeholder="0"
+                        value={discountPercent || ''}
+                        onChange={(e) => setDiscountPercent(Math.max(0, parseFloat(e.target.value) || 0))}
+                        className="w-16 px-1.5 py-0.5 bg-slate-800 border border-slate-600 rounded text-center text-xs font-bold text-white outline-none"
+                      />
+                    </div>
+                    <span className="font-mono font-bold">-${discountAmount.toLocaleString()}</span>
+                  </div>
+
+                  {/* Shipping Fee */}
+                  <div className="flex items-center justify-between text-slate-300 text-xs">
+                    <div className="flex items-center gap-2">
+                      <span>Shipping / Extra Fee:</span>
+                      <input
+                        type="number"
+                        min="0"
+                        placeholder="0.00"
+                        value={shippingFee || ''}
+                        onChange={(e) => setShippingFee(Math.max(0, parseFloat(e.target.value) || 0))}
+                        className="w-20 px-1.5 py-0.5 bg-slate-800 border border-slate-600 rounded text-right text-xs font-mono text-white outline-none"
+                      />
+                    </div>
+                    <span className="font-mono">${shipping.toLocaleString()}</span>
+                  </div>
+
+                  <div className="flex justify-between text-slate-300">
+                    <span>Tax & Service Charge (10%):</span>
+                    <span className="font-mono">${taxAmount.toLocaleString()}</span>
+                  </div>
                 </div>
-              )}
-              <div className="flex justify-between text-slate-300 pt-1 border-t border-slate-600/50">
-                <span>Subtotal:</span>
-                <span className="font-mono">${subtotalBeforeDiscount.toLocaleString()}</span>
-              </div>
-              {discountPercent > 0 && (
-                <div className="flex justify-between text-amber-300 font-semibold">
-                  <span>Discount ({discountPercent}% OFF):</span>
-                  <span className="font-mono">-${discountAmount.toLocaleString()}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-slate-300">
-                <span>Tax & Service Charge (10%):</span>
-                <span className="font-mono">${taxAmount.toLocaleString()}</span>
               </div>
 
-              <div className="flex justify-between text-base font-bold text-[#88B2AB] pt-2 border-t border-slate-500">
-                <span>Total Amount Due:</span>
-                <span className="font-mono text-xl">${grandTotal.toLocaleString()}</span>
+              <div className="flex justify-between items-center text-base font-bold text-[#88B2AB] pt-3 border-t border-slate-500">
+                <span>Invoice Total:</span>
+                <span className="font-mono text-2xl font-bold text-white">${grandTotal.toLocaleString()}</span>
               </div>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
             <button
               type="button"
               onClick={onClose}
               className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-bold hover:bg-slate-50 transition-colors cursor-pointer uppercase tracking-wider"
             >
-              Batal
+              Cancel
             </button>
 
             <button
@@ -670,6 +962,17 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
           </div>
 
         </form>
+    </div>
+  );
+
+  if (inline) {
+    return formContent;
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+      <div className="max-w-4xl w-full max-h-[92vh] flex flex-col overflow-y-auto rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+        {formContent}
       </div>
     </div>
   );
