@@ -52,7 +52,7 @@ export async function exportInvoiceAsImage(
   onscreenNode: HTMLElement | null,
   fileName: string
 ): Promise<ExportResult> {
-  // Always target exportNode first to guarantee the wide 800px Desktop format layout
+  // Always target exportNode first to guarantee the wide 800px Desktop format layout, or fallback to onscreenNode
   const primaryNode = exportNode || onscreenNode;
   const secondaryNode = onscreenNode && onscreenNode !== primaryNode ? onscreenNode : null;
 
@@ -62,7 +62,24 @@ export async function exportInvoiceAsImage(
 
   let dataUrl = '';
 
-  // Strategy 1: html2canvas on Desktop-Format (800px) node
+  // Helper to reset parent layout in cloned document so html2canvas renders at (0, 0)
+  const resetClonedLayout = (clonedDoc: Document, element: HTMLElement) => {
+    let current: HTMLElement | null = element;
+    while (current && current !== clonedDoc.body) {
+      current.style.position = 'static';
+      current.style.left = '0';
+      current.style.top = '0';
+      current.style.transform = 'none';
+      current.style.opacity = '1';
+      current.style.visibility = 'visible';
+      current = current.parentElement;
+    }
+    element.style.width = '800px';
+    element.style.display = 'block';
+    element.style.backgroundColor = '#FFFFFF';
+  };
+
+  // Strategy 1: html2canvas on Primary Node with cloned layout reset
   try {
     const canvas = await runWithTimeout(
       html2canvas(primaryNode, {
@@ -72,14 +89,11 @@ export async function exportInvoiceAsImage(
         backgroundColor: '#FFFFFF',
         logging: false,
         imageTimeout: 2000,
-        onclone: (_, element) => {
-          element.style.position = 'static';
-          element.style.left = '0';
-          element.style.top = '0';
-          element.style.transform = 'none';
-          element.style.opacity = '1';
-          element.style.visibility = 'visible';
-          element.style.width = '800px';
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: 800,
+        onclone: (clonedDoc, element) => {
+          resetClonedLayout(clonedDoc, element);
         }
       }),
       4000,
@@ -89,49 +103,51 @@ export async function exportInvoiceAsImage(
   } catch (err1) {
     console.warn('Strategy 1 (html2canvas primary) failed or timed out:', err1);
 
-    // Strategy 2: toPng (html-to-image) on primary node
-    try {
-      dataUrl = await runWithTimeout(
-        toPng(primaryNode, {
-          cacheBust: true,
-          quality: 0.95,
-          pixelRatio: 2,
-          backgroundColor: '#FFFFFF',
-          skipFonts: true,
-          fontEmbedCSS: '',
-          style: {
-            position: 'static',
-            opacity: '1',
-            visibility: 'visible',
-            transform: 'none',
-            width: '800px'
-          }
-        }),
-        4000,
-        'toPng primary'
-      );
-    } catch (err2) {
-      console.warn('Strategy 2 (toPng primary) failed:', err2);
+    // Strategy 2: Direct html2canvas on onscreenNode if available
+    if (secondaryNode) {
+      try {
+        const canvas = await runWithTimeout(
+          html2canvas(secondaryNode, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#FFFFFF',
+            logging: false,
+            imageTimeout: 2000,
+          }),
+          3000,
+          'html2canvas secondary'
+        );
+        dataUrl = canvas.toDataURL('image/png', 0.95);
+      } catch (err2) {
+        console.warn('Strategy 2 (html2canvas secondary) failed:', err2);
+      }
+    }
 
-      // Strategy 3: Fallback on secondary node if available
-      if (secondaryNode) {
-        try {
-          const canvas = await runWithTimeout(
-            html2canvas(secondaryNode, {
-              scale: 2,
-              useCORS: true,
-              allowTaint: true,
-              backgroundColor: '#FFFFFF',
-              logging: false,
-              imageTimeout: 2000,
-            }),
-            4000,
-            'html2canvas secondary'
-          );
-          dataUrl = canvas.toDataURL('image/png', 0.95);
-        } catch (err3) {
-          console.warn('Strategy 3 (html2canvas secondary) failed:', err3);
-        }
+    // Strategy 3: toPng (html-to-image) on primary node
+    if (!dataUrl) {
+      try {
+        dataUrl = await runWithTimeout(
+          toPng(primaryNode, {
+            cacheBust: true,
+            quality: 0.95,
+            pixelRatio: 2,
+            backgroundColor: '#FFFFFF',
+            skipFonts: true,
+            fontEmbedCSS: '',
+            style: {
+              position: 'static',
+              opacity: '1',
+              visibility: 'visible',
+              transform: 'none',
+              width: '800px'
+            }
+          }),
+          3000,
+          'toPng primary'
+        );
+      } catch (err3) {
+        console.warn('Strategy 3 (toPng primary) failed:', err3);
       }
     }
   }
@@ -173,14 +189,29 @@ export async function exportInvoiceAsImage(
       const link = document.createElement('a');
       link.href = blobUrl;
       link.download = fileName;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
+      // Do NOT set link.target = '_blank' as modern browsers block async popup or ignore download attribute
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
+      setTimeout(() => {
+        if (document.body.contains(link)) {
+          document.body.removeChild(link);
+        }
+      }, 200);
     } catch (dlErr) {
-      console.warn('Direct anchor download failed, attempting window fallback:', dlErr);
-      if (isMobile) {
+      console.warn('Direct anchor download failed, attempting dataUrl fallback:', dlErr);
+      try {
+        const linkData = document.createElement('a');
+        linkData.href = dataUrl;
+        linkData.download = fileName;
+        document.body.appendChild(linkData);
+        linkData.click();
+        setTimeout(() => {
+          if (document.body.contains(linkData)) {
+            document.body.removeChild(linkData);
+          }
+        }, 200);
+      } catch (dataErr) {
+        console.warn('DataUrl download fallback failed, opening window:', dataErr);
         window.open(blobUrl, '_blank');
       }
     }
