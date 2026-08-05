@@ -653,6 +653,100 @@ function build32ColumnRowValues(inquiry: BookingInquiry, finalBookingId: string,
   ];
 }
 
+function escapeHtmlClient(str: string): string {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function getBookingTypeLabelClient(bookOption?: string): string {
+  switch (bookOption) {
+    case 'room': return 'Room Reservation / Stay';
+    case 'event': return 'Event & Catering';
+    case 'both': return 'Room & Event';
+    case 'meeting': return 'Meeting Room';
+    case 'room_meeting': return 'Room & Meeting Room';
+    default: return bookOption || 'General Reservation';
+  }
+}
+
+/**
+ * Direct client-side Telegram alert trigger for static deployments (Netlify, Vercel, GitHub Pages)
+ */
+export async function sendTelegramBookingNotificationClient(booking: BookingInquiry): Promise<boolean> {
+  const botToken = (import.meta as any).env?.VITE_TELEGRAM_BOT_TOKEN || '8876777341:AAG20riJl6DGtvwkb6Juvkn3DQADS5qbA6c';
+  const chatId = (import.meta as any).env?.VITE_TELEGRAM_CHAT_ID || '8068935973';
+
+  if (!botToken || !chatId) {
+    console.warn('[Telegram Client] Bot Token or Chat ID not configured');
+    return false;
+  }
+
+  const bookingId = booking.bookingId || booking.id || 'N/A';
+  const guestName = booking.guestName || 'Guest';
+  const xUser = booking.xUsername && booking.xUsername.trim() ? ` (${booking.xUsername.trim()})` : '';
+  const propertyName = booking.propertyName || booking.propertySlug || 'Hanford Sanctuary';
+  const bookingType = getBookingTypeLabelClient(booking.bookOption);
+  const dates = booking.checkInDate && booking.checkOutDate
+    ? `${booking.checkInDate} to ${booking.checkOutDate}`
+    : booking.checkInDate || 'Not specified';
+  const eventDate = booking.eventDate ? booking.eventDate : null;
+  const totalAmount = booking.totalAmount !== undefined && booking.totalAmount !== null
+    ? `$${Number(booking.totalAmount).toLocaleString()}`
+    : 'Custom Invoice';
+
+  // For Netlify / Static hosting, point invoice links to Cloud Run live API server or window origin
+  const origin = typeof window !== 'undefined' && window.location.origin.includes('netlify.app')
+    ? 'https://ais-dev-sfkcuoclk2mqz7rx6iai42-477170986057.asia-southeast1.run.app'
+    : (typeof window !== 'undefined' ? window.location.origin : '');
+
+  const paidInvoiceUrl = `${origin}/api/invoice/${encodeURIComponent(bookingId)}?status=PAID`;
+  const unpaidInvoiceUrl = `${origin}/api/invoice/${encodeURIComponent(bookingId)}?status=UNPAID`;
+
+  let telegramMessage = `🔔 <b>NEW RESERVATION ALERT</b>
+
+📋 <b>Invoice:</b> <code>#${escapeHtmlClient(bookingId)}</code>
+👤 <b>Guest:</b> ${escapeHtmlClient(guestName)}${escapeHtmlClient(xUser)}
+🏛️ <b>Property:</b> ${escapeHtmlClient(propertyName)}
+🏷️ <b>Booking Type:</b> ${escapeHtmlClient(bookingType)}
+📅 <b>Dates:</b> ${escapeHtmlClient(dates)}`;
+
+  if (eventDate) {
+    telegramMessage += `\n🎉 <b>Event Date:</b> ${escapeHtmlClient(eventDate)}`;
+  }
+
+  telegramMessage += `\n💰 <b>Total:</b> <b>${escapeHtmlClient(totalAmount)}</b>
+
+📄 <b>Paid Invoice:</b> <a href="${paidInvoiceUrl}">Download Paid Invoice</a>
+📄 <b>Unpaid Invoice:</b> <a href="${unpaidInvoiceUrl}">Download Unpaid Invoice</a>
+
+<i>Sent automatically from Hanford Hotels & Resorts</i>`;
+
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: telegramMessage,
+        parse_mode: 'HTML'
+      })
+    });
+    const resData = await response.json();
+    if (response.ok && resData?.ok) {
+      console.log('[Telegram Client] Sent booking notification to Telegram:', resData);
+      return true;
+    } else {
+      console.warn('[Telegram Client] Telegram Bot API response error:', resData);
+      return false;
+    }
+  } catch (err) {
+    console.error('[Telegram Client] Error sending Telegram alert:', err);
+    return false;
+  }
+}
+
 /**
  * Fallback handler for static deployments (e.g. Netlify, Vercel Static, GitHub Pages)
  * where backend Express server (/api/book) is not available (returns HTTP 404).
@@ -681,6 +775,13 @@ async function handleStaticBookingSubmission(inquiry: BookingInquiry): Promise<{
     localStorage.setItem('hanford_booking_requests', JSON.stringify(existingBookings));
   } catch (e) {
     console.warn('[dataService] Unable to save to localStorage:', e);
+  }
+
+  // Always send instant Telegram alert directly from browser when on static hosts like Netlify
+  try {
+    await sendTelegramBookingNotificationClient(newInquiry);
+  } catch (tErr) {
+    console.warn('[dataService] Client Telegram dispatch failed:', tErr);
   }
 
   // Attempt client-side webhook dispatch if available
@@ -757,6 +858,14 @@ export async function submitBooking(inquiry: BookingInquiry): Promise<{
       body: JSON.stringify(inquiry)
     });
 
+    const contentType = res.headers.get('content-type') || '';
+
+    // If server returned HTML (e.g. Netlify /* /index.html SPA fallback), it's a static deployment without Express backend
+    if (contentType.includes('text/html') || res.status === 404 || res.status === 405) {
+      console.info('[dataService] Static host detected (/api/book served HTML or 404). Executing static booking & Telegram handler...');
+      return await handleStaticBookingSubmission(inquiry);
+    }
+
     if (res.ok) {
       const json = await res.json().catch(() => ({}));
       return {
@@ -764,12 +873,6 @@ export async function submitBooking(inquiry: BookingInquiry): Promise<{
         message: json.message || 'Data booking berhasil tersimpan ke Google Sheet.',
         source: json.source || 'google_sheets'
       };
-    }
-
-    // On static deployments like Netlify, /api/book returns HTTP 404 or 405
-    if (res.status === 404 || res.status === 405) {
-      console.info('[dataService] /api/book returned HTTP 404 (static deployment detected). Switching to static fallback handler...');
-      return await handleStaticBookingSubmission(inquiry);
     }
 
     const json = await res.json().catch(() => ({}));
