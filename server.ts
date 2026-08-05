@@ -1,7 +1,10 @@
+import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { getPropertiesFromSource, getProjectsFromSource, getBookingsFromSource, appendBookingInquiry } from './src/server/googleSheetsService';
+import { sendTelegramBookingNotification } from './src/server/telegramService';
+import { generateInvoiceHtml } from './src/server/invoiceHtmlService';
 import { BookingInquiry } from './src/types';
 
 async function startServer() {
@@ -17,6 +20,11 @@ async function startServer() {
   // Health & integration status diagnostic
   app.get('/api/health', (req: Request, res: Response) => {
     const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
+    const hasTelegramConfig = Boolean(
+      process.env.TELEGRAM_BOT_TOKEN &&
+      process.env.TELEGRAM_CHAT_ID
+    );
+
     res.json({
       status: 'ok',
       brand: 'Hanford Hotels & Resorts',
@@ -31,6 +39,10 @@ async function startServer() {
         },
         googleDrive: {
           configured: Boolean(process.env.GOOGLE_DRIVE_API_KEY)
+        },
+        telegramBot: {
+          configured: hasTelegramConfig,
+          type: '100% Free Instant Alert'
         }
       }
     });
@@ -164,7 +176,7 @@ async function startServer() {
     }
   });
 
-  // POST /api/book - Submit booking inquiry
+  // POST /api/book - Submit booking inquiry & trigger instant Telegram Bot alert
   app.post('/api/book', async (req: Request, res: Response) => {
     try {
       const payload: BookingInquiry = req.body;
@@ -176,10 +188,7 @@ async function startServer() {
         });
       }
 
-      if (!payload.xUsername || !payload.xUsername.trim()) {
-        payload.xUsername = '@guest';
-      }
-
+      // 1. Append booking inquiry to Google Sheet
       const response = await appendBookingInquiry(payload);
       if (!response.success) {
         return res.status(500).json({
@@ -188,7 +197,23 @@ async function startServer() {
           details: response.message
         });
       }
-      res.status(201).json(response);
+
+      // 2. Trigger Instant Telegram Bot Alert Notification
+      let telegramResult: any = null;
+      try {
+        const host = req.get('x-forwarded-host') || req.get('host');
+        const protocol = req.get('x-forwarded-proto') || req.protocol || 'http';
+        const baseUrl = `${protocol}://${host}`;
+        telegramResult = await sendTelegramBookingNotification(payload, baseUrl);
+      } catch (tErr: any) {
+        console.warn('Telegram Notification Dispatch Warning:', tErr?.message);
+        telegramResult = { success: false, error: tErr?.message };
+      }
+
+      res.status(201).json({
+        ...response,
+        telegramNotification: telegramResult
+      });
     } catch (error: any) {
       console.error('Error in /api/book:', error);
       res.status(500).json({
@@ -196,6 +221,74 @@ async function startServer() {
         error: 'Failed to submit booking inquiry to Google Sheet',
         details: error?.message || String(error)
       });
+    }
+  });
+
+  // POST /api/telegram/test - Manually trigger a Telegram Bot alert test
+  app.post('/api/telegram/test', async (req: Request, res: Response) => {
+    try {
+      const sampleBooking: BookingInquiry = req.body?.guestName ? req.body : {
+        bookingId: `TEST-${Math.floor(1000 + Math.random() * 9000)}`,
+        guestName: 'Demo Guest',
+        xUsername: '@guest_x',
+        propertyName: 'Hanford Resort Bali',
+        bookOption: 'room',
+        checkInDate: '2026-09-01',
+        checkOutDate: '2026-09-05',
+        totalAmount: 1250,
+        guestEmail: 'guest@example.com',
+        guestPhone: '+628123456789'
+      };
+
+      const host = req.get('x-forwarded-host') || req.get('host');
+      const protocol = req.get('x-forwarded-proto') || req.protocol || 'http';
+      const baseUrl = `${protocol}://${host}`;
+
+      const telegramResult = await sendTelegramBookingNotification(sampleBooking, baseUrl);
+      res.json({
+        success: telegramResult.success,
+        message: telegramResult.message,
+        details: telegramResult
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: error?.message || String(error)
+      });
+    }
+  });
+
+  // GET /api/invoice/:bookingId? - Serve printable/downloadable Paid or Unpaid invoice HTML
+  app.get(['/api/invoice/:bookingId', '/api/invoice'], async (req: Request, res: Response) => {
+    try {
+      const rawBookingId = req.params.bookingId || (req.query.id as string) || (req.query.bookingId as string) || 'TEST-8535';
+      const statusParam = ((req.query.status as string) || 'UNPAID').toUpperCase() === 'PAID' ? 'PAID' : 'UNPAID';
+
+      // Look up booking from Google Sheets / store or construct preview model
+      const allBookingsRes = await getBookingsFromSource();
+      const existingBooking = allBookingsRes.bookings.find(
+        (b) => (b.bookingId || b.id || '').toLowerCase() === rawBookingId.toLowerCase()
+      );
+
+      const bookingToRender: BookingInquiry = existingBooking || {
+        bookingId: rawBookingId,
+        guestName: (req.query.guest as string) || 'Valued Guest',
+        xUsername: (req.query.x as string) || '@guest',
+        propertyName: (req.query.property as string) || 'Hanford Hotels & Resorts Sanctuary',
+        propertySlug: 'hanford-sanctuary',
+        bookOption: (req.query.type as any) || 'room',
+        checkInDate: (req.query.checkIn as string) || '2026-09-01',
+        checkOutDate: (req.query.checkOut as string) || '2026-09-05',
+        totalAmount: req.query.total ? Number(req.query.total) : 1250,
+        paymentStatus: statusParam
+      };
+
+      const htmlContent = generateInvoiceHtml(bookingToRender, statusParam);
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.send(htmlContent);
+    } catch (err: any) {
+      console.error('Error serving invoice HTML:', err);
+      res.status(500).send('<h1>Error generating invoice</h1><p>' + (err?.message || String(err)) + '</p>');
     }
   });
 
