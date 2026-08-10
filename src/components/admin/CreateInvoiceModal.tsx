@@ -268,7 +268,7 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
       cateringPax: cateringPax || 0,
       checkInDate: bookOption === 'room' || bookOption === 'both' || bookOption === 'room_meeting' ? checkInDate : undefined,
       checkOutDate: bookOption === 'room' || bookOption === 'both' || bookOption === 'room_meeting' ? checkOutDate : undefined,
-      eventDate: bookOption !== 'room' ? eventDate : undefined,
+      eventDate: bookOption !== 'room' && bookOption !== 'custom_only' ? eventDate : undefined,
       numberOfNights: nights,
       priceStandardRoom: priceStandard,
       priceDeluxeRoom: priceDeluxe,
@@ -456,26 +456,38 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
 
           {/* Section 2: Booking Option / Service Category */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-[#51867E] uppercase tracking-wider flex items-center gap-1.5 border-b pb-1">
-              <Building className="w-4 h-4 text-[#51867E]" />
-              <span>2. Reservation Category & Service Type</span>
-            </h4>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-1">
+              <h4 className="text-xs font-bold text-[#51867E] uppercase tracking-wider flex items-center gap-1.5">
+                <Building className="w-4 h-4 text-[#51867E]" />
+                <span>2. Reservation Category & Service Type</span>
+              </h4>
+              <span className="text-[10px] text-slate-500 font-medium">
+                Pilih dengan kategori reservasi atau murni produk/jasa saja
+              </span>
+            </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
               {[
                 { id: 'room', label: 'Room Stay', desc: 'Room accommodation' },
                 { id: 'event', label: 'Event Hall', desc: 'Event venue & ballroom' },
                 { id: 'both', label: 'Room & Event', desc: 'Room stay & event' },
                 { id: 'meeting', label: 'Meeting Room', desc: 'Meeting room per pax' },
-                { id: 'room_meeting', label: 'Room & Meeting', desc: 'Room stay & meeting' }
+                { id: 'room_meeting', label: 'Room & Meeting', desc: 'Room stay & meeting' },
+                { id: 'custom_only', label: 'Product & Service Only', desc: 'Custom product/service' }
               ].map((opt) => (
                 <button
                   key={opt.id}
                   type="button"
-                  onClick={() => setBookOption(opt.id as BookOption)}
+                  onClick={() => {
+                    const newOpt = opt.id as BookOption;
+                    setBookOption(newOpt);
+                    if (newOpt === 'custom_only' && customLineItems.length === 0) {
+                      handleAddLineItem();
+                    }
+                  }}
                   className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                     bookOption === opt.id
-                      ? 'bg-[#51867E] text-white border-[#51867E] shadow-sm'
+                      ? 'bg-[#51867E] text-white border-[#51867E] shadow-sm font-bold'
                       : 'bg-white border-slate-200 text-slate-700 hover:border-[#51867E]'
                   }`}
                 >
@@ -486,6 +498,15 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
                 </button>
               ))}
             </div>
+
+            {bookOption === 'custom_only' && (
+              <div className="p-3 bg-emerald-50/80 border border-emerald-200 text-emerald-800 rounded-xl text-xs flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>
+                  <strong>Mode Product &amp; Service Only:</strong> Rincian kamar/venue disembunyikan. Invoice diisi murni via tabel <strong>Product or service</strong> di bawah.
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Section 3: Room Inventory (If Room / Both / Room & Meeting) */}
@@ -576,7 +597,7 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
           )}
 
           {/* Section 4: Event / Meeting Details (If Event / Meeting / Both / Room & Meeting) */}
-          {bookOption !== 'room' && (
+          {bookOption !== 'room' && bookOption !== 'custom_only' && (
             <div className="space-y-3 p-4 bg-slate-50/70 rounded-2xl border border-slate-200">
               <div className="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5 border-b pb-2">
                 <Calendar className="w-3.5 h-3.5 text-[#51867E]" />

@@ -111,7 +111,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
   const customItems = booking.customLineItems || [];
   const customItemsAmt = customItems.reduce((acc, item) => acc + (item.amount || 0), 0);
 
-  const fallbackRoomAmt = (totalRooms === 0 && !booking.eventAttendees && customItems.length === 0)
+  const fallbackRoomAmt = (totalRooms === 0 && !booking.eventAttendees && customItems.length === 0 && booking.bookOption !== 'custom_only')
     ? (booking.totalAmount ? Math.round(booking.totalAmount / 1.1) : priceStandard)
     : 0;
 
@@ -266,7 +266,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                   <strong>Business Name:</strong>{' '}
                   {booking.businessName && booking.businessName.trim()
                     ? booking.businessName.trim()
-                    : 'HANFORD'}
+                    : '-'}
                 </div>
               </div>
             </div>
@@ -411,7 +411,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               </div>
             ))}
 
-            {totalRooms === 0 && !booking.eventAttendees && customItems.length === 0 && (
+            {totalRooms === 0 && !booking.eventAttendees && customItems.length === 0 && booking.bookOption !== 'custom_only' && (
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
                 <div>
                   <div className="font-bold text-slate-800">Room Reservation</div>
@@ -517,7 +517,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                   </tr>
                 ))}
 
-                {totalRooms === 0 && !booking.eventAttendees && customItems.length === 0 && (
+                {totalRooms === 0 && !booking.eventAttendees && customItems.length === 0 && booking.bookOption !== 'custom_only' && (
                   <tr>
                     <td className="py-3 px-4">
                       <div className="font-semibold text-slate-800">Room Reservation</div>

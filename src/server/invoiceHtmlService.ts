@@ -15,6 +15,7 @@ function getBookingTypeLabel(bookOption?: string): string {
     case 'both': return 'Room Stay & Event';
     case 'meeting': return 'Meeting Room Rental';
     case 'room_meeting': return 'Room & Meeting Room';
+    case 'custom_only': return 'Product & Service Only';
     default: return bookOption || 'General Reservation';
   }
 }

@@ -14,6 +14,11 @@ export function getBookingTypeLabel(booking: Partial<BookingInquiry>): string {
   const opt = (booking.bookOption || '').toLowerCase().trim();
   const acc = (booking.accommodationOption || '').toLowerCase().trim();
 
+  // 0. Product & Service Only
+  if (opt === 'custom_only' || opt === 'product_service' || opt === 'custom' || opt === 'none') {
+    return 'Product & Service Only';
+  }
+
   // 1. Meeting with Accommodation
   if (
     opt === 'room_meeting' ||

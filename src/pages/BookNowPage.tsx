@@ -281,7 +281,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
     const stdCost = (formData.standardRooms || 0) * priceStandard;
     const delCost = (formData.deluxeRooms || 0) * priceDeluxe;
     const presCost = (formData.presidentialSuites || 0) * pricePresidential;
-    const villaCost = isEcoResort ? (formData.privateVillas || 0) * (pricePrivateVilla || 0) : 0;
+    const villaCost = hasPrivateVilla ? (formData.privateVillas || 0) * (pricePrivateVilla || 0) : 0;
     currentRoomSubtotal = (stdCost + delCost + presCost + villaCost) * currentNights;
   }
 
@@ -308,7 +308,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
     if (formData.standardRooms) snapshotRatesArr.push(`Standard: $${priceStandard}/night`);
     if (formData.deluxeRooms) snapshotRatesArr.push(`Deluxe: $${priceDeluxe}/night`);
     if (formData.presidentialSuites) snapshotRatesArr.push(`Presidential: $${pricePresidential}/night`);
-    if (isEcoResort && formData.privateVillas) snapshotRatesArr.push(`Villa: $${pricePrivateVilla}/night`);
+    if (hasPrivateVilla && formData.privateVillas) snapshotRatesArr.push(`Villa: $${pricePrivateVilla}/night`);
   }
   if (showVenueSettings) {
     if (formData.bookOption === 'meeting') {
@@ -408,7 +408,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
       priceStandardRoom: priceStandard,
       priceDeluxeRoom: priceDeluxe,
       pricePresidentialSuite: pricePresidential,
-      pricePrivateVilla: isEcoResort ? pricePrivateVilla : undefined,
+      pricePrivateVilla: hasPrivateVilla ? pricePrivateVilla : undefined,
       priceMeetingRoom: effectiveMeetingRoomRate,
       priceEventHall: priceEventHall,
       priceCateringPerPax: effectiveCateringPerPax,

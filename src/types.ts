@@ -119,7 +119,7 @@ export interface Project {
   galleryImages: string[];
 }
 
-export type BookOption = 'room' | 'event' | 'both' | 'meeting' | 'room_meeting';
+export type BookOption = 'room' | 'event' | 'both' | 'meeting' | 'room_meeting' | 'custom_only';
 export type EventTypeOption = 'hall' | 'meeting';
 export type EventAddonOption = 'none' | 'catering' | 'decoration' | 'both';
 
