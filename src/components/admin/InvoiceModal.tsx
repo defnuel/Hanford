@@ -262,12 +262,11 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                     @{booking.xUsername ? booking.xUsername.replace(/^@/, '') : 'DEF'}
                   </span>
                 </div>
-                <div>
-                  <strong>Business Name:</strong>{' '}
-                  {booking.businessName && booking.businessName.trim()
-                    ? booking.businessName.trim()
-                    : '-'}
-                </div>
+                {booking.businessName && booking.businessName.trim() && booking.businessName.trim().toUpperCase() !== 'HANFORD' ? (
+                  <div>
+                    <strong>Business Name:</strong> {booking.businessName.trim()}
+                  </div>
+                ) : null}
               </div>
             </div>
 
@@ -652,12 +651,11 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                       @{booking.xUsername ? booking.xUsername.replace(/^@/, '') : 'DEF'}
                     </span>
                   </div>
-                  <div>
-                    <strong>Business Name:</strong>{' '}
-                    {booking.businessName && booking.businessName.trim()
-                      ? booking.businessName.trim()
-                      : 'HANFORD'}
-                  </div>
+                  {booking.businessName && booking.businessName.trim() && booking.businessName.trim().toUpperCase() !== 'HANFORD' ? (
+                    <div>
+                      <strong>Business Name:</strong> {booking.businessName.trim()}
+                    </div>
+                  ) : null}
                 </div>
               </div>
 

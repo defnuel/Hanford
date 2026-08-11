@@ -532,6 +532,8 @@ export function transformSheetRowToBooking(row: Record<string, string>, index: n
   const propertyName = getVal('location', 'property', 'property name', 'nama properti', 'nama resort') || 'Hanford Estate';
   const guestName = getVal('name', 'guest name', 'nama', 'nama tamu', 'customer') || `Guest #${index + 1}`;
   const xUsername = getVal('x username', 'x_username', 'twitter', 'username', 'x handle') || 'N/A';
+  const rawBusiness = getVal('business name', 'business_name', 'business', 'perusahaan', 'company', 'nama bisnis');
+  const businessName = rawBusiness && rawBusiness.trim().toUpperCase() !== 'HANFORD' ? rawBusiness.trim() : undefined;
   const bookOptionRaw = getVal('book option', 'option', 'tipe booking', 'booking type') || 'room';
 
   const parseNum = (valStr: string): number => {
@@ -619,6 +621,7 @@ export function transformSheetRowToBooking(row: Record<string, string>, index: n
     propertyName,
     guestName,
     xUsername,
+    businessName,
     guestEmail: `${guestName.toLowerCase().replace(/[^a-z0-9]/g, '.')}@example.com`,
     bookOption,
     standardRooms: standardRooms || undefined,

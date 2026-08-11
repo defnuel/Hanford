@@ -320,7 +320,9 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({ bookings, prop
                   <div className="space-y-2 text-xs">
                     <div>
                       <div className="font-bold text-slate-900 text-sm">{b.guestName}</div>
-                      {b.businessName && <div className="text-xs text-slate-600 font-medium">{b.businessName}</div>}
+                      {b.businessName && b.businessName.trim() && b.businessName.trim().toUpperCase() !== 'HANFORD' && (
+                        <div className="text-xs text-slate-600 font-medium">{b.businessName.trim()}</div>
+                      )}
                       <div className="flex flex-wrap items-center gap-x-3 text-[11px] text-slate-500 pt-0.5">
                         {b.xUsername && <span className="text-[#51867E]">X: {b.xUsername}</span>}
                         {b.guestEmail && <span>{b.guestEmail}</span>}
@@ -424,8 +426,8 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({ bookings, prop
 
                         <td className="py-3.5 px-4 space-y-0.5">
                           <div className="font-bold text-slate-900 text-xs">{b.guestName}</div>
-                          {b.businessName && (
-                            <div className="text-[10.5px] text-slate-600 font-medium">{b.businessName}</div>
+                          {b.businessName && b.businessName.trim() && b.businessName.trim().toUpperCase() !== 'HANFORD' && (
+                            <div className="text-[10.5px] text-slate-600 font-medium">{b.businessName.trim()}</div>
                           )}
                           {b.xUsername && (
                             <div className="text-[11px] text-[#51867E]">X: {b.xUsername}</div>
