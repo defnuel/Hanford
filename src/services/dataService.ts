@@ -912,6 +912,46 @@ export function saveAdminProjects(projects: Project[]) {
 
 const DEFAULT_MOCK_BOOKINGS: BookingInquiry[] = [
   {
+    id: 'HNF-2026-U8821',
+    bookingId: 'HNF-2026-U8821',
+    createdAt: new Date(Date.now() - 3600000 * 12).toISOString(),
+    propertySlug: 'hanford-hotel-resort-uluwatu-bali',
+    propertyName: 'Hanford Hotel & Resort Uluwatu, Bali',
+    guestName: 'Agatha Madeleine',
+    xUsername: '@pendxnts',
+    guestEmail: 'agatha.madeleine@example.com',
+    bookOption: 'both', // Room & Event
+    deluxeRooms: 1,
+    privateVillas: 1,
+    checkInDate: '2026-08-13',
+    checkOutDate: '2026-08-16',
+    numberOfNights: 3,
+    eventDate: undefined,
+    totalAmount: 5850,
+    paymentStatus: 'PAID',
+    status: 'Confirmed',
+    notes: 'Room & Event booking. VIP guest pass and welcome arrangement requested.'
+  },
+  {
+    id: 'HNF-2026-G1042',
+    bookingId: 'HNF-2026-G1042',
+    createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
+    propertySlug: 'hanford-hotel-resort-uluwatu-bali',
+    propertyName: 'Hanford Hotel & Resort Uluwatu, Bali',
+    guestName: 'Gavin Elian Baskoro',
+    xUsername: '@gavinbaskoro',
+    guestEmail: 'gavin.elian@example.com',
+    bookOption: 'room',
+    privateVillas: 1,
+    checkInDate: '2026-08-15',
+    checkOutDate: '2026-08-18',
+    numberOfNights: 3,
+    totalAmount: 4950,
+    paymentStatus: 'PAID',
+    status: 'Confirmed',
+    notes: 'Private Pool Villa PMV - 03 - A reserved.'
+  },
+  {
     id: 'HNF-2026-X8921',
     bookingId: 'HNF-2026-X8921',
     createdAt: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),

@@ -42,6 +42,17 @@ export const MOCK_RAW_GOOGLE_SHEETS_DATA: RawGoogleSheetsPropertyRow[] = [
     Source: 'https://www.forbestravelguide.com/hotels/santorini-greece/sandblu-santorini-lxr-hotels-resorts'
   },
   {
+    Name: 'Hanford Hotel & Resort Uluwatu',
+    Tagline: 'Clifftop Oceanfront Sanctuary in Southern Bali',
+    Address: 'Jl. Pantai Suluban No. 88, Pecatu, Uluwatu, Bali 80361',
+    Country: 'Indonesia',
+    Continent: 'Asia',
+    Status: 'Live',
+    Details: `<div><h1>Hanford Hotel & Resort Uluwatu</h1> <h4><em><strong>Clifftop sanctuary overlooking the Indian Ocean</strong></em></h4> </div> <div data-maxchar="250"> <p>Perched high above the limestone cliffs of Uluwatu in southern Bali, Hanford Hotel & Resort Uluwatu offers private cliffside villas, panoramic ocean views, private beach access, and authentic Balinese hospitality.</p> <div> <h3><strong>Highlights</strong></h3> <div> <ul> <li>Clifftop infinity pool floating above the Indian Ocean with sunset view deck.</li> <li>Private pool villas with traditional Balinese aling-aling gates and open-air marble showers.</li> <li>Signature cliff-edge dining at The Suluban Pavilion and organic wellness cuisine.</li> <li>Hanford Spa with traditional Balinese boreh treatments and sunset yoga.</li> </ul> </div> </div> <div> <h3><strong>Amenities</strong></h3> <div> <ul> <li>24-hour room service</li> <li>Bar</li> <li>Fitness classes</li> <li>Gym</li> <li>House car</li> <li>Meeting rooms</li> <li>Outdoor pool</li> <li>Restaurants</li> <li>Spa</li> <li>Private Beach Access</li> </ul> </div> </div> </div>`,
+    "Picture's folder": '',
+    Source: 'https://www.forbestravelguide.com/hotels/bali-indonesia/bulgari-resort-bali'
+  },
+  {
     Name: 'Hanford Grand Hotel Jakarta',
     Tagline: 'International Luxury with an Indonesian Touch',
     Address: 'Jl. Jenderal Sudirman No.Kav. 87, Kota Jakarta Pusat, DKI Jakarta 10220',
@@ -273,6 +284,28 @@ const RAW_PROPERTIES_DATA: Property[] = [
     priceFrom: 1650,
     rating: 4.99,
     amenities: ['24-hour room service', 'Bar', 'Fitness classes', 'Gym', 'House car', 'Meeting rooms', 'Indoor pool', 'Outdoor pool', 'Restaurants', 'Spa', 'Babysitting services', 'Beach', 'Kids Club', 'Pet friendly']
+  },
+  {
+    id: 'prop-uluwatu',
+    slug: 'hanford-hotel-resort-uluwatu-bali',
+    name: 'Hanford Hotel & Resort Uluwatu, Bali',
+    tagline: 'Clifftop Oceanfront Sanctuary in Southern Bali',
+    address: 'Jl. Pantai Suluban No. 88, Pecatu, Uluwatu, Bali 80361',
+    country: 'Indonesia',
+    continent: 'Asia',
+    status: 'Live',
+    detailsHtml: MOCK_RAW_GOOGLE_SHEETS_DATA[3].Details,
+    driveFolderUrl: '',
+    heroImage: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1800&q=85',
+    galleryImages: [
+      'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80'
+    ],
+    priceFrom: 1250,
+    rating: 4.98,
+    amenities: ['24-hour room service', 'Bar', 'Fitness classes', 'Gym', 'House car', 'Meeting rooms', 'Outdoor pool', 'Restaurants', 'Spa', 'Private Beach Access', 'Clifftop Pavilion']
   },
   {
     id: 'prop-jakarta',

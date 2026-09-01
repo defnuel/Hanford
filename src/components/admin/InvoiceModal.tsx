@@ -9,6 +9,7 @@ interface InvoiceModalProps {
   booking: BookingInquiry;
   onClose: () => void;
   onTogglePaymentStatus: (bookingId: string, currentStatus: 'UNPAID' | 'PAID') => void;
+  onOpenCardGenerator?: (booking: BookingInquiry, type: 'keycard' | 'welcomecard') => void;
 }
 
 function calculateNights(checkIn?: string, checkOut?: string): number {
@@ -24,7 +25,8 @@ function calculateNights(checkIn?: string, checkOut?: string): number {
 export const InvoiceModal: React.FC<InvoiceModalProps> = ({
   booking,
   onClose,
-  onTogglePaymentStatus
+  onTogglePaymentStatus,
+  onOpenCardGenerator
 }) => {
   const [matchedProperty, setMatchedProperty] = useState<Property | null>(null);
   const [isDownloadingImage, setIsDownloadingImage] = useState(false);
@@ -176,6 +178,30 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             >
               Mark as {isPaid ? 'UNPAID' : 'PAID'}
             </button>
+            {onOpenCardGenerator && (
+              <>
+                <button
+                  onClick={() => {
+                    onClose();
+                    onOpenCardGenerator(booking, 'keycard');
+                  }}
+                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-200 border border-amber-400/30 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
+                  title="Generate Key Card PNG"
+                >
+                  <span>🗝️ Key Card</span>
+                </button>
+                <button
+                  onClick={() => {
+                    onClose();
+                    onOpenCardGenerator(booking, 'welcomecard');
+                  }}
+                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-200 border border-emerald-400/30 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
+                  title="Generate Welcoming Card PNG"
+                >
+                  <span>💌 Welcome Card</span>
+                </button>
+              </>
+            )}
             <button
               onClick={handleDownloadImage}
               disabled={isDownloadingImage}
