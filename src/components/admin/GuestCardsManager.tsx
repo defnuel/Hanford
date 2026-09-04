@@ -145,7 +145,8 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
   const [welcomeRoomDetails, setWelcomeRoomDetails] = useState<string>('Private Pool Villa');
   const [welcomeCustomNote, setWelcomeCustomNote] = useState<string>('');
   const [welcomeRef, setWelcomeRef] = useState<string>(() => {
-    const bId = initialBooking?.bookingId || initialBooking?.id;
+    const b = initialBooking || (bookings && bookings.length > 0 ? bookings[0] : null);
+    const bId = b?.bookingId || b?.id;
     return bId ? (bId.toUpperCase().startsWith('REF:') ? bId : `REF: ${bId}`) : 'REF: HNF-2026-INV';
   });
 
@@ -156,8 +157,9 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
   const [galleryRoomType, setGalleryRoomType] = useState<string>('Private Pool Villa • 3 Bedroom Ocean Suite');
   const [galleryStayDates, setGalleryStayDates] = useState<string>('2026-09-01 to 2026-09-02 (1 night)');
   const [galleryRef, setGalleryRef] = useState<string>(() => {
-    const bId = initialBooking?.bookingId || initialBooking?.id;
-    return bId ? (bId.toUpperCase().startsWith('REF:') ? bId : `REF: ${bId}`) : 'REF: HNF-ACCOM-2026';
+    const b = initialBooking || (bookings && bookings.length > 0 ? bookings[0] : null);
+    const bId = b?.bookingId || b?.id;
+    return bId ? (bId.toUpperCase().startsWith('REF:') ? bId : `REF: ${bId}`) : 'REF: HNF-2026-INV';
   });
   const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhotoItem[]>(DEFAULT_GALLERY_PHOTOS);
   const [newPhotoUrl, setNewPhotoUrl] = useState<string>('');
@@ -266,7 +268,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
     const bRefCode = b.bookingId || b.id || '';
     const formattedRef = bRefCode ? (bRefCode.toUpperCase().startsWith('REF:') ? bRefCode : `REF: ${bRefCode}`) : 'REF: HNF-2026-INV';
     setWelcomeRef(formattedRef);
-    setGalleryRef(bRefCode ? (bRefCode.toUpperCase().startsWith('REF:') ? bRefCode : `REF: ${bRefCode}`) : 'REF: HNF-ACCOM-2026');
+    setGalleryRef(formattedRef);
 
     // Auto-select preset photos if matching property
     const pLower = propName.toLowerCase();
@@ -297,6 +299,16 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
       .trim()
       .toUpperCase();
     return clean || 'ULUWATU';
+  };
+
+  // Helper to extract clean raw Booking / Invoice ID for presets
+  const getRawBookingCode = (refVal: string): string => {
+    const matched = bookings.find((b) => (b.bookingId || b.id) === selectedBookingId);
+    if (matched && (matched.bookingId || matched.id)) {
+      return (matched.bookingId || matched.id).trim();
+    }
+    const cleaned = refVal.replace(/^(REF|INVOICE\s*NO|INV)\s*[:#]?\s*/i, '').trim();
+    return cleaned || 'HNF-2026-INV';
   };
 
   const handleBookingSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -780,7 +792,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                     Reference Stamp / Invoice Ref
                   </label>
                   <span className="text-[10px] text-[#51867E] font-medium font-mono">
-                    Matches Invoice #{welcomeRef.replace(/^REF:\s*/i, '')}
+                    Matches Invoice #{getRawBookingCode(welcomeRef)}
                   </span>
                 </div>
                 <input
@@ -790,6 +802,58 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                   placeholder="e.g. REF: HNF-2026-U8821"
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold text-slate-800 focus:bg-white focus:ring-2 focus:ring-[#51867E] focus:outline-none"
                 />
+                {/* Format Presets to exactly match Invoice / Card requirements */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  <span className="text-[10px] text-slate-400 font-medium">Format:</span>
+                  <button
+                    type="button"
+                    onClick={() => setWelcomeRef(`Invoice No: ${getRawBookingCode(welcomeRef)}`)}
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-colors cursor-pointer border ${
+                      welcomeRef.toLowerCase().startsWith('invoice no:')
+                        ? 'bg-[#51867E] text-white border-[#51867E]'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-slate-200'
+                    }`}
+                    title="Exact Invoice No format"
+                  >
+                    Invoice No: {getRawBookingCode(welcomeRef)}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setWelcomeRef(`REF: ${getRawBookingCode(welcomeRef)}`)}
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-colors cursor-pointer border ${
+                      welcomeRef.toLowerCase().startsWith('ref:')
+                        ? 'bg-[#51867E] text-white border-[#51867E]'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-slate-200'
+                    }`}
+                    title="REF prefix format"
+                  >
+                    REF: {getRawBookingCode(welcomeRef)}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setWelcomeRef(`#${getRawBookingCode(welcomeRef)}`)}
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-colors cursor-pointer border ${
+                      welcomeRef.startsWith('#')
+                        ? 'bg-[#51867E] text-white border-[#51867E]'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-slate-200'
+                    }`}
+                    title="Hash prefix format"
+                  >
+                    #{getRawBookingCode(welcomeRef)}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setWelcomeRef(getRawBookingCode(welcomeRef))}
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-colors cursor-pointer border ${
+                      welcomeRef === getRawBookingCode(welcomeRef)
+                        ? 'bg-[#51867E] text-white border-[#51867E]'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-slate-200'
+                    }`}
+                    title="Plain ID format"
+                  >
+                    {getRawBookingCode(welcomeRef)}
+                  </button>
+                </div>
               </div>
 
               {/* Property Selector */}
@@ -986,7 +1050,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                     Reference Stamp / Invoice Ref
                   </label>
                   <span className="text-[10px] text-[#51867E] font-medium font-mono">
-                    Matches Invoice #{galleryRef.replace(/^REF:\s*/i, '')}
+                    Matches Invoice #{getRawBookingCode(galleryRef)}
                   </span>
                 </div>
                 <input
@@ -996,6 +1060,58 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                   placeholder="e.g. REF: HNF-2026-U8821"
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold text-slate-800 focus:bg-white focus:ring-2 focus:ring-[#51867E] focus:outline-none"
                 />
+                {/* Format Presets */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  <span className="text-[10px] text-slate-400 font-medium">Format:</span>
+                  <button
+                    type="button"
+                    onClick={() => setGalleryRef(`Invoice No: ${getRawBookingCode(galleryRef)}`)}
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-colors cursor-pointer border ${
+                      galleryRef.toLowerCase().startsWith('invoice no:')
+                        ? 'bg-[#51867E] text-white border-[#51867E]'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-slate-200'
+                    }`}
+                    title="Exact Invoice No format"
+                  >
+                    Invoice No: {getRawBookingCode(galleryRef)}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setGalleryRef(`REF: ${getRawBookingCode(galleryRef)}`)}
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-colors cursor-pointer border ${
+                      galleryRef.toLowerCase().startsWith('ref:')
+                        ? 'bg-[#51867E] text-white border-[#51867E]'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-slate-200'
+                    }`}
+                    title="REF prefix format"
+                  >
+                    REF: {getRawBookingCode(galleryRef)}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setGalleryRef(`#${getRawBookingCode(galleryRef)}`)}
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-colors cursor-pointer border ${
+                      galleryRef.startsWith('#')
+                        ? 'bg-[#51867E] text-white border-[#51867E]'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-slate-200'
+                    }`}
+                    title="Hash prefix format"
+                  >
+                    #{getRawBookingCode(galleryRef)}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setGalleryRef(getRawBookingCode(galleryRef))}
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-colors cursor-pointer border ${
+                      galleryRef === getRawBookingCode(galleryRef)
+                        ? 'bg-[#51867E] text-white border-[#51867E]'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-slate-200'
+                    }`}
+                    title="Plain ID format"
+                  >
+                    {getRawBookingCode(galleryRef)}
+                  </button>
+                </div>
               </div>
 
               {/* Property & Stay Dates */}

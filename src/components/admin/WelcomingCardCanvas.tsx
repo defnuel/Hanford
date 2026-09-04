@@ -43,9 +43,7 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
   const displayStayDates = stayDates.trim() || '2026-09-01 to 2026-09-02 (1 night)';
   const displayEventDate = eventDate.trim() || 'N/A';
   const displayRef = bookingRef && bookingRef.trim()
-    ? (bookingRef.trim().toUpperCase().startsWith('REF:')
-        ? bookingRef.trim()
-        : `REF: ${bookingRef.trim()}`)
+    ? bookingRef.trim()
     : 'REF: HNF-2026-INV';
 
   const defaultHeroImage =

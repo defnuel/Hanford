@@ -583,6 +583,9 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   <div className="text-sm sm:text-base font-bold text-[#3A4F67]">
                     Invoice No: <span className="font-mono text-[#3A4F67]">{confirmedBooking.bookingId}</span>
                   </div>
+                  <div className="text-xs text-slate-500 font-mono">
+                    Ref No: <span className="text-[#3A4F67] font-semibold">{confirmedBooking.bookingId}</span>
+                  </div>
                   <div className="text-xs text-slate-500">
                     Date Issued: {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
@@ -917,6 +920,9 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     </span>
                     <div className="text-base font-bold text-[#3A4F67]">
                       Invoice No: <span className="font-mono text-[#3A4F67]">{confirmedBooking.bookingId}</span>
+                    </div>
+                    <div className="text-xs text-slate-500 font-mono">
+                      Ref No: <span className="text-[#3A4F67] font-semibold">{confirmedBooking.bookingId}</span>
                     </div>
                     <div className="text-xs text-slate-500">
                       Date Issued: {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}

@@ -264,6 +264,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 OFFICIAL RECEIPT / INVOICE
               </div>
               <div className="text-sm font-bold text-[#3A4F67]">Invoice No: <span className="font-mono">{bookingId}</span></div>
+              <div className="text-xs text-slate-500 font-mono">Ref No: <span className="text-[#3A4F67] font-semibold">{bookingId}</span></div>
               <div className="text-xs text-slate-500">Date Issued: {dateStr}</div>
 
               {/* Status Stamp */}
@@ -653,6 +654,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                   OFFICIAL RECEIPT / INVOICE
                 </div>
                 <div className="text-sm font-bold text-[#3A4F67]">Invoice No: <span className="font-mono">{bookingId}</span></div>
+                <div className="text-xs text-slate-500 font-mono">Ref No: <span className="text-[#3A4F67] font-semibold">{bookingId}</span></div>
                 <div className="text-xs text-slate-500">Date Issued: {dateStr}</div>
 
                 {/* Status Stamp */}

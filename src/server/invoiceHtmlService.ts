@@ -273,8 +273,11 @@ export function generateInvoiceHtml(booking: BookingInquiry, requestedStatus?: '
 
         <div class="invoice-title-block">
           <div class="invoice-title">INVOICE</div>
-          <div style="font-size: 14px; font-weight: 600; color: #475569; margin-top: 2px;">
-            #${escapeHtml(bookingId)}
+          <div style="font-size: 14px; font-weight: 700; color: #1E293B; margin-top: 2px;">
+            Invoice No: ${escapeHtml(bookingId)}
+          </div>
+          <div style="font-size: 11px; font-family: monospace; font-weight: 600; color: #64748B; margin-top: 2px;">
+            Ref No: ${escapeHtml(bookingId)}
           </div>
           <div class="badge-status">
             ${isPaid ? '✓ OFFICIAL RECEIPT (PAID)' : '⏳ PAYMENT PENDING (UNPAID)'}
