@@ -144,6 +144,10 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
   );
   const [welcomeRoomDetails, setWelcomeRoomDetails] = useState<string>('Private Pool Villa');
   const [welcomeCustomNote, setWelcomeCustomNote] = useState<string>('');
+  const [welcomeRef, setWelcomeRef] = useState<string>(() => {
+    const bId = initialBooking?.bookingId || initialBooking?.id;
+    return bId ? (bId.toUpperCase().startsWith('REF:') ? bId : `REF: ${bId}`) : 'REF: HNF-2026-INV';
+  });
 
   // Accommodation Gallery Form State (New Feature)
   const [galleryGuestName, setGalleryGuestName] = useState<string>('Agatha Madeleine');
@@ -151,7 +155,10 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
   const [galleryProperty, setGalleryProperty] = useState<string>('Hanford Hotel & Resort Uluwatu, Bali');
   const [galleryRoomType, setGalleryRoomType] = useState<string>('Private Pool Villa • 3 Bedroom Ocean Suite');
   const [galleryStayDates, setGalleryStayDates] = useState<string>('2026-09-01 to 2026-09-02 (1 night)');
-  const [galleryRef, setGalleryRef] = useState<string>('REF: HNF-ACCOM-2026');
+  const [galleryRef, setGalleryRef] = useState<string>(() => {
+    const bId = initialBooking?.bookingId || initialBooking?.id;
+    return bId ? (bId.toUpperCase().startsWith('REF:') ? bId : `REF: ${bId}`) : 'REF: HNF-ACCOM-2026';
+  });
   const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhotoItem[]>(DEFAULT_GALLERY_PHOTOS);
   const [newPhotoUrl, setNewPhotoUrl] = useState<string>('');
   const [newPhotoTitle, setNewPhotoTitle] = useState<string>('');
@@ -256,7 +263,10 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
       (b.standardRooms ? 'Standard Premium Room' : '') ||
       'Private Pool Villa • 3 Bedroom Ocean Suite';
     setGalleryRoomType(resolvedRoom);
-    setGalleryRef(`REF: ${b.bookingId || b.id || 'HNF-ACCOM-2026'}`);
+    const bRefCode = b.bookingId || b.id || '';
+    const formattedRef = bRefCode ? (bRefCode.toUpperCase().startsWith('REF:') ? bRefCode : `REF: ${bRefCode}`) : 'REF: HNF-2026-INV';
+    setWelcomeRef(formattedRef);
+    setGalleryRef(bRefCode ? (bRefCode.toUpperCase().startsWith('REF:') ? bRefCode : `REF: ${bRefCode}`) : 'REF: HNF-ACCOM-2026');
 
     // Auto-select preset photos if matching property
     const pLower = propName.toLowerCase();
@@ -558,9 +568,11 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
               setWelcomeXUser('');
               setWelcomeRoomDetails('');
               setWelcomeCustomNote('');
+              setWelcomeRef('REF: HNF-2026-INV');
               setGalleryGuestName('');
               setGalleryXUser('');
               setGalleryRoomType('');
+              setGalleryRef('REF: HNF-ACCOM-2026');
             }}
             className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors flex items-center gap-1"
             title="Reset Form Fields"
@@ -761,6 +773,25 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                 </div>
               </div>
 
+              {/* Reference Stamp / Invoice Ref */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="block font-bold text-slate-700 uppercase tracking-wider text-[10.5px]">
+                    Reference Stamp / Invoice Ref
+                  </label>
+                  <span className="text-[10px] text-[#51867E] font-medium font-mono">
+                    Matches Invoice #{welcomeRef.replace(/^REF:\s*/i, '')}
+                  </span>
+                </div>
+                <input
+                  type="text"
+                  value={welcomeRef}
+                  onChange={(e) => setWelcomeRef(e.target.value)}
+                  placeholder="e.g. REF: HNF-2026-U8821"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold text-slate-800 focus:bg-white focus:ring-2 focus:ring-[#51867E] focus:outline-none"
+                />
+              </div>
+
               {/* Property Selector */}
               <div className="space-y-1.5">
                 <label className="block font-bold text-slate-700 uppercase tracking-wider text-[10.5px]">
@@ -946,6 +977,25 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-[#51867E] focus:outline-none"
                   />
                 </div>
+              </div>
+
+              {/* Reference Stamp / Invoice Ref */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="block font-bold text-slate-700 uppercase tracking-wider text-[10.5px]">
+                    Reference Stamp / Invoice Ref
+                  </label>
+                  <span className="text-[10px] text-[#51867E] font-medium font-mono">
+                    Matches Invoice #{galleryRef.replace(/^REF:\s*/i, '')}
+                  </span>
+                </div>
+                <input
+                  type="text"
+                  value={galleryRef}
+                  onChange={(e) => setGalleryRef(e.target.value)}
+                  placeholder="e.g. REF: HNF-2026-U8821"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold text-slate-800 focus:bg-white focus:ring-2 focus:ring-[#51867E] focus:outline-none"
+                />
               </div>
 
               {/* Property & Stay Dates */}
@@ -1270,6 +1320,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                     heroImageUrl={welcomeHeroImage}
                     roomDetails={welcomeRoomDetails}
                     customWelcomeNote={welcomeCustomNote}
+                    bookingRef={welcomeRef}
                     canvasRef={welcomeCardRef}
                     id="hanford-welcome-card-canvas"
                     fixedWidth={true}
@@ -1340,6 +1391,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
             heroImageUrl={welcomeHeroImage}
             roomDetails={welcomeRoomDetails}
             customWelcomeNote={welcomeCustomNote}
+            bookingRef={welcomeRef}
             canvasRef={welcomeExportRef}
             id="hanford-welcome-card-export"
             fixedWidth={true}

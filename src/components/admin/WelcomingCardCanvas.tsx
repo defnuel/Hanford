@@ -11,6 +11,7 @@ interface WelcomingCardCanvasProps {
   heroImageUrl?: string;
   roomDetails?: string;
   customWelcomeNote?: string;
+  bookingRef?: string;
   id?: string;
   canvasRef?: React.RefObject<HTMLDivElement | null>;
   fixedWidth?: boolean;
@@ -26,6 +27,7 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
   heroImageUrl,
   roomDetails,
   customWelcomeNote,
+  bookingRef,
   id = 'hanford-welcome-card-canvas',
   canvasRef,
   fixedWidth = false,
@@ -40,6 +42,11 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
   const displayBookingType = bookingType.trim() || 'Room Reservation';
   const displayStayDates = stayDates.trim() || '2026-09-01 to 2026-09-02 (1 night)';
   const displayEventDate = eventDate.trim() || 'N/A';
+  const displayRef = bookingRef && bookingRef.trim()
+    ? (bookingRef.trim().toUpperCase().startsWith('REF:')
+        ? bookingRef.trim()
+        : `REF: ${bookingRef.trim()}`)
+    : 'REF: HNF-2026-INV';
 
   const defaultHeroImage =
     'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=85';
@@ -109,7 +116,7 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
           {/* Right Reference Stamp (Matching Invoice Style) */}
           <div className="flex flex-col items-end gap-1 shrink-0">
             <div className="px-4 py-2 bg-slate-100 border border-slate-200 rounded-lg text-[#3A4F67] font-mono text-xs font-bold uppercase tracking-wider">
-              REF: HNF-WLCM-2026
+              {displayRef}
             </div>
             <div className="text-[11px] text-slate-500 font-medium tracking-wide">
               Exclusive Stay Confirmation

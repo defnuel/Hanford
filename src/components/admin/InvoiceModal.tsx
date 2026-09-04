@@ -9,7 +9,7 @@ interface InvoiceModalProps {
   booking: BookingInquiry;
   onClose: () => void;
   onTogglePaymentStatus: (bookingId: string, currentStatus: 'UNPAID' | 'PAID') => void;
-  onOpenCardGenerator?: (booking: BookingInquiry, type: 'keycard' | 'welcomecard') => void;
+  onOpenCardGenerator?: (booking: BookingInquiry, type: 'keycard' | 'welcomecard' | 'gallery') => void;
 }
 
 function calculateNights(checkIn?: string, checkOut?: string): number {
@@ -199,6 +199,16 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                   title="Generate Welcoming Card PNG"
                 >
                   <span>💌 Welcome Card</span>
+                </button>
+                <button
+                  onClick={() => {
+                    onClose();
+                    onOpenCardGenerator(booking, 'gallery');
+                  }}
+                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-[#9fe1d5] border border-[#51867E]/40 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
+                  title="Generate Accommodation Visual Gallery PNG"
+                >
+                  <span>🖼️ Gallery</span>
                 </button>
               </>
             )}
