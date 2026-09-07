@@ -44,7 +44,7 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
   const displayEventDate = eventDate.trim() || 'N/A';
   const displayRef = bookingRef && bookingRef.trim()
     ? bookingRef.trim()
-    : 'REF: HNF-2026-INV';
+    : 'Ref No: HNF-2026-INV';
 
   const defaultHeroImage =
     'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=85';

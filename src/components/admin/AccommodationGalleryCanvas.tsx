@@ -27,7 +27,7 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
   propertyName,
   roomType,
   stayDates,
-  bookingRef = 'REF: HNF-ACCOM-2026',
+  bookingRef = 'Ref No: HNF-ACCOM-2026',
   photos = [],
   brandLogoUrl = 'https://lh3.googleusercontent.com/d/1F-m9SWOLAD63pO-tzJIzOCUSv4heXHLk',
   canvasRef,
@@ -43,7 +43,7 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
   const displayProperty = propertyName.trim() || 'Hanford Hotel & Resort Uluwatu, Bali';
   const displayRoomType = roomType.trim() || 'Private Pool Villa • 3 Bedroom Ocean Suite';
   const displayStayDates = stayDates.trim() || '2026-09-01 to 2026-09-02 (1 night)';
-  const displayRef = bookingRef.trim() || 'REF: HNF-ACCOM-2026';
+  const displayRef = bookingRef.trim() || 'Ref No: HNF-ACCOM-2026';
 
   // Ensure we have up to 15 photos, with elegant fallback if empty
   const displayPhotos = photos.length > 0 ? photos.slice(0, 15) : [

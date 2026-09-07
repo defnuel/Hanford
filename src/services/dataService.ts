@@ -635,7 +635,9 @@ function build32ColumnRowValues(inquiry: BookingInquiry, finalBookingId: string,
     inquiry.checkInDate || 'N/A',
     inquiry.checkOutDate || 'N/A',
     inquiry.eventDate || 'N/A',
-    inquiry.notes || 'N/A',
+    (inquiry.notes && inquiry.notes.trim().toUpperCase() !== 'N/A' ? inquiry.notes.trim() : '') ||
+      (inquiry.noteToCustomer && inquiry.noteToCustomer.trim().toUpperCase() !== 'N/A' ? inquiry.noteToCustomer.trim() : '') ||
+      'N/A',
     priceStandardText,
     priceDeluxeText,
     pricePresidentialText,
@@ -1063,7 +1065,8 @@ function transformSheetRowToBookingClient(row: Record<string, string>, index: nu
   const checkInDate = getVal('check-in date', 'check-in', 'checkin', 'check in') || '';
   const checkOutDate = getVal('check-out date', 'check-out', 'checkout', 'check out') || '';
   const eventDate = getVal('event date', 'tanggal event', 'eventdate') || '';
-  const notes = getVal('keterangan / notes', 'keterangan', 'notes', 'catatan', 'pesan') || '';
+  const rawNotes = getVal('keterangan / notes', 'keterangan', 'notes', 'catatan', 'pesan') || '';
+  const notes = rawNotes.trim().toUpperCase() === 'N/A' ? '' : rawNotes.trim();
 
   const totalAmount = parseMoney(getVal('total invoice ($)', 'total invoice', 'total amount', 'total', 'invoice', 'harga'));
   const paymentStatusRaw = getVal('payment status', 'status payment', 'status', 'payment').toUpperCase();
@@ -1113,7 +1116,8 @@ function transformSheetRowToBookingClient(row: Record<string, string>, index: nu
     checkInDate,
     checkOutDate,
     eventDate,
-    notes,
+    notes: notes || undefined,
+    noteToCustomer: notes || undefined,
     totalAmount: totalAmount || 2500,
     paymentStatus,
     status: paymentStatus === 'PAID' ? 'Confirmed' : 'Pending'
@@ -1202,6 +1206,33 @@ function addDeletedBookingId(bookingId: string) {
   }
 }
 
+function mergeBookingWithLocal(sb: BookingInquiry, matchedLocal: BookingInquiry): BookingInquiry {
+  const cleanSbNotes = (sb.notes && sb.notes.trim().toUpperCase() !== 'N/A') ? sb.notes.trim() : '';
+  const cleanLocalNotes = (matchedLocal.notes && matchedLocal.notes.trim().toUpperCase() !== 'N/A') ? matchedLocal.notes.trim() : '';
+  const cleanLocalCustomerNote = (matchedLocal.noteToCustomer && matchedLocal.noteToCustomer.trim().toUpperCase() !== 'N/A') ? matchedLocal.noteToCustomer.trim() : '';
+  const resolvedNotes = cleanLocalNotes || cleanLocalCustomerNote || cleanSbNotes || '';
+
+  return {
+    ...matchedLocal,
+    ...sb,
+    notes: resolvedNotes || undefined,
+    noteToCustomer: cleanLocalCustomerNote || resolvedNotes || undefined,
+    memoOnStatement: matchedLocal.memoOnStatement || sb.memoOnStatement,
+    customLineItems: (matchedLocal.customLineItems && matchedLocal.customLineItems.length > 0)
+      ? matchedLocal.customLineItems
+      : sb.customLineItems,
+    itemRatesSnapshot: matchedLocal.itemRatesSnapshot || sb.itemRatesSnapshot,
+    discountCode: matchedLocal.discountCode || sb.discountCode,
+    discountPercent: matchedLocal.discountPercent !== undefined ? matchedLocal.discountPercent : sb.discountPercent,
+    discountAmount: matchedLocal.discountAmount !== undefined ? matchedLocal.discountAmount : sb.discountAmount,
+    subtotalBeforeDiscount: matchedLocal.subtotalBeforeDiscount !== undefined ? matchedLocal.subtotalBeforeDiscount : sb.subtotalBeforeDiscount,
+    subtotalBeforeTax: matchedLocal.subtotalBeforeTax !== undefined ? matchedLocal.subtotalBeforeTax : sb.subtotalBeforeTax,
+    taxAmount: matchedLocal.taxAmount !== undefined ? matchedLocal.taxAmount : sb.taxAmount,
+    paymentStatus: matchedLocal.paymentStatus || sb.paymentStatus,
+    status: matchedLocal.status || sb.status
+  };
+}
+
 export async function fetchBookings(): Promise<BookingInquiry[]> {
   const deletedIds = getDeletedBookingIds();
   try {
@@ -1215,11 +1246,7 @@ export async function fetchBookings(): Promise<BookingInquiry[]> {
         const merged: BookingInquiry[] = sheetBookings.map((sb) => {
           const matchedLocal = localBookings.find((lb) => (lb.bookingId || lb.id) === (sb.bookingId || sb.id));
           if (matchedLocal) {
-            return {
-              ...sb,
-              paymentStatus: matchedLocal.paymentStatus || sb.paymentStatus,
-              status: matchedLocal.status || sb.status
-            };
+            return mergeBookingWithLocal(sb, matchedLocal);
           }
           return sb;
         });
@@ -1247,11 +1274,7 @@ export async function fetchBookings(): Promise<BookingInquiry[]> {
       const merged: BookingInquiry[] = sheetBookings.map((sb) => {
         const matchedLocal = localBookings.find((lb) => (lb.bookingId || lb.id) === (sb.bookingId || sb.id));
         if (matchedLocal) {
-          return {
-            ...sb,
-            paymentStatus: matchedLocal.paymentStatus || sb.paymentStatus,
-            status: matchedLocal.status || sb.status
-          };
+          return mergeBookingWithLocal(sb, matchedLocal);
         }
         return sb;
       });

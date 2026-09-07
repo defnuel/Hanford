@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BookingInquiry, Property } from '../../types';
-import { Search, Printer, CheckCircle, Clock, Trash2, FileText, Building, Plus, AlertTriangle, CheckCircle2, X, ExternalLink, FileSpreadsheet, KeyRound, Mail, LayoutGrid } from 'lucide-react';
+import { Search, Printer, CheckCircle, Clock, Trash2, FileText, Building, Plus, AlertTriangle, CheckCircle2, X, ExternalLink, FileSpreadsheet, KeyRound, Mail, LayoutGrid, Edit3 } from 'lucide-react';
 import { updateBookingPaymentStatus, deleteBookingInquiry } from '../../services/dataService';
 import { getBookingTypeLabel } from '../../utils/bookingUtils';
 import { InvoiceModal } from './InvoiceModal';
@@ -23,6 +23,7 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'UNPAID' | 'PAID'>('ALL');
   const [selectedInvoiceBooking, setSelectedInvoiceBooking] = useState<BookingInquiry | null>(null);
   const [isCreateInvoiceOpen, setIsCreateInvoiceOpen] = useState(false);
+  const [editingBooking, setEditingBooking] = useState<BookingInquiry | null>(null);
 
   // Bulk Selection State
   const [selectedBookingIds, setSelectedBookingIds] = useState<string[]>([]);
@@ -139,10 +140,15 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
       <div className="space-y-4">
         <CreateInvoiceModal
           inline={true}
+          initialBooking={editingBooking || undefined}
           properties={properties}
-          onClose={() => setIsCreateInvoiceOpen(false)}
+          onClose={() => {
+            setIsCreateInvoiceOpen(false);
+            setEditingBooking(null);
+          }}
           onSuccess={() => {
             setIsCreateInvoiceOpen(false);
+            setEditingBooking(null);
             onRefreshData();
           }}
         />
@@ -391,6 +397,17 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
                         </>
                       )}
                       <button
+                        onClick={() => {
+                          setEditingBooking(b);
+                          setIsCreateInvoiceOpen(true);
+                        }}
+                        className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 rounded-xl text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
+                        title="Edit Invoice"
+                      >
+                        <Edit3 className="w-3.5 h-3.5 text-slate-600" />
+                        <span>Edit</span>
+                      </button>
+                      <button
                         onClick={() => setSelectedInvoiceBooking(b)}
                         className="px-3 py-1.5 bg-[#51867E] hover:bg-[#3f6d66] text-white rounded-xl text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer shadow-sm"
                       >
@@ -549,6 +566,18 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
                             )}
 
                             <button
+                              onClick={() => {
+                                setEditingBooking(b);
+                                setIsCreateInvoiceOpen(true);
+                              }}
+                              className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
+                              title="Edit Invoice"
+                            >
+                              <Edit3 className="w-3.5 h-3.5 text-slate-600" />
+                              <span>Edit</span>
+                            </button>
+
+                            <button
                               onClick={() => setSelectedInvoiceBooking(b)}
                               className="px-3 py-1.5 bg-[#51867E] hover:bg-[#3f6d66] text-white rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer shadow-sm"
                             >
@@ -705,6 +734,11 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
           booking={selectedInvoiceBooking}
           onClose={() => setSelectedInvoiceBooking(null)}
           onOpenCardGenerator={onOpenCardGenerator}
+          onEditInvoice={(bookingToEdit) => {
+            setSelectedInvoiceBooking(null);
+            setEditingBooking(bookingToEdit);
+            setIsCreateInvoiceOpen(true);
+          }}
           onTogglePaymentStatus={(id, currentStatus) => {
             const nextStatus = currentStatus === 'PAID' ? 'UNPAID' : 'PAID';
             const updated = updateBookingPaymentStatus(id, nextStatus);

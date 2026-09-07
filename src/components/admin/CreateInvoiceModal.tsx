@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Property, BookingInquiry, BookOption, EventAddonOption, InvoiceLineItem } from '../../types';
-import { X, Plus, Calculator, Building, Calendar, User, Tag, Sparkles, CheckCircle2, ShieldCheck, GripVertical, Trash2, FileText, ArrowLeft } from 'lucide-react';
-import { submitBooking, fetchLocations } from '../../services/dataService';
+import { 
+  X, Plus, Calculator, Building, Calendar, User, Tag, Sparkles, 
+  CheckCircle2, ShieldCheck, GripVertical, Trash2, FileText, ArrowLeft,
+  ChevronDown, PartyPopper, Layers, Users, RefreshCw
+} from 'lucide-react';
+import { submitBooking, fetchLocations, updateBookingDetails } from '../../services/dataService';
 import { PropertySearchSelect } from '../PropertySearchSelect';
 
 interface CreateInvoiceModalProps {
@@ -9,13 +13,15 @@ interface CreateInvoiceModalProps {
   onClose: () => void;
   onSuccess: () => void;
   inline?: boolean;
+  initialBooking?: BookingInquiry | null;
 }
 
 export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
   properties,
   onClose,
   onSuccess,
-  inline = false
+  inline = false,
+  initialBooking = null
 }) => {
   const [loadedProperties, setLoadedProperties] = useState<Property[]>(properties || []);
 
@@ -44,59 +50,153 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
     priceCateringPerPax: 85
   };
 
-  const [bookingId, setBookingId] = useState(() => `HNF-2026-${Math.random().toString(36).substring(2, 7).toUpperCase()}`);
-  const [selectedPropertySlug, setSelectedPropertySlug] = useState(defaultProperty.slug || 'los-angeles');
+  const [bookingId, setBookingId] = useState(() => 
+    initialBooking?.bookingId || initialBooking?.id || `HNF-2026-${Math.random().toString(36).substring(2, 7).toUpperCase()}`
+  );
+  const [selectedPropertySlug, setSelectedPropertySlug] = useState(() =>
+    initialBooking?.propertySlug || defaultProperty.slug || 'los-angeles'
+  );
 
   useEffect(() => {
     if (loadedProperties.length > 0 && !selectedPropertySlug) {
       setSelectedPropertySlug(loadedProperties[0].slug);
     }
-  }, [loadedProperties]);
+  }, [loadedProperties, selectedPropertySlug]);
   
   // Guest details
-  const [guestName, setGuestName] = useState('');
-  const [businessName, setBusinessName] = useState('');
-  const [xUsername, setXUsername] = useState('');
-  const [guestEmail, setGuestEmail] = useState('');
-  const [guestPhone, setGuestPhone] = useState('');
+  const [guestName, setGuestName] = useState(() => initialBooking?.guestName || '');
+  const [businessName, setBusinessName] = useState(() => initialBooking?.businessName || '');
+  const [xUsername, setXUsername] = useState(() => initialBooking?.xUsername || '');
+  const [guestEmail, setGuestEmail] = useState(() => initialBooking?.guestEmail || '');
+  const [guestPhone, setGuestPhone] = useState(() => initialBooking?.guestPhone || '');
 
   // Booking category
-  const [bookOption, setBookOption] = useState<BookOption>('room');
+  const [bookOption, setBookOption] = useState<BookOption>(() => initialBooking?.bookOption || 'room');
 
   // Stay / Room details
-  const [checkInDate, setCheckInDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [checkInDate, setCheckInDate] = useState(() => initialBooking?.checkInDate || new Date().toISOString().split('T')[0]);
   const [checkOutDate, setCheckOutDate] = useState(() => {
+    if (initialBooking?.checkOutDate) return initialBooking.checkOutDate;
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     return tomorrow.toISOString().split('T')[0];
   });
-  const [standardRooms, setStandardRooms] = useState(1);
-  const [deluxeRooms, setDeluxeRooms] = useState(0);
-  const [presidentialSuites, setPresidentialSuites] = useState(0);
-  const [privateVillas, setPrivateVillas] = useState(0);
+  const [standardRooms, setStandardRooms] = useState(() => {
+    if (initialBooking) return initialBooking.standardRooms ?? 0;
+    return 1;
+  });
+  const [deluxeRooms, setDeluxeRooms] = useState(() => initialBooking?.deluxeRooms ?? 0);
+  const [presidentialSuites, setPresidentialSuites] = useState(() => initialBooking?.presidentialSuites ?? 0);
+  const [privateVillas, setPrivateVillas] = useState(() => initialBooking?.privateVillas ?? 0);
 
   // Meeting / Event details
-  const [eventDate, setEventDate] = useState(() => new Date().toISOString().split('T')[0]);
-  const [eventAttendees, setEventAttendees] = useState(10);
-  const [venueRentalRate, setVenueRentalRate] = useState<'half_day' | 'full_day' | 'full_board'>('full_day');
-  const [eventAddons, setEventAddons] = useState<EventAddonOption>('none');
-  const [cateringPax, setCateringPax] = useState(10);
+  const [eventDate, setEventDate] = useState(() => initialBooking?.eventDate || new Date().toISOString().split('T')[0]);
+  const [eventAttendees, setEventAttendees] = useState(() => {
+    if (initialBooking) {
+      return (initialBooking.bookOption === 'room' || initialBooking.bookOption === 'custom_only') ? 0 : (initialBooking.eventAttendees || 0);
+    }
+    return 0; // Default is 0 so room invoices never get unintended event fees
+  });
+  const [venueRentalRate, setVenueRentalRate] = useState<'half_day' | 'full_day' | 'full_board'>(() => 
+    (initialBooking?.venueRentalRate as any) || 'full_day'
+  );
+  const [eventAddons, setEventAddons] = useState<EventAddonOption>(() => 
+    (initialBooking?.eventAddons as any) || 'none'
+  );
+  const [cateringPax, setCateringPax] = useState(() => {
+    if (initialBooking) {
+      return (initialBooking.bookOption === 'room' || initialBooking.bookOption === 'custom_only') ? 0 : (initialBooking.cateringPax || 0);
+    }
+    return 0; // Default is 0 so room invoices never get unintended catering
+  });
 
   // Custom Product or Service Line Items (QuickBooks style)
-  const [customLineItems, setCustomLineItems] = useState<InvoiceLineItem[]>([]);
-  const [noteToCustomer, setNoteToCustomer] = useState('');
-  const [memoOnStatement, setMemoOnStatement] = useState('');
-  const [shippingFee, setShippingFee] = useState<number>(0);
+  const [customLineItems, setCustomLineItems] = useState<InvoiceLineItem[]>(() => initialBooking?.customLineItems || []);
+  const [noteToCustomer, setNoteToCustomer] = useState(() => {
+    if (initialBooking?.noteToCustomer && initialBooking.noteToCustomer.trim().toUpperCase() !== 'N/A') {
+      return initialBooking.noteToCustomer;
+    }
+    if (initialBooking?.notes && initialBooking.notes.trim().toUpperCase() !== 'N/A') {
+      return initialBooking.notes;
+    }
+    return '';
+  });
+  const [memoOnStatement, setMemoOnStatement] = useState(() => initialBooking?.memoOnStatement || '');
+  const [shippingFee, setShippingFee] = useState<number>(() => initialBooking?.shippingFee || 0);
   const [discountType, setDiscountType] = useState<'percent' | 'fixed'>('percent');
 
   // Financials & Notes
-  const [discountCode, setDiscountCode] = useState('');
-  const [discountPercent, setDiscountPercent] = useState(0);
-  const [paymentStatus, setPaymentStatus] = useState<'UNPAID' | 'PAID'>('UNPAID');
-  const [notes, setNotes] = useState('');
+  const [discountCode, setDiscountCode] = useState(() => initialBooking?.discountCode || '');
+  const [discountPercent, setDiscountPercent] = useState(() => initialBooking?.discountPercent || 0);
+  const [paymentStatus, setPaymentStatus] = useState<'UNPAID' | 'PAID'>(() => initialBooking?.paymentStatus || 'UNPAID');
+  const [notes, setNotes] = useState(() => {
+    if (initialBooking?.notes && initialBooking.notes.trim().toUpperCase() !== 'N/A') {
+      return initialBooking.notes;
+    }
+    if (initialBooking?.noteToCustomer && initialBooking.noteToCustomer.trim().toUpperCase() !== 'N/A') {
+      return initialBooking.noteToCustomer;
+    }
+    return '';
+  });
 
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  // Handle booking option dropdown switch cleanly
+  const handleBookOptionChange = (newOpt: BookOption) => {
+    setBookOption(newOpt);
+    if (newOpt === 'room') {
+      // Clear event and meeting data completely
+      setEventAttendees(0);
+      setCateringPax(0);
+      setEventAddons('none');
+      if ((standardRooms || 0) + (deluxeRooms || 0) + (presidentialSuites || 0) + (privateVillas || 0) === 0) {
+        setStandardRooms(1);
+      }
+    } else if (newOpt === 'event') {
+      // Clear rooms
+      setStandardRooms(0);
+      setDeluxeRooms(0);
+      setPresidentialSuites(0);
+      setPrivateVillas(0);
+      if (!eventAttendees || eventAttendees < 1) {
+        setEventAttendees(10);
+      }
+    } else if (newOpt === 'both') {
+      if ((standardRooms || 0) + (deluxeRooms || 0) + (presidentialSuites || 0) + (privateVillas || 0) === 0) {
+        setStandardRooms(1);
+      }
+      if (!eventAttendees || eventAttendees < 1) {
+        setEventAttendees(10);
+      }
+    } else if (newOpt === 'meeting') {
+      setStandardRooms(0);
+      setDeluxeRooms(0);
+      setPresidentialSuites(0);
+      setPrivateVillas(0);
+      if (!eventAttendees || eventAttendees < 1) {
+        setEventAttendees(10);
+      }
+    } else if (newOpt === 'room_meeting') {
+      if ((standardRooms || 0) + (deluxeRooms || 0) + (presidentialSuites || 0) + (privateVillas || 0) === 0) {
+        setStandardRooms(1);
+      }
+      if (!eventAttendees || eventAttendees < 1) {
+        setEventAttendees(10);
+      }
+    } else if (newOpt === 'custom_only') {
+      setStandardRooms(0);
+      setDeluxeRooms(0);
+      setPresidentialSuites(0);
+      setPrivateVillas(0);
+      setEventAttendees(0);
+      setCateringPax(0);
+      setEventAddons('none');
+      if (customLineItems.length === 0) {
+        handleAddLineItem();
+      }
+    }
+  };
 
   // Line item actions
   const handleAddLineItem = () => {
@@ -168,25 +268,25 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
   const effectiveMeetingRate = Math.round(baseMeetingRoom * venueMultiplier);
   const effectiveCateringRate = Math.round(baseCatering * venueMultiplier);
 
-  // Calculates Subtotal
+  // Strict subtotal calculations
   let roomSubtotal = 0;
   if (bookOption === 'room' || bookOption === 'both' || bookOption === 'room_meeting') {
     roomSubtotal =
-      (standardRooms * priceStandard +
-        deluxeRooms * priceDeluxe +
-        presidentialSuites * pricePresidential +
-        privateVillas * priceVilla) *
+      ((standardRooms || 0) * priceStandard +
+        (deluxeRooms || 0) * priceDeluxe +
+        (presidentialSuites || 0) * pricePresidential +
+        (privateVillas || 0) * priceVilla) *
       nights;
   }
 
   let eventSubtotal = 0;
   if (bookOption === 'meeting' || bookOption === 'room_meeting') {
-    eventSubtotal = (eventAttendees || 1) * effectiveMeetingRate;
+    eventSubtotal = Math.max(0, eventAttendees || 0) * effectiveMeetingRate;
   } else if (bookOption === 'event' || bookOption === 'both') {
     const venueCost = priceEventHall;
     const cateringCost =
       eventAddons === 'catering' || eventAddons === 'both'
-        ? (cateringPax || eventAttendees || 1) * effectiveCateringRate
+        ? Math.max(0, cateringPax || eventAttendees || 0) * effectiveCateringRate
         : 0;
     eventSubtotal = venueCost + cateringCost;
   }
@@ -214,18 +314,33 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
       return;
     }
 
+    const isRoomIncluded = bookOption === 'room' || bookOption === 'both' || bookOption === 'room_meeting';
+    const isEventIncluded = bookOption === 'event' || bookOption === 'both';
+    const isMeetingIncluded = bookOption === 'meeting' || bookOption === 'room_meeting';
+
+    const cleanStandardRooms = isRoomIncluded ? Math.max(0, standardRooms || 0) : 0;
+    const cleanDeluxeRooms = isRoomIncluded ? Math.max(0, deluxeRooms || 0) : 0;
+    const cleanPresidentialSuites = isRoomIncluded ? Math.max(0, presidentialSuites || 0) : 0;
+    const cleanPrivateVillas = isRoomIncluded ? Math.max(0, privateVillas || 0) : 0;
+    const totalRoomsCount = cleanStandardRooms + cleanDeluxeRooms + cleanPresidentialSuites + cleanPrivateVillas;
+
+    if (isRoomIncluded && totalRoomsCount === 0 && customLineItems.length === 0) {
+      setErrorMsg('Please select at least 1 room for room accommodation, or add items in Product or service table.');
+      return;
+    }
+
     setSubmitting(true);
     setErrorMsg('');
 
     const itemRatesArr: string[] = [];
-    if (roomSubtotal > 0) {
-      if (standardRooms > 0) itemRatesArr.push(`Std: $${priceStandard}/nt (${standardRooms} rm)`);
-      if (deluxeRooms > 0) itemRatesArr.push(`Dlx: $${priceDeluxe}/nt (${deluxeRooms} rm)`);
-      if (presidentialSuites > 0) itemRatesArr.push(`Ste: $${pricePresidential}/nt (${presidentialSuites} rm)`);
-      if (privateVillas > 0) itemRatesArr.push(`Villa: $${priceVilla}/nt (${privateVillas} rm)`);
+    if (roomSubtotal > 0 && isRoomIncluded) {
+      if (cleanStandardRooms > 0) itemRatesArr.push(`Std: $${priceStandard}/nt (${cleanStandardRooms} rm)`);
+      if (cleanDeluxeRooms > 0) itemRatesArr.push(`Dlx: $${priceDeluxe}/nt (${cleanDeluxeRooms} rm)`);
+      if (cleanPresidentialSuites > 0) itemRatesArr.push(`Ste: $${pricePresidential}/nt (${cleanPresidentialSuites} rm)`);
+      if (cleanPrivateVillas > 0) itemRatesArr.push(`Villa: $${priceVilla}/nt (${cleanPrivateVillas} rm)`);
     }
-    if (eventSubtotal > 0) {
-      if (bookOption === 'meeting' || bookOption === 'room_meeting') {
+    if (eventSubtotal > 0 && (isEventIncluded || isMeetingIncluded)) {
+      if (isMeetingIncluded) {
         itemRatesArr.push(`Meeting (${venueRentalRate}): $${effectiveMeetingRate}/pax`);
       } else {
         itemRatesArr.push(`Hall: $${priceEventHall}`);
@@ -246,6 +361,12 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
       (item) => item.productService.trim() !== '' || item.amount > 0
     );
 
+    const cleanEventAttendees = (isEventIncluded || isMeetingIncluded) ? Math.max(1, eventAttendees || 1) : 0;
+    const cleanEventAddons: EventAddonOption = isEventIncluded ? eventAddons : 'none';
+    const cleanCateringPax = isEventIncluded && (cleanEventAddons === 'catering' || cleanEventAddons === 'both')
+      ? Math.max(1, cateringPax || cleanEventAttendees || 1)
+      : 0;
+
     const newInquiry: BookingInquiry = {
       id: bookingId,
       bookingId: bookingId,
@@ -257,28 +378,32 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
       guestEmail: guestEmail.trim() || undefined,
       guestPhone: guestPhone.trim() || undefined,
       bookOption,
-      venueRentalRate: bookOption === 'meeting' || bookOption === 'room_meeting' ? venueRentalRate : undefined,
-      standardRooms: standardRooms || 0,
-      deluxeRooms: deluxeRooms || 0,
-      presidentialSuites: presidentialSuites || 0,
-      privateVillas: privateVillas || 0,
-      roomsCount: (standardRooms || 0) + (deluxeRooms || 0) + (presidentialSuites || 0) + (privateVillas || 0),
-      eventAttendees: eventAttendees || 0,
-      eventAddons: eventAddons,
-      cateringPax: cateringPax || 0,
-      checkInDate: bookOption === 'room' || bookOption === 'both' || bookOption === 'room_meeting' ? checkInDate : undefined,
-      checkOutDate: bookOption === 'room' || bookOption === 'both' || bookOption === 'room_meeting' ? checkOutDate : undefined,
-      eventDate: bookOption !== 'room' && bookOption !== 'custom_only' ? eventDate : undefined,
-      numberOfNights: nights,
+      venueRentalRate: isMeetingIncluded ? venueRentalRate : undefined,
+      standardRooms: cleanStandardRooms,
+      deluxeRooms: cleanDeluxeRooms,
+      presidentialSuites: cleanPresidentialSuites,
+      privateVillas: cleanPrivateVillas,
+      roomsCount: totalRoomsCount,
+      eventAttendees: cleanEventAttendees > 0 ? cleanEventAttendees : undefined,
+      eventAddons: cleanEventAddons,
+      cateringPax: cleanCateringPax > 0 ? cleanCateringPax : undefined,
+      checkInDate: isRoomIncluded ? checkInDate : undefined,
+      checkOutDate: isRoomIncluded ? checkOutDate : undefined,
+      eventDate: (isEventIncluded || isMeetingIncluded) ? eventDate : undefined,
+      numberOfNights: isRoomIncluded ? nights : undefined,
       priceStandardRoom: priceStandard,
       priceDeluxeRoom: priceDeluxe,
       pricePresidentialSuite: pricePresidential,
       pricePrivateVilla: priceVilla,
-      priceMeetingRoom: effectiveMeetingRate,
-      priceEventHall: priceEventHall,
-      priceCateringPerPax: effectiveCateringRate,
+      priceMeetingRoom: isMeetingIncluded ? effectiveMeetingRate : undefined,
+      priceEventHall: isEventIncluded ? priceEventHall : undefined,
+      priceCateringPerPax: cleanCateringPax > 0 ? effectiveCateringRate : undefined,
       customLineItems: validCustomItems.length > 0 ? validCustomItems : undefined,
-      noteToCustomer: noteToCustomer.trim() || undefined,
+      noteToCustomer: (() => {
+        const c = noteToCustomer.trim();
+        const n = notes.trim();
+        return (c && c.toUpperCase() !== 'N/A') ? c : ((n && n.toUpperCase() !== 'N/A') ? n : undefined);
+      })(),
       memoOnStatement: memoOnStatement.trim() || undefined,
       shippingFee: shipping > 0 ? shipping : undefined,
       itemRatesSnapshot: itemRatesArr.join(' | '),
@@ -291,16 +416,24 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
       totalAmount: grandTotal,
       paymentStatus,
       status: paymentStatus === 'PAID' ? 'Confirmed' : 'Pending',
-      notes: notes.trim() || undefined,
-      createdAt: new Date().toISOString()
+      notes: (() => {
+        const n = notes.trim();
+        const c = noteToCustomer.trim();
+        return (n && n.toUpperCase() !== 'N/A') ? n : ((c && c.toUpperCase() !== 'N/A') ? c : undefined);
+      })(),
+      createdAt: initialBooking?.createdAt || new Date().toISOString()
     };
 
     try {
-      await submitBooking(newInquiry);
+      if (initialBooking) {
+        updateBookingDetails(newInquiry);
+      } else {
+        await submitBooking(newInquiry);
+      }
       setSubmitting(false);
       onSuccess();
     } catch (err) {
-      console.error('Error creating invoice:', err);
+      console.error('Error saving invoice:', err);
       setErrorMsg('Failed to save invoice. Please try again.');
       setSubmitting(false);
     }
@@ -316,10 +449,11 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
           </div>
           <div>
             <div className="text-xs font-mono font-bold text-[#88B2AB] uppercase tracking-widest flex items-center gap-2">
-              <span>INVOICE GENERATOR</span>
+              <span>{initialBooking ? 'EDIT INVOICE' : 'INVOICE GENERATOR'}</span>
+              <span>&bull; #{bookingId}</span>
             </div>
             <h3 className="text-base sm:text-lg font-serif font-light tracking-wide text-white">
-              Create New Official Invoice
+              {initialBooking ? 'Edit & Update Invoice' : 'Create New Official Invoice'}
             </h3>
           </div>
         </div>
@@ -349,640 +483,668 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
           </div>
         )}
 
-          {/* Top Bar: Invoice ID & Property Selection */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-200">
-            <div>
-              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+        {/* Top Bar: Invoice ID & Property Selection */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-200">
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                 Invoice / Booking ID
               </label>
+              {!initialBooking && (
+                <button
+                  type="button"
+                  onClick={() => setBookingId(`HNF-2026-${Math.random().toString(36).substring(2, 7).toUpperCase()}`)}
+                  className="text-[10px] text-[#51867E] hover:underline flex items-center gap-0.5 cursor-pointer"
+                  title="Generate new ID"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                  <span>Regenerate</span>
+                </button>
+              )}
+            </div>
+            <input
+              type="text"
+              value={bookingId}
+              onChange={(e) => setBookingId(e.target.value)}
+              className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-mono font-bold text-[#3A4F67] outline-none focus:border-[#51867E]"
+              required
+            />
+          </div>
+
+          <div className="sm:col-span-2">
+            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Select Sanctuary / Property (SELECT FROM location name tab) *
+            </label>
+            <PropertySearchSelect
+              properties={loadedProperties}
+              selectedSlug={selectedPropertySlug}
+              onSelect={(slug) => setSelectedPropertySlug(slug)}
+            />
+          </div>
+        </div>
+
+        {/* Section 1: Guest Information */}
+        <div className="space-y-3">
+          <h4 className="text-xs font-bold text-[#51867E] uppercase tracking-wider flex items-center gap-1.5 border-b pb-1">
+            <User className="w-4 h-4 text-[#51867E]" />
+            <span>1. Customer & Guest Details (Billed To)</span>
+          </h4>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-[10px] font-semibold text-slate-600 mb-1">Guest Full Name *</label>
               <input
                 type="text"
-                value={bookingId}
-                onChange={(e) => setBookingId(e.target.value)}
-                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-mono font-bold text-[#3A4F67] outline-none focus:border-[#51867E]"
+                placeholder="e.g. John Doe"
+                value={guestName}
+                onChange={(e) => setGuestName(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-medium outline-none focus:border-[#51867E]"
                 required
               />
             </div>
 
-            <div className="sm:col-span-2">
-              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                Select Sanctuary / Property (SELECT FROM location name tab) *
+            <div>
+              <label className="block text-[10px] font-semibold text-slate-600 mb-1">Business / Company Name</label>
+              <input
+                type="text"
+                placeholder="e.g. Hanford Group Corp"
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-medium outline-none focus:border-[#51867E]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-semibold text-slate-600 mb-1">X Handle / Twitter</label>
+              <input
+                type="text"
+                placeholder="e.g. @johndoe"
+                value={xUsername}
+                onChange={(e) => setXUsername(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-medium outline-none focus:border-[#51867E]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-semibold text-slate-600 mb-1">Email Address</label>
+              <input
+                type="email"
+                placeholder="guest@example.com"
+                value={guestEmail}
+                onChange={(e) => setGuestEmail(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-medium outline-none focus:border-[#51867E]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-semibold text-slate-600 mb-1">Phone Number</label>
+              <input
+                type="text"
+                placeholder="+1 (555) 000-1234"
+                value={guestPhone}
+                onChange={(e) => setGuestPhone(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-medium outline-none focus:border-[#51867E]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-semibold text-slate-600 mb-1">Payment Status</label>
+              <select
+                value={paymentStatus}
+                onChange={(e) => setPaymentStatus(e.target.value as 'UNPAID' | 'PAID')}
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-bold outline-none focus:border-[#51867E]"
+              >
+                <option value="UNPAID">UNPAID</option>
+                <option value="PAID">PAID</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 2: Booking Option / Service Category (Dropdown as requested) */}
+        <div className="space-y-3 bg-slate-50/70 p-4 rounded-2xl border border-slate-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-2">
+            <h4 className="text-xs font-bold text-[#51867E] uppercase tracking-wider flex items-center gap-1.5">
+              <Building className="w-4 h-4 text-[#51867E]" />
+              <span>2. Reservation Category & Service Type</span>
+            </h4>
+            <span className="text-[10px] text-slate-500 font-medium">
+              Pilih opsi reservasi melalui drop-down agar data tidak tercampur
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+            <div className="sm:col-span-7">
+              <label className="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Booking Option Selection <span className="text-rose-500">*</span>
               </label>
-              <PropertySearchSelect
-                properties={loadedProperties}
-                selectedSlug={selectedPropertySlug}
-                onSelect={(slug) => setSelectedPropertySlug(slug)}
+              <div className="relative">
+                <select
+                  value={bookOption}
+                  onChange={(e) => handleBookOptionChange(e.target.value as BookOption)}
+                  className="w-full px-3.5 py-2.5 bg-white border-2 border-slate-300 hover:border-[#51867E] focus:border-[#51867E] rounded-xl text-xs font-bold text-slate-800 outline-none transition-colors shadow-2xs cursor-pointer appearance-none pr-10"
+                >
+                  <option value="room">🏨 Room Stay (Room Only) — Accommodation rooms only</option>
+                  <option value="event">🎉 Event Location Only — Event hall & ballroom rental</option>
+                  <option value="both">🏰 Room & Event — Accommodation stay + event venue</option>
+                  <option value="meeting">👥 Meeting Room Only — Meeting package rate per pax</option>
+                  <option value="room_meeting">💼 Room & Meeting — Accommodation + meeting space</option>
+                  <option value="custom_only">📦 Product & Service Only — Custom items only (no rooms/venue)</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+                  <ChevronDown className="w-4 h-4" />
+                </div>
+              </div>
+            </div>
+
+            {/* Visual Indicator of Active Scope */}
+            <div className="sm:col-span-5">
+              <div className="p-2.5 rounded-xl border text-xs flex items-center gap-2.5 bg-white shadow-2xs border-slate-200">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-[#EAF2F1] text-[#51867E]">
+                  {bookOption === 'room' && <Building className="w-4 h-4" />}
+                  {bookOption === 'event' && <PartyPopper className="w-4 h-4" />}
+                  {bookOption === 'both' && <Layers className="w-4 h-4" />}
+                  {bookOption === 'meeting' && <Users className="w-4 h-4" />}
+                  {bookOption === 'room_meeting' && <Building className="w-4 h-4" />}
+                  {bookOption === 'custom_only' && <Sparkles className="w-4 h-4" />}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="font-bold text-slate-800 text-[11px] truncate">
+                    {bookOption === 'room' && 'Active Mode: Room Accommodation Only'}
+                    {bookOption === 'event' && 'Active Mode: Event Venue Only'}
+                    {bookOption === 'both' && 'Active Mode: Room Stay & Event Venue'}
+                    {bookOption === 'meeting' && 'Active Mode: Meeting Room Package'}
+                    {bookOption === 'room_meeting' && 'Active Mode: Rooms + Meeting Space'}
+                    {bookOption === 'custom_only' && 'Active Mode: Product & Service Only'}
+                  </div>
+                  <div className="text-[10px] text-slate-500 truncate">
+                    {bookOption === 'room' && 'Event fees & catering are zeroed out and excluded.'}
+                    {bookOption === 'event' && 'Room accommodation charges are zeroed out and excluded.'}
+                    {bookOption === 'both' && 'Both room stay & event space charges are active.'}
+                    {bookOption === 'meeting' && 'Charged per pax meeting rate. Rooms excluded.'}
+                    {bookOption === 'room_meeting' && 'Both rooms & per pax meeting rate are active.'}
+                    {bookOption === 'custom_only' && 'Billed exclusively through Product or service lines.'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 3: Room Inventory (If Room / Both / Room & Meeting) */}
+        {(bookOption === 'room' || bookOption === 'both' || bookOption === 'room_meeting') && (
+          <div className="space-y-3 p-4 bg-slate-50/70 rounded-2xl border border-slate-200">
+            <div className="flex items-center justify-between border-b pb-2">
+              <span className="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-[#51867E]" />
+                Accommodation Rooms & Stay Dates
+              </span>
+              <span className="text-[10px] font-bold text-[#51867E] bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                {nights} Night(s) Stay
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-600 mb-1">Check-In Date</label>
+                <input
+                  type="date"
+                  value={checkInDate}
+                  onChange={(e) => setCheckInDate(e.target.value)}
+                  className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-medium outline-none focus:border-[#51867E]"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-600 mb-1">Check-Out Date</label>
+                <input
+                  type="date"
+                  value={checkOutDate}
+                  onChange={(e) => setCheckOutDate(e.target.value)}
+                  className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-medium outline-none focus:border-[#51867E]"
+                />
+              </div>
+            </div>
+
+            {/* Room Quantities */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+              <div className="bg-white p-3 rounded-xl border border-slate-200">
+                <label className="block text-[10px] font-bold text-slate-600">Standard Room</label>
+                <div className="text-[10px] text-slate-400 font-mono mb-1.5">${priceStandard}/night</div>
+                <input
+                  type="number"
+                  min="0"
+                  value={standardRooms}
+                  onChange={(e) => setStandardRooms(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-center font-bold outline-none focus:border-[#51867E]"
+                />
+              </div>
+
+              <div className="bg-white p-3 rounded-xl border border-slate-200">
+                <label className="block text-[10px] font-bold text-slate-600">Deluxe Room</label>
+                <div className="text-[10px] text-slate-400 font-mono mb-1.5">${priceDeluxe}/night</div>
+                <input
+                  type="number"
+                  min="0"
+                  value={deluxeRooms}
+                  onChange={(e) => setDeluxeRooms(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-center font-bold outline-none focus:border-[#51867E]"
+                />
+              </div>
+
+              <div className="bg-white p-3 rounded-xl border border-slate-200">
+                <label className="block text-[10px] font-bold text-slate-600">Presidential Suite</label>
+                <div className="text-[10px] text-slate-400 font-mono mb-1.5">${pricePresidential}/night</div>
+                <input
+                  type="number"
+                  min="0"
+                  value={presidentialSuites}
+                  onChange={(e) => setPresidentialSuites(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-center font-bold outline-none focus:border-[#51867E]"
+                />
+              </div>
+
+              <div className="bg-white p-3 rounded-xl border border-slate-200">
+                <label className="block text-[10px] font-bold text-slate-600">Private Villa</label>
+                <div className="text-[10px] text-slate-400 font-mono mb-1.5">${priceVilla}/night</div>
+                <input
+                  type="number"
+                  min="0"
+                  value={privateVillas}
+                  onChange={(e) => setPrivateVillas(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-center font-bold outline-none focus:border-[#51867E]"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Section 4: Event / Meeting Details (If Event / Meeting / Both / Room & Meeting) */}
+        {(bookOption === 'event' || bookOption === 'both' || bookOption === 'meeting' || bookOption === 'room_meeting') && (
+          <div className="space-y-3 p-4 bg-slate-50/70 rounded-2xl border border-slate-200">
+            <div className="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5 border-b pb-2">
+              <Calendar className="w-3.5 h-3.5 text-[#51867E]" />
+              Event & Meeting Services Configuration
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-600 mb-1">Event Date</label>
+                <input
+                  type="date"
+                  value={eventDate}
+                  onChange={(e) => setEventDate(e.target.value)}
+                  className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-medium outline-none focus:border-[#51867E]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-600 mb-1">Attendees / Pax Count</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={eventAttendees}
+                  onChange={(e) => setEventAttendees(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-bold outline-none focus:border-[#51867E]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-600 mb-1">
+                  Meeting Package Rate *
+                </label>
+                <select
+                  value={venueRentalRate}
+                  onChange={(e) => setVenueRentalRate(e.target.value as any)}
+                  className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-bold outline-none focus:border-[#51867E]"
+                >
+                  <option value="half_day">HALF DAY (40% rate - ${effectiveMeetingRate}/pax)</option>
+                  <option value="full_day">FULL DAY (100% rate - ${effectiveMeetingRate}/pax)</option>
+                  <option value="full_board">FULL BOARD (120% rate - ${effectiveMeetingRate}/pax)</option>
+                </select>
+              </div>
+            </div>
+
+            {(bookOption === 'event' || bookOption === 'both') && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div>
+                  <label className="block text-[10px] font-semibold text-slate-600 mb-1">Event Catering Add-On</label>
+                  <select
+                    value={eventAddons}
+                    onChange={(e) => setEventAddons(e.target.value as EventAddonOption)}
+                    className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-medium outline-none focus:border-[#51867E]"
+                  >
+                    <option value="none">Venue Only (No Catering)</option>
+                    <option value="catering">Include Gourmet Catering (+${effectiveCateringRate}/pax)</option>
+                    <option value="both">Include Catering & Decoration (+${effectiveCateringRate}/pax)</option>
+                  </select>
+                </div>
+
+                {(eventAddons === 'catering' || eventAddons === 'both') && (
+                  <div>
+                    <label className="block text-[10px] font-semibold text-slate-600 mb-1">Catering Pax Count</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={cateringPax}
+                      onChange={(e) => setCateringPax(Math.max(1, parseInt(e.target.value) || 1))}
+                      className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-bold outline-none focus:border-[#51867E]"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Section 5: Product or service (QuickBooks Style Table - Preserved Intact) */}
+        <div className="space-y-3 pt-2">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+            <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#51867E]" />
+              Product or service
+            </h4>
+            <span className="text-[10px] text-slate-400 font-medium">
+              Add extra services outside room & venue reservation
+            </span>
+          </div>
+
+          <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead className="bg-[#3A4F67]/5 text-slate-700 font-bold uppercase text-[9.5px] tracking-wider border-b border-slate-200">
+                  <tr>
+                    <th className="py-2.5 px-2 text-center w-8"></th>
+                    <th className="py-2.5 px-2 text-center w-8">#</th>
+                    <th className="py-2.5 px-3 min-w-[130px]">Service Date</th>
+                    <th className="py-2.5 px-3 min-w-[180px]">Product/service *</th>
+                    <th className="py-2.5 px-3 min-w-[200px]">Description</th>
+                    <th className="py-2.5 px-3 text-center w-20">Qty</th>
+                    <th className="py-2.5 px-3 text-right w-28">Rate ($)</th>
+                    <th className="py-2.5 px-3 text-right w-28">Amount ($)</th>
+                    <th className="py-2.5 px-2 text-center w-10"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium">
+                  {customLineItems.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} className="py-6 text-center text-slate-400 text-xs italic">
+                        No extra products or services added yet. Click &quot;Add product or service&quot; below.
+                      </td>
+                    </tr>
+                  ) : (
+                    customLineItems.map((item, idx) => (
+                      <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
+                        <td className="py-2 px-2 text-center text-slate-300">
+                          <GripVertical className="w-3.5 h-3.5 mx-auto cursor-grab" />
+                        </td>
+                        <td className="py-2 px-2 text-center font-mono text-slate-400 font-bold text-[11px]">
+                          {idx + 1}
+                        </td>
+                        <td className="py-2 px-2">
+                          <input
+                            type="date"
+                            value={item.serviceDate || ''}
+                            onChange={(e) => handleUpdateLineItem(item.id, 'serviceDate', e.target.value)}
+                            className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-[#51867E]"
+                          />
+                        </td>
+                        <td className="py-2 px-2">
+                          <input
+                            type="text"
+                            placeholder="e.g. Airport Transfer VIP"
+                            value={item.productService}
+                            onChange={(e) => handleUpdateLineItem(item.id, 'productService', e.target.value)}
+                            className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs font-semibold outline-none focus:border-[#51867E]"
+                          />
+                        </td>
+                        <td className="py-2 px-2">
+                          <input
+                            type="text"
+                            placeholder="Details or notes..."
+                            value={item.description || ''}
+                            onChange={(e) => handleUpdateLineItem(item.id, 'description', e.target.value)}
+                            className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-[#51867E]"
+                          />
+                        </td>
+                        <td className="py-2 px-2">
+                          <input
+                            type="number"
+                            min="1"
+                            value={item.qty}
+                            onChange={(e) => handleUpdateLineItem(item.id, 'qty', Math.max(1, parseInt(e.target.value) || 1))}
+                            className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs text-center font-bold outline-none focus:border-[#51867E]"
+                          />
+                        </td>
+                        <td className="py-2 px-2">
+                          <input
+                            type="number"
+                            min="0"
+                            step="any"
+                            placeholder="0.00"
+                            value={item.rate || ''}
+                            onChange={(e) => handleUpdateLineItem(item.id, 'rate', Math.max(0, parseFloat(e.target.value) || 0))}
+                            className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs text-right font-mono font-medium outline-none focus:border-[#51867E]"
+                          />
+                        </td>
+                        <td className="py-2 px-3 text-right font-mono font-bold text-[#3A4F67]">
+                          ${(item.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </td>
+                        <td className="py-2 px-2 text-center">
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveLineItem(item.id)}
+                            className="p-1 text-slate-400 hover:text-red-500 rounded transition-colors cursor-pointer"
+                            title="Remove item"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Add & Clear Actions */}
+            <div className="p-2.5 bg-slate-50/80 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={handleAddLineItem}
+                className="px-3 py-1.5 bg-white border border-slate-300 hover:border-[#51867E] hover:text-[#51867E] text-slate-700 text-xs font-bold rounded-xl shadow-2xs transition-all cursor-pointer flex items-center gap-1.5"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add product or service</span>
+              </button>
+
+              {customLineItems.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleClearAllLines}
+                  className="px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
+                >
+                  Clear all lines
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Section 6: Customer payment options & Notes + Financial Calculation Summary */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
+          
+          {/* Left: Customer payment options */}
+          <div className="space-y-3.5 bg-slate-50/70 p-4 rounded-2xl border border-slate-200">
+            <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-200 pb-2">
+              <FileText className="w-3.5 h-3.5 text-[#51867E]" />
+              Customer payment options & notes
+            </h4>
+
+            <div>
+              <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                Invoice Notes / Instructions (Printed on Invoice)
+              </label>
+              <textarea
+                rows={2}
+                placeholder="e.g. Special requests, arrival instructions, custom notes, or remarks..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-[#51867E] resize-y"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                Note to customer
+              </label>
+              <textarea
+                rows={2}
+                placeholder="Thank you for choosing Hanford Hotels & Resorts."
+                value={noteToCustomer}
+                onChange={(e) => setNoteToCustomer(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-[#51867E] resize-y"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                Memo on statement (hidden)
+              </label>
+              <textarea
+                rows={2}
+                placeholder="This memo will not show up on your invoice, but will appear on the statement."
+                value={memoOnStatement}
+                onChange={(e) => setMemoOnStatement(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-[#51867E] resize-y"
               />
             </div>
           </div>
 
-          {/* Section 1: Guest Information */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold text-[#51867E] uppercase tracking-wider flex items-center gap-1.5 border-b pb-1">
-              <User className="w-4 h-4 text-[#51867E]" />
-              <span>1. Customer & Guest Details (Billed To)</span>
-            </h4>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-[10px] font-semibold text-slate-600 mb-1">Guest Full Name *</label>
-                <input
-                  type="text"
-                  placeholder="e.g. John Doe"
-                  value={guestName}
-                  onChange={(e) => setGuestName(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-medium outline-none focus:border-[#51867E]"
-                  required
-                />
+          {/* Right: Financial Summary Box */}
+          <div className="bg-[#3A4F67] text-white p-5 rounded-2xl space-y-3 flex flex-col justify-between">
+            <div>
+              <div className="text-xs font-bold uppercase tracking-wider text-[#88B2AB] border-b border-slate-600 pb-2 flex items-center justify-between">
+                <span>Financial Calculation Summary</span>
+                <span>USD ($)</span>
               </div>
 
-              <div>
-                <label className="block text-[10px] font-semibold text-slate-600 mb-1">Business / Company Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Hanford Group Corp"
-                  value={businessName}
-                  onChange={(e) => setBusinessName(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-medium outline-none focus:border-[#51867E]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-semibold text-slate-600 mb-1">X Handle / Twitter</label>
-                <input
-                  type="text"
-                  placeholder="e.g. @johndoe"
-                  value={xUsername}
-                  onChange={(e) => setXUsername(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-medium outline-none focus:border-[#51867E]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-semibold text-slate-600 mb-1">Email Address</label>
-                <input
-                  type="email"
-                  placeholder="guest@example.com"
-                  value={guestEmail}
-                  onChange={(e) => setGuestEmail(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-medium outline-none focus:border-[#51867E]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-semibold text-slate-600 mb-1">Phone Number</label>
-                <input
-                  type="text"
-                  placeholder="+1 (555) 000-1234"
-                  value={guestPhone}
-                  onChange={(e) => setGuestPhone(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-medium outline-none focus:border-[#51867E]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-semibold text-slate-600 mb-1">Payment Status</label>
-                <select
-                  value={paymentStatus}
-                  onChange={(e) => setPaymentStatus(e.target.value as 'UNPAID' | 'PAID')}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-bold outline-none focus:border-[#51867E]"
-                >
-                  <option value="UNPAID">UNPAID</option>
-                  <option value="PAID">PAID</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* Section 2: Booking Option / Service Category */}
-          <div className="space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-1">
-              <h4 className="text-xs font-bold text-[#51867E] uppercase tracking-wider flex items-center gap-1.5">
-                <Building className="w-4 h-4 text-[#51867E]" />
-                <span>2. Reservation Category & Service Type</span>
-              </h4>
-              <span className="text-[10px] text-slate-500 font-medium">
-                Pilih dengan kategori reservasi atau murni produk/jasa saja
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-              {[
-                { id: 'room', label: 'Room Stay', desc: 'Room accommodation' },
-                { id: 'event', label: 'Event Hall', desc: 'Event venue & ballroom' },
-                { id: 'both', label: 'Room & Event', desc: 'Room stay & event' },
-                { id: 'meeting', label: 'Meeting Room', desc: 'Meeting room per pax' },
-                { id: 'room_meeting', label: 'Room & Meeting', desc: 'Room stay & meeting' },
-                { id: 'custom_only', label: 'Product & Service Only', desc: 'Custom product/service' }
-              ].map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => {
-                    const newOpt = opt.id as BookOption;
-                    setBookOption(newOpt);
-                    if (newOpt === 'custom_only' && customLineItems.length === 0) {
-                      handleAddLineItem();
-                    }
-                  }}
-                  className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                    bookOption === opt.id
-                      ? 'bg-[#51867E] text-white border-[#51867E] shadow-sm font-bold'
-                      : 'bg-white border-slate-200 text-slate-700 hover:border-[#51867E]'
-                  }`}
-                >
-                  <div className="font-bold text-[11px] uppercase tracking-wider">{opt.label}</div>
-                  <div className={`text-[9.5px] mt-0.5 ${bookOption === opt.id ? 'text-slate-100' : 'text-slate-400'}`}>
-                    {opt.desc}
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            {bookOption === 'custom_only' && (
-              <div className="p-3 bg-emerald-50/80 border border-emerald-200 text-emerald-800 rounded-xl text-xs flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>
-                  <strong>Mode Product &amp; Service Only:</strong> Rincian kamar/venue disembunyikan. Invoice diisi murni via tabel <strong>Product or service</strong> di bawah.
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Section 3: Room Inventory (If Room / Both / Room & Meeting) */}
-          {(bookOption === 'room' || bookOption === 'both' || bookOption === 'room_meeting') && (
-            <div className="space-y-3 p-4 bg-slate-50/70 rounded-2xl border border-slate-200">
-              <div className="flex items-center justify-between border-b pb-2">
-                <span className="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-[#51867E]" />
-                  Accommodation Rooms & Stay Dates
-                </span>
-                <span className="text-[10px] font-bold text-[#51867E] bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                  {nights} Night(s) Stay
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[10px] font-semibold text-slate-600 mb-1">Check-In Date</label>
-                  <input
-                    type="date"
-                    value={checkInDate}
-                    onChange={(e) => setCheckInDate(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-medium outline-none focus:border-[#51867E]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-slate-600 mb-1">Check-Out Date</label>
-                  <input
-                    type="date"
-                    value={checkOutDate}
-                    onChange={(e) => setCheckOutDate(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-medium outline-none focus:border-[#51867E]"
-                  />
-                </div>
-              </div>
-
-              {/* Room Quantities */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                <div className="bg-white p-3 rounded-xl border border-slate-200">
-                  <label className="block text-[10px] font-bold text-slate-600">Standard Room</label>
-                  <div className="text-[10px] text-slate-400 font-mono mb-1.5">${priceStandard}/night</div>
-                  <input
-                    type="number"
-                    min="0"
-                    value={standardRooms}
-                    onChange={(e) => setStandardRooms(Math.max(0, parseInt(e.target.value) || 0))}
-                    className="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-center font-bold"
-                  />
-                </div>
-
-                <div className="bg-white p-3 rounded-xl border border-slate-200">
-                  <label className="block text-[10px] font-bold text-slate-600">Deluxe Room</label>
-                  <div className="text-[10px] text-slate-400 font-mono mb-1.5">${priceDeluxe}/night</div>
-                  <input
-                    type="number"
-                    min="0"
-                    value={deluxeRooms}
-                    onChange={(e) => setDeluxeRooms(Math.max(0, parseInt(e.target.value) || 0))}
-                    className="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-center font-bold"
-                  />
-                </div>
-
-                <div className="bg-white p-3 rounded-xl border border-slate-200">
-                  <label className="block text-[10px] font-bold text-slate-600">Presidential Suite</label>
-                  <div className="text-[10px] text-slate-400 font-mono mb-1.5">${pricePresidential}/night</div>
-                  <input
-                    type="number"
-                    min="0"
-                    value={presidentialSuites}
-                    onChange={(e) => setPresidentialSuites(Math.max(0, parseInt(e.target.value) || 0))}
-                    className="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-center font-bold"
-                  />
-                </div>
-
-                <div className="bg-white p-3 rounded-xl border border-slate-200">
-                  <label className="block text-[10px] font-bold text-slate-600">Private Villa</label>
-                  <div className="text-[10px] text-slate-400 font-mono mb-1.5">${priceVilla}/night</div>
-                  <input
-                    type="number"
-                    min="0"
-                    value={privateVillas}
-                    onChange={(e) => setPrivateVillas(Math.max(0, parseInt(e.target.value) || 0))}
-                    className="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-center font-bold"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Section 4: Event / Meeting Details (If Event / Meeting / Both / Room & Meeting) */}
-          {bookOption !== 'room' && bookOption !== 'custom_only' && (
-            <div className="space-y-3 p-4 bg-slate-50/70 rounded-2xl border border-slate-200">
-              <div className="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5 border-b pb-2">
-                <Calendar className="w-3.5 h-3.5 text-[#51867E]" />
-                Event & Meeting Services Configuration
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-[10px] font-semibold text-slate-600 mb-1">Event Date</label>
-                  <input
-                    type="date"
-                    value={eventDate}
-                    onChange={(e) => setEventDate(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-medium outline-none focus:border-[#51867E]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-semibold text-slate-600 mb-1">Attendees / Attendees Pax</label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={eventAttendees}
-                    onChange={(e) => setEventAttendees(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-bold outline-none focus:border-[#51867E]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-semibold text-slate-600 mb-1">
-                    Meeting Package Rate *
-                  </label>
-                  <select
-                    value={venueRentalRate}
-                    onChange={(e) => setVenueRentalRate(e.target.value as any)}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-bold outline-none focus:border-[#51867E]"
-                  >
-                    <option value="half_day">HALF DAY (40% rate - ${effectiveMeetingRate}/pax)</option>
-                    <option value="full_day">FULL DAY (100% rate - ${effectiveMeetingRate}/pax)</option>
-                    <option value="full_board">FULL BOARD (120% rate - ${effectiveMeetingRate}/pax)</option>
-                  </select>
-                </div>
-              </div>
-
-              {(bookOption === 'event' || bookOption === 'both') && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                  <div>
-                    <label className="block text-[10px] font-semibold text-slate-600 mb-1">Event Catering Add-On</label>
-                    <select
-                      value={eventAddons}
-                      onChange={(e) => setEventAddons(e.target.value as EventAddonOption)}
-                      className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-medium outline-none focus:border-[#51867E]"
-                    >
-                      <option value="none">Venue Only (No Catering)</option>
-                      <option value="catering">Include Gourmet Catering (+${effectiveCateringRate}/pax)</option>
-                      <option value="both">Include Catering & Decoration (+${effectiveCateringRate}/pax)</option>
-                    </select>
-                  </div>
-
-                  {(eventAddons === 'catering' || eventAddons === 'both') && (
-                    <div>
-                      <label className="block text-[10px] font-semibold text-slate-600 mb-1">Catering Pax Count</label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={cateringPax}
-                        onChange={(e) => setCateringPax(Math.max(1, parseInt(e.target.value) || 1))}
-                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-bold outline-none focus:border-[#51867E]"
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Section 5: Product or service (QuickBooks Style Table) */}
-          <div className="space-y-3 pt-2">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-              <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-[#51867E]" />
-                Product or service
-              </h4>
-              <span className="text-[10px] text-slate-400 font-medium">
-                Add extra services outside room & venue reservation
-              </span>
-            </div>
-
-            <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-[#3A4F67]/5 text-slate-700 font-bold uppercase text-[9.5px] tracking-wider border-b border-slate-200">
-                    <tr>
-                      <th className="py-2.5 px-2 text-center w-8"></th>
-                      <th className="py-2.5 px-2 text-center w-8">#</th>
-                      <th className="py-2.5 px-3 min-w-[130px]">Service Date</th>
-                      <th className="py-2.5 px-3 min-w-[180px]">Product/service *</th>
-                      <th className="py-2.5 px-3 min-w-[200px]">Description</th>
-                      <th className="py-2.5 px-3 text-center w-20">Qty</th>
-                      <th className="py-2.5 px-3 text-right w-28">Rate ($)</th>
-                      <th className="py-2.5 px-3 text-right w-28">Amount ($)</th>
-                      <th className="py-2.5 px-2 text-center w-10"></th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-medium">
-                    {customLineItems.length === 0 ? (
-                      <tr>
-                        <td colSpan={9} className="py-6 text-center text-slate-400 text-xs italic">
-                          No extra products or services added yet. Click &quot;Add product or service&quot; below.
-                        </td>
-                      </tr>
-                    ) : (
-                      customLineItems.map((item, idx) => (
-                        <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
-                          <td className="py-2 px-2 text-center text-slate-300">
-                            <GripVertical className="w-3.5 h-3.5 mx-auto cursor-grab" />
-                          </td>
-                          <td className="py-2 px-2 text-center font-mono text-slate-400 font-bold text-[11px]">
-                            {idx + 1}
-                          </td>
-                          <td className="py-2 px-2">
-                            <input
-                              type="date"
-                              value={item.serviceDate || ''}
-                              onChange={(e) => handleUpdateLineItem(item.id, 'serviceDate', e.target.value)}
-                              className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-[#51867E]"
-                            />
-                          </td>
-                          <td className="py-2 px-2">
-                            <input
-                              type="text"
-                              placeholder="e.g. Airport Transfer, Spa, Yacht"
-                              value={item.productService}
-                              onChange={(e) => handleUpdateLineItem(item.id, 'productService', e.target.value)}
-                              className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 outline-none focus:border-[#51867E]"
-                            />
-                          </td>
-                          <td className="py-2 px-2">
-                            <input
-                              type="text"
-                              placeholder="Description of service"
-                              value={item.description || ''}
-                              onChange={(e) => handleUpdateLineItem(item.id, 'description', e.target.value)}
-                              className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-[#51867E]"
-                            />
-                          </td>
-                          <td className="py-2 px-2">
-                            <input
-                              type="number"
-                              min="1"
-                              value={item.qty}
-                              onChange={(e) => handleUpdateLineItem(item.id, 'qty', Math.max(1, parseInt(e.target.value) || 1))}
-                              className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs text-center font-bold outline-none focus:border-[#51867E]"
-                            />
-                          </td>
-                          <td className="py-2 px-2">
-                            <input
-                              type="number"
-                              min="0"
-                              step="any"
-                              placeholder="0.00"
-                              value={item.rate || ''}
-                              onChange={(e) => handleUpdateLineItem(item.id, 'rate', Math.max(0, parseFloat(e.target.value) || 0))}
-                              className="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs text-right font-mono font-medium outline-none focus:border-[#51867E]"
-                            />
-                          </td>
-                          <td className="py-2 px-3 text-right font-mono font-bold text-[#3A4F67]">
-                            ${(item.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                          </td>
-                          <td className="py-2 px-2 text-center">
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveLineItem(item.id)}
-                              className="p-1 text-slate-400 hover:text-red-500 rounded transition-colors cursor-pointer"
-                              title="Remove item"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Add & Clear Actions */}
-              <div className="p-2.5 bg-slate-50/80 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
-                <button
-                  type="button"
-                  onClick={handleAddLineItem}
-                  className="px-3 py-1.5 bg-white border border-slate-300 hover:border-[#51867E] hover:text-[#51867E] text-slate-700 text-xs font-bold rounded-xl shadow-2xs transition-all cursor-pointer flex items-center gap-1.5"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add product or service</span>
-                </button>
-
-                {customLineItems.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={handleClearAllLines}
-                    className="px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
-                  >
-                    Clear all lines
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Section 6: Customer payment options & Notes + Financial Calculation Summary */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
-            
-            {/* Left: Customer payment options */}
-            <div className="space-y-3.5 bg-slate-50/70 p-4 rounded-2xl border border-slate-200">
-              <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-200 pb-2">
-                <FileText className="w-3.5 h-3.5 text-[#51867E]" />
-                Customer payment options & notes
-              </h4>
-
-              <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
-                  Note to customer
-                </label>
-                <textarea
-                  rows={2}
-                  placeholder="Thank you for your business."
-                  value={noteToCustomer}
-                  onChange={(e) => setNoteToCustomer(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-[#51867E] resize-y"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
-                  Memo on statement (hidden)
-                </label>
-                <textarea
-                  rows={2}
-                  placeholder="This memo will not show up on your invoice, but will appear on the statement."
-                  value={memoOnStatement}
-                  onChange={(e) => setMemoOnStatement(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-[#51867E] resize-y"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
-                  Special Notes / Requests (Internal)
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. High floor, quiet room away from elevator"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-[#51867E]"
-                />
-              </div>
-            </div>
-
-            {/* Right: QuickBooks Style Financial Summary Box */}
-            <div className="bg-[#3A4F67] text-white p-5 rounded-2xl space-y-3 flex flex-col justify-between">
-              <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-[#88B2AB] border-b border-slate-600 pb-2 flex items-center justify-between">
-                  <span>Financial Calculation Summary</span>
-                  <span>USD ($)</span>
-                </div>
-
-                <div className="space-y-2 text-xs pt-3">
-                  {roomSubtotal > 0 && (
-                    <div className="flex justify-between text-slate-300">
-                      <span>Room Accommodation ({nights} Nights):</span>
-                      <span className="font-mono">${roomSubtotal.toLocaleString()}</span>
-                    </div>
-                  )}
-                  {eventSubtotal > 0 && (
-                    <div className="flex justify-between text-slate-300">
-                      <span>Venue & Meeting Service ({venueRentalRate.replace('_', ' ')}):</span>
-                      <span className="font-mono">${eventSubtotal.toLocaleString()}</span>
-                    </div>
-                  )}
-                  {customItemsSubtotal > 0 && (
-                    <div className="flex justify-between text-emerald-300 font-semibold">
-                      <span>Custom Products & Services ({customLineItems.length} items):</span>
-                      <span className="font-mono">${customItemsSubtotal.toLocaleString()}</span>
-                    </div>
-                  )}
-
-                  <div className="flex justify-between text-slate-200 pt-1.5 border-t border-slate-600/60 font-medium">
-                    <span>Subtotal:</span>
-                    <span className="font-mono font-bold">${subtotalBeforeDiscount.toLocaleString()}</span>
-                  </div>
-
-                  {/* Discount row with toggle */}
-                  <div className="flex items-center justify-between text-amber-300 text-xs">
-                    <div className="flex items-center gap-2">
-                      <span>Discount:</span>
-                      <div className="inline-flex rounded-lg bg-slate-800 p-0.5 border border-slate-600">
-                        <button
-                          type="button"
-                          onClick={() => setDiscountType('percent')}
-                          className={`px-1.5 py-0.5 text-[10px] font-bold rounded ${discountType === 'percent' ? 'bg-[#51867E] text-white' : 'text-slate-400'}`}
-                        >
-                          %
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setDiscountType('fixed')}
-                          className={`px-1.5 py-0.5 text-[10px] font-bold rounded ${discountType === 'fixed' ? 'bg-[#51867E] text-white' : 'text-slate-400'}`}
-                        >
-                          $
-                        </button>
-                      </div>
-                      <input
-                        type="number"
-                        min="0"
-                        placeholder="0"
-                        value={discountPercent || ''}
-                        onChange={(e) => setDiscountPercent(Math.max(0, parseFloat(e.target.value) || 0))}
-                        className="w-16 px-1.5 py-0.5 bg-slate-800 border border-slate-600 rounded text-center text-xs font-bold text-white outline-none"
-                      />
-                    </div>
-                    <span className="font-mono font-bold">-${discountAmount.toLocaleString()}</span>
-                  </div>
-
-                  {/* Shipping Fee */}
-                  <div className="flex items-center justify-between text-slate-300 text-xs">
-                    <div className="flex items-center gap-2">
-                      <span>Shipping / Extra Fee:</span>
-                      <input
-                        type="number"
-                        min="0"
-                        placeholder="0.00"
-                        value={shippingFee || ''}
-                        onChange={(e) => setShippingFee(Math.max(0, parseFloat(e.target.value) || 0))}
-                        className="w-20 px-1.5 py-0.5 bg-slate-800 border border-slate-600 rounded text-right text-xs font-mono text-white outline-none"
-                      />
-                    </div>
-                    <span className="font-mono">${shipping.toLocaleString()}</span>
-                  </div>
-
+              <div className="space-y-2 text-xs pt-3">
+                {roomSubtotal > 0 && (
                   <div className="flex justify-between text-slate-300">
-                    <span>Tax & Service Charge (10%):</span>
-                    <span className="font-mono">${taxAmount.toLocaleString()}</span>
+                    <span>Room Accommodation ({nights} Nights):</span>
+                    <span className="font-mono">${roomSubtotal.toLocaleString()}</span>
                   </div>
+                )}
+                {eventSubtotal > 0 && (
+                  <div className="flex justify-between text-slate-300">
+                    <span>Venue & Meeting Service ({venueRentalRate.replace('_', ' ')}):</span>
+                    <span className="font-mono">${eventSubtotal.toLocaleString()}</span>
+                  </div>
+                )}
+                {customItemsSubtotal > 0 && (
+                  <div className="flex justify-between text-emerald-300 font-semibold">
+                    <span>Custom Products & Services ({customLineItems.length} items):</span>
+                    <span className="font-mono">${customItemsSubtotal.toLocaleString()}</span>
+                  </div>
+                )}
+
+                <div className="flex justify-between text-slate-200 pt-1.5 border-t border-slate-600/60 font-medium">
+                  <span>Subtotal:</span>
+                  <span className="font-mono font-bold">${subtotalBeforeDiscount.toLocaleString()}</span>
+                </div>
+
+                {/* Discount row with toggle */}
+                <div className="flex items-center justify-between text-amber-300 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span>Discount:</span>
+                    <div className="inline-flex rounded-lg bg-slate-800 p-0.5 border border-slate-600">
+                      <button
+                        type="button"
+                        onClick={() => setDiscountType('percent')}
+                        className={`px-1.5 py-0.5 text-[10px] font-bold rounded ${discountType === 'percent' ? 'bg-[#51867E] text-white' : 'text-slate-400'}`}
+                      >
+                        %
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDiscountType('fixed')}
+                        className={`px-1.5 py-0.5 text-[10px] font-bold rounded ${discountType === 'fixed' ? 'bg-[#51867E] text-white' : 'text-slate-400'}`}
+                      >
+                        $
+                      </button>
+                    </div>
+                    <input
+                      type="number"
+                      min="0"
+                      placeholder="0"
+                      value={discountPercent || ''}
+                      onChange={(e) => setDiscountPercent(Math.max(0, parseFloat(e.target.value) || 0))}
+                      className="w-16 px-1.5 py-0.5 bg-slate-800 border border-slate-600 rounded text-center text-xs font-bold text-white outline-none"
+                    />
+                  </div>
+                  <span className="font-mono font-bold">-${discountAmount.toLocaleString()}</span>
+                </div>
+
+                {/* Shipping Fee */}
+                <div className="flex items-center justify-between text-slate-300 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span>Shipping / Extra Fee:</span>
+                    <input
+                      type="number"
+                      min="0"
+                      placeholder="0.00"
+                      value={shippingFee || ''}
+                      onChange={(e) => setShippingFee(Math.max(0, parseFloat(e.target.value) || 0))}
+                      className="w-20 px-1.5 py-0.5 bg-slate-800 border border-slate-600 rounded text-right text-xs font-mono text-white outline-none"
+                    />
+                  </div>
+                  <span className="font-mono">${shipping.toLocaleString()}</span>
+                </div>
+
+                <div className="flex justify-between text-slate-300">
+                  <span>Tax & Service Charge (10%):</span>
+                  <span className="font-mono">${taxAmount.toLocaleString()}</span>
                 </div>
               </div>
+            </div>
 
-              <div className="flex justify-between items-center text-base font-bold text-[#88B2AB] pt-3 border-t border-slate-500">
-                <span>Invoice Total:</span>
-                <span className="font-mono text-2xl font-bold text-white">${grandTotal.toLocaleString()}</span>
-              </div>
+            <div className="flex justify-between items-center text-base font-bold text-[#88B2AB] pt-3 border-t border-slate-500">
+              <span>Invoice Total:</span>
+              <span className="font-mono text-2xl font-bold text-white">${grandTotal.toLocaleString()}</span>
             </div>
           </div>
+        </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-bold hover:bg-slate-50 transition-colors cursor-pointer uppercase tracking-wider"
-            >
-              Cancel
-            </button>
+        {/* Action Buttons */}
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-bold hover:bg-slate-50 transition-colors cursor-pointer uppercase tracking-wider"
+          >
+            Cancel
+          </button>
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className="px-6 py-2.5 bg-[#51867E] hover:bg-[#3f6d66] text-white font-bold rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2 uppercase tracking-wider disabled:opacity-50"
-            >
-              {submitting ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Saving Invoice...</span>
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Save & Generate Invoice</span>
-                </>
-              )}
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="px-6 py-2.5 bg-[#51867E] hover:bg-[#3f6d66] text-white font-bold rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2 uppercase tracking-wider disabled:opacity-50"
+          >
+            {submitting ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Saving Invoice...</span>
+              </>
+            ) : (
+              <>
+                <CheckCircle2 className="w-4 h-4" />
+                <span>{initialBooking ? 'Update & Save Invoice' : 'Save & Generate Invoice'}</span>
+              </>
+            )}
+          </button>
+        </div>
 
-        </form>
+      </form>
     </div>
   );
 

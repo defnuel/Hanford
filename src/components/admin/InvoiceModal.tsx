@@ -3,13 +3,14 @@ import { BookingInquiry, Property } from '../../types';
 import { fetchLocations } from '../../services/dataService';
 import { getBookingTypeLabel } from '../../utils/bookingUtils';
 import { exportInvoiceAsImage } from '../../utils/exportInvoiceImage';
-import { X, CheckCircle, Clock, FileText, Building, Download, Image as ImageIcon, Loader2, MapPin } from 'lucide-react';
+import { X, CheckCircle, Clock, FileText, Building, Download, Image as ImageIcon, Loader2, MapPin, Edit3 } from 'lucide-react';
 
 interface InvoiceModalProps {
   booking: BookingInquiry;
   onClose: () => void;
   onTogglePaymentStatus: (bookingId: string, currentStatus: 'UNPAID' | 'PAID') => void;
   onOpenCardGenerator?: (booking: BookingInquiry, type: 'keycard' | 'welcomecard' | 'gallery') => void;
+  onEditInvoice?: (booking: BookingInquiry) => void;
 }
 
 function calculateNights(checkIn?: string, checkOut?: string): number {
@@ -26,7 +27,8 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
   booking,
   onClose,
   onTogglePaymentStatus,
-  onOpenCardGenerator
+  onOpenCardGenerator,
+  onEditInvoice
 }) => {
   const [matchedProperty, setMatchedProperty] = useState<Property | null>(null);
   const [isDownloadingImage, setIsDownloadingImage] = useState(false);
@@ -97,15 +99,19 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
   const presidentialAmt = (booking.presidentialSuites || 0) * pricePresidential * nights;
   const villaAmt = (booking.privateVillas || 0) * pricePrivateVilla * nights;
 
+  const isEventEnabled = booking.bookOption === 'event' || booking.bookOption === 'both';
+  const isMeetingEnabled = booking.bookOption === 'meeting' || booking.bookOption === 'room_meeting';
+  const isRoomEnabled = booking.bookOption === 'room' || booking.bookOption === 'both' || booking.bookOption === 'room_meeting' || (!booking.bookOption && totalRooms > 0);
+
   let eventAmt = 0;
-  if (booking.bookOption === 'meeting' || booking.bookOption === 'room_meeting') {
-    eventAmt = (booking.eventAttendees || 1) * priceMeetingRoom;
-  } else if (booking.bookOption === 'event' || booking.bookOption === 'both' || booking.eventAttendees) {
+  if (isMeetingEnabled) {
+    eventAmt = Math.max(1, booking.eventAttendees || 1) * priceMeetingRoom;
+  } else if (isEventEnabled) {
     eventAmt = priceEventHall;
   }
 
   let cateringAmt = 0;
-  if (booking.cateringPax || booking.eventAddons === 'catering' || booking.eventAddons === 'both') {
+  if (isEventEnabled && (booking.cateringPax || booking.eventAddons === 'catering' || booking.eventAddons === 'both')) {
     const pax = booking.cateringPax || booking.eventAttendees || 1;
     cateringAmt = pax * priceCateringPerPax;
   }
@@ -113,7 +119,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
   const customItems = booking.customLineItems || [];
   const customItemsAmt = customItems.reduce((acc, item) => acc + (item.amount || 0), 0);
 
-  const fallbackRoomAmt = (totalRooms === 0 && !booking.eventAttendees && customItems.length === 0 && booking.bookOption !== 'custom_only')
+  const fallbackRoomAmt = (totalRooms === 0 && !isEventEnabled && !isMeetingEnabled && customItems.length === 0 && booking.bookOption !== 'custom_only')
     ? (booking.totalAmount ? Math.round(booking.totalAmount / 1.1) : priceStandard)
     : 0;
 
@@ -136,6 +142,11 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
   const subtotalBeforeTax = Math.max(0, rawSubtotal - discountAmount);
   const finalTax = Math.round((subtotalBeforeTax + shippingFee) * 0.1);
   const finalGrandTotal = subtotalBeforeTax + shippingFee + finalTax;
+
+  const cleanBookingNotes = booking.notes && booking.notes.trim().toUpperCase() !== 'N/A' ? booking.notes.trim() : '';
+  const cleanCustomerNote = booking.noteToCustomer && booking.noteToCustomer.trim().toUpperCase() !== 'N/A' ? booking.noteToCustomer.trim() : '';
+  const hasDistinctCustomerNote = Boolean(cleanCustomerNote && cleanCustomerNote !== cleanBookingNotes);
+  const primaryNoteText = cleanBookingNotes || cleanCustomerNote || 'Reservation is processed under Hanford Central Hospitality guidelines.';
 
   const handleDownloadImage = async () => {
     try {
@@ -211,6 +222,19 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                   <span>🖼️ Gallery</span>
                 </button>
               </>
+            )}
+            {onEditInvoice && (
+              <button
+                onClick={() => {
+                  onClose();
+                  onEditInvoice(booking);
+                }}
+                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
+                title="Edit this invoice"
+              >
+                <Edit3 className="w-3.5 h-3.5 text-slate-300" />
+                <span>Edit Invoice</span>
+              </button>
             )}
             <button
               onClick={handleDownloadImage}
@@ -347,7 +371,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               Breakdown Item & Layanan
             </div>
 
-            {booking.standardRooms ? (
+            {isRoomEnabled && booking.standardRooms ? (
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
                 <div>
                   <div className="font-bold text-slate-800">Standard Room</div>
@@ -361,7 +385,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               </div>
             ) : null}
 
-            {booking.deluxeRooms ? (
+            {isRoomEnabled && booking.deluxeRooms ? (
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
                 <div>
                   <div className="font-bold text-slate-800">Deluxe Room</div>
@@ -375,7 +399,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               </div>
             ) : null}
 
-            {booking.presidentialSuites ? (
+            {isRoomEnabled && booking.presidentialSuites ? (
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
                 <div>
                   <div className="font-bold text-slate-800">Presidential Suite</div>
@@ -389,7 +413,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               </div>
             ) : null}
 
-            {booking.privateVillas ? (
+            {isRoomEnabled && booking.privateVillas ? (
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
                 <div>
                   <div className="font-bold text-slate-800">Private Villa</div>
@@ -403,7 +427,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               </div>
             ) : null}
 
-            {booking.eventAttendees ? (
+            {(isEventEnabled || isMeetingEnabled) && booking.eventAttendees ? (
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
                 <div>
                   <div className="font-bold text-slate-800">Event Space Rental</div>
@@ -417,12 +441,12 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               </div>
             ) : null}
 
-            {booking.cateringPax ? (
+            {isEventEnabled && (booking.cateringPax || booking.eventAddons === 'catering' || booking.eventAddons === 'both') ? (
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
                 <div>
                   <div className="font-bold text-slate-800">Catering Service</div>
                   <div className="text-[10px] text-slate-500">
-                    ${priceCateringPerPax.toLocaleString()} / pax &bull; {booking.cateringPax} Pax
+                    ${priceCateringPerPax.toLocaleString()} / pax &bull; {booking.cateringPax || booking.eventAttendees || 1} Pax
                   </div>
                 </div>
                 <div className="font-mono font-bold text-[#3A4F67] text-xs">
@@ -473,7 +497,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                {booking.standardRooms ? (
+                {isRoomEnabled && booking.standardRooms ? (
                   <tr>
                     <td className="py-3 px-4">
                       <div className="font-semibold text-slate-800">Standard Room</div>
@@ -484,7 +508,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                   </tr>
                 ) : null}
 
-                {booking.deluxeRooms ? (
+                {isRoomEnabled && booking.deluxeRooms ? (
                   <tr>
                     <td className="py-3 px-4">
                       <div className="font-semibold text-slate-800">Deluxe Room</div>
@@ -495,7 +519,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                   </tr>
                 ) : null}
 
-                {booking.presidentialSuites ? (
+                {isRoomEnabled && booking.presidentialSuites ? (
                   <tr>
                     <td className="py-3 px-4">
                       <div className="font-semibold text-slate-800">Presidential Suite</div>
@@ -506,7 +530,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                   </tr>
                 ) : null}
 
-                {booking.privateVillas ? (
+                {isRoomEnabled && booking.privateVillas ? (
                   <tr>
                     <td className="py-3 px-4">
                       <div className="font-semibold text-slate-800">Private Villa</div>
@@ -517,7 +541,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                   </tr>
                 ) : null}
 
-                {booking.eventAttendees ? (
+                {(isEventEnabled || isMeetingEnabled) && booking.eventAttendees ? (
                   <tr>
                     <td className="py-3 px-4">
                       <div className="font-semibold text-slate-800">Event Space Rental</div>
@@ -530,13 +554,13 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                   </tr>
                 ) : null}
 
-                {booking.cateringPax ? (
+                {isEventEnabled && (booking.cateringPax || booking.eventAddons === 'catering' || booking.eventAddons === 'both') ? (
                   <tr>
                     <td className="py-3 px-4">
                       <div className="font-semibold text-slate-800">Catering Service</div>
                       <div className="text-[11px] text-slate-500 font-mono mt-0.5">${priceCateringPerPax.toLocaleString()} / pax</div>
                     </td>
-                    <td className="py-3 px-4 text-center">{booking.cateringPax} Pax</td>
+                    <td className="py-3 px-4 text-center">{booking.cateringPax || booking.eventAttendees || 1} Pax</td>
                     <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">${cateringAmt.toLocaleString()}</td>
                   </tr>
                 ) : null}
@@ -553,7 +577,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                   </tr>
                 ))}
 
-                {totalRooms === 0 && !booking.eventAttendees && customItems.length === 0 && booking.bookOption !== 'custom_only' && (
+                {totalRooms === 0 && !isEventEnabled && !isMeetingEnabled && customItems.length === 0 && booking.bookOption !== 'custom_only' && (
                   <tr>
                     <td className="py-3 px-4">
                       <div className="font-semibold text-slate-800">Room Reservation</div>
@@ -573,11 +597,11 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
           <div className="flex flex-col sm:flex-row justify-between items-start gap-6 border-t border-slate-200 pt-6">
             <div className="text-xs text-slate-500 space-y-2 max-w-xs text-left">
               <div className="font-bold text-slate-700 uppercase tracking-wider text-[10px]">Notes / Instructions:</div>
-              <p>{booking.notes || 'Reservation is processed under Hanford Central Hospitality guidelines.'}</p>
-              {booking.noteToCustomer && (
+              <p className="text-slate-700 whitespace-pre-wrap leading-relaxed">{primaryNoteText}</p>
+              {hasDistinctCustomerNote && cleanBookingNotes && (
                 <div className="p-2.5 bg-[#51867E]/5 border border-[#51867E]/20 rounded-xl text-xs">
                   <div className="font-bold text-[#51867E] uppercase tracking-wider text-[9.5px]">Note to Customer:</div>
-                  <p className="text-slate-700 italic mt-0.5">{booking.noteToCustomer}</p>
+                  <p className="text-slate-700 italic mt-0.5 whitespace-pre-wrap leading-relaxed">{cleanCustomerNote}</p>
                 </div>
               )}
             </div>
@@ -742,7 +766,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                  {booking.standardRooms ? (
+                  {isRoomEnabled && booking.standardRooms ? (
                     <tr>
                       <td className="py-3 px-4">
                         <div className="font-semibold text-slate-800">Standard Room</div>
@@ -753,7 +777,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                     </tr>
                   ) : null}
 
-                  {booking.deluxeRooms ? (
+                  {isRoomEnabled && booking.deluxeRooms ? (
                     <tr>
                       <td className="py-3 px-4">
                         <div className="font-semibold text-slate-800">Deluxe Room</div>
@@ -764,7 +788,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                     </tr>
                   ) : null}
 
-                  {booking.presidentialSuites ? (
+                  {isRoomEnabled && booking.presidentialSuites ? (
                     <tr>
                       <td className="py-3 px-4">
                         <div className="font-semibold text-slate-800">Presidential Suite</div>
@@ -775,7 +799,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                     </tr>
                   ) : null}
 
-                  {booking.privateVillas ? (
+                  {isRoomEnabled && booking.privateVillas ? (
                     <tr>
                       <td className="py-3 px-4">
                         <div className="font-semibold text-slate-800">Private Villa</div>
@@ -786,7 +810,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                     </tr>
                   ) : null}
 
-                  {booking.eventAttendees ? (
+                  {(isEventEnabled || isMeetingEnabled) && booking.eventAttendees ? (
                     <tr>
                       <td className="py-3 px-4">
                         <div className="font-semibold text-slate-800">Event Space Rental</div>
@@ -799,13 +823,13 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                     </tr>
                   ) : null}
 
-                  {booking.cateringPax ? (
+                  {isEventEnabled && (booking.cateringPax || booking.eventAddons === 'catering' || booking.eventAddons === 'both') ? (
                     <tr>
                       <td className="py-3 px-4">
                         <div className="font-semibold text-slate-800">Catering Service</div>
                         <div className="text-[11px] text-slate-500 font-mono mt-0.5">${priceCateringPerPax.toLocaleString()} / pax</div>
                       </td>
-                      <td className="py-3 px-4 text-center">{booking.cateringPax} Pax</td>
+                      <td className="py-3 px-4 text-center">{booking.cateringPax || booking.eventAttendees || 1} Pax</td>
                       <td className="py-3 px-4 text-right font-mono font-bold text-[#3A4F67]">${cateringAmt.toLocaleString()}</td>
                     </tr>
                   ) : null}
@@ -822,7 +846,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                     </tr>
                   ))}
 
-                  {totalRooms === 0 && !booking.eventAttendees && customItems.length === 0 && (
+                  {totalRooms === 0 && !isEventEnabled && !isMeetingEnabled && customItems.length === 0 && booking.bookOption !== 'custom_only' && (
                     <tr>
                       <td className="py-3 px-4">
                         <div className="font-semibold text-slate-800">Room Reservation</div>
@@ -842,11 +866,11 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             <div className="flex flex-row justify-between items-start gap-6 border-t border-slate-200 pt-6">
               <div className="text-xs text-slate-500 space-y-2 max-w-xs text-left">
                 <div className="font-bold text-slate-700 uppercase tracking-wider text-[10px]">Notes / Instructions:</div>
-                <p>{booking.notes || 'Reservation is processed under Hanford Central Hospitality guidelines.'}</p>
-                {booking.noteToCustomer && (
+                <p className="text-slate-700 whitespace-pre-wrap leading-relaxed">{primaryNoteText}</p>
+                {hasDistinctCustomerNote && cleanBookingNotes && (
                   <div className="p-2.5 bg-[#51867E]/5 border border-[#51867E]/20 rounded-xl text-xs">
                     <div className="font-bold text-[#51867E] uppercase tracking-wider text-[9.5px]">Note to Customer:</div>
-                    <p className="text-slate-700 italic mt-0.5">{booking.noteToCustomer}</p>
+                    <p className="text-slate-700 italic mt-0.5 whitespace-pre-wrap leading-relaxed">{cleanCustomerNote}</p>
                   </div>
                 )}
               </div>

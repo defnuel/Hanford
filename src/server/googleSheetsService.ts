@@ -527,7 +527,26 @@ export function transformSheetRowToBooking(row: Record<string, string>, index: n
     return '';
   };
 
-  const bookingId = getVal('booking id', 'booking_id', 'id', 'invoice id') || `HNF-2026-S${String(index + 1).padStart(4, '0')}`;
+  const bookingId = getVal(
+    'ref no',
+    'ref number',
+    'ref_number',
+    'reference number',
+    'reference no',
+    'reference',
+    'ref',
+    'booking id',
+    'booking_id',
+    'id',
+    'invoice id',
+    'invoice no',
+    'invoice_no',
+    'inv no',
+    'inv_no',
+    'invoice',
+    'no invoice',
+    'nomor invoice'
+  ) || `HNF-2026-S${String(index + 1).padStart(4, '0')}`;
   const createdAt = getVal('timestamp', 'created at', 'createdat', 'tanggal', 'date') || new Date().toISOString();
   const propertyName = getVal('location', 'property', 'property name', 'nama properti', 'nama resort') || 'Hanford Estate';
   const guestName = getVal('name', 'guest name', 'nama', 'nama tamu', 'customer') || `Guest #${index + 1}`;
@@ -564,7 +583,8 @@ export function transformSheetRowToBooking(row: Record<string, string>, index: n
   const checkInDate = getVal('check-in date', 'check-in', 'checkin', 'check in') || '';
   const checkOutDate = getVal('check-out date', 'check-out', 'checkout', 'check out') || '';
   const eventDate = getVal('event date', 'tanggal event', 'eventdate') || '';
-  const notes = getVal('keterangan / notes', 'keterangan', 'notes', 'catatan', 'pesan') || '';
+  const rawNotes = getVal('keterangan / notes', 'keterangan', 'notes', 'catatan', 'pesan') || '';
+  const notes = rawNotes.trim().toUpperCase() === 'N/A' ? '' : rawNotes.trim();
 
   const priceStandardRoom = parseMoney(getVal('price standard room ($)', 'price standard room', 'standard room price', 'price standard'));
   const priceDeluxeRoom = parseMoney(getVal('price deluxe room ($)', 'price deluxe room', 'deluxe room price', 'price deluxe'));
@@ -634,7 +654,8 @@ export function transformSheetRowToBooking(row: Record<string, string>, index: n
     checkInDate,
     checkOutDate,
     eventDate,
-    notes,
+    notes: notes || undefined,
+    noteToCustomer: notes || undefined,
     priceStandardRoom: priceStandardRoom || undefined,
     priceDeluxeRoom: priceDeluxeRoom || undefined,
     pricePresidentialSuite: pricePresidentialSuite || undefined,
@@ -827,7 +848,9 @@ export async function appendBookingInquiry(inquiry: BookingInquiry): Promise<{
     inquiry.checkInDate || 'N/A',
     inquiry.checkOutDate || 'N/A',
     inquiry.eventDate || 'N/A',
-    inquiry.notes || 'N/A',
+    (inquiry.notes && inquiry.notes.trim().toUpperCase() !== 'N/A' ? inquiry.notes.trim() : '') ||
+      (inquiry.noteToCustomer && inquiry.noteToCustomer.trim().toUpperCase() !== 'N/A' ? inquiry.noteToCustomer.trim() : '') ||
+      'N/A',
     priceStandardText,
     priceDeluxeText,
     pricePresidentialText,

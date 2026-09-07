@@ -146,8 +146,8 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
   const [welcomeCustomNote, setWelcomeCustomNote] = useState<string>('');
   const [welcomeRef, setWelcomeRef] = useState<string>(() => {
     const b = initialBooking || (bookings && bookings.length > 0 ? bookings[0] : null);
-    const bId = b?.bookingId || b?.id;
-    return bId ? (bId.toUpperCase().startsWith('REF:') ? bId : `REF: ${bId}`) : 'REF: HNF-2026-INV';
+    const bId = (b?.bookingId || b?.id || '').trim();
+    return bId ? `Ref No: ${bId}` : 'Ref No: HNF-2026-INV';
   });
 
   // Accommodation Gallery Form State (New Feature)
@@ -158,8 +158,8 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
   const [galleryStayDates, setGalleryStayDates] = useState<string>('2026-09-01 to 2026-09-02 (1 night)');
   const [galleryRef, setGalleryRef] = useState<string>(() => {
     const b = initialBooking || (bookings && bookings.length > 0 ? bookings[0] : null);
-    const bId = b?.bookingId || b?.id;
-    return bId ? (bId.toUpperCase().startsWith('REF:') ? bId : `REF: ${bId}`) : 'REF: HNF-2026-INV';
+    const bId = (b?.bookingId || b?.id || '').trim();
+    return bId ? `Ref No: ${bId}` : 'Ref No: HNF-2026-INV';
   });
   const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhotoItem[]>(DEFAULT_GALLERY_PHOTOS);
   const [newPhotoUrl, setNewPhotoUrl] = useState<string>('');
@@ -265,8 +265,8 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
       (b.standardRooms ? 'Standard Premium Room' : '') ||
       'Private Pool Villa • 3 Bedroom Ocean Suite';
     setGalleryRoomType(resolvedRoom);
-    const bRefCode = b.bookingId || b.id || '';
-    const formattedRef = bRefCode ? (bRefCode.toUpperCase().startsWith('REF:') ? bRefCode : `REF: ${bRefCode}`) : 'REF: HNF-2026-INV';
+    const bRefCode = (b.bookingId || b.id || '').trim();
+    const formattedRef = bRefCode ? `Ref No: ${bRefCode}` : 'Ref No: HNF-2026-INV';
     setWelcomeRef(formattedRef);
     setGalleryRef(formattedRef);
 
@@ -307,7 +307,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
     if (matched && (matched.bookingId || matched.id)) {
       return (matched.bookingId || matched.id).trim();
     }
-    const cleaned = refVal.replace(/^(REF|INVOICE\s*NO|INV)\s*[:#]?\s*/i, '').trim();
+    const cleaned = refVal.replace(/^(REF\s*NO|REF|INVOICE\s*NO|INV\s*NO|INV)\s*[:#]?\s*/i, '').trim();
     return cleaned || 'HNF-2026-INV';
   };
 
@@ -807,6 +807,18 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                   <span className="text-[10px] text-slate-400 font-medium">Format:</span>
                   <button
                     type="button"
+                    onClick={() => setWelcomeRef(`Ref No: ${getRawBookingCode(welcomeRef)}`)}
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-colors cursor-pointer border ${
+                      welcomeRef.toLowerCase().startsWith('ref no:')
+                        ? 'bg-[#51867E] text-white border-[#51867E]'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-slate-200'
+                    }`}
+                    title="Exact Ref No format matching Invoice"
+                  >
+                    Ref No: {getRawBookingCode(welcomeRef)}
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => setWelcomeRef(`Invoice No: ${getRawBookingCode(welcomeRef)}`)}
                     className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-colors cursor-pointer border ${
                       welcomeRef.toLowerCase().startsWith('invoice no:')
@@ -821,7 +833,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                     type="button"
                     onClick={() => setWelcomeRef(`REF: ${getRawBookingCode(welcomeRef)}`)}
                     className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-colors cursor-pointer border ${
-                      welcomeRef.toLowerCase().startsWith('ref:')
+                      welcomeRef.toLowerCase().startsWith('ref:') && !welcomeRef.toLowerCase().startsWith('ref no:')
                         ? 'bg-[#51867E] text-white border-[#51867E]'
                         : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-slate-200'
                     }`}
@@ -1065,6 +1077,18 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                   <span className="text-[10px] text-slate-400 font-medium">Format:</span>
                   <button
                     type="button"
+                    onClick={() => setGalleryRef(`Ref No: ${getRawBookingCode(galleryRef)}`)}
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-colors cursor-pointer border ${
+                      galleryRef.toLowerCase().startsWith('ref no:')
+                        ? 'bg-[#51867E] text-white border-[#51867E]'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-slate-200'
+                    }`}
+                    title="Exact Ref No format matching Invoice"
+                  >
+                    Ref No: {getRawBookingCode(galleryRef)}
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => setGalleryRef(`Invoice No: ${getRawBookingCode(galleryRef)}`)}
                     className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-colors cursor-pointer border ${
                       galleryRef.toLowerCase().startsWith('invoice no:')
@@ -1079,7 +1103,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                     type="button"
                     onClick={() => setGalleryRef(`REF: ${getRawBookingCode(galleryRef)}`)}
                     className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-colors cursor-pointer border ${
-                      galleryRef.toLowerCase().startsWith('ref:')
+                      galleryRef.toLowerCase().startsWith('ref:') && !galleryRef.toLowerCase().startsWith('ref no:')
                         ? 'bg-[#51867E] text-white border-[#51867E]'
                         : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-slate-200'
                     }`}

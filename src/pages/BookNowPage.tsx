@@ -790,9 +790,11 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     NOTES / INSTRUCTIONS:
                   </span>
                   <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap">
-                    {confirmedBooking.inquiry.notes && confirmedBooking.inquiry.notes.trim() !== ''
+                    {confirmedBooking.inquiry.notes && confirmedBooking.inquiry.notes.trim() !== '' && confirmedBooking.inquiry.notes.trim().toUpperCase() !== 'N/A'
                       ? confirmedBooking.inquiry.notes.trim()
-                      : 'Lets play'}
+                      : (confirmedBooking.inquiry.noteToCustomer && confirmedBooking.inquiry.noteToCustomer.trim().toUpperCase() !== 'N/A'
+                          ? confirmedBooking.inquiry.noteToCustomer.trim()
+                          : 'Reservation is processed under Hanford Central Hospitality guidelines.')}
                   </p>
                 </div>
 
@@ -1125,9 +1127,11 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       NOTES / INSTRUCTIONS:
                     </span>
                     <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap">
-                      {confirmedBooking.inquiry.notes && confirmedBooking.inquiry.notes.trim() !== ''
+                      {confirmedBooking.inquiry.notes && confirmedBooking.inquiry.notes.trim() !== '' && confirmedBooking.inquiry.notes.trim().toUpperCase() !== 'N/A'
                         ? confirmedBooking.inquiry.notes.trim()
-                        : 'Lets play'}
+                        : (confirmedBooking.inquiry.noteToCustomer && confirmedBooking.inquiry.noteToCustomer.trim().toUpperCase() !== 'N/A'
+                            ? confirmedBooking.inquiry.noteToCustomer.trim()
+                            : 'Reservation is processed under Hanford Central Hospitality guidelines.')}
                     </p>
                   </div>
 
