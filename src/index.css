@@ -8,7 +8,8 @@
   --color-offblack: #2C3744;
   --color-sagetint: #EAF2F1;
 
-  --font-serif: "Cormorant Garamond", Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-serif: "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-display: "Cinzel", "Playfair Display", Georgia, serif;
   --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -37,17 +38,23 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* 2. Serif Typography for Luxury Hotel Display Headings & Logos */
+  /* 2. Serif Typography for Luxury Hotel Display Headings */
   h1,
   h2,
-  .site-logo,
   .font-serif,
   .luxury-serif {
-    font-family: "Cormorant Garamond", Georgia, Cambria, "Times New Roman", Times, serif;
-    letter-spacing: 0.02em;
+    font-family: "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
+    letter-spacing: 0.01em;
   }
 
-  /* 3. Title Headings (h1, h2, h3), Site Logo (.site-logo), & Luxury Emphasis (.luxury-emphasis) */
+  /* 3. Site Logo & Roman Archival Accents */
+  .site-logo,
+  .font-display {
+    font-family: "Cinzel", "Playfair Display", Georgia, serif;
+    letter-spacing: 0.25em;
+  }
+
+  /* 4. Title Headings (h1, h2, h3), Site Logo (.site-logo), & Luxury Emphasis (.luxury-emphasis) */
   h1,
   h2,
   h3,

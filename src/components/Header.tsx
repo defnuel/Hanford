@@ -49,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPath, onNavigate }) => {
           onClick={() => handleLinkClick('/')}
           className="text-left group flex items-center gap-3 focus:outline-none"
         >
-          <div className="site-logo text-xl sm:text-3xl font-light tracking-[0.2em] sm:tracking-[0.3em] uppercase text-[#3A4F67] font-serif flex items-center gap-1.5 sm:gap-2">
+          <div className="site-logo text-xl sm:text-2xl font-medium tracking-[0.25em] sm:tracking-[0.3em] uppercase text-[#3A4F67] flex items-center gap-1.5 sm:gap-2">
             <span>Hanford</span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#88B2AB]" />
           </div>

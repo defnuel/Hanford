@@ -84,7 +84,7 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
             <div className="flex items-center gap-2 text-[9px] sm:text-[10px] font-bold tracking-[0.3em] sm:tracking-[0.4em] uppercase text-[#51867E] mb-1.5 sm:mb-2">
               <span>GLOBAL FOOTPRINT</span>
             </div>
-            <h1 className="font-serif italic text-3xl sm:text-6xl text-[#3A4F67] font-light">
+            <h1 className="font-serif italic text-3xl sm:text-6xl text-[#3A4F67] font-normal">
               Our Locations
             </h1>
           </div>

@@ -59,7 +59,7 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
                 <Sparkles className="w-3 h-3 text-[#88B2AB]" />
                 <span>Collaborations</span>
               </div>
-              <h1 className="text-2xl sm:text-5xl font-serif font-light text-[#3A4F67] tracking-wide leading-tight font-serif italic">
+              <h1 className="text-2xl sm:text-5xl font-serif font-normal text-[#3A4F67] tracking-wide leading-tight italic">
                 Collaborations, Projects, and News
               </h1>
               <p className="text-sm sm:text-base text-[#2C3744]/80 font-light leading-relaxed">

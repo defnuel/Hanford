@@ -78,7 +78,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
               {/* Main Title Heading */}
               <div>
-                <h1 className="text-[34px] min-[375px]:text-[40px] min-[414px]:text-[44px] sm:text-6xl md:text-[72px] lg:text-[84px] leading-[1.05] font-light italic font-serif text-white tracking-tight drop-shadow-2xl">
+                <h1 className="text-[34px] min-[375px]:text-[40px] min-[414px]:text-[44px] sm:text-6xl md:text-[72px] lg:text-[84px] leading-[1.05] font-normal italic font-serif text-white tracking-tight drop-shadow-2xl">
                   An Elevated<br />Way of Staying
                 </h1>
               </div>
