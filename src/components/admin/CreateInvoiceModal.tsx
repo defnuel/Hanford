@@ -126,7 +126,10 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
   const [discountType, setDiscountType] = useState<'percent' | 'fixed'>('percent');
 
   // Financials & Notes
-  const [discountCode, setDiscountCode] = useState(() => initialBooking?.discountCode || '');
+  const [discountCode, setDiscountCode] = useState(() => {
+    const c = initialBooking?.discountCode;
+    return (c && c.trim().toUpperCase() !== 'N/A') ? c.trim() : '';
+  });
   const [discountPercent, setDiscountPercent] = useState(() => initialBooking?.discountPercent || 0);
   const [paymentStatus, setPaymentStatus] = useState<'UNPAID' | 'PAID'>(() => initialBooking?.paymentStatus || 'UNPAID');
   const [notes, setNotes] = useState(() => {
@@ -407,7 +410,7 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
       memoOnStatement: memoOnStatement.trim() || undefined,
       shippingFee: shipping > 0 ? shipping : undefined,
       itemRatesSnapshot: itemRatesArr.join(' | '),
-      discountCode: discountCode.trim() || undefined,
+      discountCode: (discountCode.trim() && discountCode.trim().toUpperCase() !== 'N/A') ? discountCode.trim() : undefined,
       discountPercent: discountPercent || 0,
       discountAmount,
       subtotalBeforeDiscount,
@@ -1083,6 +1086,21 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
                     />
                   </div>
                   <span className="font-mono font-bold">-${discountAmount.toLocaleString()}</span>
+                </div>
+
+                {/* Optional Coupon Code Input */}
+                <div className="flex items-center justify-between text-slate-300 text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] text-slate-400">Coupon Code:</span>
+                    <span className="text-[9.5px] text-slate-500 italic">(optional)</span>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="None (Leave empty if no coupon)"
+                    value={discountCode}
+                    onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                    className="w-48 px-2 py-0.5 bg-slate-800 border border-slate-600 rounded text-xs font-mono text-white placeholder:text-slate-500 uppercase outline-none focus:border-[#51867E]"
+                  />
                 </div>
 
                 {/* Shipping Fee */}

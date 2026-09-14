@@ -220,3 +220,85 @@ export interface AdminUser {
   department?: string;
   password?: string;
 }
+
+export interface GRNItem {
+  id: string;
+  itemNumber: number;
+  description: string;
+  quantityOrdered: number;
+  quantityReceived: number;
+  quantityAccepted: number;
+  quantityRejected: number;
+  unit: string; // KG, L, Trays, Uts, Box, Pcs, etc.
+  unitPrice: number;
+  totalAmount: number;
+  storageLocation?: string;
+  inspectionCondition?: 'Passed QC / Good Condition' | 'Minor Discrepancy' | 'Damaged / Rejected' | 'Temperature Verified';
+  remarks?: string;
+}
+
+export interface GoodsReceivedNote {
+  id: string;
+  grnNumber: string;
+  status: 'Inspected & Accepted' | 'Partially Accepted' | 'Under Inspection' | 'Rejected';
+  
+  // Supplier / Vendor Info
+  supplierName: string;
+  supplierAddress?: string;
+  supplierContactPerson?: string;
+  supplierPhoneOrEmail?: string;
+  
+  // Receiving Destination & Internal Team
+  receivingProperty: string;
+  receivingDepartment: string;
+  receivingAddress?: string;
+  receivedBy: string;
+  inspectedBy: string;
+  approvedBy?: string;
+  
+  // References & Dates
+  invoiceNumber: string;
+  purchaseOrderRef: string;
+  deliveryNoteRef?: string;
+  vehicleNumber?: string;
+  issuanceDate: string;
+  receivedDate: string;
+  inspectionDate: string;
+  dueDate?: string;
+  
+  // Items
+  items: GRNItem[];
+  
+  // Financial & Aggregates
+  currency: string;
+  subtotalNet: number;
+  taxPercent?: number;
+  taxAmount?: number;
+  grandTotal: number;
+  totalOrderedUnits: number;
+  totalReceivedUnits: number;
+  totalAcceptedUnits: number;
+  totalRejectedUnits: number;
+  
+  // Inspection Checklist
+  inspectionChecks: {
+    packagingIntact: boolean;
+    temperatureCompliant: boolean;
+    expiryDateVerified: boolean;
+    weightCountVerified: boolean;
+    foodSafetyHACCP?: boolean;
+  };
+  
+  bankDetails?: {
+    bankName?: string;
+    accountName?: string;
+    accountNumber?: string;
+    swiftCode?: string;
+    paymentTerms?: string;
+  };
+  
+  notes?: string;
+  rawSourceText?: string;
+  createdAt: string;
+  updatedAt?: string;
+}

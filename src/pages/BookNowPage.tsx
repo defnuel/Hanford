@@ -805,12 +805,21 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     <span className="font-mono text-slate-800 font-semibold">${(confirmedBooking.roomSubtotal + confirmedBooking.eventSubtotal).toLocaleString()}</span>
                   </div>
 
-                  {confirmedBooking.inquiry.discountAmount! > 0 && (
-                    <div className="flex justify-between items-center sm:justify-end sm:gap-8 text-emerald-600 font-semibold">
-                      <span>Discount ({confirmedBooking.inquiry.discountCode || 'PROMO'} - {confirmedBooking.inquiry.discountPercent}%):</span>
-                      <span className="font-mono">-${confirmedBooking.inquiry.discountAmount?.toLocaleString()}</span>
-                    </div>
-                  )}
+                  {confirmedBooking.inquiry.discountAmount! > 0 && (() => {
+                    const code = (confirmedBooking.inquiry.discountCode && confirmedBooking.inquiry.discountCode.trim().toUpperCase() !== 'N/A')
+                      ? confirmedBooking.inquiry.discountCode.trim()
+                      : '';
+                    const percent = confirmedBooking.inquiry.discountPercent || 0;
+                    const label = code
+                      ? (percent > 0 ? `Discount (${code} - ${percent}%):` : `Discount (${code}):`)
+                      : (percent > 0 ? `Discount (${percent}%):` : 'Discount:');
+                    return (
+                      <div className="flex justify-between items-center sm:justify-end sm:gap-8 text-emerald-600 font-semibold">
+                        <span>{label}</span>
+                        <span className="font-mono">-${confirmedBooking.inquiry.discountAmount?.toLocaleString()}</span>
+                      </div>
+                    );
+                  })()}
 
                   <div className="flex justify-between items-center sm:justify-end sm:gap-8">
                     <span>Subtotal Before Tax:</span>
@@ -1141,12 +1150,21 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       <span className="font-mono text-slate-800 font-semibold">${(confirmedBooking.roomSubtotal + confirmedBooking.eventSubtotal).toLocaleString()}</span>
                     </div>
 
-                    {confirmedBooking.inquiry.discountAmount! > 0 && (
-                      <div className="flex justify-between items-center gap-8 text-emerald-600 font-semibold">
-                        <span>Discount ({confirmedBooking.inquiry.discountCode || 'PROMO'} - {confirmedBooking.inquiry.discountPercent}%):</span>
-                        <span className="font-mono">-${confirmedBooking.inquiry.discountAmount?.toLocaleString()}</span>
-                      </div>
-                    )}
+                    {confirmedBooking.inquiry.discountAmount! > 0 && (() => {
+                      const code = (confirmedBooking.inquiry.discountCode && confirmedBooking.inquiry.discountCode.trim().toUpperCase() !== 'N/A')
+                        ? confirmedBooking.inquiry.discountCode.trim()
+                        : '';
+                      const percent = confirmedBooking.inquiry.discountPercent || 0;
+                      const label = code
+                        ? (percent > 0 ? `Discount (${code} - ${percent}%):` : `Discount (${code}):`)
+                        : (percent > 0 ? `Discount (${percent}%):` : 'Discount:');
+                      return (
+                        <div className="flex justify-between items-center gap-8 text-emerald-600 font-semibold">
+                          <span>{label}</span>
+                          <span className="font-mono">-${confirmedBooking.inquiry.discountAmount?.toLocaleString()}</span>
+                        </div>
+                      );
+                    })()}
 
                     <div className="flex justify-between items-center gap-8">
                       <span>Subtotal Before Tax:</span>

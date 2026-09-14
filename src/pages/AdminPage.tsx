@@ -13,7 +13,8 @@ import { ProjectsEditor } from '../components/admin/ProjectsEditor';
 import { BookingsManager } from '../components/admin/BookingsManager';
 import { AdminUsersManager } from '../components/admin/AdminUsersManager';
 import { GuestCardsManager } from '../components/admin/GuestCardsManager';
-import { ShieldCheck, Building2, FolderGit2, FileText, Users, LogOut, ArrowLeft, LayoutDashboard, KeyRound } from 'lucide-react';
+import { GoodsReceivedManager } from '../components/admin/GoodsReceivedManager';
+import { ShieldCheck, Building2, FolderGit2, FileText, Users, LogOut, ArrowLeft, LayoutDashboard, KeyRound, FileCheck2 } from 'lucide-react';
 
 interface AdminPageProps {
   onNavigate: (path: string) => void;
@@ -29,7 +30,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     }
   });
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'locations' | 'collaborations' | 'bookings' | 'cards' | 'users'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'locations' | 'collaborations' | 'bookings' | 'grn' | 'cards' | 'users'>('overview');
   const [cardTargetBooking, setCardTargetBooking] = useState<BookingInquiry | null>(null);
   const [cardTargetType, setCardTargetType] = useState<'keycard' | 'welcomecard' | 'gallery'>('keycard');
 
@@ -184,6 +185,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           </button>
 
           <button
+            onClick={() => setActiveTab('grn')}
+            className={`px-4 py-2 rounded-xl font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
+              activeTab === 'grn'
+                ? 'bg-[#51867E] text-white shadow-sm'
+                : 'text-slate-600 hover:text-[#3A4F67] hover:bg-slate-50'
+            }`}
+          >
+            <FileCheck2 className="w-4 h-4" />
+            <span>Goods Received (GRN)</span>
+          </button>
+
+          <button
             onClick={() => {
               setCardTargetBooking(null);
               setActiveTab('cards');
@@ -262,6 +275,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               />
             )}
 
+            {activeTab === 'grn' && (
+              <GoodsReceivedManager properties={properties} />
+            )}
+
             {activeTab === 'cards' && (
               <GuestCardsManager
                 properties={properties}
@@ -317,6 +334,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         >
           <FileText className={`w-5 h-5 ${activeTab === 'bookings' ? 'scale-110' : ''}`} />
           <span className="text-[10px] tracking-tight">Invoices</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('grn')}
+          className={`flex-1 flex flex-col items-center justify-center gap-1 py-1 transition-all cursor-pointer ${
+            activeTab === 'grn' ? 'text-[#51867E] font-bold' : 'text-slate-400 hover:text-slate-600'
+          }`}
+        >
+          <FileCheck2 className={`w-5 h-5 ${activeTab === 'grn' ? 'scale-110' : ''}`} />
+          <span className="text-[10px] tracking-tight">GRN</span>
         </button>
 
         <button

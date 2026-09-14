@@ -1,6 +1,7 @@
-import { Property, Project, BookingInquiry, ApiResponse, AdminUser } from '../types';
+import { Property, Project, BookingInquiry, ApiResponse, AdminUser, GoodsReceivedNote } from '../types';
 import { MOCK_PROPERTIES, createSlug } from '../data/mockProperties';
 import { MOCK_PROJECTS } from '../data/mockProjects';
+import { parseInvoiceToGRN, SAMPLE_KEBUN_ASAP_INVOICE_TEXT } from '../utils/grnParser';
 
 const DEFAULT_SPREADSHEET_ID = '1a2WN_AqaV9WS15h-37FDCyVV_ZpLB1IaBDbvb2VYzeU';
 
@@ -1068,6 +1069,11 @@ function transformSheetRowToBookingClient(row: Record<string, string>, index: nu
   const rawNotes = getVal('keterangan / notes', 'keterangan', 'notes', 'catatan', 'pesan') || '';
   const notes = rawNotes.trim().toUpperCase() === 'N/A' ? '' : rawNotes.trim();
 
+  const rawDiscountCode = getVal('discount code', 'coupon code', 'kode diskon', 'kupon');
+  const discountCode = (rawDiscountCode && rawDiscountCode.trim().toUpperCase() !== 'N/A') ? rawDiscountCode.trim() : undefined;
+  const rawDiscountPercent = getVal('discount (%)', 'discount %', 'discount', 'diskon');
+  const discountPercent = rawDiscountPercent ? parseNum(rawDiscountPercent) : undefined;
+
   const totalAmount = parseMoney(getVal('total invoice ($)', 'total invoice', 'total amount', 'total', 'invoice', 'harga'));
   const paymentStatusRaw = getVal('payment status', 'status payment', 'status', 'payment').toUpperCase();
   const paymentStatus: 'PAID' | 'UNPAID' = (paymentStatusRaw.includes('PAID') && !paymentStatusRaw.includes('UNPAID')) || paymentStatusRaw === 'CONFIRMED' || paymentStatusRaw === 'LUNAS' ? 'PAID' : 'UNPAID';
@@ -1118,6 +1124,8 @@ function transformSheetRowToBookingClient(row: Record<string, string>, index: nu
     eventDate,
     notes: notes || undefined,
     noteToCustomer: notes || undefined,
+    discountCode: discountCode || undefined,
+    discountPercent: discountPercent !== undefined ? discountPercent : undefined,
     totalAmount: totalAmount || 2500,
     paymentStatus,
     status: paymentStatus === 'PAID' ? 'Confirmed' : 'Pending'
@@ -1222,7 +1230,15 @@ function mergeBookingWithLocal(sb: BookingInquiry, matchedLocal: BookingInquiry)
       ? matchedLocal.customLineItems
       : sb.customLineItems,
     itemRatesSnapshot: matchedLocal.itemRatesSnapshot || sb.itemRatesSnapshot,
-    discountCode: matchedLocal.discountCode || sb.discountCode,
+    discountCode: (() => {
+      const mlCode = matchedLocal.discountCode && matchedLocal.discountCode.trim().toUpperCase() !== 'N/A'
+        ? matchedLocal.discountCode.trim()
+        : undefined;
+      const sbCode = sb.discountCode && sb.discountCode.trim().toUpperCase() !== 'N/A'
+        ? sb.discountCode.trim()
+        : undefined;
+      return mlCode || sbCode || undefined;
+    })(),
     discountPercent: matchedLocal.discountPercent !== undefined ? matchedLocal.discountPercent : sb.discountPercent,
     discountAmount: matchedLocal.discountAmount !== undefined ? matchedLocal.discountAmount : sb.discountAmount,
     subtotalBeforeDiscount: matchedLocal.subtotalBeforeDiscount !== undefined ? matchedLocal.subtotalBeforeDiscount : sb.subtotalBeforeDiscount,
@@ -1526,4 +1542,107 @@ export function authenticateAdmin(usernameOrEmail: string, passwordAttempt: stri
     message: 'Login berhasil.'
   };
 }
+
+const GRN_STORAGE_KEY = 'hanford_grn_records_v1';
+
+/**
+ * Retrieves all stored Goods Received Notes. Automatically seeds with the Kebun Asap Group sample GRN if empty.
+ */
+export function getGoodsReceivedNotes(): GoodsReceivedNote[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(GRN_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        let changed = false;
+        const cleaned = parsed.map((item: GoodsReceivedNote) => {
+          let itemUpdated = false;
+          const u = { ...item };
+          if (u.grnNumber === 'GRN-HGH-2026-0801') {
+            if (u.receivedDate !== '07 September 2026') {
+              u.receivedDate = '07 September 2026';
+              u.inspectionDate = '07 September 2026';
+              u.issuanceDate = '07 September 2026';
+              itemUpdated = true;
+            }
+            if (!u.approvedBy || u.approvedBy.includes('Trevor Finn')) {
+              u.approvedBy = 'Bramantyo Wardhana (Corporate F&B Purchasing Director)';
+              itemUpdated = true;
+            }
+          }
+          if (u.currency === 'WIT' || !u.currency) {
+            u.currency = 'USD';
+            itemUpdated = true;
+          }
+          if (itemUpdated) {
+            changed = true;
+            return u;
+          }
+          return item;
+        });
+        if (changed) {
+          localStorage.setItem(GRN_STORAGE_KEY, JSON.stringify(cleaned));
+          return cleaned;
+        }
+        return parsed;
+      }
+    }
+    // Seed with official Kebun Asap Group GRN
+    const initialSampleGRN = parseInvoiceToGRN(SAMPLE_KEBUN_ASAP_INVOICE_TEXT);
+    initialSampleGRN.id = 'grn-default-sample-001';
+    initialSampleGRN.grnNumber = 'GRN-HGH-2026-0801';
+    initialSampleGRN.status = 'Inspected & Accepted';
+    initialSampleGRN.receivedDate = '07 September 2026';
+    initialSampleGRN.inspectionDate = '07 September 2026';
+    initialSampleGRN.issuanceDate = '07 September 2026';
+    initialSampleGRN.currency = 'USD';
+    initialSampleGRN.approvedBy = 'Bramantyo Wardhana (Corporate F&B Purchasing Director)';
+    const list = [initialSampleGRN];
+    localStorage.setItem(GRN_STORAGE_KEY, JSON.stringify(list));
+    return list;
+  } catch (e) {
+    console.error('Failed to read GRNs from localStorage:', e);
+    return [];
+  }
+}
+
+/**
+ * Saves a new Goods Received Note to storage.
+ */
+export function saveGoodsReceivedNote(grn: GoodsReceivedNote): GoodsReceivedNote {
+  const current = getGoodsReceivedNotes();
+  const existingIdx = current.findIndex((item) => item.id === grn.id || item.grnNumber === grn.grnNumber);
+  let updatedList: GoodsReceivedNote[];
+  if (existingIdx >= 0) {
+    updatedList = [...current];
+    updatedList[existingIdx] = {
+      ...grn,
+      updatedAt: new Date().toISOString()
+    };
+  } else {
+    updatedList = [grn, ...current];
+  }
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(GRN_STORAGE_KEY, JSON.stringify(updatedList));
+  }
+  return grn;
+}
+
+/**
+ * Deletes a Goods Received Note by ID.
+ */
+export function deleteGoodsReceivedNote(id: string): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    const current = getGoodsReceivedNotes();
+    const filtered = current.filter((item) => item.id !== id && item.grnNumber !== id);
+    localStorage.setItem(GRN_STORAGE_KEY, JSON.stringify(filtered));
+    return true;
+  } catch (e) {
+    console.error('Failed to delete GRN:', e);
+    return false;
+  }
+}
+
 

@@ -595,7 +595,8 @@ export function transformSheetRowToBooking(row: Record<string, string>, index: n
   const priceCateringPerPax = parseMoney(getVal('price catering per pax ($)', 'price catering per pax', 'catering per pax price', 'price catering'));
 
   const itemRatesSnapshot = getVal('rates snapshot', 'item rates', 'rates', 'harga snapshot') || undefined;
-  const discountCode = getVal('discount code', 'coupon code', 'kode diskon', 'kupon') || undefined;
+  const rawDiscountCode = getVal('discount code', 'coupon code', 'kode diskon', 'kupon');
+  const discountCode = (rawDiscountCode && rawDiscountCode.trim().toUpperCase() !== 'N/A') ? rawDiscountCode.trim() : undefined;
   const discountPercent = parseNum(getVal('discount (%)', 'discount %', 'discount', 'diskon'));
   const subtotalBeforeTax = parseMoney(getVal('subtotal before tax ($)', 'subtotal before tax', 'subtotal'));
   const taxAmount = parseMoney(getVal('tax 10% ($)', 'tax 10%', 'tax', 'pajak'));

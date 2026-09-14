@@ -360,11 +360,16 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
                       <div className="font-mono font-bold text-sm text-[#3A4F67]">
                         ${b.totalAmount ? b.totalAmount.toLocaleString() : '0'}
                       </div>
-                      {b.discountCode && (
-                        <div className="text-[10px] font-semibold text-[#51867E]">
-                          {b.discountCode} ({b.discountPercent || 0}% OFF)
-                        </div>
-                      )}
+                      {(() => {
+                        const hasCode = b.discountCode && b.discountCode.trim().toUpperCase() !== 'N/A';
+                        const hasPercent = (b.discountPercent || 0) > 0;
+                        if (!hasCode && !hasPercent) return null;
+                        return (
+                          <div className="text-[10px] font-semibold text-[#51867E]">
+                            {hasCode ? `${b.discountCode} (${b.discountPercent || 0}% OFF)` : `${b.discountPercent}% OFF`}
+                          </div>
+                        );
+                      })()}
                     </div>
 
                     <div className="flex flex-wrap items-center gap-1.5">
@@ -503,11 +508,16 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
                           <div className="font-mono font-bold text-xs text-[#3A4F67]">
                             ${b.totalAmount ? b.totalAmount.toLocaleString() : '0'}
                           </div>
-                          {b.discountCode && (
-                            <div className="text-[9.5px] font-semibold text-[#51867E]">
-                              {b.discountCode} ({b.discountPercent || 0}% OFF)
-                            </div>
-                          )}
+                          {(() => {
+                            const hasCode = b.discountCode && b.discountCode.trim().toUpperCase() !== 'N/A';
+                            const hasPercent = (b.discountPercent || 0) > 0;
+                            if (!hasCode && !hasPercent) return null;
+                            return (
+                              <div className="text-[9.5px] font-semibold text-[#51867E]">
+                                {hasCode ? `${b.discountCode} (${b.discountPercent || 0}% OFF)` : `${b.discountPercent}% OFF`}
+                              </div>
+                            );
+                          })()}
                         </td>
 
                         <td className="py-3.5 px-4 text-center">

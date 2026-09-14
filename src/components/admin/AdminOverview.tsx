@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, FolderGit2, CalendarCheck, FileCheck, FileX, Users, ArrowRight, Sparkles, KeyRound } from 'lucide-react';
+import { Building2, FolderGit2, CalendarCheck, FileCheck, FileX, Users, ArrowRight, Sparkles, KeyRound, FileCheck2 } from 'lucide-react';
 import { Property, Project, BookingInquiry, AdminUser } from '../../types';
 
 interface AdminOverviewProps {
@@ -7,7 +7,7 @@ interface AdminOverviewProps {
   projects: Project[];
   bookings: BookingInquiry[];
   adminUsers: AdminUser[];
-  onNavigateTab: (tab: 'locations' | 'collaborations' | 'bookings' | 'cards' | 'users') => void;
+  onNavigateTab: (tab: 'locations' | 'collaborations' | 'bookings' | 'grn' | 'cards' | 'users') => void;
 }
 
 export const AdminOverview: React.FC<AdminOverviewProps> = ({
@@ -142,18 +142,31 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
         <h3 className="text-sm font-bold uppercase tracking-wider text-[#3A4F67]">
           Quick Access & Operations
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <button
-            onClick={() => onNavigateTab('cards')}
+            onClick={() => onNavigateTab('grn')}
             className="p-4 bg-[#EAF2F1] hover:bg-[#D5E7E5] rounded-xl text-left border border-[#51867E]/30 transition-colors space-y-1 cursor-pointer group shadow-xs"
           >
             <div className="flex items-center justify-between">
               <strong className="text-xs font-bold text-[#2C3744] group-hover:text-[#51867E] block">
-                ★ Guest Cards Generator
+                ★ Goods Received (GRN)
               </strong>
-              <KeyRound className="w-4 h-4 text-[#51867E]" />
+              <FileCheck2 className="w-4 h-4 text-[#51867E]" />
             </div>
-            <p className="text-[11px] text-slate-600">Buat Key Card & Welcoming Card PNG untuk tamu/villa.</p>
+            <p className="text-[11px] text-slate-600">Auto-generate dokumen GRN dari teks invoice supplier.</p>
+          </button>
+
+          <button
+            onClick={() => onNavigateTab('cards')}
+            className="p-4 bg-slate-50 hover:bg-[#EAF2F1] rounded-xl text-left border border-slate-200 transition-colors space-y-1 cursor-pointer group"
+          >
+            <div className="flex items-center justify-between">
+              <strong className="text-xs font-bold text-[#2C3744] group-hover:text-[#51867E] block">
+                Guest Cards
+              </strong>
+              <KeyRound className="w-4 h-4 text-slate-500 group-hover:text-[#51867E]" />
+            </div>
+            <p className="text-[11px] text-slate-600">Buat Key Card & Welcoming Card PNG untuk tamu.</p>
           </button>
 
           <button

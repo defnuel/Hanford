@@ -130,14 +130,28 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
     ? calculatedSubtotal
     : (booking.subtotalBeforeDiscount || (booking.totalAmount ? Math.round(booking.totalAmount / 1.1) : 0));
 
-  const discountCode = booking.discountCode || matchedProperty?.discountCode || '';
-  const discountPercent = booking.discountPercent || (discountCode ? matchedProperty?.discountPercent || 0 : 0);
+  const cleanDiscountCode =
+    booking.discountCode &&
+    booking.discountCode.trim() &&
+    booking.discountCode.trim().toUpperCase() !== 'N/A'
+      ? booking.discountCode.trim()
+      : '';
+
+  const discountPercent =
+    booking.discountPercent !== undefined && booking.discountPercent !== null
+      ? Number(booking.discountPercent)
+      : 0;
+
   const discountAmount =
     booking.discountAmount !== undefined && booking.discountAmount >= 0
       ? booking.discountAmount
       : discountPercent > 0
       ? Math.round(rawSubtotal * (discountPercent / 100))
       : 0;
+
+  const discountLabel = cleanDiscountCode
+    ? (discountPercent > 0 ? `Discount (${cleanDiscountCode} - ${discountPercent}%):` : `Discount (${cleanDiscountCode}):`)
+    : (discountPercent > 0 ? `Discount (${discountPercent}%):` : 'Discount:');
 
   const subtotalBeforeTax = Math.max(0, rawSubtotal - discountAmount);
   const finalTax = Math.round((subtotalBeforeTax + shippingFee) * 0.1);
@@ -613,7 +627,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               </div>
               {discountAmount > 0 && (
                 <div className="flex justify-between text-[#51867E] font-medium">
-                  <span>Discount ({discountCode || 'COUPON'} - {discountPercent}%):</span>
+                  <span>{discountLabel}</span>
                   <span className="font-mono font-bold">-${discountAmount.toLocaleString()}</span>
                 </div>
               )}
@@ -882,7 +896,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 </div>
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-[#51867E] font-medium">
-                    <span>Discount ({discountCode || 'COUPON'} - {discountPercent}%):</span>
+                    <span>{discountLabel}</span>
                     <span className="font-mono font-bold">-${discountAmount.toLocaleString()}</span>
                   </div>
                 )}
