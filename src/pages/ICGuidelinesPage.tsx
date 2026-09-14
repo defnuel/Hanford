@@ -299,7 +299,7 @@ export const ICGuidelinesPage: React.FC<ICGuidelinesPageProps> = ({ onNavigate }
                 <span>WELCOME TO HANFORD Hotels & Resorts</span>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl font-serif text-white font-light tracking-wide">
+              <h2 className="text-2xl sm:text-3xl font-serif text-white font-semibold tracking-wide">
                 HAVE FUN & CREATE YOUR STORY
               </h2>
 
@@ -309,7 +309,7 @@ export const ICGuidelinesPage: React.FC<ICGuidelinesPageProps> = ({ onNavigate }
 
               <div className="py-1">
                 <div className="inline-block px-4 py-1.5 bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm text-center">
-                  <span className="font-serif text-xs sm:text-sm text-[#88B2AB] tracking-[0.2em] font-light uppercase">
+                  <span className="font-serif text-xs sm:text-sm text-[#88B2AB] tracking-[0.2em] font-medium uppercase">
                     Stay. Dine. Gather. Explore.
                   </span>
                 </div>

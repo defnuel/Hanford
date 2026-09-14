@@ -279,7 +279,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
           {/* Header & Logo */}
           <div className="flex flex-col sm:flex-row justify-between items-start border-b border-slate-200 pb-8 gap-6">
             <div>
-              <div className="text-2xl sm:text-3xl font-serif font-light text-[#3A4F67] tracking-[0.2em] uppercase flex items-center gap-2">
+              <div className="text-2xl sm:text-3xl font-serif font-semibold text-[#3A4F67] tracking-[0.2em] uppercase flex items-center gap-2">
                 <span>HANFORD</span>
                 <span className="w-2 h-2 rounded-full bg-[#51867E]" />
               </div>
@@ -669,7 +669,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             {/* Header & Logo */}
             <div className="flex flex-row justify-between items-start border-b border-slate-200 pb-8 gap-6">
               <div>
-                <div className="text-3xl font-serif font-light text-[#3A4F67] tracking-[0.2em] uppercase flex items-center gap-2">
+                <div className="text-3xl font-serif font-semibold text-[#3A4F67] tracking-[0.2em] uppercase flex items-center gap-2">
                   <span>HANFORD</span>
                   <span className="w-2 h-2 rounded-full bg-[#51867E]" />
                 </div>

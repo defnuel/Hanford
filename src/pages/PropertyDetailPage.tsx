@@ -239,10 +239,10 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
                   <span className="text-[10px] uppercase font-bold tracking-widest text-[#88B2AB] block">
                     Starting From
                   </span>
-                  <span className="font-serif italic text-2xl sm:text-3xl text-white font-light">
+                  <span className="font-serif italic text-2xl sm:text-3xl text-white font-semibold">
                     ${(property.priceStandard || property.priceFrom)?.toLocaleString()}
                   </span>
-                  <span className="text-xs text-[#EAF2F1]/80 font-light"> / night</span>
+                  <span className="text-xs text-[#EAF2F1]/80 font-normal"> / night</span>
                 </div>
                 <div className="flex items-center gap-1 text-[#EAF2F1] text-xs">
                   <Star className="w-4 h-4 fill-[#88B2AB] text-[#88B2AB]" />

@@ -147,13 +147,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.3em] sm:tracking-[0.4em] text-[#51867E] uppercase block mb-1.5 sm:mb-2">
               OUR STORY
             </span>
-            <h2 className="font-serif italic text-2xl sm:text-5xl text-[#3A4F67] font-light">
+            <h2 className="font-serif italic text-2xl sm:text-5xl text-[#3A4F67] font-semibold">
               Over a Century of Timeless Hospitality
             </h2>
             <div className="w-12 sm:w-16 h-[1px] bg-[#51867E] mx-auto mt-3 sm:mt-4" />
           </div>
 
-          <div className="space-y-4 sm:space-y-6 text-[#2C3744] font-light leading-relaxed text-xs sm:text-base">
+          <div className="space-y-4 sm:space-y-6 text-[#2C3744] font-normal leading-relaxed text-xs sm:text-base">
             <p>
               A tradition of warmth, elegance, and genuine hospitality that creates unforgettable stays. What began as a single grand hotel more than a century ago has grown into an international collection of luxury hotels and resorts, proudly guided by four generations of the Hanford family.
             </p>
@@ -247,10 +247,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
               <span className="text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#3A4F67] uppercase block">
                 CITY LANDMARKS
               </span>
-              <h3 className="font-serif italic text-2xl sm:text-3xl text-[#3A4F67] font-light">
+              <h3 className="font-serif italic text-2xl sm:text-3xl text-[#3A4F67] font-semibold">
                 Hanford Grand Hotel
               </h3>
-              <p className="text-xs sm:text-sm text-[#2C3744] font-light leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#2C3744] font-normal leading-relaxed">
                 A collection of luxury five-star hotels located in the world’s leading cities. Positioned within prestigious business districts and cultural landmarks, each property offers refined accommodations, award-winning dining, grand event venues, wellness facilities, and personalized service for business and leisure travelers alike.
               </p>
             </div>
@@ -268,10 +268,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
               <span className="text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#3A4F67] uppercase block">
                 PREMIER DESTINATIONS
               </span>
-              <h3 className="font-serif italic text-2xl sm:text-3xl text-[#3A4F67] font-light">
+              <h3 className="font-serif italic text-2xl sm:text-3xl text-[#3A4F67] font-semibold">
                 Hanford Hotel & Resort
               </h3>
-              <p className="text-xs sm:text-sm text-[#2C3744] font-light leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#2C3744] font-normal leading-relaxed">
                 A collection of sophisticated hotels and resorts in select premier destinations worldwide. Offering the perfect balance of urban convenience and resort serenity, each property delivers elegant accommodations, exceptional dining, versatile event spaces, and attentive service for discerning travelers.
               </p>
             </div>
@@ -289,10 +289,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
               <span className="text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#3A4F67] uppercase block">
                 NATURAL SANCTUARIES
               </span>
-              <h3 className="font-serif italic text-2xl sm:text-3xl text-[#3A4F67] font-light">
+              <h3 className="font-serif italic text-2xl sm:text-3xl text-[#3A4F67] font-semibold">
                 Hanford Eco Resort
               </h3>
-              <p className="text-xs sm:text-sm text-[#2C3744] font-light leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#2C3744] font-normal leading-relaxed">
                 A collection of sustainable luxury resorts set within remarkable coastal destinations. Designed to immerse guests in nature while preserving the surrounding environment, each resort features private accommodations, locally inspired experiences, wellness programs, and unforgettable connections with the landscape.
               </p>
             </div>

@@ -160,7 +160,7 @@ Acknowledged & Approved By: Bramantyo Wardhana (Corporate F&B Purchasing Directo
   const renderHeader = (pageIndex: number) => (
     <div className="flex flex-col sm:flex-row justify-between items-start border-b-2 border-[#3A4F67] pb-6 gap-6">
       <div>
-        <div className="text-2xl sm:text-3xl font-serif font-light text-[#3A4F67] tracking-[0.2em] uppercase flex items-center gap-2">
+        <div className="text-2xl sm:text-3xl font-serif font-semibold text-[#3A4F67] tracking-[0.2em] uppercase flex items-center gap-2">
           <span>HANFORD</span>
           <span className="w-2 h-2 rounded-full bg-[#51867E]" />
         </div>

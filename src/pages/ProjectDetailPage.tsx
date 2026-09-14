@@ -78,7 +78,7 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
   if (!project) {
     return (
       <div className="pt-32 pb-24 min-h-screen bg-[#FFFFFF] flex flex-col items-center justify-center space-y-6 px-6 text-center">
-        <h2 className="text-3xl font-serif font-light text-[#3A4F67]">Collaboration Not Found</h2>
+        <h2 className="text-3xl font-serif font-semibold text-[#3A4F67]">Collaboration Not Found</h2>
         <p className="text-xs text-[#2C3744] max-w-md">
           The requested collaboration project could not be located in the Hanford database.
         </p>
@@ -234,7 +234,7 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
                 <span className="text-[10px] font-bold tracking-[0.25em] text-[#51867E] uppercase block">
                   COLLABORATION SNAPSHOT
                 </span>
-                <h3 className="font-serif text-xl font-light text-[#3A4F67]">
+                <h3 className="font-serif text-xl font-semibold text-[#3A4F67]">
                   {project.projectName}
                 </h3>
               </div>

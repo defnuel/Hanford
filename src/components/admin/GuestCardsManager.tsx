@@ -491,7 +491,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
             <Sparkles className="w-3.5 h-3.5" />
             <span>Hanford Guest Visual Assets Studio</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-serif font-light tracking-wide text-white">
+          <h2 className="text-2xl sm:text-3xl font-serif font-semibold tracking-wide text-white">
             Guest Cards & Visual Gallery Generator
           </h2>
           <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">

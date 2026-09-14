@@ -455,7 +455,7 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
               <span>{initialBooking ? 'EDIT INVOICE' : 'INVOICE GENERATOR'}</span>
               <span>&bull; #{bookingId}</span>
             </div>
-            <h3 className="text-base sm:text-lg font-serif font-light tracking-wide text-white">
+            <h3 className="text-base sm:text-lg font-serif font-semibold tracking-wide text-white">
               {initialBooking ? 'Edit & Update Invoice' : 'Create New Official Invoice'}
             </h3>
           </div>

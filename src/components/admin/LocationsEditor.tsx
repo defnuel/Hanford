@@ -137,7 +137,7 @@ export const LocationsEditor: React.FC<LocationsEditorProps> = ({ properties, on
       {/* Top Header & Search */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg sm:text-xl font-serif font-light text-[#3A4F67]">
+          <h2 className="text-lg sm:text-xl font-serif font-semibold text-[#3A4F67]">
             Sanctuaries & Locations ({properties.length})
           </h2>
           <p className="text-xs text-slate-500">

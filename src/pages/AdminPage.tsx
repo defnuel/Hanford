@@ -100,7 +100,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             </button>
 
             <div>
-              <div className="font-serif text-base sm:text-xl font-light tracking-[0.15em] sm:tracking-[0.2em] text-white uppercase flex items-center gap-1.5 sm:gap-2">
+              <div className="font-serif text-base sm:text-xl font-semibold tracking-[0.15em] sm:tracking-[0.2em] text-white uppercase flex items-center gap-1.5 sm:gap-2">
                 <span>HANFORD</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-[#88B2AB]" />
                 <span className="text-[10px] sm:text-xs text-[#88B2AB] font-mono uppercase font-bold tracking-widest">

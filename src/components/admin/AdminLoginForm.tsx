@@ -84,7 +84,7 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
           <div className="inline-flex items-center justify-center p-3 bg-[#51867E]/20 text-[#88B2AB] rounded-full mb-1 border border-[#51867E]/30">
             <ShieldCheck className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-serif font-light tracking-[0.2em] text-white uppercase">
+          <h1 className="text-2xl font-serif font-semibold tracking-[0.2em] text-white uppercase">
             HANFORD ADMIN
           </h1>
           <p className="text-xs text-slate-400 font-medium tracking-wide">

@@ -110,7 +110,7 @@ export const GoodsReceivedManager: React.FC<GoodsReceivedManagerProps> = ({ prop
             <FileCheck2 className="w-3.5 h-3.5" />
             <span>Goods Receiving & Warehouse QA Inspection</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-serif font-light text-white tracking-wide">
+          <h2 className="text-xl sm:text-2xl font-serif font-semibold text-white tracking-wide">
             Goods Received Notes (GRN)
           </h2>
           <p className="text-xs text-slate-200 max-w-2xl leading-relaxed">

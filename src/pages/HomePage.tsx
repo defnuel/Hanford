@@ -119,7 +119,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           {activeSlide && (
             <div className="flex items-center gap-2 px-3 py-1 bg-[#3A4F67]/90 backdrop-blur-md rounded-full border border-[#88B2AB]/40 text-xs">
               <MapPin className="w-3.5 h-3.5 text-[#88B2AB]" />
-              <span className="font-serif italic text-white font-light">{activeSlide.name}</span>
+              <span className="font-serif italic text-white font-medium">{activeSlide.name}</span>
               <span className="text-[#88B2AB] font-bold text-[10px] uppercase tracking-wider">• {activeSlide.country}</span>
             </div>
           )}

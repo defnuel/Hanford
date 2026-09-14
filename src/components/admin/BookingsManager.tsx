@@ -163,7 +163,7 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-            <h2 className="text-lg sm:text-xl font-serif font-light text-[#3A4F67]">
+            <h2 className="text-lg sm:text-xl font-serif font-semibold text-[#3A4F67]">
               Reservations & Invoices ({bookings.length})
             </h2>
             <div className="flex items-center gap-2">

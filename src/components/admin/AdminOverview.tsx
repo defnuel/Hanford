@@ -30,7 +30,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
             <Sparkles className="w-3.5 h-3.5" />
             <span>Central Admin Workspace</span>
           </div>
-          <h2 className="text-xl sm:text-3xl font-serif font-light tracking-wide text-white">
+          <h2 className="text-xl sm:text-3xl font-serif font-semibold tracking-wide text-white">
             Hanford Management Portal
           </h2>
           <p className="text-xs text-slate-200 max-w-2xl leading-relaxed">
@@ -74,7 +74,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
               <Building2 className="w-5 h-5" />
             </div>
           </div>
-          <div className="text-3xl font-serif font-light text-[#2C3744]">{properties.length}</div>
+          <div className="text-3xl font-serif font-semibold text-[#2C3744]">{properties.length}</div>
           <div className="text-[11px] text-slate-500 flex items-center gap-1 font-medium group-hover:text-[#51867E]">
             <span>Manage Locations & Pricing</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -92,7 +92,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
               <FolderGit2 className="w-5 h-5" />
             </div>
           </div>
-          <div className="text-3xl font-serif font-light text-[#2C3744]">{projects.length}</div>
+          <div className="text-3xl font-serif font-semibold text-[#2C3744]">{projects.length}</div>
           <div className="text-[11px] text-slate-500 flex items-center gap-1 font-medium group-hover:text-[#51867E]">
             <span>Manage Projects & Content</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -110,7 +110,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
               <FileX className="w-5 h-5" />
             </div>
           </div>
-          <div className="text-3xl font-serif font-light text-amber-700">{unpaidBookings.length}</div>
+          <div className="text-3xl font-serif font-semibold text-amber-700">{unpaidBookings.length}</div>
           <div className="text-[11px] text-amber-800 flex items-center gap-1 font-medium">
             <span>Mark as PAID & Print</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -128,7 +128,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
               <FileCheck className="w-5 h-5" />
             </div>
           </div>
-          <div className="text-3xl font-serif font-light text-emerald-700">{paidBookings.length}</div>
+          <div className="text-3xl font-serif font-semibold text-emerald-700">{paidBookings.length}</div>
           <div className="text-[11px] text-emerald-800 flex items-center gap-1 font-medium">
             <span>Print Official Receipts</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
