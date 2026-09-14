@@ -78,7 +78,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
               {/* Main Title Heading */}
               <div>
-                <h1 className="text-[34px] min-[375px]:text-[40px] min-[414px]:text-[44px] sm:text-6xl md:text-[72px] lg:text-[84px] leading-[1.05] font-normal italic font-serif text-white tracking-tight drop-shadow-2xl">
+                <h1 className="text-[34px] min-[375px]:text-[40px] min-[414px]:text-[44px] sm:text-6xl md:text-[72px] lg:text-[84px] leading-[1.05] font-semibold italic font-serif text-white tracking-tight drop-shadow-2xl">
                   An Elevated<br />Way of Staying
                 </h1>
               </div>
@@ -172,7 +172,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.3em] sm:tracking-[0.4em] uppercase text-[#51867E] block mb-1.5 sm:mb-2">
               CURATED PORTFOLIO
             </span>
-            <h2 className="font-serif text-3xl sm:text-6xl font-light italic text-[#3A4F67]">
+            <h2 className="font-serif text-3xl sm:text-6xl font-medium italic text-[#3A4F67]">
               Featured Sanctuaries
             </h2>
           </div>
@@ -218,10 +218,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                     <span className="text-[10px] font-bold tracking-[0.2em] text-[#3A4F67] uppercase block mb-1">
                       {property.continent}
                     </span>
-                    <h3 className="font-serif text-xl sm:text-2xl font-light italic text-[#3A4F67] mb-2 group-hover:text-[#51867E] transition-colors">
+                    <h3 className="font-serif text-xl sm:text-2xl font-semibold italic text-[#3A4F67] mb-2 group-hover:text-[#51867E] transition-colors">
                       {property.name}
                     </h3>
-                    <p className="text-xs text-[#2C3744] font-light leading-relaxed mb-4 sm:mb-6 italic">
+                    <p className="text-xs text-[#2C3744] font-normal leading-relaxed mb-4 sm:mb-6 italic">
                       "{property.tagline}"
                     </p>
                   </div>
@@ -262,7 +262,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.3em] sm:tracking-[0.4em] text-[#51867E] uppercase block">
             THE HANFORD PHILOSOPHY
           </span>
-          <h2 className="luxury-emphasis font-serif text-2xl sm:text-5xl font-light italic leading-snug sm:leading-tight text-[#3A4F67]">
+          <h2 className="luxury-emphasis font-serif text-2xl sm:text-5xl font-medium italic leading-snug sm:leading-tight text-[#3A4F67]">
             "Every destination shares the same commitment to thoughtful service, timeless elegance, and experiences that celebrate both the people and the places."
           </h2>
           <div className="w-12 sm:w-16 h-[1px] bg-[#51867E] mx-auto" />
@@ -286,7 +286,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.3em] sm:tracking-[0.4em] uppercase text-[#51867E] block mb-1.5 sm:mb-2">
             UNRIVALED STANDARD
           </span>
-          <h2 className="font-serif text-2xl sm:text-5xl font-light italic text-[#3A4F67]">
+          <h2 className="font-serif text-2xl sm:text-5xl font-medium italic text-[#3A4F67]">
             Signature Elements of Hanford
           </h2>
         </div>
@@ -296,8 +296,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#51867E] border border-[#88B2AB]/30 flex items-center justify-center mx-auto text-[#88B2AB]">
               <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <h3 className="font-serif text-lg sm:text-xl font-light italic text-[#3A4F67]">St. James Butler Service</h3>
-            <p className="text-xs text-[#2C3744] leading-relaxed font-light">
+            <h3 className="font-serif text-lg sm:text-xl font-medium italic text-[#3A4F67]">St. James Butler Service</h3>
+            <p className="text-xs text-[#2C3744] leading-relaxed font-normal">
               Intuitive 24-hour white-glove service rooted in the finest traditions of world-class hospitality.
             </p>
           </div>
@@ -306,8 +306,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#51867E] border border-[#88B2AB]/30 flex items-center justify-center mx-auto text-[#88B2AB]">
               <Award className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <h3 className="font-serif text-lg sm:text-xl font-light italic text-[#3A4F67]">Michelin-Starred Dining</h3>
-            <p className="text-xs text-[#2C3744] leading-relaxed font-light">
+            <h3 className="font-serif text-lg sm:text-xl font-medium italic text-[#3A4F67]">Michelin-Starred Dining</h3>
+            <p className="text-xs text-[#2C3744] leading-relaxed font-normal">
               Hyper-local and seasonal gastronomy crafted by renowned international master chefs, complemented by expert sommelier pairings.
             </p>
           </div>
@@ -316,8 +316,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#51867E] border border-[#88B2AB]/30 flex items-center justify-center mx-auto text-[#88B2AB]">
               <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <h3 className="font-serif text-lg sm:text-xl font-light italic text-[#3A4F67]">Holistic Thermal Spas</h3>
-            <p className="text-xs text-[#2C3744] leading-relaxed font-light">
+            <h3 className="font-serif text-lg sm:text-xl font-medium italic text-[#3A4F67]">Holistic Thermal Spas</h3>
+            <p className="text-xs text-[#2C3744] leading-relaxed font-normal">
               Natural thermal springs, elegant hydrotherapy marble pools, and personalized herbal wellness treatments.
             </p>
           </div>
@@ -326,8 +326,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#51867E] border border-[#88B2AB]/30 flex items-center justify-center mx-auto text-[#88B2AB]">
               <MapPin className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <h3 className="font-serif text-lg sm:text-xl font-light italic text-[#3A4F67]">Rare Global Destinations</h3>
-            <p className="text-xs text-[#2C3744] leading-relaxed font-light">
+            <h3 className="font-serif text-lg sm:text-xl font-medium italic text-[#3A4F67]">Rare Global Destinations</h3>
+            <p className="text-xs text-[#2C3744] leading-relaxed font-normal">
               Carefully selected locations that offer unparalleled privacy, breathtaking natural beauty, and deep cultural resonance.
             </p>
           </div>
@@ -341,10 +341,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.3em] sm:tracking-[0.4em] uppercase text-[#3A4F67] block mb-1">
               RESERVATIONS
             </span>
-            <h3 className="font-serif text-2xl sm:text-4xl font-light italic text-[#3A4F67]">
+            <h3 className="font-serif text-2xl sm:text-4xl font-medium italic text-[#3A4F67]">
               Ready to Reserve Your Stay?
             </h3>
-            <p className="text-xs text-[#2C3744] font-light tracking-wider mt-1">
+            <p className="text-xs text-[#2C3744] font-normal tracking-wider mt-1">
               Submit your booking request directly to our Central Reservations team.
             </p>
           </div>

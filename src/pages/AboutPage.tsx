@@ -95,7 +95,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             </span>
           </div>
 
-          <h1 className="font-serif italic text-2xl sm:text-5xl lg:text-6xl text-white font-light mb-4 sm:mb-6 leading-tight drop-shadow-md">
+          <h1 className="font-serif italic text-2xl sm:text-5xl lg:text-6xl text-white font-semibold mb-4 sm:mb-6 leading-tight drop-shadow-md">
             Hanford Hotels & Resorts
           </h1>
 
@@ -201,7 +201,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
               </div>
 
               <div>
-                <h2 className="font-serif italic text-2xl sm:text-4xl text-[#3A4F67] font-light">
+                <h2 className="font-serif italic text-2xl sm:text-4xl text-[#3A4F67] font-semibold">
                   Trevor Finn Hanford
                 </h2>
                 <p className="text-xs sm:text-sm font-bold tracking-widest text-[#51867E] uppercase mt-1">
@@ -229,7 +229,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.3em] sm:tracking-[0.4em] text-[#51867E] uppercase block mb-1.5 sm:mb-2">
             PORTFOLIO ARCHITECTURE
           </span>
-          <h2 className="font-serif italic text-2xl sm:text-5xl text-[#3A4F67] font-light">
+          <h2 className="font-serif italic text-2xl sm:text-5xl text-[#3A4F67] font-semibold">
             Our Collections
           </h2>
           <p className="text-xs text-[#2C3744] font-medium mt-1.5 sm:mt-2">
@@ -320,11 +320,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.3em] sm:tracking-[0.4em] text-[#88B2AB] uppercase block">
             OUR COMMITMENT
           </span>
-          <h2 className="font-serif italic text-2xl sm:text-5xl font-light text-white">
+          <h2 className="font-serif italic text-2xl sm:text-5xl font-semibold text-white">
             The Hanford Promise
           </h2>
           <div className="w-12 sm:w-16 h-[1px] bg-[#88B2AB] mx-auto" />
-          <p className="font-serif italic text-base sm:text-2xl text-white font-normal leading-relaxed max-w-3xl mx-auto drop-shadow-sm">
+          <p className="font-serif italic text-base sm:text-2xl text-white font-medium leading-relaxed max-w-3xl mx-auto drop-shadow-sm">
             “For more than a century since 1920, Hanford Hotels & Resorts has remained committed to creating meaningful journeys. Across iconic city landmarks and pristine coastal destinations, we honor our founding values by delivering authentic hospitality that stands the test of time.”
           </p>
         </div>
@@ -335,7 +335,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
         <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.3em] sm:tracking-[0.4em] text-[#51867E] uppercase block">
           CENTURY OF RECOGNITION
         </span>
-        <h2 className="font-serif italic text-2xl sm:text-5xl font-light text-[#3A4F67]">
+        <h2 className="font-serif italic text-2xl sm:text-5xl font-semibold text-[#3A4F67]">
           Global Honors & Accolades
         </h2>
 

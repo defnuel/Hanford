@@ -62,7 +62,7 @@ export const GuidelinesPage: React.FC<GuidelinesPageProps> = ({ onNavigate, defa
           <span>HANFORD H&R GUIDELINES</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-serif font-light text-[#3A4F67] tracking-tight">
+        <h1 className="text-3xl sm:text-5xl font-serif font-semibold text-[#3A4F67] tracking-tight">
           Guidelines
         </h1>
 

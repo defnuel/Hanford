@@ -38,7 +38,7 @@ export const ICGuidelinesPage: React.FC<ICGuidelinesPageProps> = ({ onNavigate }
           <span>Roleplay & Writer's Guidelines</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-serif font-light text-[#3A4F67] tracking-tight">
+        <h1 className="text-3xl sm:text-5xl font-serif font-semibold text-[#3A4F67] tracking-tight">
           Writer's Guidelines
         </h1>
 

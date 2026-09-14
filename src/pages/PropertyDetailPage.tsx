@@ -122,7 +122,7 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
               </span>
             </div>
 
-            <h1 className="font-serif italic text-3xl sm:text-6xl font-light text-white leading-tight">
+            <h1 className="font-serif italic text-3xl sm:text-6xl font-semibold text-white leading-tight">
               {property.name}
             </h1>
 

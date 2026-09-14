@@ -132,7 +132,7 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-serif font-light text-[#3A4F67] tracking-wide leading-tight">
+          <h1 className="text-3xl sm:text-5xl font-serif font-semibold text-[#3A4F67] tracking-wide leading-tight">
             {project.projectName}
           </h1>
 

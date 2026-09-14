@@ -491,7 +491,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
             <Sparkles className="w-3.5 h-3.5 text-[#88B2AB]" />
             <span>CENTRAL RESERVATIONS & BOOKING SYSTEM</span>
           </div>
-          <h1 className="font-serif italic text-3xl sm:text-6xl text-[#3A4F67] font-light">
+          <h1 className="font-serif italic text-3xl sm:text-6xl text-[#3A4F67] font-semibold">
             Book Your Experience
           </h1>
           <p className="text-xs sm:text-sm text-[#2C3744] max-w-xl mx-auto font-light leading-relaxed">
