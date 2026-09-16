@@ -306,16 +306,16 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               <div className="text-xs text-slate-500">Date Issued: {dateStr}</div>
 
               {/* Status Stamp */}
-              <div className="pt-2">
+              <div className="pt-2 flex justify-start sm:justify-end">
                 {isPaid ? (
-                  <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#51867E]/10 border-2 border-[#51867E] text-[#51867E] rounded-md font-bold text-xs uppercase tracking-widest">
-                    <CheckCircle className="w-4 h-4 text-[#51867E]" />
-                    <span>PAID IN FULL</span>
+                  <div className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 bg-[#51867E]/10 border-2 border-[#51867E] text-[#51867E] rounded-md font-bold text-xs uppercase tracking-wider whitespace-nowrap shrink-0 leading-none">
+                    <CheckCircle className="w-4 h-4 text-[#51867E] shrink-0" />
+                    <span className="whitespace-nowrap leading-none tracking-wider font-bold">PAID IN FULL</span>
                   </div>
                 ) : (
-                  <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-amber-50 border-2 border-amber-500 text-amber-700 rounded-md font-bold text-xs uppercase tracking-widest">
-                    <Clock className="w-4 h-4 text-amber-600" />
-                    <span>UNPAID - INVOICE PENDING</span>
+                  <div className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 bg-amber-50 border-2 border-amber-500 text-amber-700 rounded-md font-bold text-xs uppercase tracking-wider whitespace-nowrap shrink-0 leading-none">
+                    <Clock className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span className="whitespace-nowrap leading-none tracking-wider font-bold">UNPAID - INVOICE PENDING</span>
                   </div>
                 )}
               </div>
@@ -702,16 +702,16 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 <div className="text-xs text-slate-500">Date Issued: {dateStr}</div>
 
                 {/* Status Stamp */}
-                <div className="pt-2">
+                <div className="pt-2 flex justify-end">
                   {isPaid ? (
-                    <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#51867E]/10 border-2 border-[#51867E] text-[#51867E] rounded-md font-bold text-xs uppercase tracking-widest">
-                      <CheckCircle className="w-4 h-4 text-[#51867E]" />
-                      <span>PAID IN FULL</span>
+                    <div className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 bg-[#51867E]/10 border-2 border-[#51867E] text-[#51867E] rounded-md font-bold text-xs uppercase tracking-wider whitespace-nowrap shrink-0 leading-none">
+                      <CheckCircle className="w-4 h-4 text-[#51867E] shrink-0" />
+                      <span className="whitespace-nowrap leading-none tracking-wider font-bold">PAID IN FULL</span>
                     </div>
                   ) : (
-                    <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-amber-50 border-2 border-amber-500 text-amber-700 rounded-md font-bold text-xs uppercase tracking-widest">
-                      <Clock className="w-4 h-4 text-amber-600" />
-                      <span>UNPAID - INVOICE PENDING</span>
+                    <div className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 bg-amber-50 border-2 border-amber-500 text-amber-700 rounded-md font-bold text-xs uppercase tracking-wider whitespace-nowrap shrink-0 leading-none">
+                      <Clock className="w-4 h-4 text-amber-600 shrink-0" />
+                      <span className="whitespace-nowrap leading-none tracking-wider font-bold">UNPAID - INVOICE PENDING</span>
                     </div>
                   )}
                 </div>

@@ -103,6 +103,29 @@ export async function exportInvoiceAsImage(
     element.style.display = 'block';
     element.style.backgroundColor = '#FFFFFF';
     element.style.boxSizing = 'border-box';
+
+    // Ensure status stamps/badges never wrap words or break onto two lines during canvas capture
+    clonedDoc.querySelectorAll('*').forEach((node: Element) => {
+      const el = node as HTMLElement;
+      const text = el.textContent ? el.textContent.trim() : '';
+      if (
+        text === 'PAID IN FULL' ||
+        text.includes('PAID IN FULL') ||
+        text.includes('UNPAID - INVOICE PENDING') ||
+        text.includes('OFFICIAL RECEIPT')
+      ) {
+        el.style.whiteSpace = 'nowrap';
+        el.style.wordBreak = 'keep-all';
+        el.style.overflowWrap = 'normal';
+        if (el.tagName === 'SPAN') {
+          el.style.display = 'inline-block';
+        } else if (el.tagName === 'DIV') {
+          el.style.display = 'inline-flex';
+          el.style.flexWrap = 'nowrap';
+          el.style.alignItems = 'center';
+        }
+      }
+    });
   };
 
   // Strategy 1: html2canvas on Primary Node with cloned layout reset

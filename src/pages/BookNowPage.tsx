@@ -590,10 +590,17 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     Date Issued: {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
 
-                  <div className="px-3 py-1 bg-amber-50/80 border border-amber-500/80 text-amber-800 rounded-full text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5 shadow-2xs mt-1 self-start sm:self-auto">
-                    <Clock className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                    <span>UNPAID - INVOICE PENDING</span>
-                  </div>
+                  {confirmedBooking.inquiry.paymentStatus === 'PAID' ? (
+                    <div className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 bg-[#51867E]/10 border-2 border-[#51867E] text-[#51867E] rounded-md text-xs font-bold uppercase tracking-wider whitespace-nowrap shrink-0 leading-none mt-1 self-start sm:self-auto">
+                      <CheckCircle2 className="w-4 h-4 text-[#51867E] shrink-0" />
+                      <span className="whitespace-nowrap leading-none tracking-wider font-bold">PAID IN FULL</span>
+                    </div>
+                  ) : (
+                    <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1 bg-amber-50/80 border border-amber-500/80 text-amber-800 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap shrink-0 leading-none shadow-2xs mt-1 self-start sm:self-auto">
+                      <Clock className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                      <span className="whitespace-nowrap leading-none tracking-wider font-bold">UNPAID - INVOICE PENDING</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -939,10 +946,17 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       Date Issued: {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </div>
 
-                    <div className="px-3 py-1 bg-amber-50/80 border border-amber-500/80 text-amber-800 rounded-full text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5 shadow-2xs mt-1">
-                      <Clock className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                      <span>UNPAID - INVOICE PENDING</span>
-                    </div>
+                    {confirmedBooking.inquiry.paymentStatus === 'PAID' ? (
+                      <div className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 bg-[#51867E]/10 border-2 border-[#51867E] text-[#51867E] rounded-md text-xs font-bold uppercase tracking-wider whitespace-nowrap shrink-0 leading-none mt-1">
+                        <CheckCircle2 className="w-4 h-4 text-[#51867E] shrink-0" />
+                        <span className="whitespace-nowrap leading-none tracking-wider font-bold">PAID IN FULL</span>
+                      </div>
+                    ) : (
+                      <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1 bg-amber-50/80 border border-amber-500/80 text-amber-800 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap shrink-0 leading-none shadow-2xs mt-1">
+                        <Clock className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                        <span className="whitespace-nowrap leading-none tracking-wider font-bold">UNPAID - INVOICE PENDING</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
