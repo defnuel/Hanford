@@ -223,6 +223,15 @@ export async function exportCardAsImage(
 
   let dataUrl = '';
 
+  // Ensure all web fonts are completely loaded before capturing canvas
+  if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
+    try {
+      await document.fonts.ready;
+    } catch {
+      // Non-blocking fallback
+    }
+  }
+
   // Priority 1: Key Card Direct Canvas Renderer
   if (primaryNode.id.includes('key-card') || primaryNode.hasAttribute('data-guest-name')) {
     try {

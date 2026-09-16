@@ -60,10 +60,32 @@ export async function exportInvoiceAsImage(
     throw new Error('Tidak ditemukan elemen invoice untuk diunduh.');
   }
 
+  // Ensure all web fonts (Plus Jakarta Sans, Cormorant Garamond, etc.) are loaded before rendering
+  try {
+    if (typeof document !== 'undefined' && 'fonts' in document) {
+      await (document as any).fonts.ready;
+    }
+  } catch (fontErr) {
+    console.warn('Waiting for fonts failed or not supported:', fontErr);
+  }
+
   let dataUrl = '';
 
   // Helper to reset parent layout in cloned document so html2canvas renders at (0, 0)
   const resetClonedLayout = (clonedDoc: Document, element: HTMLElement) => {
+    // Ensure the iframe document and body evaluate as wide desktop viewport (>= 820px)
+    if (clonedDoc.documentElement) {
+      clonedDoc.documentElement.style.width = '820px';
+      clonedDoc.documentElement.style.minWidth = '820px';
+    }
+    if (clonedDoc.body) {
+      clonedDoc.body.style.width = '820px';
+      clonedDoc.body.style.minWidth = '820px';
+      clonedDoc.body.style.margin = '0';
+      clonedDoc.body.style.padding = '0';
+      clonedDoc.body.style.backgroundColor = '#FFFFFF';
+    }
+
     let current: HTMLElement | null = element;
     while (current && current !== clonedDoc.body) {
       current.style.position = 'static';
@@ -72,11 +94,15 @@ export async function exportInvoiceAsImage(
       current.style.transform = 'none';
       current.style.opacity = '1';
       current.style.visibility = 'visible';
+      current.style.overflow = 'visible';
       current = current.parentElement;
     }
     element.style.width = '800px';
+    element.style.minWidth = '800px';
+    element.style.maxWidth = '800px';
     element.style.display = 'block';
     element.style.backgroundColor = '#FFFFFF';
+    element.style.boxSizing = 'border-box';
   };
 
   // Strategy 1: html2canvas on Primary Node with cloned layout reset
@@ -88,15 +114,16 @@ export async function exportInvoiceAsImage(
         allowTaint: true,
         backgroundColor: '#FFFFFF',
         logging: false,
-        imageTimeout: 2000,
+        imageTimeout: 3000,
         scrollX: 0,
         scrollY: 0,
-        windowWidth: 800,
+        windowWidth: 820,
+        width: 800,
         onclone: (clonedDoc, element) => {
           resetClonedLayout(clonedDoc, element);
         }
       }),
-      4000,
+      6000,
       'html2canvas primary'
     );
     dataUrl = canvas.toDataURL('image/png', 0.95);
@@ -113,9 +140,9 @@ export async function exportInvoiceAsImage(
             allowTaint: true,
             backgroundColor: '#FFFFFF',
             logging: false,
-            imageTimeout: 2000,
+            imageTimeout: 3000,
           }),
-          3000,
+          4000,
           'html2canvas secondary'
         );
         dataUrl = canvas.toDataURL('image/png', 0.95);
@@ -135,15 +162,18 @@ export async function exportInvoiceAsImage(
             backgroundColor: '#FFFFFF',
             skipFonts: true,
             fontEmbedCSS: '',
+            width: 800,
             style: {
               position: 'static',
               opacity: '1',
               visibility: 'visible',
               transform: 'none',
-              width: '800px'
+              width: '800px',
+              minWidth: '800px',
+              maxWidth: '800px'
             }
           }),
-          3000,
+          4000,
           'toPng primary'
         );
       } catch (err3) {

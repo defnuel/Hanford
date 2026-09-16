@@ -278,18 +278,18 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
           
           {/* Header & Logo */}
           <div className="flex flex-col sm:flex-row justify-between items-start border-b border-slate-200 pb-8 gap-6">
-            <div>
+            <div className="flex-1 min-w-0">
               <div className="text-2xl sm:text-3xl font-serif font-semibold text-[#3A4F67] tracking-[0.2em] uppercase flex items-center gap-2">
                 <span>HANFORD</span>
                 <span className="w-2 h-2 rounded-full bg-[#51867E]" />
               </div>
-              <p className="text-[11px] font-semibold text-[#51867E] uppercase tracking-widest mt-1">
+              <p className="text-[10.5px] sm:text-[11px] font-semibold text-[#51867E] uppercase tracking-[0.14em] mt-1 leading-normal whitespace-nowrap">
                 HOTELS & RESORTS &bull; CENTRAL RESERVATIONS
               </p>
-              <p className="text-xs text-slate-600 mt-1.5 font-medium italic">
+              <p className="text-xs text-slate-600 mt-1 font-medium italic leading-normal whitespace-nowrap">
                 An Elevated Way of Staying
               </p>
-              <div className="flex items-center gap-1.5 mt-1 text-xs text-slate-500 font-medium">
+              <div className="flex items-center gap-1.5 mt-1 text-xs text-slate-500 font-medium whitespace-nowrap">
                 <svg className="w-3.5 h-3.5 fill-current text-slate-800 shrink-0" viewBox="0 0 24 24">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                 </svg>
@@ -297,7 +297,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               </div>
             </div>
 
-            <div className="sm:text-right space-y-1">
+            <div className="sm:text-right space-y-1 shrink-0">
               <div className="inline-block px-3 py-1 bg-slate-100 rounded-lg text-slate-600 font-mono text-xs font-bold uppercase tracking-wider mb-2">
                 OFFICIAL RECEIPT / INVOICE
               </div>
@@ -323,13 +323,13 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
           </div>
 
           {/* Guest & Property Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 my-8 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 my-8 text-xs">
             {/* Guest Details */}
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1.5 text-xs text-left">
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2 text-xs text-left">
               <span className="text-[10px] font-bold text-[#51867E] uppercase tracking-wider block">
                 Guest Information
               </span>
-              <div className="space-y-1 text-[#2C3744]">
+              <div className="space-y-1 text-[#2C3744] leading-normal">
                 <div><strong>Name:</strong> {booking.guestName || 'Trevor'}</div>
                 <div>
                   <strong>X Username:</strong>{' '}
@@ -346,36 +346,38 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             </div>
 
             {/* Property Details */}
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1.5">
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2 text-xs text-left">
               <span className="text-[10px] font-bold text-[#51867E] uppercase tracking-wider block">
                 Property / Location
               </span>
-              <div className="font-bold text-sm text-[#3A4F67] flex items-center gap-1.5">
-                <Building className="w-4 h-4 text-[#51867E]" />
-                <span>{booking.propertyName}</span>
+              <div className="font-bold text-sm text-[#3A4F67] flex items-start gap-1.5 leading-snug">
+                <Building className="w-4 h-4 text-[#51867E] mt-0.5 shrink-0" />
+                <span className="flex-1 break-words">{booking.propertyName}</span>
               </div>
-              <div className="text-slate-600 flex items-start gap-1.5 text-xs">
+              <div className="text-slate-600 flex items-start gap-1.5 text-xs leading-normal">
                 <MapPin className="w-3.5 h-3.5 text-[#51867E] mt-0.5 shrink-0" />
-                <span>
+                <span className="flex-1 break-words">
                   {matchedProperty?.address
                     ? `${matchedProperty.address}${matchedProperty.country ? `, ${matchedProperty.country}` : ''}`
                     : 'Hanford Central Estate & Hospitality Precinct'}
                 </span>
               </div>
-              <div className="text-slate-600 pt-0.5">
-                Booking Type: <strong className="text-slate-800">{getBookingTypeLabel(booking)}</strong>
+              <div className="text-slate-600 pt-1 border-t border-slate-100/80 space-y-1 leading-normal">
+                <div>
+                  Booking Type: <strong className="text-slate-800">{getBookingTypeLabel(booking)}</strong>
+                </div>
+                {booking.checkInDate && (
+                  <div>
+                    Stay Dates: <strong>{booking.checkInDate}</strong> to <strong>{booking.checkOutDate || 'TBD'}</strong>
+                    {nights ? ` (${nights} night${nights > 1 ? 's' : ''})` : ''}
+                  </div>
+                )}
+                {booking.eventDate && (
+                  <div>
+                    Event Date: <strong>{booking.eventDate}</strong>
+                  </div>
+                )}
               </div>
-              {booking.checkInDate && (
-                <div className="text-slate-600">
-                  Stay Dates: <strong>{booking.checkInDate}</strong> to <strong>{booking.checkOutDate || 'TBD'}</strong>
-                  {nights ? ` (${nights} night${nights > 1 ? 's' : ''})` : ''}
-                </div>
-              )}
-              {booking.eventDate && (
-                <div className="text-slate-600">
-                  Event Date: <strong>{booking.eventDate}</strong>
-                </div>
-              )}
             </div>
           </div>
 
@@ -620,39 +622,43 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               )}
             </div>
 
-            <div className="w-full sm:w-72 space-y-2 text-xs">
-              <div className="flex justify-between text-slate-600">
-                <span>Subtotal Before Discount:</span>
-                <span className="font-mono font-semibold">${rawSubtotal.toLocaleString()}</span>
-              </div>
-              {discountAmount > 0 && (
-                <div className="flex justify-between text-[#51867E] font-medium">
-                  <span>{discountLabel}</span>
-                  <span className="font-mono font-bold">-${discountAmount.toLocaleString()}</span>
-                </div>
-              )}
-              {shippingFee > 0 && (
-                <div className="flex justify-between text-slate-600">
-                  <span>Shipping / Extra Fee:</span>
-                  <span className="font-mono font-semibold">${shippingFee.toLocaleString()}</span>
-                </div>
-              )}
-              {discountAmount > 0 && (
-                <div className="flex justify-between text-slate-600">
-                  <span>Subtotal Before Tax:</span>
-                  <span className="font-mono font-semibold">${subtotalBeforeTax.toLocaleString()}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-slate-600">
-                <span>Taxes & Fees (10%):</span>
-                <span className="font-mono font-semibold">${finalTax.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between text-sm font-bold text-[#3A4F67] border-t border-slate-200 pt-2">
-                <span>Total Invoice:</span>
-                <span className="font-mono text-[#51867E] text-base">
-                  ${finalGrandTotal.toLocaleString()}
-                </span>
-              </div>
+            <div className="w-full sm:w-80 text-xs">
+              <table className="w-full text-xs border-collapse">
+                <tbody>
+                  <tr>
+                    <td className="py-1 text-left text-slate-600 whitespace-nowrap pr-3">Subtotal Before Discount:</td>
+                    <td className="py-1 text-right font-mono font-semibold text-slate-700 whitespace-nowrap">${rawSubtotal.toLocaleString()}</td>
+                  </tr>
+                  {discountAmount > 0 && (
+                    <tr>
+                      <td className="py-1 text-left text-[#51867E] font-medium whitespace-nowrap pr-3">{discountLabel}</td>
+                      <td className="py-1 text-right font-mono font-bold text-[#51867E] whitespace-nowrap">-${discountAmount.toLocaleString()}</td>
+                    </tr>
+                  )}
+                  {shippingFee > 0 && (
+                    <tr>
+                      <td className="py-1 text-left text-slate-600 whitespace-nowrap pr-3">Shipping / Extra Fee:</td>
+                      <td className="py-1 text-right font-mono font-semibold text-slate-700 whitespace-nowrap">${shippingFee.toLocaleString()}</td>
+                    </tr>
+                  )}
+                  {discountAmount > 0 && (
+                    <tr>
+                      <td className="py-1 text-left text-slate-600 whitespace-nowrap pr-3">Subtotal Before Tax:</td>
+                      <td className="py-1 text-right font-mono font-semibold text-slate-700 whitespace-nowrap">${subtotalBeforeTax.toLocaleString()}</td>
+                    </tr>
+                  )}
+                  <tr>
+                    <td className="py-1 text-left text-slate-600 whitespace-nowrap pr-3">Taxes & Fees (10%):</td>
+                    <td className="py-1 text-right font-mono font-semibold text-slate-700 whitespace-nowrap">${finalTax.toLocaleString()}</td>
+                  </tr>
+                  <tr className="border-t border-slate-200">
+                    <td className="pt-2.5 pb-1 text-left text-sm font-bold text-[#3A4F67] whitespace-nowrap pr-3">Total Invoice:</td>
+                    <td className="pt-2.5 pb-1 text-right font-mono text-[#51867E] text-base font-bold whitespace-nowrap">
+                      ${finalGrandTotal.toLocaleString()}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
@@ -665,21 +671,21 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
 
         {/* Offscreen Hidden Container for Desktop-Width (800px) PNG Download */}
         <div className="fixed -left-[9999px] top-0 pointer-events-none opacity-100 z-[-9999] overflow-hidden" aria-hidden="true">
-          <div className="p-10 bg-white text-[#2C3744] w-[800px] text-left" ref={exportInvoiceRef}>
+          <div className="p-10 bg-white text-[#2C3744] w-[800px] min-w-[800px] text-left box-border" ref={exportInvoiceRef}>
             {/* Header & Logo */}
             <div className="flex flex-row justify-between items-start border-b border-slate-200 pb-8 gap-6">
-              <div>
+              <div className="flex-1 min-w-0">
                 <div className="text-3xl font-serif font-semibold text-[#3A4F67] tracking-[0.2em] uppercase flex items-center gap-2">
                   <span>HANFORD</span>
                   <span className="w-2 h-2 rounded-full bg-[#51867E]" />
                 </div>
-                <p className="text-[11px] font-semibold text-[#51867E] uppercase tracking-widest mt-1">
+                <p className="text-[10.5px] font-semibold text-[#51867E] uppercase tracking-[0.14em] mt-1 leading-normal whitespace-nowrap">
                   HOTELS & RESORTS &bull; CENTRAL RESERVATIONS
                 </p>
-                <p className="text-xs text-slate-600 mt-1.5 font-medium italic">
+                <p className="text-xs text-slate-600 mt-1 font-medium italic leading-normal whitespace-nowrap">
                   An Elevated Way of Staying
                 </p>
-                <div className="flex items-center gap-1.5 mt-1 text-xs text-slate-500 font-medium">
+                <div className="flex items-center gap-1.5 mt-1 text-xs text-slate-500 font-medium whitespace-nowrap">
                   <svg className="w-3.5 h-3.5 fill-current text-slate-800 shrink-0" viewBox="0 0 24 24">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                   </svg>
@@ -687,7 +693,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 </div>
               </div>
 
-              <div className="text-right space-y-1">
+              <div className="text-right space-y-1 shrink-0">
                 <div className="inline-block px-3 py-1 bg-slate-100 rounded-lg text-slate-600 font-mono text-xs font-bold uppercase tracking-wider mb-2">
                   OFFICIAL RECEIPT / INVOICE
                 </div>
@@ -713,13 +719,13 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             </div>
 
             {/* Guest & Property Grid (2 columns) */}
-            <div className="grid grid-cols-2 gap-8 my-8 text-xs">
+            <div className="grid grid-cols-2 gap-6 my-8 text-xs">
               {/* Guest Details */}
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1.5 text-xs text-left">
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2 text-xs text-left">
                 <span className="text-[10px] font-bold text-[#51867E] uppercase tracking-wider block">
                   Guest Information
                 </span>
-                <div className="space-y-1 text-[#2C3744]">
+                <div className="space-y-1 text-[#2C3744] leading-normal">
                   <div><strong>Name:</strong> {booking.guestName || 'Trevor'}</div>
                   <div>
                     <strong>X Username:</strong>{' '}
@@ -736,36 +742,38 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               </div>
 
               {/* Property Details */}
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1.5">
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2 text-xs text-left">
                 <span className="text-[10px] font-bold text-[#51867E] uppercase tracking-wider block">
                   Property / Location
                 </span>
-                <div className="font-bold text-sm text-[#3A4F67] flex items-center gap-1.5">
-                  <Building className="w-4 h-4 text-[#51867E]" />
-                  <span>{booking.propertyName}</span>
+                <div className="font-bold text-sm text-[#3A4F67] flex items-start gap-1.5 leading-snug">
+                  <Building className="w-4 h-4 text-[#51867E] mt-0.5 shrink-0" />
+                  <span className="flex-1 break-words">{booking.propertyName}</span>
                 </div>
-                <div className="text-slate-600 flex items-start gap-1.5 text-xs">
+                <div className="text-slate-600 flex items-start gap-1.5 text-xs leading-normal">
                   <MapPin className="w-3.5 h-3.5 text-[#51867E] mt-0.5 shrink-0" />
-                  <span>
+                  <span className="flex-1 break-words">
                     {matchedProperty?.address
                       ? `${matchedProperty.address}${matchedProperty.country ? `, ${matchedProperty.country}` : ''}`
                       : 'Hanford Central Estate & Hospitality Precinct'}
                   </span>
                 </div>
-                <div className="text-slate-600 pt-0.5">
-                  Booking Type: <strong className="text-slate-800">{getBookingTypeLabel(booking)}</strong>
+                <div className="text-slate-600 pt-1 border-t border-slate-100/80 space-y-1 leading-normal">
+                  <div>
+                    Booking Type: <strong className="text-slate-800">{getBookingTypeLabel(booking)}</strong>
+                  </div>
+                  {booking.checkInDate && (
+                    <div>
+                      Stay Dates: <strong>{booking.checkInDate}</strong> to <strong>{booking.checkOutDate || 'TBD'}</strong>
+                      {nights ? ` (${nights} night${nights > 1 ? 's' : ''})` : ''}
+                    </div>
+                  )}
+                  {booking.eventDate && (
+                    <div>
+                      Event Date: <strong>{booking.eventDate}</strong>
+                    </div>
+                  )}
                 </div>
-                {booking.checkInDate && (
-                  <div className="text-slate-600">
-                    Stay Dates: <strong>{booking.checkInDate}</strong> to <strong>{booking.checkOutDate || 'TBD'}</strong>
-                    {nights ? ` (${nights} night${nights > 1 ? 's' : ''})` : ''}
-                  </div>
-                )}
-                {booking.eventDate && (
-                  <div className="text-slate-600">
-                    Event Date: <strong>{booking.eventDate}</strong>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -889,39 +897,43 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 )}
               </div>
 
-              <div className="w-72 space-y-2 text-xs text-right">
-                <div className="flex justify-between text-slate-600">
-                  <span>Subtotal Before Discount:</span>
-                  <span className="font-mono font-semibold">${rawSubtotal.toLocaleString()}</span>
-                </div>
-                {discountAmount > 0 && (
-                  <div className="flex justify-between text-[#51867E] font-medium">
-                    <span>{discountLabel}</span>
-                    <span className="font-mono font-bold">-${discountAmount.toLocaleString()}</span>
-                  </div>
-                )}
-                {shippingFee > 0 && (
-                  <div className="flex justify-between text-slate-600">
-                    <span>Shipping / Extra Fee:</span>
-                    <span className="font-mono font-semibold">${shippingFee.toLocaleString()}</span>
-                  </div>
-                )}
-                {discountAmount > 0 && (
-                  <div className="flex justify-between text-slate-600">
-                    <span>Subtotal Before Tax:</span>
-                    <span className="font-mono font-semibold">${subtotalBeforeTax.toLocaleString()}</span>
-                  </div>
-                )}
-                <div className="flex justify-between text-slate-600">
-                  <span>Taxes & Fees (10%):</span>
-                  <span className="font-mono font-semibold">${finalTax.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between text-sm font-bold text-[#3A4F67] border-t border-slate-200 pt-2">
-                  <span>Total Invoice:</span>
-                  <span className="font-mono text-[#51867E] text-base">
-                    ${finalGrandTotal.toLocaleString()}
-                  </span>
-                </div>
+              <div className="w-80 text-xs shrink-0">
+                <table className="w-full text-xs border-collapse">
+                  <tbody>
+                    <tr>
+                      <td className="py-1 text-left text-slate-600 whitespace-nowrap pr-3">Subtotal Before Discount:</td>
+                      <td className="py-1 text-right font-mono font-semibold text-slate-700 whitespace-nowrap">${rawSubtotal.toLocaleString()}</td>
+                    </tr>
+                    {discountAmount > 0 && (
+                      <tr>
+                        <td className="py-1 text-left text-[#51867E] font-medium whitespace-nowrap pr-3">{discountLabel}</td>
+                        <td className="py-1 text-right font-mono font-bold text-[#51867E] whitespace-nowrap">-${discountAmount.toLocaleString()}</td>
+                      </tr>
+                    )}
+                    {shippingFee > 0 && (
+                      <tr>
+                        <td className="py-1 text-left text-slate-600 whitespace-nowrap pr-3">Shipping / Extra Fee:</td>
+                        <td className="py-1 text-right font-mono font-semibold text-slate-700 whitespace-nowrap">${shippingFee.toLocaleString()}</td>
+                      </tr>
+                    )}
+                    {discountAmount > 0 && (
+                      <tr>
+                        <td className="py-1 text-left text-slate-600 whitespace-nowrap pr-3">Subtotal Before Tax:</td>
+                        <td className="py-1 text-right font-mono font-semibold text-slate-700 whitespace-nowrap">${subtotalBeforeTax.toLocaleString()}</td>
+                      </tr>
+                    )}
+                    <tr>
+                      <td className="py-1 text-left text-slate-600 whitespace-nowrap pr-3">Taxes & Fees (10%):</td>
+                      <td className="py-1 text-right font-mono font-semibold text-slate-700 whitespace-nowrap">${finalTax.toLocaleString()}</td>
+                    </tr>
+                    <tr className="border-t border-slate-200">
+                      <td className="pt-2.5 pb-1 text-left text-sm font-bold text-[#3A4F67] whitespace-nowrap pr-3">Total Invoice:</td>
+                      <td className="pt-2.5 pb-1 text-right font-mono text-[#51867E] text-base font-bold whitespace-nowrap">
+                        ${finalGrandTotal.toLocaleString()}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
 

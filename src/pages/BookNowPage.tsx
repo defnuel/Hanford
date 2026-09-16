@@ -628,13 +628,13 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   <span className="text-[10px] font-bold text-[#51867E] uppercase tracking-wider block">
                     PROPERTY / LOCATION
                   </span>
-                  <div className="font-bold text-sm text-[#3A4F67] flex items-center gap-1.5">
-                    <Building2 className="w-4 h-4 text-[#51867E] shrink-0" />
-                    <span>{confirmedBooking.property.name}</span>
+                  <div className="font-bold text-sm text-[#3A4F67] flex items-start gap-1.5 leading-snug">
+                    <Building2 className="w-4 h-4 text-[#51867E] shrink-0 mt-0.5" />
+                    <span className="flex-1 break-words">{confirmedBooking.property.name}</span>
                   </div>
-                  <div className="text-slate-500 text-xs flex items-start gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
-                    <span>{confirmedBooking.property.address || confirmedBooking.property.country}</span>
+                  <div className="text-slate-500 text-xs flex items-start gap-1.5 leading-normal">
+                    <MapPin className="w-3.5 h-3.5 text-[#51867E] shrink-0 mt-0.5" />
+                    <span className="flex-1 break-words">{confirmedBooking.property.address || confirmedBooking.property.country}</span>
                   </div>
                   <div className="space-y-0.5 pt-1 text-slate-600 border-t border-slate-100 mt-1">
                     <div>Booking Type: <strong className="text-[#3A4F67]">{getBookingCategoryLabel(confirmedBooking.inquiry)}</strong></div>
@@ -799,42 +799,42 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 </div>
 
                 {/* Summary Calculation */}
-                <div className="sm:col-span-6 space-y-1.5 text-xs font-medium text-slate-600 text-right">
-                  <div className="flex justify-between items-center sm:justify-end sm:gap-8">
-                    <span>Subtotal Before Discount:</span>
-                    <span className="font-mono text-slate-800 font-semibold">${(confirmedBooking.roomSubtotal + confirmedBooking.eventSubtotal).toLocaleString()}</span>
-                  </div>
-
-                  {confirmedBooking.inquiry.discountAmount! > 0 && (() => {
-                    const code = (confirmedBooking.inquiry.discountCode && confirmedBooking.inquiry.discountCode.trim().toUpperCase() !== 'N/A')
-                      ? confirmedBooking.inquiry.discountCode.trim()
-                      : '';
-                    const percent = confirmedBooking.inquiry.discountPercent || 0;
-                    const label = code
-                      ? (percent > 0 ? `Discount (${code} - ${percent}%):` : `Discount (${code}):`)
-                      : (percent > 0 ? `Discount (${percent}%):` : 'Discount:');
-                    return (
-                      <div className="flex justify-between items-center sm:justify-end sm:gap-8 text-emerald-600 font-semibold">
-                        <span>{label}</span>
-                        <span className="font-mono">-${confirmedBooking.inquiry.discountAmount?.toLocaleString()}</span>
-                      </div>
-                    );
-                  })()}
-
-                  <div className="flex justify-between items-center sm:justify-end sm:gap-8">
-                    <span>Subtotal Before Tax:</span>
-                    <span className="font-mono text-slate-800 font-semibold">${(confirmedBooking.roomSubtotal + confirmedBooking.eventSubtotal - (confirmedBooking.inquiry.discountAmount || 0)).toLocaleString()}</span>
-                  </div>
-
-                  <div className="flex justify-between items-center sm:justify-end sm:gap-8">
-                    <span>Taxes & Fees (10%):</span>
-                    <span className="font-mono text-slate-800 font-semibold">${confirmedBooking.taxAmount.toLocaleString()}</span>
-                  </div>
-
-                  <div className="flex justify-between items-center sm:justify-end sm:gap-8 pt-2 border-t border-slate-200 text-sm sm:text-base font-bold text-[#3A4F67]">
-                    <span className="uppercase tracking-wider">Total Invoice:</span>
-                    <span className="font-mono text-lg sm:text-xl text-[#3A4F67]">${confirmedBooking.grandTotal.toLocaleString()}</span>
-                  </div>
+                <div className="sm:col-span-6 w-full text-xs">
+                  <table className="w-full text-xs border-collapse">
+                    <tbody>
+                      <tr>
+                        <td className="py-1 text-left text-slate-600 whitespace-nowrap pr-2">Subtotal Before Discount:</td>
+                        <td className="py-1 text-right font-mono font-semibold text-slate-800 whitespace-nowrap">${(confirmedBooking.roomSubtotal + confirmedBooking.eventSubtotal).toLocaleString()}</td>
+                      </tr>
+                      {confirmedBooking.inquiry.discountAmount! > 0 && (() => {
+                        const code = (confirmedBooking.inquiry.discountCode && confirmedBooking.inquiry.discountCode.trim().toUpperCase() !== 'N/A')
+                          ? confirmedBooking.inquiry.discountCode.trim()
+                          : '';
+                        const percent = confirmedBooking.inquiry.discountPercent || 0;
+                        const label = code
+                          ? (percent > 0 ? `Discount (${code} - ${percent}%):` : `Discount (${code}):`)
+                          : (percent > 0 ? `Discount (${percent}%):` : 'Discount:');
+                        return (
+                          <tr>
+                            <td className="py-1 text-left text-emerald-600 font-semibold whitespace-nowrap pr-2">{label}</td>
+                            <td className="py-1 text-right font-mono font-bold text-emerald-600 whitespace-nowrap">-${confirmedBooking.inquiry.discountAmount?.toLocaleString()}</td>
+                          </tr>
+                        );
+                      })()}
+                      <tr>
+                        <td className="py-1 text-left text-slate-600 whitespace-nowrap pr-2">Subtotal Before Tax:</td>
+                        <td className="py-1 text-right font-mono font-semibold text-slate-800 whitespace-nowrap">${(confirmedBooking.roomSubtotal + confirmedBooking.eventSubtotal - (confirmedBooking.inquiry.discountAmount || 0)).toLocaleString()}</td>
+                      </tr>
+                      <tr>
+                        <td className="py-1 text-left text-slate-600 whitespace-nowrap pr-2">Taxes & Fees (10%):</td>
+                        <td className="py-1 text-right font-mono font-semibold text-slate-800 whitespace-nowrap">${confirmedBooking.taxAmount.toLocaleString()}</td>
+                      </tr>
+                      <tr className="border-t border-slate-200">
+                        <td className="pt-2 pb-1 text-left text-sm sm:text-base font-bold text-[#3A4F67] uppercase tracking-wider whitespace-nowrap pr-2">Total Invoice:</td>
+                        <td className="pt-2 pb-1 text-right font-mono font-bold text-lg sm:text-xl text-[#3A4F67] whitespace-nowrap">${confirmedBooking.grandTotal.toLocaleString()}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
 
@@ -900,24 +900,24 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
             <div className="fixed -left-[9999px] top-0 pointer-events-none opacity-100 z-[-9999] overflow-hidden" aria-hidden="true">
               <div
                 ref={exportInvoiceRef}
-                className="bg-[#FFFFFF] border-2 border-[#3A4F67]/30 rounded-2xl p-8 space-y-4 relative w-[800px] text-left"
+                className="bg-[#FFFFFF] border-2 border-[#3A4F67]/30 rounded-2xl p-8 space-y-4 relative w-[800px] min-w-[800px] box-border text-left"
               >
                 {/* Invoice Header (Desktop Side-by-Side) */}
                 <div className="border-b border-slate-200 pb-4 flex flex-row items-start justify-between gap-4">
-                  <div className="space-y-1">
+                  <div className="space-y-1 flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-serif text-3xl font-bold tracking-wider text-[#3A4F67]">
                         HANFORD
                       </span>
                       <span className="w-2.5 h-2.5 rounded-full bg-[#51867E] inline-block"></span>
                     </div>
-                    <div className="text-[11px] font-bold tracking-[0.2em] text-[#51867E] uppercase">
+                    <div className="text-[11px] font-bold tracking-[0.2em] text-[#51867E] uppercase whitespace-nowrap leading-normal">
                       HOTELS & RESORTS • CENTRAL RESERVATIONS
                     </div>
-                    <div className="text-sm italic font-serif text-slate-500 pt-0.5">
+                    <div className="text-sm italic font-serif text-slate-500 pt-0.5 whitespace-nowrap leading-normal">
                       An Elevated Way of Staying
                     </div>
-                    <div className="inline-flex items-center gap-1.5 text-xs text-slate-600 pt-0.5">
+                    <div className="inline-flex items-center gap-1.5 text-xs text-slate-600 pt-0.5 whitespace-nowrap leading-normal">
                       <svg className="w-3.5 h-3.5 fill-current text-slate-700 shrink-0" viewBox="0 0 24 24">
                         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                       </svg>
@@ -925,7 +925,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-end space-y-1 text-right">
+                  <div className="flex flex-col items-end space-y-1 text-right shrink-0">
                     <span className="px-2.5 py-0.5 bg-slate-100 text-slate-600 rounded-full text-[10px] font-bold uppercase tracking-wider inline-block">
                       OFFICIAL RECEIPT / INVOICE
                     </span>
@@ -949,14 +949,14 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 {/* Guest Details & Property / Location Cards Grid (Desktop 2 Columns) */}
                 <div className="grid grid-cols-2 gap-4 my-3 text-xs">
                   {/* Guest Details */}
-                  <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-100 space-y-1">
+                  <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-100 space-y-1 text-left">
                     <span className="text-[10px] font-bold text-[#51867E] uppercase tracking-wider block">
                       GUEST DETAILS
                     </span>
                     <div className="font-bold text-sm text-[#3A4F67] uppercase tracking-wide">
                       {confirmedBooking.inquiry.guestName || 'TREVOR'}
                     </div>
-                    <div className="space-y-0.5 text-slate-600">
+                    <div className="space-y-0.5 text-slate-600 leading-normal">
                       <div className="flex items-center gap-1.5">
                         <svg className="w-3.5 h-3.5 fill-current text-slate-700 shrink-0" viewBox="0 0 24 24">
                           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
@@ -973,19 +973,19 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   </div>
 
                   {/* Property / Location Details */}
-                  <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-100 space-y-1">
+                  <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-100 space-y-1 text-left">
                     <span className="text-[10px] font-bold text-[#51867E] uppercase tracking-wider block">
                       PROPERTY / LOCATION
                     </span>
-                    <div className="font-bold text-sm text-[#3A4F67] flex items-center gap-1.5">
-                      <Building2 className="w-4 h-4 text-[#51867E] shrink-0" />
-                      <span>{confirmedBooking.property.name}</span>
+                    <div className="font-bold text-sm text-[#3A4F67] flex items-start gap-1.5 leading-snug">
+                      <Building2 className="w-4 h-4 text-[#51867E] shrink-0 mt-0.5" />
+                      <span className="flex-1 break-words">{confirmedBooking.property.name}</span>
                     </div>
-                    <div className="text-slate-500 text-xs flex items-start gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
-                      <span>{confirmedBooking.property.address || confirmedBooking.property.country}</span>
+                    <div className="text-slate-500 text-xs flex items-start gap-1.5 leading-normal">
+                      <MapPin className="w-3.5 h-3.5 text-[#51867E] shrink-0 mt-0.5" />
+                      <span className="flex-1 break-words">{confirmedBooking.property.address || confirmedBooking.property.country}</span>
                     </div>
-                    <div className="space-y-0.5 pt-1 text-slate-600 border-t border-slate-100 mt-1">
+                    <div className="space-y-0.5 pt-1 text-slate-600 border-t border-slate-100 mt-1 leading-normal">
                       <div>Booking Type: <strong className="text-[#3A4F67]">{getBookingCategoryLabel(confirmedBooking.inquiry)}</strong></div>
                       <div>
                         Stay Dates: <strong className="text-[#3A4F67]">{confirmedBooking.inquiry.checkInDate}</strong> to <strong className="text-[#3A4F67]">{confirmedBooking.inquiry.checkOutDate}</strong> ({confirmedBooking.nights} night{confirmedBooking.nights !== 1 ? 's' : ''})
@@ -1144,42 +1144,42 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     </p>
                   </div>
 
-                  <div className="col-span-6 space-y-1.5 text-xs font-medium text-slate-600 text-right">
-                    <div className="flex justify-between items-center gap-8">
-                      <span>Subtotal Before Discount:</span>
-                      <span className="font-mono text-slate-800 font-semibold">${(confirmedBooking.roomSubtotal + confirmedBooking.eventSubtotal).toLocaleString()}</span>
-                    </div>
-
-                    {confirmedBooking.inquiry.discountAmount! > 0 && (() => {
-                      const code = (confirmedBooking.inquiry.discountCode && confirmedBooking.inquiry.discountCode.trim().toUpperCase() !== 'N/A')
-                        ? confirmedBooking.inquiry.discountCode.trim()
-                        : '';
-                      const percent = confirmedBooking.inquiry.discountPercent || 0;
-                      const label = code
-                        ? (percent > 0 ? `Discount (${code} - ${percent}%):` : `Discount (${code}):`)
-                        : (percent > 0 ? `Discount (${percent}%):` : 'Discount:');
-                      return (
-                        <div className="flex justify-between items-center gap-8 text-emerald-600 font-semibold">
-                          <span>{label}</span>
-                          <span className="font-mono">-${confirmedBooking.inquiry.discountAmount?.toLocaleString()}</span>
-                        </div>
-                      );
-                    })()}
-
-                    <div className="flex justify-between items-center gap-8">
-                      <span>Subtotal Before Tax:</span>
-                      <span className="font-mono text-slate-800 font-semibold">${(confirmedBooking.roomSubtotal + confirmedBooking.eventSubtotal - (confirmedBooking.inquiry.discountAmount || 0)).toLocaleString()}</span>
-                    </div>
-
-                    <div className="flex justify-between items-center gap-8">
-                      <span>Taxes & Fees (10%):</span>
-                      <span className="font-mono text-slate-800 font-semibold">${confirmedBooking.taxAmount.toLocaleString()}</span>
-                    </div>
-
-                    <div className="flex justify-between items-center gap-8 pt-2 border-t border-slate-200 text-base font-bold text-[#3A4F67]">
-                      <span className="uppercase tracking-wider">Total Invoice:</span>
-                      <span className="font-mono text-xl text-[#3A4F67]">${confirmedBooking.grandTotal.toLocaleString()}</span>
-                    </div>
+                  <div className="col-span-6 w-full text-xs">
+                    <table className="w-full text-xs border-collapse">
+                      <tbody>
+                        <tr>
+                          <td className="py-1 text-left text-slate-600 whitespace-nowrap pr-3">Subtotal Before Discount:</td>
+                          <td className="py-1 text-right font-mono font-semibold text-slate-800 whitespace-nowrap">${(confirmedBooking.roomSubtotal + confirmedBooking.eventSubtotal).toLocaleString()}</td>
+                        </tr>
+                        {confirmedBooking.inquiry.discountAmount! > 0 && (() => {
+                          const code = (confirmedBooking.inquiry.discountCode && confirmedBooking.inquiry.discountCode.trim().toUpperCase() !== 'N/A')
+                            ? confirmedBooking.inquiry.discountCode.trim()
+                            : '';
+                          const percent = confirmedBooking.inquiry.discountPercent || 0;
+                          const label = code
+                            ? (percent > 0 ? `Discount (${code} - ${percent}%):` : `Discount (${code}):`)
+                            : (percent > 0 ? `Discount (${percent}%):` : 'Discount:');
+                          return (
+                            <tr>
+                              <td className="py-1 text-left text-emerald-600 font-semibold whitespace-nowrap pr-3">{label}</td>
+                              <td className="py-1 text-right font-mono font-bold text-emerald-600 whitespace-nowrap">-${confirmedBooking.inquiry.discountAmount?.toLocaleString()}</td>
+                            </tr>
+                          );
+                        })()}
+                        <tr>
+                          <td className="py-1 text-left text-slate-600 whitespace-nowrap pr-3">Subtotal Before Tax:</td>
+                          <td className="py-1 text-right font-mono font-semibold text-slate-800 whitespace-nowrap">${(confirmedBooking.roomSubtotal + confirmedBooking.eventSubtotal - (confirmedBooking.inquiry.discountAmount || 0)).toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                          <td className="py-1 text-left text-slate-600 whitespace-nowrap pr-3">Taxes & Fees (10%):</td>
+                          <td className="py-1 text-right font-mono font-semibold text-slate-800 whitespace-nowrap">${confirmedBooking.taxAmount.toLocaleString()}</td>
+                        </tr>
+                        <tr className="border-t border-slate-200">
+                          <td className="pt-2 pb-1 text-left text-sm font-bold text-[#3A4F67] uppercase tracking-wider whitespace-nowrap pr-3">Total Invoice:</td>
+                          <td className="pt-2 pb-1 text-right font-mono font-bold text-xl text-[#3A4F67] whitespace-nowrap">${confirmedBooking.grandTotal.toLocaleString()}</td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
 
