@@ -27,94 +27,45 @@ function runWithTimeout<T>(promise: Promise<T>, ms: number, stepLabel: string): 
 }
 
 /**
- * Convert a blob safely to a JPEG Data URL via FileReader or Canvas fallback
- */
-async function blobToSafeDataUrl(blob: Blob): Promise<string> {
-  return new Promise((resolve) => {
-    if (blob.type === 'image/jpeg' || blob.type === 'image/png') {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result : '');
-      reader.onerror = () => resolve('');
-      reader.readAsDataURL(blob);
-      return;
-    }
-
-    // If AVIF, WebP, or other format, convert through canvas to safe JPEG Data URL
-    const blobUrl = URL.createObjectURL(blob);
-    const img = new Image();
-    img.onload = () => {
-      try {
-        const c = document.createElement('canvas');
-        c.width = img.naturalWidth || img.width || 880;
-        c.height = img.naturalHeight || img.height || 568;
-        const ctx = c.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(img, 0, 0);
-          const safeDataUrl = c.toDataURL('image/jpeg', 0.95);
-          URL.revokeObjectURL(blobUrl);
-          resolve(safeDataUrl);
-          return;
-        }
-      } catch (e) {
-        console.warn('[Card Exporter] Canvas convert error:', e);
-      }
-      URL.revokeObjectURL(blobUrl);
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result : '');
-      reader.onerror = () => resolve('');
-      reader.readAsDataURL(blob);
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(blobUrl);
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result : '');
-      reader.onerror = () => resolve('');
-      reader.readAsDataURL(blob);
-    };
-    img.src = blobUrl;
-  });
-}
-
-/**
  * Fetch an image URL (including Google Drive / Unsplash) and convert to Base64 Data URL.
- * Routes external remote URLs through local proxy to eliminate CORS & enforce standard JPEG/PNG format.
+ * Uses local backend proxy if direct fetch encounters CORS limitations.
  */
 async function fetchAsDataUrl(url: string): Promise<string> {
   if (!url) return '';
   if (url.startsWith('data:')) return url;
 
-  // If it's a local path (e.g. /logo-hanford.svg)
-  if (url.startsWith('/')) {
-    try {
-      const res = await fetch(url);
-      if (res.ok) {
-        const blob = await res.blob();
-        return await blobToSafeDataUrl(blob);
-      }
-    } catch {}
+  // 1. Try direct fetch with cors
+  try {
+    const res = await fetch(url, { mode: 'cors' });
+    if (res.ok) {
+      const blob = await res.blob();
+      return await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+        reader.onerror = () => resolve('');
+        reader.readAsDataURL(blob);
+      });
+    }
+  } catch {
+    // direct fetch failed, try backend proxy
   }
 
-  // 1. Try backend proxy first for remote URLs to eliminate CORS and guarantee JPEG
+  // 2. Try backend proxy endpoint
   try {
     const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`;
     const res = await fetch(proxyUrl);
     if (res.ok) {
       const blob = await res.blob();
-      const safeUrl = await blobToSafeDataUrl(blob);
-      if (safeUrl) return safeUrl;
+      return await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+        reader.onerror = () => resolve('');
+        reader.readAsDataURL(blob);
+      });
     }
   } catch (err) {
     console.warn('[Card Exporter] Proxy fetch error for:', url, err);
   }
-
-  // 2. Direct fetch fallback with cors
-  try {
-    const res = await fetch(url, { mode: 'cors' });
-    if (res.ok) {
-      const blob = await res.blob();
-      return await blobToSafeDataUrl(blob);
-    }
-  } catch {}
 
   return '';
 }
@@ -128,18 +79,11 @@ async function inlineImagesInElement(element: HTMLElement) {
     images.map(async (img) => {
       const src = img.src || img.getAttribute('src');
       if (src && !src.startsWith('data:')) {
-        try {
-          const dataUrl = await fetchAsDataUrl(src);
-          if (dataUrl) {
-            img.src = dataUrl;
-            img.removeAttribute('crossorigin');
-            img.removeAttribute('referrerpolicy');
-            if ('decode' in img) {
-              await img.decode().catch(() => {});
-            }
-          }
-        } catch (e) {
-          console.warn('[Card Exporter] Failed inlining image:', src, e);
+        const dataUrl = await fetchAsDataUrl(src);
+        if (dataUrl) {
+          img.src = dataUrl;
+          img.removeAttribute('crossorigin');
+          img.removeAttribute('referrerpolicy');
         }
       }
     })
@@ -299,87 +243,27 @@ export async function exportCardAsImage(
 
   // Helper to reset cloned layout inside html2canvas iframe
   const resetClonedLayout = (clonedDoc: Document, element: HTMLElement) => {
-    // 1. Force wide desktop layout on iframe root and body
-    if (clonedDoc.documentElement) {
-      clonedDoc.documentElement.style.width = '1200px';
-      clonedDoc.documentElement.style.minWidth = '1200px';
+    let current: HTMLElement | null = element;
+    while (current && current !== clonedDoc.body) {
+      current.style.position = 'static';
+      current.style.left = '0';
+      current.style.top = '0';
+      current.style.transform = 'none';
+      current.style.opacity = '1';
+      current.style.visibility = 'visible';
+      current.style.overflow = 'visible';
+      current = current.parentElement;
     }
-    if (clonedDoc.body) {
-      clonedDoc.body.style.width = '1200px';
-      clonedDoc.body.style.minWidth = '1200px';
-      clonedDoc.body.style.margin = '0';
-      clonedDoc.body.style.padding = '0';
-      clonedDoc.body.style.backgroundColor = '#FFFFFF';
-    }
-
-    // 2. Isolate target element directly to body to bypass any offscreen/flex parent quirks
-    clonedDoc.body.innerHTML = '';
-    clonedDoc.body.appendChild(element);
-    element.style.position = 'relative';
-    element.style.left = '0';
-    element.style.top = '0';
-    element.style.margin = '0 auto';
-    element.style.transform = 'none';
-    element.style.opacity = '1';
-    element.style.visibility = 'visible';
-    element.style.overflow = 'visible';
+    clonedDoc.body.style.width = '960px';
+    clonedDoc.body.style.minWidth = '960px';
+    clonedDoc.body.style.margin = '0';
+    clonedDoc.body.style.padding = '0';
+    clonedDoc.body.style.backgroundColor = '#FFFFFF';
     element.style.width = '960px';
     element.style.minWidth = '960px';
     element.style.maxWidth = '960px';
     element.style.display = 'block';
     element.style.backgroundColor = '#FFFFFF';
-
-    // 3. Ensure element styles and child elements render without wrapping
-    clonedDoc.querySelectorAll('*').forEach((node: Element) => {
-      const el = node as HTMLElement;
-
-      // Ensure containers with aspect-ratio or banner heights don't collapse to 0
-      if (el.className && typeof el.className === 'string') {
-        if (el.className.includes('aspect-[1.55/1]') || el.className.includes('h-[568px]')) {
-          el.style.height = '568px';
-          el.style.minHeight = '568px';
-        }
-        if (el.className.includes('aspect-[16/10.2]') || el.className.includes('aspect-[16/10.5]')) {
-          const w = el.offsetWidth || 280;
-          el.style.height = `${Math.round((w * 10.2) / 16)}px`;
-        }
-        if (el.className.includes('aspect-[16/9.5]')) {
-          const w = el.offsetWidth || 430;
-          el.style.height = `${Math.round((w * 9.5) / 16)}px`;
-        }
-      }
-
-      // Ensure all images are block and fully visible
-      if (el.tagName === 'IMG') {
-        el.style.display = 'block';
-        el.style.opacity = '1';
-        el.style.visibility = 'visible';
-      }
-
-      // Enforce nowrap and keep-all on headers, labels, badges, stamps, and footer
-      const text = el.textContent ? el.textContent.trim() : '';
-      if (
-        text.includes('HANFORD HOTELS & RESORTS') ||
-        text.includes('WELCOME TO') ||
-        text.includes('FEATURED PROPERTY') ||
-        text.includes('VERIFIED DESTINATION') ||
-        text.includes('ISSUED BY HANFORD') ||
-        text.includes('Central Reservations') ||
-        text.includes('GUEST INFORMATION') ||
-        text.includes('GUEST FULL NAME') ||
-        text.includes('RESERVATION DETAILS') ||
-        text.includes('BOOKING TYPE') ||
-        text.includes('EVENT DATE') ||
-        text.includes('STAY DATES') ||
-        text.includes('ALLOCATED ROOM') ||
-        text.includes('RESERVED ACCOMMODATION') ||
-        text.includes('ROOM TYPE')
-      ) {
-        el.style.whiteSpace = 'nowrap';
-        el.style.wordBreak = 'keep-all';
-        el.style.overflowWrap = 'normal';
-      }
-    });
   };
 
   // Priority 2: html2canvas on Primary Node with Base64 inlining and onclone layout reset

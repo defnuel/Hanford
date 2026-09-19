@@ -266,19 +266,10 @@ async function startServer() {
         return res.status(400).send('Missing url parameter');
       }
 
-      // Normalize Unsplash URLs to request JPEG format
-      let fetchUrl = imageUrl;
-      if (fetchUrl.includes('images.unsplash.com')) {
-        fetchUrl = fetchUrl.replace(/auto=format/g, 'fm=jpg');
-        if (!fetchUrl.includes('fm=jpg') && !fetchUrl.includes('format=')) {
-          fetchUrl += (fetchUrl.includes('?') ? '&' : '?') + 'fm=jpg';
-        }
-      }
-
-      const response = await fetch(fetchUrl, {
+      const response = await fetch(imageUrl, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Accept': 'image/jpeg,image/png,image/webp;q=0.8,*/*;q=0.5'
+          'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
         }
       });
 
