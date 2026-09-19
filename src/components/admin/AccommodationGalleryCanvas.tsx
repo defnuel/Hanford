@@ -92,32 +92,43 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
           
           {/* Logo & Main Title in English */}
           <div className="flex items-center gap-4 text-left">
-            <div className="w-16 h-16 p-1.5 bg-white rounded-xl shadow-xs border border-slate-200 flex items-center justify-center shrink-0">
-              <img
-                src={brandLogoUrl}
-                alt="Hanford Logo"
-                className="w-full h-full object-contain"
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).src = 'https://lh3.googleusercontent.com/d/1F-m9SWOLAD63pO-tzJIzOCUSv4heXHLk';
-                }}
-              />
+            <div className="w-16 h-16 p-2 bg-white rounded-xl shadow-xs border border-slate-200 flex items-center justify-center shrink-0">
+              <svg viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full object-contain">
+                <defs>
+                  <linearGradient id="galleryGoldLinear" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#F9E2A8" />
+                    <stop offset="35%" stopColor="#D4AF37" />
+                    <stop offset="70%" stopColor="#ECC876" />
+                    <stop offset="100%" stopColor="#B38A28" />
+                  </linearGradient>
+                </defs>
+                <rect x="12" y="12" width="176" height="276" rx="88" ry="88" stroke="url(#galleryGoldLinear)" strokeWidth="3.2" fill="none"/>
+                <rect x="20" y="20" width="160" height="260" rx="80" ry="80" stroke="url(#galleryGoldLinear)" strokeWidth="1.8" strokeOpacity="0.85" fill="none"/>
+                <g id="HR-monogram">
+                  <path d="M 52 110 L 74 110 L 74 114 L 66 114 L 66 186 L 74 186 L 74 190 L 52 190 L 52 186 L 60 186 L 60 114 L 52 114 Z" fill="url(#galleryGoldLinear)" />
+                  <path d="M 82 110 L 104 110 L 104 114 L 96 114 L 96 186 L 104 186 L 104 190 L 82 190 L 82 186 L 90 186 L 90 114 L 82 114 Z" fill="url(#galleryGoldLinear)" />
+                  <rect x="60" y="147" width="55" height="6" fill="url(#galleryGoldLinear)" />
+                  <path d="M 96 110 L 126 110 C 142 110 148 119 148 131 C 148 143 140 152 125 152 L 96 152 L 96 146 L 124 146 C 135 146 141 140 141 131 C 141 122 135 116 124 116 L 96 116 Z" fill="url(#galleryGoldLinear)" />
+                  <path d="M 116 150 C 122 150 128 155 132 163 L 144 186 C 146 189 149 190 153 190 L 158 190 L 158 186 C 154 186 150 183 147 178 L 136 157 C 132 150 125 147 116 147 Z" fill="url(#galleryGoldLinear)" />
+                </g>
+              </svg>
             </div>
 
-            <div>
-              <div className="text-xs tracking-[0.22em] font-bold text-[#51867E] uppercase flex items-center gap-1.5 justify-start">
-                <span>HANFORD HOTELS & RESORTS</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#51867E]" />
+            <div className="space-y-1">
+              <div className="text-xs tracking-[0.18em] font-bold text-[#51867E] uppercase flex items-center gap-1.5 justify-start whitespace-nowrap leading-none">
+                <span className="whitespace-nowrap">HANFORD HOTELS &amp; RESORTS</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#51867E] shrink-0" />
               </div>
               
               {/* JUDUL: RESERVED ACCOMMODATION */}
-              <div className="mt-0.5">
-                <h1 className="text-2xl sm:text-[25px] text-[#1E293B] font-bold tracking-tight uppercase leading-snug">
+              <div className="pt-0.5">
+                <h1 className="text-[25px] text-[#1E293B] font-bold tracking-tight uppercase leading-snug">
                   RESERVED ACCOMMODATION
                 </h1>
                 
                 {/* BAWAHNYA: ROOM TYPE */}
-                <div className="text-sm sm:text-[14px] font-semibold text-[#51867E] tracking-normal mt-1 flex items-center gap-2">
-                  <span className="inline-block px-2.5 py-0.5 bg-[#EBF3F1] border border-[#CDE1DC] rounded-md font-bold uppercase text-[11px] text-[#2D5A53]">
+                <div className="text-[14px] font-semibold text-[#51867E] tracking-normal mt-1 flex items-center gap-2 whitespace-nowrap">
+                  <span className="inline-block px-2.5 py-0.5 bg-[#EBF3F1] border border-[#CDE1DC] rounded-md font-bold uppercase text-[11px] text-[#2D5A53] whitespace-nowrap shrink-0 leading-tight">
                     ROOM TYPE
                   </span>
                   <span className="text-[#1E293B] font-bold uppercase tracking-tight truncate max-w-[500px]">
