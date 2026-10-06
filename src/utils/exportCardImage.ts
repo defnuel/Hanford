@@ -1,5 +1,5 @@
 import html2canvas from 'html2canvas';
-import { toPng } from 'html-to-image';
+import { toCanvas, toPng } from 'html-to-image';
 import { dataUrlToBlob } from './exportInvoiceImage';
 
 export interface CardExportResult {
@@ -7,6 +7,65 @@ export interface CardExportResult {
   dataUrl: string;
   blobUrl: string;
   shared?: boolean;
+}
+
+let cachedFontEmbedCSS: string | null = null;
+let fontFetchPromise: Promise<string> | null = null;
+
+/**
+ * Pre-fetches and caches Google Fonts CSS with Base64 embedded font glyphs
+ * to guarantee pixel-identical typography (Plus Jakarta Sans & Cormorant Garamond)
+ * in SVG foreignObject exports without network delays or missing font fallbacks.
+ */
+async function getCardFontEmbedCSS(): Promise<string> {
+  if (cachedFontEmbedCSS !== null) {
+    return cachedFontEmbedCSS;
+  }
+  if (fontFetchPromise) {
+    return fontFetchPromise;
+  }
+
+  fontFetchPromise = (async () => {
+    try {
+      const cssUrl =
+        'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap';
+      const cssRes = await runWithTimeout(fetch(cssUrl), 3000, 'fetch font css');
+      if (!cssRes.ok) throw new Error('Failed to fetch font CSS');
+      let cssText = await cssRes.text();
+
+      const fontUrls = [...cssText.matchAll(/url\((https:[^)]+)\)/g)].map((m) => m[1]);
+      await Promise.all(
+        fontUrls.map(async (fUrl) => {
+          try {
+            const fontRes = await runWithTimeout(fetch(fUrl), 3000, `fetch font file ${fUrl}`);
+            if (fontRes.ok) {
+              const blob = await fontRes.blob();
+              const dataUri = await new Promise<string>((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result as string);
+                reader.onerror = () => resolve('');
+                reader.readAsDataURL(blob);
+              });
+              if (dataUri) {
+                cssText = cssText.replace(fUrl, dataUri);
+              }
+            }
+          } catch {
+            // Ignore individual font file download failure
+          }
+        })
+      );
+
+      cachedFontEmbedCSS = cssText;
+      return cachedFontEmbedCSS;
+    } catch (err) {
+      console.warn('[Card Exporter] Font embedding failed, using fallback:', err);
+      cachedFontEmbedCSS = '';
+      return '';
+    }
+  })();
+
+  return fontFetchPromise;
 }
 
 function runWithTimeout<T>(promise: Promise<T>, ms: number, stepLabel: string): Promise<T> {
@@ -26,6 +85,8 @@ function runWithTimeout<T>(promise: Promise<T>, ms: number, stepLabel: string): 
   });
 }
 
+const dataUrlCache = new Map<string, string>();
+
 /**
  * Fetch an image URL (including Google Drive / Unsplash) and convert to Base64 Data URL.
  * Uses local backend proxy if direct fetch encounters CORS limitations.
@@ -33,18 +94,23 @@ function runWithTimeout<T>(promise: Promise<T>, ms: number, stepLabel: string): 
 async function fetchAsDataUrl(url: string): Promise<string> {
   if (!url) return '';
   if (url.startsWith('data:')) return url;
+  if (dataUrlCache.has(url)) return dataUrlCache.get(url)!;
 
   // 1. Try direct fetch with cors
   try {
-    const res = await fetch(url, { mode: 'cors' });
+    const res = await runWithTimeout(fetch(url, { mode: 'cors' }), 2500, 'direct fetch');
     if (res.ok) {
       const blob = await res.blob();
-      return await new Promise<string>((resolve) => {
+      const result = await new Promise<string>((resolve) => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result : '');
         reader.onerror = () => resolve('');
         reader.readAsDataURL(blob);
       });
+      if (result) {
+        dataUrlCache.set(url, result);
+        return result;
+      }
     }
   } catch {
     // direct fetch failed, try backend proxy
@@ -53,21 +119,25 @@ async function fetchAsDataUrl(url: string): Promise<string> {
   // 2. Try backend proxy endpoint
   try {
     const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`;
-    const res = await fetch(proxyUrl);
+    const res = await runWithTimeout(fetch(proxyUrl), 3500, 'proxy fetch');
     if (res.ok) {
       const blob = await res.blob();
-      return await new Promise<string>((resolve) => {
+      const result = await new Promise<string>((resolve) => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result : '');
         reader.onerror = () => resolve('');
         reader.readAsDataURL(blob);
       });
+      if (result) {
+        dataUrlCache.set(url, result);
+        return result;
+      }
     }
   } catch (err) {
     console.warn('[Card Exporter] Proxy fetch error for:', url, err);
   }
 
-  return '';
+  return url;
 }
 
 /**
@@ -75,12 +145,12 @@ async function fetchAsDataUrl(url: string): Promise<string> {
  */
 async function inlineImagesInElement(element: HTMLElement) {
   const images = Array.from(element.querySelectorAll('img'));
-  await Promise.all(
+  await Promise.allSettled(
     images.map(async (img) => {
       const src = img.src || img.getAttribute('src');
       if (src && !src.startsWith('data:')) {
         const dataUrl = await fetchAsDataUrl(src);
-        if (dataUrl) {
+        if (dataUrl && dataUrl.startsWith('data:')) {
           img.src = dataUrl;
           img.removeAttribute('crossorigin');
           img.removeAttribute('referrerpolicy');
@@ -187,8 +257,8 @@ function formatPortraitWelcomingCanvas(
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
 
-  // Fill A4 sheet cleanly
-  const scale = Math.max(targetWidth / sourceCanvas.width, targetHeight / sourceCanvas.height);
+  // Scale cleanly to fit A4 sheet without cropping header, footer, or edges!
+  const scale = Math.min(targetWidth / sourceCanvas.width, targetHeight / sourceCanvas.height);
   const drawW = Math.round(sourceCanvas.width * scale);
   const drawH = Math.round(sourceCanvas.height * scale);
   const drawX = Math.round((targetWidth - drawW) / 2);
@@ -237,7 +307,141 @@ export async function exportCardAsImage(
     try {
       dataUrl = await runWithTimeout(renderKeyCardToCanvas(primaryNode), 6000, 'direct canvas render');
     } catch (errCanvas) {
-      console.warn('[Card Exporter] Direct canvas failed, falling back to html2canvas:', errCanvas);
+      console.warn('[Card Exporter] Direct canvas failed, falling back:', errCanvas);
+    }
+  }
+
+  // Priority 2: High-Fidelity SVG foreignObject Native Renderer (toCanvas from html-to-image)
+  // This uses the browser's native CSS layout engine, guaranteeing 100% fidelity to the preview
+  if (!dataUrl) {
+    try {
+      // In-line images first so SVG rendering does not hit CORS restrictions
+      await inlineImagesInElement(primaryNode);
+
+      // Wait for all image tags to decode
+      const imgElements = Array.from(primaryNode.querySelectorAll('img'));
+      await Promise.all(
+        imgElements.map(async (img) => {
+          if (!img.complete) {
+            await new Promise((res) => {
+              img.onload = res;
+              img.onerror = res;
+            });
+          }
+          if (img.decode) {
+            try {
+              await img.decode();
+            } catch {
+              // Non-blocking decode failure
+            }
+          }
+        })
+      );
+
+      const fontCSS = await getCardFontEmbedCSS();
+      const targetHeight = primaryNode.offsetHeight || 1358;
+
+      const canvas = await runWithTimeout(
+        toCanvas(primaryNode, {
+          pixelRatio: 2.5,
+          cacheBust: true,
+          backgroundColor: '#FFFFFF',
+          width: 960,
+          height: targetHeight,
+          fontEmbedCSS: fontCSS || undefined,
+          skipFonts: false,
+          style: {
+            transform: 'none',
+            position: 'static',
+            margin: '0',
+            width: '960px',
+            minWidth: '960px',
+            maxWidth: '960px',
+            height: `${targetHeight}px`,
+          },
+        }),
+        10000,
+        'toCanvas primary'
+      );
+
+      const finalCanvas = isA4Document
+        ? formatPortraitWelcomingCanvas(canvas, 2480, 3508)
+        : canvas;
+      dataUrl = finalCanvas.toDataURL('image/png', 1.0);
+    } catch (errToCanvas) {
+      console.warn('[Card Exporter] Primary toCanvas failed, trying secondary/fallback:', errToCanvas);
+    }
+  }
+
+  // Priority 3: toCanvas on Secondary Node (onscreen node if primary was offscreen)
+  if (!dataUrl && secondaryNode) {
+    try {
+      await inlineImagesInElement(secondaryNode);
+      const fontCSS = await getCardFontEmbedCSS();
+      const secHeight = secondaryNode.offsetHeight || 1358;
+
+      const canvas = await runWithTimeout(
+        toCanvas(secondaryNode, {
+          pixelRatio: 2.5,
+          cacheBust: true,
+          backgroundColor: '#FFFFFF',
+          width: 960,
+          height: secHeight,
+          fontEmbedCSS: fontCSS || undefined,
+          skipFonts: false,
+          style: {
+            transform: 'none',
+            position: 'static',
+            margin: '0',
+            width: '960px',
+            minWidth: '960px',
+            maxWidth: '960px',
+            height: `${secHeight}px`,
+          },
+        }),
+        10000,
+        'toCanvas secondary'
+      );
+
+      const finalCanvas = isA4Document
+        ? formatPortraitWelcomingCanvas(canvas, 2480, 3508)
+        : canvas;
+      dataUrl = finalCanvas.toDataURL('image/png', 1.0);
+    } catch (errToCanvasSec) {
+      console.warn('[Card Exporter] Secondary toCanvas failed:', errToCanvasSec);
+    }
+  }
+
+  // Priority 4: toPng direct rasterizer fallback
+  if (!dataUrl) {
+    try {
+      const fontCSS = await getCardFontEmbedCSS();
+      const targetHeight = primaryNode.offsetHeight || 1358;
+      dataUrl = await runWithTimeout(
+        toPng(primaryNode, {
+          cacheBust: true,
+          quality: 1.0,
+          pixelRatio: 2.5,
+          fontEmbedCSS: fontCSS || undefined,
+          backgroundColor: '#FFFFFF',
+          width: 960,
+          height: targetHeight,
+          style: {
+            position: 'static',
+            opacity: '1',
+            visibility: 'visible',
+            transform: 'none',
+            width: '960px',
+            minWidth: '960px',
+            maxWidth: '960px',
+            height: `${targetHeight}px`,
+          },
+        }),
+        8000,
+        'toPng fallback'
+      );
+    } catch (errPng) {
+      console.warn('[Card Exporter] toPng fallback failed:', errPng);
     }
   }
 
@@ -254,6 +458,7 @@ export async function exportCardAsImage(
       current.style.overflow = 'visible';
       current = current.parentElement;
     }
+    const targetHeight = element.offsetHeight || 1358;
     clonedDoc.body.style.width = '960px';
     clonedDoc.body.style.minWidth = '960px';
     clonedDoc.body.style.margin = '0';
@@ -262,15 +467,16 @@ export async function exportCardAsImage(
     element.style.width = '960px';
     element.style.minWidth = '960px';
     element.style.maxWidth = '960px';
+    element.style.height = `${targetHeight}px`;
     element.style.display = 'block';
     element.style.backgroundColor = '#FFFFFF';
   };
 
-  // Priority 2: html2canvas on Primary Node with Base64 inlining and onclone layout reset
+  // Priority 5: html2canvas fallback on Primary Node
   if (!dataUrl) {
     try {
-      // In-line images first so html2canvas doesn't fail on CORS
       await inlineImagesInElement(primaryNode);
+      const targetHeight = primaryNode.offsetHeight || 1358;
 
       const canvas = await runWithTimeout(
         html2canvas(primaryNode, {
@@ -283,12 +489,14 @@ export async function exportCardAsImage(
           scrollX: 0,
           scrollY: 0,
           width: 960,
-          windowWidth: 1200,
+          height: targetHeight,
+          windowWidth: 960,
+          windowHeight: targetHeight + 100,
           onclone: (clonedDoc, element) => {
             resetClonedLayout(clonedDoc, element);
           },
         }),
-        9000,
+        10000,
         'html2canvas primary'
       );
       const finalCanvas = isA4Document
@@ -297,67 +505,6 @@ export async function exportCardAsImage(
       dataUrl = finalCanvas.toDataURL('image/png', 1.0);
     } catch (errPrimary) {
       console.warn('[Card Exporter] Primary html2canvas failed:', errPrimary);
-    }
-  }
-
-  // Priority 3: html2canvas on Secondary Node if available
-  if (!dataUrl && secondaryNode) {
-    try {
-      await inlineImagesInElement(secondaryNode);
-      const canvas = await runWithTimeout(
-        html2canvas(secondaryNode, {
-          scale: 2.5,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#FFFFFF',
-          logging: false,
-          imageTimeout: 5000,
-          scrollX: 0,
-          scrollY: 0,
-          width: 960,
-          windowWidth: 1200,
-          onclone: (clonedDoc, element) => {
-            resetClonedLayout(clonedDoc, element);
-          },
-        }),
-        9000,
-        'html2canvas secondary'
-      );
-      const finalCanvas = isA4Document
-        ? formatPortraitWelcomingCanvas(canvas, 2480, 3508)
-        : canvas;
-      dataUrl = finalCanvas.toDataURL('image/png', 1.0);
-    } catch (errSec) {
-      console.warn('[Card Exporter] Secondary html2canvas failed:', errSec);
-    }
-  }
-
-  // Priority 4: toPng fallback
-  if (!dataUrl) {
-    try {
-      dataUrl = await runWithTimeout(
-        toPng(primaryNode, {
-          cacheBust: true,
-          quality: 1.0,
-          pixelRatio: 2.0,
-          skipFonts: true,
-          fontEmbedCSS: '',
-          backgroundColor: '#FFFFFF',
-          width: 960,
-          style: {
-            position: 'static',
-            opacity: '1',
-            visibility: 'visible',
-            transform: 'none',
-            width: '960px',
-            minWidth: '960px',
-          },
-        }),
-        6000,
-        'toPng fallback'
-      );
-    } catch (errPng) {
-      console.warn('[Card Exporter] toPng fallback failed:', errPng);
     }
   }
 

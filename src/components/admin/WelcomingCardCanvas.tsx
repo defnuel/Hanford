@@ -58,23 +58,23 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
       ref={canvasRef as any}
       className={`relative mx-auto select-none overflow-hidden rounded-2xl text-[#1E293B] font-sans bg-white flex flex-col justify-between ${
         fixedWidth
-          ? 'w-[960px] min-w-[960px] max-w-[960px] min-h-[1358px] p-10'
-          : 'w-full max-w-[960px] min-h-[1358px] p-6 sm:p-10'
+          ? 'w-[960px] min-w-[960px] max-w-[960px] min-h-[1358px] p-8'
+          : 'w-full max-w-[960px] min-h-[1358px] p-6 sm:p-8'
       }`}
       style={{
         boxShadow: '0 20px 45px -10px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.05)',
         border: '1px solid #E2E8F0',
         aspectRatio: '1 / 1.4142',
-        ...(fixedWidth ? { width: '960px', minWidth: '960px', maxWidth: '960px' } : {}),
+        ...(fixedWidth ? { width: '960px', minWidth: '960px', maxWidth: '960px', height: '1358px' } : {}),
       }}
     >
       {/* Decorative Outer Border (Invoice Style) */}
-      <div className="absolute inset-4 border border-[#E2E8F0] pointer-events-none rounded-xl" />
+      <div className="absolute inset-3.5 border border-[#E2E8F0] pointer-events-none rounded-xl" />
 
       {/* Top Container */}
-      <div className="relative z-10 space-y-7">
+      <div className="relative z-10 space-y-5">
         {/* Card Header & Brand Identity - ALWAYS Horizontal Row */}
-        <div className="flex flex-row items-center justify-between border-b border-slate-200 pb-5 gap-4">
+        <div className="flex flex-row items-center justify-between border-b border-slate-200 pb-4 gap-4">
           {/* Brand Logo & Title */}
           <div className="flex items-center gap-4 text-left">
             {/* Logo container matching invoice elegance */}
@@ -89,23 +89,23 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
               />
             </div>
 
-            <div>
+            <div className="flex flex-col gap-1 text-left">
               <div className="text-xs tracking-[0.22em] font-bold text-[#51867E] uppercase flex items-center gap-1.5 justify-start">
                 <span>HANFORD HOTELS & RESORTS</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#51867E]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#51867E] shrink-0 inline-block" />
               </div>
               
               {/* WELCOME TO: with newline for Location Name */}
-              <div className="mt-1">
-                <div className="text-[13px] text-[#1E293B] font-bold tracking-[0.18em] uppercase">
+              <div className="pt-0.5">
+                <div className="text-[13px] text-[#1E293B] font-bold tracking-[0.18em] uppercase leading-normal">
                   WELCOME TO :
                 </div>
-                <h1 className="text-2xl sm:text-[26px] text-[#1E293B] font-bold tracking-tight uppercase leading-snug mt-0.5">
+                <div className="text-2xl sm:text-[26px] text-[#1E293B] font-bold font-sans tracking-tight uppercase leading-snug mt-0.5">
                   {displayProperty}
-                </h1>
+                </div>
               </div>
 
-              <div className="text-[11.5px] tracking-[0.12em] text-slate-500 uppercase font-medium mt-1">
+              <div className="text-[11.5px] tracking-[0.12em] text-slate-500 uppercase font-medium leading-normal pt-0.5">
                 WE HOPE YOU ENJOY YOUR EXCEPTIONAL STAY &amp; LUXURIOUS EXPERIENCE
               </div>
             </div>
@@ -122,9 +122,9 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
           </div>
         </div>
 
-        {/* 1st Picture: Hero Picture of the Location (Proportional A4 Photo Banner) */}
+        {/* 1st Picture: Hero Picture of the Location with Explicit Height for Rasterization */}
         <div className="rounded-xl overflow-hidden shadow-md border border-slate-200 bg-[#0F172A] group">
-          <div className="aspect-[1.55/1] w-full relative overflow-hidden">
+          <div className="w-full h-[430px] relative overflow-hidden">
             <img
               src={imageSource}
               alt={displayProperty}
@@ -138,18 +138,18 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
             <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/90 via-[#0F172A]/30 to-transparent" />
 
             {/* Overlay Details */}
-            <div className="absolute bottom-5 left-6 right-6 flex items-end justify-between">
-              <div className="text-white space-y-1">
-                <div className="text-[10px] font-bold tracking-[0.16em] text-[#51867E] bg-white/95 backdrop-blur-md px-2.5 py-1 rounded uppercase inline-flex items-center gap-1.5 mb-1 shadow-xs">
-                  <Building className="w-3.5 h-3.5 text-[#51867E]" />
+            <div className="absolute bottom-5 left-6 right-6 flex items-end justify-between gap-4">
+              <div className="text-white flex flex-col gap-1.5 text-left">
+                <div className="text-[10px] font-bold tracking-[0.16em] text-[#51867E] bg-white/95 backdrop-blur-md px-2.5 py-1 rounded uppercase inline-flex items-center gap-1.5 shadow-xs w-fit">
+                  <Building className="w-3.5 h-3.5 text-[#51867E] shrink-0" />
                   <span>FEATURED PROPERTY LOCATION</span>
                 </div>
-                <div className="text-2xl sm:text-3xl text-white font-bold tracking-wide drop-shadow-md">
+                <div className="text-2xl sm:text-3xl text-white font-bold tracking-wide drop-shadow-md leading-tight">
                   {displayProperty}
                 </div>
               </div>
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/15 backdrop-blur-md border border-white/30 text-white rounded-lg text-[11px] font-bold tracking-wider uppercase">
-                <CheckCircle className="w-4 h-4 text-[#51867E]" />
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/15 backdrop-blur-md border border-white/30 text-white rounded-lg text-[11px] font-bold tracking-wider uppercase shrink-0">
+                <CheckCircle className="w-4 h-4 text-[#51867E] shrink-0" />
                 <span>VERIFIED DESTINATION</span>
               </div>
             </div>
@@ -157,15 +157,15 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
         </div>
 
         {/* Main Content Grid: Guest Info & Stay Details - ALWAYS 2 COLUMNS */}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-5">
           {/* Box 1: Guest Information (Invoice Style) */}
-          <div className="p-6 bg-slate-50 rounded-xl border border-slate-200 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 text-[#51867E] font-bold text-[11px] tracking-[0.2em] uppercase border-b border-slate-200 pb-2.5">
+          <div className="p-5 bg-slate-50 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-3.5">
+            <div className="flex items-center gap-2 text-[#51867E] font-bold text-[11px] tracking-[0.2em] uppercase border-b border-slate-200 pb-2">
               <User className="w-3.5 h-3.5" />
               <span>GUEST INFORMATION</span>
             </div>
 
-            <div className="space-y-3.5">
+            <div className="flex flex-col gap-3">
               <div>
                 <div className="text-[10px] tracking-wider text-slate-500 uppercase font-semibold">
                   GUEST FULL NAME
@@ -203,8 +203,8 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
           </div>
 
           {/* Box 2: Reservation & Stay Details (Invoice Style) */}
-          <div className="p-6 bg-slate-50 rounded-xl border border-slate-200 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 text-[#51867E] font-bold text-[11px] tracking-[0.2em] uppercase border-b border-slate-200 pb-2.5">
+          <div className="p-5 bg-slate-50 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-3.5">
+            <div className="flex items-center gap-2 text-[#51867E] font-bold text-[11px] tracking-[0.2em] uppercase border-b border-slate-200 pb-2">
               <Calendar className="w-3.5 h-3.5" />
               <span>RESERVATION DETAILS</span>
             </div>
@@ -228,7 +228,7 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
                 </div>
               </div>
 
-              <div className="col-span-2 pt-3 border-t border-slate-200">
+              <div className="col-span-2 pt-2.5 border-t border-slate-200">
                 <div className="text-[10px] tracking-wider text-slate-500 uppercase font-semibold">
                   STAY DATES
                 </div>
@@ -241,20 +241,20 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
         </div>
 
         {/* Butler / Concierge Welcome Greeting Message */}
-        <div className="p-7 bg-[#EBF3F1]/80 rounded-xl border border-[#CDE1DC] text-base leading-relaxed text-[#2C3744] italic relative">
-          <span className="text-3xl text-[#51867E] font-serif leading-none mr-2">&ldquo;</span>
+        <div className="p-5 bg-[#EBF3F1]/80 rounded-xl border border-[#CDE1DC] text-[13.5px] leading-relaxed text-[#2C3744] italic relative">
+          <span className="text-2xl text-[#51867E] font-serif leading-none mr-2">&ldquo;</span>
           {customWelcomeNote || `Dear ${displayGuestName}, on behalf of the management and our hospitality team at ${displayProperty}, we warmly welcome you to your retreat. Every arrangement has been made to ensure your stay is seamless, relaxing, and unforgettable. Our dedicated concierge and butler service remain at your complete disposal.`}
-          <span className="text-3xl text-[#51867E] font-serif leading-none ml-2">&rdquo;</span>
+          <span className="text-2xl text-[#51867E] font-serif leading-none ml-2">&rdquo;</span>
         </div>
       </div>
 
-      {/* Card Footer: Left-aligned Issuer info (Clean A4 layout without redundant right signature) */}
-      <div className="relative z-10 flex flex-row items-center justify-between border-t border-slate-200 pt-5 mt-5">
-        <div className="text-left space-y-0.5">
-          <div className="text-xs tracking-[0.18em] text-[#51867E] uppercase font-bold">
+      {/* Card Footer: Left-aligned Issuer info (Clean A4 layout) */}
+      <div className="relative z-10 flex flex-row items-center justify-between border-t border-slate-200 pt-4 mt-4">
+        <div className="text-left flex flex-col gap-0.5">
+          <div className="text-xs tracking-[0.18em] text-[#51867E] uppercase font-bold leading-normal">
             ISSUED BY HANFORD HNR CONCIERGE
           </div>
-          <div className="text-[13px] text-slate-600 font-medium">
+          <div className="text-[13px] text-slate-600 font-medium leading-normal">
             Central Reservations • Hanford Hotels &amp; Resorts
           </div>
         </div>

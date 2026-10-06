@@ -1500,11 +1500,20 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
 
       {/* Offscreen Hidden Containers for Pixel-Perfect 960px Desktop & A4 Export on Mobile & Desktop */}
       <div
-        className="fixed -left-[9999px] top-0 pointer-events-none opacity-100 z-[-9999] overflow-hidden"
+        id="hanford-export-staging-container"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: '-9999px',
+          width: '960px',
+          visibility: 'visible',
+          pointerEvents: 'none',
+          zIndex: -9999,
+        }}
         aria-hidden="true"
       >
         {/* Offscreen Accommodation Gallery (A4 2480x3508 export) */}
-        <div className="w-[960px] bg-white text-[#1E293B]">
+        <div style={{ width: '960px', height: '1358px' }} className="bg-white text-[#1E293B]">
           <AccommodationGalleryCanvas
             guestName={galleryGuestName}
             xUsername={galleryXUser}
@@ -1520,7 +1529,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
         </div>
 
         {/* Offscreen Welcoming Card */}
-        <div className="w-[960px] bg-white text-[#1E293B]">
+        <div style={{ width: '960px', height: '1358px', marginTop: '40px' }} className="bg-white text-[#1E293B]">
           <WelcomingCardCanvas
             guestName={welcomeGuestName}
             xUsername={welcomeXUser}
@@ -1539,7 +1548,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
         </div>
 
         {/* Offscreen Key Card */}
-        <div className="w-[1000px] bg-[#101726]">
+        <div style={{ width: '1000px', marginTop: '40px' }} className="bg-[#101726]">
           <GuestKeyCardCanvas
             guestName={keyGuestName}
             roomNumbers={roomNumbers}

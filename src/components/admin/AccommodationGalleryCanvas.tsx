@@ -78,7 +78,7 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
       style={{
         boxShadow: '0 20px 45px -10px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.05)',
         aspectRatio: '1 / 1.4142', // Standard ISO A4 Ratio (210 x 297 mm)
-        ...(fixedWidth ? { width: '960px', minWidth: '960px', maxWidth: '960px' } : {}),
+        ...(fixedWidth ? { width: '960px', minWidth: '960px', maxWidth: '960px', height: '1358px' } : {}),
       }}
     >
       {/* Luxury Inner Border Outline */}
@@ -103,21 +103,21 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
               />
             </div>
 
-            <div>
+            <div className="flex flex-col gap-1 text-left">
               <div className="text-xs tracking-[0.22em] font-bold text-[#51867E] uppercase flex items-center gap-1.5 justify-start">
                 <span>HANFORD HOTELS & RESORTS</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#51867E]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#51867E] shrink-0 inline-block" />
               </div>
               
               {/* JUDUL: RESERVED ACCOMMODATION */}
-              <div className="mt-0.5">
-                <h1 className="text-2xl sm:text-[25px] text-[#1E293B] font-bold tracking-tight uppercase leading-snug">
+              <div className="pt-0.5">
+                <div className="text-2xl sm:text-[25px] text-[#1E293B] font-bold font-sans tracking-tight uppercase leading-snug">
                   RESERVED ACCOMMODATION
-                </h1>
+                </div>
                 
                 {/* BAWAHNYA: ROOM TYPE */}
                 <div className="text-sm sm:text-[14px] font-semibold text-[#51867E] tracking-normal mt-1 flex items-center gap-2">
-                  <span className="inline-block px-2.5 py-0.5 bg-[#EBF3F1] border border-[#CDE1DC] rounded-md font-bold uppercase text-[11px] text-[#2D5A53]">
+                  <span className="inline-block px-2.5 py-0.5 bg-[#EBF3F1] border border-[#CDE1DC] rounded-md font-bold uppercase text-[11px] text-[#2D5A53] shrink-0">
                     ROOM TYPE
                   </span>
                   <span className="text-[#1E293B] font-bold uppercase tracking-tight truncate max-w-[500px]">
@@ -179,7 +179,7 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
                 key={photo.id || `grid-${idx}`}
                 className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-900 group shadow-xs"
               >
-                <div className="aspect-[16/10.2] w-full relative overflow-hidden">
+                <div className="w-full h-[172px] relative overflow-hidden">
                   <img
                     src={photo.url}
                     alt={photo.title || `Photo ${idx + 1}`}
@@ -213,7 +213,7 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
                   key={photo.id || `hero-${idx}`}
                   className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-900 group shadow-sm"
                 >
-                  <div className="aspect-[16/9.5] w-full relative overflow-hidden">
+                  <div className="w-full h-[250px] relative overflow-hidden">
                     <img
                       src={photo.url}
                       alt={photo.title || `Hero Photo ${idx + 1}`}
@@ -245,7 +245,7 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
                     key={photo.id || `grid-${idx}`}
                     className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-900 group shadow-xs"
                   >
-                    <div className="aspect-[16/10.5] w-full relative overflow-hidden">
+                    <div className="w-full h-[155px] relative overflow-hidden">
                       <img
                         src={photo.url}
                         alt={photo.title || `Photo ${photoNumber}`}
@@ -277,7 +277,7 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
                 key={photo.id || `grid-${idx}`}
                 className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-900 group shadow-xs"
               >
-                <div className="aspect-[16/10.2] w-full relative overflow-hidden">
+                <div className="w-full h-[185px] relative overflow-hidden">
                   <img
                     src={photo.url}
                     alt={photo.title || `Photo ${idx + 1}`}
@@ -304,17 +304,17 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
 
       {/* Card Footer: Left-aligned Issuer info & Verification (Clean A4 layout) */}
       <div className="relative z-10 flex flex-row items-center justify-between border-t border-slate-200 pt-3.5 mt-2 shrink-0">
-        <div className="text-left space-y-0.5">
-          <div className="text-[11px] tracking-[0.2em] text-[#51867E] uppercase font-bold">
+        <div className="text-left flex flex-col gap-0.5">
+          <div className="text-[11px] tracking-[0.2em] text-[#51867E] uppercase font-bold leading-normal">
             ISSUED BY HANFORD HNR CONCIERGE
           </div>
-          <div className="text-xs text-slate-600 font-medium">
+          <div className="text-xs text-slate-600 font-medium leading-normal">
             Central Reservations • Hanford Hotels &amp; Resorts
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-xs font-bold text-[#51867E] bg-[#EBF3F1] border border-[#CDE1DC] px-3.5 py-1.5 rounded-lg">
-          <ShieldCheck className="w-4.5 h-4.5 text-[#51867E]" />
+        <div className="flex items-center gap-2 text-xs font-bold text-[#51867E] bg-[#EBF3F1] border border-[#CDE1DC] px-3.5 py-1.5 rounded-lg shrink-0">
+          <ShieldCheck className="w-4.5 h-4.5 text-[#51867E] shrink-0" />
           <span className="uppercase tracking-wider text-[11px]">Official Reserved Suite</span>
         </div>
       </div>
