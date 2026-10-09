@@ -49,57 +49,148 @@ const DEFAULT_GALLERY_PHOTOS: GalleryPhotoItem[] = [
 
 const PRESET_COLLECTIONS: Record<string, GalleryPhotoItem[]> = {
   uluwatu: [
-    { id: 'u1', url: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80', title: 'Private Cliffside Infinity Pool' },
-    { id: 'u2', url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80', title: 'Master Bedroom Oceanfront Panorama' },
-    { id: 'u3', url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80', title: 'Open-Air Balinese Living Pavilion' },
-    { id: 'u4', url: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80', title: 'Handcrafted Stone En-Suite Bathroom' },
-    { id: 'u5', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80', title: 'Sunset Daybed & Poolside Deck' },
-    { id: 'u6', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80', title: 'Private Beach Trail & Indian Ocean' },
+    { id: 'u1', url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80', title: 'Master Bedroom Oceanfront Panorama' },
+    { id: 'u2', url: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80', title: 'Handcrafted Stone En-Suite Bathroom' },
+    { id: 'u3', url: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80', title: 'Private Cliffside Infinity Pool' },
+    { id: 'u4', url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80', title: 'Open-Air Balinese Living Pavilion' },
+    { id: 'u5', url: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1200&q=80', title: 'Deep Soaking Marble Jacuzzi' },
+    { id: 'u6', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80', title: 'Sunset Daybed & Poolside Deck' },
     { id: 'u7', url: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80', title: 'Dining Terrace with Candlelit View' },
-    { id: 'u8', url: 'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?auto=format&fit=crop&w=1200&q=80', title: 'Tropical Flora Courtyard' },
-    { id: 'u9', url: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1200&q=80', title: 'Deep Soaking Marble Jacuzzi' },
+    { id: 'u8', url: 'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?auto=format&fit=crop&w=1200&q=80', title: 'Tropical Flora Courtyard & Sanctuary' },
+    { id: 'u9', url: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80', title: 'Deluxe Ocean View Guest Bedroom' },
     { id: 'u10', url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80', title: 'Villa Entrance Aling-Aling Gate' },
-    { id: 'u11', url: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=1200&q=80', title: 'Private Clifftop Garden Bar' },
-    { id: 'u12', url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1200&q=80', title: 'Private Chef Kitchenette' },
+    { id: 'u11', url: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=1200&q=80', title: 'Rain Shower & Spa En-Suite' },
+    { id: 'u12', url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1200&q=80', title: 'Private Chef Kitchenette & Bar' },
     { id: 'u13', url: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80', title: 'Balinese Yoga Bale Pavilion' },
-    { id: 'u14', url: 'https://images.unsplash.com/photo-1528164344705-475426879e0d?auto=format&fit=crop&w=1200&q=80', title: 'Ocean Horizon Sunset Deck' },
-    { id: 'u15', url: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80', title: 'Tropical Waterfalls & Koi Pond' },
+    { id: 'u14', url: 'https://images.unsplash.com/photo-1528164344705-475426879e0d?auto=format&fit=crop&w=1200&q=80', title: 'Ocean Horizon Sunset Observation Point' },
+    { id: 'u15', url: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80', title: 'Grand Suite Foyer & Water Feature' },
   ],
   jeju: [
-    { id: 'j1', url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80', title: 'Jeju Volcanic Cliff Ocean Suite' },
-    { id: 'j2', url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80', title: 'Hanok-Inspired Minimalist Bedroom' },
-    { id: 'j3', url: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=1200&q=80', title: 'Natural Hot Spring Onsen Bath' },
-    { id: 'j4', url: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80', title: 'Zen Tea Garden Sunken Lounge' },
-    { id: 'j5', url: 'https://images.unsplash.com/photo-1528164344705-475426879e0d?auto=format&fit=crop&w=1200&q=80', title: 'Panoramic Volcanic Coastline View' },
-    { id: 'j6', url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80', title: 'Private Heated Plunge Pool' },
-    { id: 'j7', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80', title: 'Timber Terrace & Fire Pit' },
+    { id: 'j1', url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80', title: 'Hanok-Inspired Minimalist Master Bedroom' },
+    { id: 'j2', url: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80', title: 'Marble Jjimjilbang Soaking Tub' },
+    { id: 'j3', url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80', title: 'Private Heated Plunge Pool & Ocean View' },
+    { id: 'j4', url: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80', title: 'Zen Tea Garden Sunken Living Lounge' },
+    { id: 'j5', url: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=1200&q=80', title: 'Natural Hot Spring Onsen Bath' },
+    { id: 'j6', url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80', title: 'Jeju Volcanic Cliff Ocean Suite' },
+    { id: 'j7', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80', title: 'Timber Ocean Terrace & Fire Pit' },
     { id: 'j8', url: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80', title: 'Gourmet In-Room Dining Alcove' },
-    { id: 'j9', url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1200&q=80', title: 'Forest Path & Olle Trail Access' },
-    { id: 'j10', url: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80', title: 'Marble Jjimjilbang Soaking Tub' },
+    { id: 'j9', url: 'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?auto=format&fit=crop&w=1200&q=80', title: 'Cedar Wood Aromatherapy Guest Suite' },
+    { id: 'j10', url: 'https://images.unsplash.com/photo-1528164344705-475426879e0d?auto=format&fit=crop&w=1200&q=80', title: 'Panoramic Volcanic Coastline Bedroom' },
     { id: 'j11', url: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80', title: 'Camellia Garden Private Courtyard' },
-    { id: 'j12', url: 'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?auto=format&fit=crop&w=1200&q=80', title: 'Cedar Wood Aromatherapy Suite' },
-    { id: 'j13', url: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1200&q=80', title: 'Korean Ceramic Tea Corner' },
+    { id: 'j12', url: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1200&q=80', title: 'Korean Ceramic Tea Corner' },
+    { id: 'j13', url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1200&q=80', title: 'Forest Path & Olle Trail Access' },
     { id: 'j14', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80', title: 'Seongsan Sunrise Observation Deck' },
     { id: 'j15', url: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80', title: 'Basalt Stone Courtyard Gate' },
   ],
   santorini: [
-    { id: 's1', url: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80', title: 'Whitewashed Caldera Suite Horizon' },
-    { id: 's2', url: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1200&q=80', title: 'Cave Style Master Bedroom' },
-    { id: 's3', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80', title: 'Aegean Private Heated Jacuzzi' },
-    { id: 's4', url: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80', title: 'Sunken Cycladic Bathroom' },
-    { id: 's5', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80', title: 'Oia Sunset Observation Balcony' },
-    { id: 's6', url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80', title: 'Infinity Pool Above Aegean Sea' },
+    { id: 's1', url: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1200&q=80', title: 'Cave Style Master Bedroom' },
+    { id: 's2', url: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80', title: 'Sunken Cycladic Bathroom' },
+    { id: 's3', url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80', title: 'Infinity Pool Above Aegean Sea' },
+    { id: 's4', url: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80', title: 'Whitewashed Caldera Suite Horizon' },
+    { id: 's5', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80', title: 'Aegean Private Heated Jacuzzi' },
+    { id: 's6', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80', title: 'Oia Sunset Observation Balcony' },
     { id: 's7', url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80', title: 'Private Alfresco Dining Pergola' },
     { id: 's8', url: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80', title: 'Sun Loungers on Stone Deck' },
-    { id: 's9', url: 'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?auto=format&fit=crop&w=1200&q=80', title: 'Indigenous Wine Cellar Bar' },
-    { id: 's10', url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80', title: 'Private Courtyard Entry' },
-    { id: 's11', url: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=1200&q=80', title: 'Santorini Sunset Lounge Veranda' },
-    { id: 's12', url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1200&q=80', title: 'Greek Cave Spa Soaking Tub' },
+    { id: 's9', url: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80', title: 'Aegean View Guest Suite' },
+    { id: 's10', url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1200&q=80', title: 'Greek Cave Spa Soaking Tub' },
+    { id: 's11', url: 'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?auto=format&fit=crop&w=1200&q=80', title: 'Indigenous Wine Cellar Bar' },
+    { id: 's12', url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80', title: 'Private Courtyard Entry' },
     { id: 's13', url: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80', title: 'Caldera Cliff Morning Breakfast Nook' },
     { id: 's14', url: 'https://images.unsplash.com/photo-1528164344705-475426879e0d?auto=format&fit=crop&w=1200&q=80', title: 'Private Horizon Plunge Pool' },
     { id: 's15', url: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80', title: 'Traditional Blue Dome Terrace' },
   ],
+  jakarta: [
+    { id: 'jk1', url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80', title: 'Grand Presidential Master Bedroom' },
+    { id: 'jk2', url: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80', title: 'Italian Marble En-Suite Bathroom' },
+    { id: 'jk3', url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80', title: 'Private Penthouse Rooftop Pool' },
+    { id: 'jk4', url: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80', title: 'Executive Skyline Living Salon' },
+    { id: 'jk5', url: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1200&q=80', title: 'Deep Soaking Tub with City Panorama' },
+    { id: 'jk6', url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80', title: 'Private Balcony Overlooking Golden Triangle' },
+    { id: 'jk7', url: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80', title: 'Formal Dining Salon with Butler Service' },
+    { id: 'jk8', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80', title: 'Walk-in Dressing Room & Vanity Suite' },
+    { id: 'jk9', url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80', title: 'Second Deluxe King Guest Suite' },
+    { id: 'jk10', url: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=1200&q=80', title: 'Rainfall Shower & Steam En-Suite' },
+    { id: 'jk11', url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1200&q=80', title: 'Executive Library & Workspace' },
+    { id: 'jk12', url: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80', title: 'Private Butler Pantry & Kitchen' },
+    { id: 'jk13', url: 'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?auto=format&fit=crop&w=1200&q=80', title: 'Sunken Terrace Cocktail Lounge' },
+    { id: 'jk14', url: 'https://images.unsplash.com/photo-1528164344705-475426879e0d?auto=format&fit=crop&w=1200&q=80', title: 'Powder Room & Marble Double Vanity' },
+    { id: 'jk15', url: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80', title: 'Grand Penthouse Foyer Entrance' },
+  ],
+  santabarbara: [
+    { id: 'sb1', url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80', title: 'Oceanfront Spanish Master Bedroom' },
+    { id: 'sb2', url: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80', title: 'Handcrafted Marble En-Suite Bathroom' },
+    { id: 'sb3', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80', title: 'Private Saline Plunge Pool with Ocean View' },
+    { id: 'sb4', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80', title: 'Coastal Living Pavilion & Fireplace' },
+    { id: 'sb5', url: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1200&q=80', title: 'Deep Soaking Jacuzzi with Pacific Vistas' },
+    { id: 'sb6', url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80', title: 'Jasmine Sun Patio & Private Daybeds' },
+    { id: 'sb7', url: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80', title: 'Terracotta Alfresco Dining Terrace' },
+    { id: 'sb8', url: 'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?auto=format&fit=crop&w=1200&q=80', title: 'Botanical Courtyard & Fountain' },
+    { id: 'sb9', url: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80', title: 'Pacific Coastal King Guest Suite' },
+    { id: 'sb10', url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80', title: 'Walk-in Redwood Dressing Suite' },
+    { id: 'sb11', url: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80', title: 'Private Beach Trail & Central Coast Vista' },
+    { id: 'sb12', url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80', title: 'Spanish Tile Courtyard Gate' },
+    { id: 'sb13', url: 'https://images.unsplash.com/photo-1528164344705-475426879e0d?auto=format&fit=crop&w=1200&q=80', title: 'Sunset Oceanview Fire Pit Veranda' },
+    { id: 'sb14', url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1200&q=80', title: 'Sommelier In-Suite Wine Pantry' },
+    { id: 'sb15', url: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80', title: 'Grand Mission Foyer Entrance' },
+  ],
 };
+
+// Helper to select 15 rich accommodation photos for a given property
+const get15PhotosForProperty = (propName: string, propObj?: Property): GalleryPhotoItem[] => {
+  const pLower = propName.toLowerCase();
+  if (pLower.includes('uluwatu')) return PRESET_COLLECTIONS.uluwatu;
+  if (pLower.includes('jeju')) return PRESET_COLLECTIONS.jeju;
+  if (pLower.includes('santorini')) return PRESET_COLLECTIONS.santorini;
+  if (pLower.includes('jakarta')) return PRESET_COLLECTIONS.jakarta;
+  if (pLower.includes('santa barbara')) return PRESET_COLLECTIONS.santabarbara;
+  if (pLower.includes('seoul')) return PRESET_COLLECTIONS.jakarta;
+  if (pLower.includes('tokyo')) return PRESET_COLLECTIONS.jakarta;
+  if (pLower.includes('aspen')) return PRESET_COLLECTIONS.santabarbara;
+
+  if (propObj && propObj.galleryImages && propObj.galleryImages.length > 0) {
+    const sheetPhotos: GalleryPhotoItem[] = propObj.galleryImages.map((url, i) => ({
+      id: `sheet-${i}`,
+      url,
+      title: i === 0 ? 'Master Suite & Ocean Terrace' : i === 1 ? 'Marble En-Suite Bathroom' : i === 2 ? 'Private Infinity Pool' : `Suite Area ${i + 1}`
+    }));
+    const needed = 15 - sheetPhotos.length;
+    const fillers = DEFAULT_GALLERY_PHOTOS.slice(0, Math.max(0, needed));
+    return [...sheetPhotos, ...fillers];
+  }
+  return DEFAULT_GALLERY_PHOTOS;
+};
+
+// Helper: Format date for autofill booking dropdown (e.g. "1 Jan 2026")
+function formatAutofillDate(dateStr?: string): string {
+  if (!dateStr) return '1 Jan 2026';
+  try {
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) {
+      const day = d.getDate();
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return `${day} ${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+    }
+  } catch {}
+  return dateStr;
+}
+
+// Helper: Extract City Only (e.g. "Uluwatu", "Jeju", "Jakarta")
+function extractCityOnly(name?: string): string {
+  if (!name) return 'Uluwatu';
+  const lower = name.toLowerCase();
+  if (lower.includes('uluwatu')) return 'Uluwatu';
+  if (lower.includes('jeju')) return 'Jeju';
+  if (lower.includes('jakarta')) return 'Jakarta';
+  if (lower.includes('santa barbara')) return 'Santa Barbara';
+  if (lower.includes('santorini')) return 'Santorini';
+  if (lower.includes('seoul')) return 'Seoul';
+  if (lower.includes('tokyo')) return 'Tokyo';
+  if (lower.includes('aspen')) return 'Aspen';
+  if (lower.includes('bali')) return 'Bali';
+  if (lower.includes('como')) return 'Lake Como';
+  if (lower.includes('lombok')) return 'Lombok';
+  return name.split(',')[0].replace(/Hanford\s+(Hotel\s+&\s+Resort|Grand\s+Hotel|Eco\s+Resort|Resort\s+&\s+Spa|Resort)?/gi, '').trim() || 'Uluwatu';
+}
 
 interface GuestCardsManagerProps {
   properties: Property[];
@@ -119,6 +210,11 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
     initialBooking?.bookingId || initialBooking?.id || ''
   );
 
+  // Searchable Autofill Dropdown State
+  const [autofillSearchQuery, setAutofillSearchQuery] = useState<string>('');
+  const [isAutofillOpen, setIsAutofillOpen] = useState<boolean>(false);
+  const autofillContainerRef = useRef<HTMLDivElement>(null);
+
   // Key Card Form State
   const [keyGuestName, setKeyGuestName] = useState<string>('Gavin Elian Baskoro');
   const [keyLocationName, setKeyLocationName] = useState<string>(
@@ -129,20 +225,44 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
   const [customRoomInput, setCustomRoomInput] = useState<string>('');
 
   // Welcoming Card Form State
-  const [welcomeGuestName, setWelcomeGuestName] = useState<string>('Agatha Madeleine');
-  const [welcomeXUser, setWelcomeXUser] = useState<string>('@pendxnts');
-  const [welcomeProperty, setWelcomeProperty] = useState<string>(
-    'Hanford Hotel & Resort Uluwatu, Bali'
+  const [welcomeGuestName, setWelcomeGuestName] = useState<string>(
+    initialBooking?.guestName || 'Agatha Madeleine'
   );
-  const [welcomeBookingType, setWelcomeBookingType] = useState<string>('Room & Event');
+  const [welcomeXUser, setWelcomeXUser] = useState<string>(
+    initialBooking?.xUsername || '@pendxnts'
+  );
+  const [welcomeProperty, setWelcomeProperty] = useState<string>(
+    initialBooking?.propertyName || 'Hanford Hotel & Resort Uluwatu, Bali'
+  );
+  const [welcomeBookingType, setWelcomeBookingType] = useState<string>(
+    initialBooking?.bookOption === 'both' ? 'Room & Event' : 'Room Reservation'
+  );
   const [welcomeStayDates, setWelcomeStayDates] = useState<string>(
     '2026-09-01 to 2026-09-02 (1 night)'
   );
-  const [welcomeEventDate, setWelcomeEventDate] = useState<string>('N/A');
+  const [welcomeEventDate, setWelcomeEventDate] = useState<string>(() => {
+    if (initialBooking && initialBooking.bookOption === 'room') return '';
+    return initialBooking?.eventDate || '';
+  });
   const [welcomeHeroImage, setWelcomeHeroImage] = useState<string>(
     'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1800&q=85'
   );
-  const [welcomeRoomDetails, setWelcomeRoomDetails] = useState<string>('Private Pool Villa');
+  const [welcomeRoomDetails, setWelcomeRoomDetails] = useState<string>(() => {
+    const b = initialBooking || (bookings && bookings.length > 0 ? bookings[0] : null);
+    if (b) {
+      return (
+        (b as any).allocatedRoom ||
+        (b as any).roomCategory ||
+        (b as any).roomType ||
+        (b.privateVillas ? `Private Pool Villa${b.privateVillas > 1 ? ` (${b.privateVillas} Units)` : ''}` : '') ||
+        (b.presidentialSuites ? 'Presidential Suite' : '') ||
+        (b.deluxeRooms ? 'Deluxe Ocean View Room' : '') ||
+        (b.standardRooms ? 'Standard Premium Room' : '') ||
+        'Deluxe Ocean View Room'
+      );
+    }
+    return 'Deluxe Ocean View Room';
+  });
   const [welcomeCustomNote, setWelcomeCustomNote] = useState<string>('');
   const [welcomeRef, setWelcomeRef] = useState<string>(() => {
     const b = initialBooking || (bookings && bookings.length > 0 ? bookings[0] : null);
@@ -151,19 +271,51 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
   });
 
   // Accommodation Gallery Form State (New Feature)
-  const [galleryGuestName, setGalleryGuestName] = useState<string>('Agatha Madeleine');
-  const [galleryXUser, setGalleryXUser] = useState<string>('@pendxnts');
-  const [galleryProperty, setGalleryProperty] = useState<string>('Hanford Hotel & Resort Uluwatu, Bali');
-  const [galleryRoomType, setGalleryRoomType] = useState<string>('Private Pool Villa • 3 Bedroom Ocean Suite');
+  const [galleryGuestName, setGalleryGuestName] = useState<string>(
+    initialBooking?.guestName || 'Agatha Madeleine'
+  );
+  const [galleryXUser, setGalleryXUser] = useState<string>(
+    initialBooking?.xUsername || '@pendxnts'
+  );
+  const [galleryProperty, setGalleryProperty] = useState<string>(
+    initialBooking?.propertyName || 'Hanford Hotel & Resort Uluwatu, Bali'
+  );
+  const [galleryRoomType, setGalleryRoomType] = useState<string>(() => {
+    const b = initialBooking || (bookings && bookings.length > 0 ? bookings[0] : null);
+    if (b) {
+      return (
+        (b as any).allocatedRoom ||
+        (b as any).roomCategory ||
+        (b as any).roomType ||
+        (b.privateVillas ? `Private Pool Villa${b.privateVillas > 1 ? ` (${b.privateVillas} Units)` : ''}` : '') ||
+        (b.presidentialSuites ? 'Presidential Suite' : '') ||
+        (b.deluxeRooms ? 'Deluxe Ocean View Room' : '') ||
+        (b.standardRooms ? 'Standard Premium Room' : '') ||
+        'Deluxe Ocean View Room'
+      );
+    }
+    return 'Deluxe Ocean View Room';
+  });
   const [galleryStayDates, setGalleryStayDates] = useState<string>('2026-09-01 to 2026-09-02 (1 night)');
   const [galleryRef, setGalleryRef] = useState<string>(() => {
     const b = initialBooking || (bookings && bookings.length > 0 ? bookings[0] : null);
     const bId = (b?.bookingId || b?.id || '').trim();
     return bId ? `Ref No: ${bId}` : 'Ref No: HNF-2026-INV';
   });
-  const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhotoItem[]>(DEFAULT_GALLERY_PHOTOS);
+  const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhotoItem[]>(PRESET_COLLECTIONS.uluwatu);
   const [newPhotoUrl, setNewPhotoUrl] = useState<string>('');
   const [newPhotoTitle, setNewPhotoTitle] = useState<string>('');
+
+  // Close autofill dropdown on outside click
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (autofillContainerRef.current && !autofillContainerRef.current.contains(e.target as Node)) {
+        setIsAutofillOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
 
   // Export State
   const [isExporting, setIsExporting] = useState<boolean>(false);
@@ -251,44 +403,52 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
       setGalleryStayDates(`2026-09-01 to 2026-09-02 (1 night)`);
     }
 
-    setWelcomeEventDate(b.eventDate || 'N/A');
+    // Hide event date if booking is Room Only or eventDate is missing / N/A
+    if (b.bookOption === 'room' || !b.eventDate || b.eventDate.toUpperCase() === 'N/A') {
+      setWelcomeEventDate('');
+    } else {
+      setWelcomeEventDate(b.eventDate);
+    }
+
+    // Resolve accurate room category from booking data
+    const resolvedRoom =
+      (b as any).allocatedRoom ||
+      (b as any).roomCategory ||
+      (b as any).roomType ||
+      (b.privateVillas ? `Private Pool Villa${b.privateVillas > 1 ? ` (${b.privateVillas} Units)` : ''}` : '') ||
+      (b.presidentialSuites ? `Presidential Suite${b.presidentialSuites > 1 ? ` (${b.presidentialSuites} Units)` : ''}` : '') ||
+      (b.deluxeRooms ? `Deluxe Ocean View Room${b.deluxeRooms > 1 ? ` (${b.deluxeRooms} Units)` : ''}` : '') ||
+      (b.standardRooms ? `Standard Premium Room${b.standardRooms > 1 ? ` (${b.standardRooms} Units)` : ''}` : '') ||
+      (b.bookOption === 'meeting' ? 'Executive Meeting Room' : '') ||
+      'Deluxe Ocean View Room';
+
+    setWelcomeRoomDetails(resolvedRoom);
+    setGalleryRoomType(resolvedRoom);
 
     // Gallery fields
     setGalleryGuestName(b.guestName || 'Agatha Madeleine');
     setGalleryXUser(b.xUsername || '@pendxnts');
     setGalleryProperty(propName);
-    const resolvedRoom =
-      (b as any).allocatedRoom ||
-      (b.privateVillas ? `Private Pool Villa (${b.privateVillas} Unit)` : '') ||
-      (b.presidentialSuites ? 'Presidential Ocean Suite' : '') ||
-      (b.deluxeRooms ? 'Deluxe Ocean View Room' : '') ||
-      (b.standardRooms ? 'Standard Premium Room' : '') ||
-      'Private Pool Villa • 3 Bedroom Ocean Suite';
-    setGalleryRoomType(resolvedRoom);
+
     const bRefCode = (b.bookingId || b.id || '').trim();
     const formattedRef = bRefCode ? `Ref No: ${bRefCode}` : 'Ref No: HNF-2026-INV';
     setWelcomeRef(formattedRef);
     setGalleryRef(formattedRef);
 
-    // Auto-select preset photos if matching property
-    const pLower = propName.toLowerCase();
-    if (pLower.includes('uluwatu')) {
-      setGalleryPhotos(PRESET_COLLECTIONS.uluwatu);
-    } else if (pLower.includes('jeju')) {
-      setGalleryPhotos(PRESET_COLLECTIONS.jeju);
-    } else if (pLower.includes('santorini')) {
-      setGalleryPhotos(PRESET_COLLECTIONS.santorini);
-    }
-
-    // Find image for property hero
+    // Find matched property from Sheet Locations
     const matchedProp = properties.find(
       (p) =>
         p.name.toLowerCase() === propName.toLowerCase() ||
         p.slug.toLowerCase() === (b.propertySlug || '').toLowerCase()
     );
+
     if (matchedProp && matchedProp.heroImage) {
       setWelcomeHeroImage(matchedProp.heroImage);
     }
+
+    // Auto-select 15 curated photos with clear room, bathroom, pool visuals
+    const propPhotos = get15PhotosForProperty(propName, matchedProp);
+    setGalleryPhotos(propPhotos);
   };
 
   const extractShortCity = (name: string): string => {
@@ -346,14 +506,9 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
 
   const handlePropertySelectForGallery = (propName: string) => {
     setGalleryProperty(propName);
-    const pLower = propName.toLowerCase();
-    if (pLower.includes('uluwatu')) {
-      setGalleryPhotos(PRESET_COLLECTIONS.uluwatu);
-    } else if (pLower.includes('jeju')) {
-      setGalleryPhotos(PRESET_COLLECTIONS.jeju);
-    } else if (pLower.includes('santorini')) {
-      setGalleryPhotos(PRESET_COLLECTIONS.santorini);
-    }
+    const matched = properties.find((p) => p.name.toLowerCase() === propName.toLowerCase());
+    const propPhotos = get15PhotosForProperty(propName, matched);
+    setGalleryPhotos(propPhotos);
   };
 
   const handlePropertySelectForKeyCard = (propName: string) => {
@@ -495,7 +650,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
             Guest Cards & Visual Gallery Generator
           </h2>
           <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
-            Generate high-resolution PNG luxury Key Cards, official Welcoming Cards, and 15-Photo Accommodation Visual Galleries in standard A4 format for your VIP guests.
+            Generate high-resolution PNG Key Cards, Welcoming Cards, and Accommodation Visual Galleries for VIP guests.
           </p>
         </div>
 
@@ -539,7 +694,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
         </div>
       </div>
 
-      {/* Quick Booking Autofill Banner */}
+      {/* Quick Booking Autofill Banner with Searchable Dropdown */}
       <div className="p-4 sm:p-5 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3 w-full md:w-auto">
           <div className="p-2.5 bg-[#EAF2F1] text-[#51867E] rounded-xl shrink-0">
@@ -547,38 +702,104 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
           </div>
           <div>
             <div className="text-xs font-bold text-[#2C3744] uppercase tracking-wider">
-              Autofill Booking Data Dari Excel / Inquiries
+              Autofill Booking Data
             </div>
             <div className="text-[11px] text-slate-500">
-              Pilih data reservasi untuk otomatis mengisi nama tamu, destinasi properti, tipe kamar, dan periode menginap.
+              Pilih data Reservasi untuk mengisi data otomatis
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <select
-            value={selectedBookingId}
-            onChange={handleBookingSelect}
-            className="w-full md:w-80 px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-[#51867E] focus:bg-white cursor-pointer"
-          >
-            <option value="">-- Pilih Reservasi Tamu (Excel Data) --</option>
-            {bookings.map((b) => (
-              <option key={b.bookingId || b.id} value={b.bookingId || b.id}>
-                {b.guestName} ({b.propertyName || b.propertySlug}) - {b.bookOption || 'Stay'}
-              </option>
-            ))}
-          </select>
+        <div className="flex items-center gap-2.5 w-full md:w-auto relative" ref={autofillContainerRef}>
+          {/* Interactive Search + Dropdown */}
+          <div className="relative w-full md:w-96">
+            <input
+              type="text"
+              value={autofillSearchQuery}
+              onFocus={() => setIsAutofillOpen(true)}
+              onChange={(e) => {
+                setAutofillSearchQuery(e.target.value);
+                setIsAutofillOpen(true);
+              }}
+              placeholder="Search: Nama - City - Date..."
+              className="w-full px-3.5 py-2 pr-8 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-[#51867E] focus:bg-white transition-all"
+            />
+            <button
+              type="button"
+              onClick={() => setIsAutofillOpen((prev) => !prev)}
+              className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer"
+            >
+              <ArrowDown className={`w-3.5 h-3.5 transition-transform ${isAutofillOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {/* Dropdown Options Popup */}
+            {isAutofillOpen && (
+              <div className="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl max-h-64 overflow-y-auto z-50 divide-y divide-slate-100 text-xs">
+                {bookings
+                  .filter((b) => {
+                    if (!autofillSearchQuery.trim()) return true;
+                    const q = autofillSearchQuery.toLowerCase();
+                    const city = extractCityOnly(b.propertyName || b.propertySlug).toLowerCase();
+                    const dateFormatted = formatAutofillDate(b.checkInDate || b.createdAt).toLowerCase();
+                    return (
+                      b.guestName.toLowerCase().includes(q) ||
+                      city.includes(q) ||
+                      dateFormatted.includes(q) ||
+                      (b.propertyName || '').toLowerCase().includes(q) ||
+                      (b.bookingId || b.id || '').toLowerCase().includes(q)
+                    );
+                  })
+                  .map((b) => {
+                    const id = b.bookingId || b.id || '';
+                    const isSelected = selectedBookingId === id;
+                    const city = extractCityOnly(b.propertyName || b.propertySlug);
+                    const dateText = formatAutofillDate(b.checkInDate || b.createdAt);
+                    const formattedDisplay = `${b.guestName} - ${city} - ${dateText}`;
+
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => {
+                          applyBookingData(b);
+                          setAutofillSearchQuery(formattedDisplay);
+                          setIsAutofillOpen(false);
+                        }}
+                        className={`w-full text-left px-3.5 py-2.5 transition-colors cursor-pointer flex items-center justify-between gap-2 ${
+                          isSelected ? 'bg-[#EAF2F1] text-[#2D5A53] font-bold' : 'hover:bg-slate-50 text-slate-700'
+                        }`}
+                      >
+                        <div className="truncate">
+                          <span className="font-semibold text-[#1E293B]">{b.guestName}</span>
+                          <span className="text-slate-400 mx-1.5">•</span>
+                          <span className="text-slate-600 font-medium">{city}</span>
+                          <span className="text-slate-400 mx-1.5">•</span>
+                          <span className="text-slate-500 font-mono text-[11px]">{dateText}</span>
+                        </div>
+                        {isSelected && <Check className="w-3.5 h-3.5 text-[#51867E] shrink-0" />}
+                      </button>
+                    );
+                  })}
+                {bookings.length === 0 && (
+                  <div className="p-3 text-center text-slate-400 text-xs">Tidak ada data reservasi</div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Reset / Clear Button */}
           <button
             type="button"
             onClick={() => {
               setSelectedBookingId('');
+              setAutofillSearchQuery('');
+              setIsAutofillOpen(false);
               setKeyGuestName('');
               setRoomNumbers([]);
               setWelcomeGuestName('');
               setWelcomeXUser('');
               setWelcomeRoomDetails('');
+              setWelcomeEventDate('');
               setWelcomeCustomNote('');
               setWelcomeRef('REF: HNF-2026-INV');
               setGalleryGuestName('');
@@ -586,7 +807,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
               setGalleryRoomType('');
               setGalleryRef('REF: HNF-ACCOM-2026');
             }}
-            className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors flex items-center gap-1"
+            className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors flex items-center gap-1 shrink-0"
             title="Reset Form Fields"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -614,9 +835,11 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                   : 'Gallery Visualization Settings'}
               </h3>
             </div>
-            <span className="text-[10px] font-bold px-2 py-0.5 bg-[#EAF2F1] text-[#51867E] rounded-full uppercase">
-              {activeCardType === 'keycard' ? 'PNG 16:9' : 'A4 Portrait (300 DPI)'}
-            </span>
+            {activeCardType === 'keycard' && (
+              <span className="text-[10px] font-bold px-2 py-0.5 bg-[#EAF2F1] text-[#51867E] rounded-full uppercase">
+                PNG 16:9
+              </span>
+            )}
           </div>
 
           {/* Form Content: KEY CARD */}
@@ -761,13 +984,13 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <label className="block font-bold text-slate-700 uppercase tracking-wider text-[10.5px]">
-                    Guest Name
+                    Guest Full Name
                   </label>
                   <input
                     type="text"
                     value={welcomeGuestName}
                     onChange={(e) => setWelcomeGuestName(e.target.value)}
-                    placeholder="e.g. Agatha Madeleine"
+                    placeholder="e.g. Mr. Gavin Elian Baskoro"
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-[#51867E] focus:outline-none"
                   />
                 </div>
@@ -909,7 +1132,13 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                   </label>
                   <select
                     value={welcomeBookingType}
-                    onChange={(e) => setWelcomeBookingType(e.target.value)}
+                    onChange={(e) => {
+                      const newType = e.target.value;
+                      setWelcomeBookingType(newType);
+                      if (newType === 'Room Reservation') {
+                        setWelcomeEventDate('');
+                      }
+                    }}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-[#51867E] focus:outline-none cursor-pointer"
                   >
                     <option value="Room Reservation">Room Reservation</option>
@@ -927,7 +1156,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                     type="text"
                     value={welcomeRoomDetails}
                     onChange={(e) => setWelcomeRoomDetails(e.target.value)}
-                    placeholder="e.g. Private Pool Villa"
+                    placeholder="e.g. Deluxe Ocean View Room"
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-[#51867E] focus:outline-none"
                   />
                 </div>
@@ -949,13 +1178,13 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                 </div>
                 <div className="space-y-1.5">
                   <label className="block font-bold text-slate-700 uppercase tracking-wider text-[10.5px]">
-                    Event Date
+                    Event Date {welcomeBookingType === 'Room Reservation' ? '(Hidden for Room Only)' : ''}
                   </label>
                   <input
                     type="text"
                     value={welcomeEventDate}
                     onChange={(e) => setWelcomeEventDate(e.target.value)}
-                    placeholder="e.g. 2026-09-01 or N/A"
+                    placeholder={welcomeBookingType === 'Room Reservation' ? 'N/A (Hidden for Room only)' : 'e.g. 2026-09-01'}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-[#51867E] focus:outline-none text-[11px]"
                   />
                 </div>
@@ -999,21 +1228,10 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
           {activeCardType === 'gallery' && (
             <div className="space-y-4 text-xs">
               
-              {/* Judul & Room Type Info Header */}
-              <div className="p-3 bg-[#EAF2F1] border border-[#CDE1DC] rounded-xl space-y-1">
-                <div className="font-bold text-[#2D5A53] text-xs uppercase flex items-center gap-1.5">
-                  <LayoutGrid className="w-3.5 h-3.5" />
-                  <span>Judul: RESERVED ACCOMMODATION (English)</span>
-                </div>
-                <div className="text-[11px] text-[#3A635D]">
-                  Room Type dicantumkan tepat di bawah judul pada dokumen A4 PNG visual gallery.
-                </div>
-              </div>
-
-              {/* Room Type (Bawah Judul) */}
+              {/* Room Category / Suite Type */}
               <div className="space-y-1.5">
                 <label className="block font-bold text-slate-700 uppercase tracking-wider text-[10.5px]">
-                  Room Type (Tercantum di Bawah Judul)
+                  Room Category / Suite Type
                 </label>
                 <div className="relative">
                   <Bed className="w-3.5 h-3.5 absolute left-3 top-3 text-slate-400" />
@@ -1391,9 +1609,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
               ) : (
                 <>
                   <Download className="w-4 h-4" />
-                  <span>
-                    Download {activeCardType === 'keycard' ? 'Key Card' : activeCardType === 'welcomecard' ? 'Welcoming Card (A4)' : 'Accommodation Gallery (A4)'} as PNG
-                  </span>
+                  <span>Download as PNG</span>
                 </>
               )}
             </button>
@@ -1424,7 +1640,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="font-bold uppercase tracking-wider text-[#2C3744]">
-                Live Preview (Web &amp; Mobile Responsive Viewport)
+                Live Preview
               </span>
             </div>
             <span className="text-[11px] font-mono text-slate-400 font-semibold">
@@ -1491,7 +1707,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
           <div className="text-center text-[11px] text-slate-500 flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-[#51867E]" />
             <span>
-              Dokumen diformat dengan tipografi resmi kemewahan Hanford. Klik &quot;Download&quot; untuk mengunduh berkas PNG kualitas tinggi ukuran A4.
+              Klik &quot;Download&quot; untuk mengunduh berkas PNG
             </span>
           </div>
         </div>

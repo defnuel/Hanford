@@ -301,7 +301,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* Admin Footer */}
       <footer className="bg-slate-200 border-t border-slate-300 py-4 pb-20 md:pb-4 text-center text-xs text-slate-500">
-        Hanford Hotels & Resorts &bull; Private Admin Interface (/admin)
+        Hanford Hotels & Resorts &bull; Admin
       </footer>
 
       {/* Mobile Bottom App Navigation Bar (App style, no scrolling needed) */}

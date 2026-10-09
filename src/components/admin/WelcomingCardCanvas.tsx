@@ -117,7 +117,7 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
               {displayRef}
             </div>
             <div className="text-[11px] text-slate-500 font-medium tracking-wide">
-              Exclusive Stay Confirmation
+              Reservation Confirmation
             </div>
           </div>
         </div>
@@ -142,7 +142,7 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
               <div className="text-white flex flex-col gap-1.5 text-left">
                 <div className="text-[10px] font-bold tracking-[0.16em] text-[#51867E] bg-white/95 backdrop-blur-md px-2.5 py-1 rounded uppercase inline-flex items-center gap-1.5 shadow-xs w-fit">
                   <Building className="w-3.5 h-3.5 text-[#51867E] shrink-0" />
-                  <span>FEATURED PROPERTY LOCATION</span>
+                  <span>PROPERTY LOCATION</span>
                 </div>
                 <div className="text-2xl sm:text-3xl text-white font-bold tracking-wide drop-shadow-md leading-tight">
                   {displayProperty}
@@ -150,7 +150,7 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
               </div>
               <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/15 backdrop-blur-md border border-white/30 text-white rounded-lg text-[11px] font-bold tracking-wider uppercase shrink-0">
                 <CheckCircle className="w-4 h-4 text-[#51867E] shrink-0" />
-                <span>VERIFIED DESTINATION</span>
+                <span>PAID</span>
               </div>
             </div>
           </div>
@@ -209,41 +209,68 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
               <span>RESERVATION DETAILS</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div>
-                <div className="text-[10px] tracking-wider text-slate-500 uppercase font-semibold">
-                  BOOKING TYPE
-                </div>
-                <div className="font-semibold text-[#1E293B] text-sm sm:text-base mt-0.5">
-                  {displayBookingType}
-                </div>
-              </div>
+            {(() => {
+              const showEventDate =
+                Boolean(
+                  displayEventDate &&
+                  displayEventDate.toUpperCase() !== 'N/A' &&
+                  displayEventDate.trim() !== '' &&
+                  !displayBookingType.toLowerCase().includes('room reservation') &&
+                  displayBookingType.toLowerCase() !== 'room only' &&
+                  displayBookingType.toLowerCase() !== 'room'
+                );
 
-              <div>
-                <div className="text-[10px] tracking-wider text-slate-500 uppercase font-semibold">
-                  EVENT DATE
-                </div>
-                <div className="font-semibold text-[#1E293B] text-sm sm:text-base mt-0.5">
-                  {displayEventDate}
-                </div>
-              </div>
+              return (
+                <div className={`grid ${showEventDate ? 'grid-cols-2' : 'grid-cols-1'} gap-3 text-xs`}>
+                  <div>
+                    <div className="text-[10px] tracking-wider text-slate-500 uppercase font-semibold">
+                      BOOKING TYPE
+                    </div>
+                    <div className="font-semibold text-[#1E293B] text-sm sm:text-base mt-0.5">
+                      {displayBookingType}
+                    </div>
+                  </div>
 
-              <div className="col-span-2 pt-2.5 border-t border-slate-200">
-                <div className="text-[10px] tracking-wider text-slate-500 uppercase font-semibold">
-                  STAY DATES
+                  {showEventDate && (
+                    <div>
+                      <div className="text-[10px] tracking-wider text-slate-500 uppercase font-semibold">
+                        EVENT DATE
+                      </div>
+                      <div className="font-semibold text-[#1E293B] text-sm sm:text-base mt-0.5">
+                        {displayEventDate}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className={`${showEventDate ? 'col-span-2' : 'col-span-1'} pt-2.5 border-t border-slate-200`}>
+                    <div className="text-[10px] tracking-wider text-slate-500 uppercase font-semibold">
+                      STAY DATES
+                    </div>
+                    <div className="font-bold text-[#3A4F67] text-sm sm:text-base mt-0.5">
+                      {displayStayDates}
+                    </div>
+                  </div>
                 </div>
-                <div className="font-bold text-[#3A4F67] text-sm sm:text-base mt-0.5">
-                  {displayStayDates}
-                </div>
-              </div>
-            </div>
+              );
+            })()}
           </div>
         </div>
 
         {/* Butler / Concierge Welcome Greeting Message */}
         <div className="p-5 bg-[#EBF3F1]/80 rounded-xl border border-[#CDE1DC] text-[13.5px] leading-relaxed text-[#2C3744] italic relative">
           <span className="text-2xl text-[#51867E] font-serif leading-none mr-2">&ldquo;</span>
-          {customWelcomeNote || `Dear ${displayGuestName}, on behalf of the management and our hospitality team at ${displayProperty}, we warmly welcome you to your retreat. Every arrangement has been made to ensure your stay is seamless, relaxing, and unforgettable. Our dedicated concierge and butler service remain at your complete disposal.`}
+          {customWelcomeNote ? (
+            <div className="inline whitespace-pre-line">{customWelcomeNote}</div>
+          ) : (
+            <div className="inline">
+              <div className="block font-semibold not-italic text-[#1E293B] mb-1.5">
+                Dear {displayGuestName},
+              </div>
+              <div>
+                On behalf of the management and our hospitality team at {displayProperty}, we warmly welcome you to your retreat. Every arrangement has been made to ensure your stay is seamless, relaxing, and unforgettable. Our dedicated concierge and butler service remain at your complete disposal.
+              </div>
+            </div>
+          )}
           <span className="text-2xl text-[#51867E] font-serif leading-none ml-2">&rdquo;</span>
         </div>
       </div>

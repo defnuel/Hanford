@@ -114,16 +114,6 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
                 <div className="text-2xl sm:text-[25px] text-[#1E293B] font-bold font-sans tracking-tight uppercase leading-snug">
                   RESERVED ACCOMMODATION
                 </div>
-                
-                {/* BAWAHNYA: ROOM TYPE */}
-                <div className="text-sm sm:text-[14px] font-semibold text-[#51867E] tracking-normal mt-1 flex items-center gap-2">
-                  <span className="inline-block px-2.5 py-0.5 bg-[#EBF3F1] border border-[#CDE1DC] rounded-md font-bold uppercase text-[11px] text-[#2D5A53] shrink-0">
-                    ROOM TYPE
-                  </span>
-                  <span className="text-[#1E293B] font-bold uppercase tracking-tight truncate max-w-[500px]">
-                    {displayRoomType}
-                  </span>
-                </div>
               </div>
             </div>
           </div>
@@ -313,9 +303,11 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-xs font-bold text-[#51867E] bg-[#EBF3F1] border border-[#CDE1DC] px-3.5 py-1.5 rounded-lg shrink-0">
-          <ShieldCheck className="w-4.5 h-4.5 text-[#51867E] shrink-0" />
-          <span className="uppercase tracking-wider text-[11px]">Official Reserved Suite</span>
+        <div className="flex items-center gap-2 text-xs font-bold text-[#1E293B] bg-slate-100 border border-slate-200 px-3.5 py-1.5 rounded-lg shrink-0">
+          <span className="w-4 h-4 rounded-full bg-[#1E293B] text-white flex items-center justify-center text-[9.5px] font-bold font-sans">
+            𝕏
+          </span>
+          <span className="font-mono tracking-wider text-[11px] text-[#1E293B] font-bold">@Hanford_HnR</span>
         </div>
       </div>
     </div>
