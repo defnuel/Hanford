@@ -94,7 +94,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <button
               onClick={() => onNavigate('/')}
               className="p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-colors cursor-pointer text-slate-200 hover:text-white shrink-0"
-              title="Ke Website Utama"
+              title="Back to Public Website"
             >
               <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
@@ -234,7 +234,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         {loading ? (
           <div className="py-20 text-center space-y-3">
             <div className="w-8 h-8 border-3 border-[#51867E] border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-xs text-slate-500 font-medium">Memuat data Admin Portal...</p>
+            <p className="text-xs text-slate-500 font-medium">Loading Admin Portal data...</p>
           </div>
         ) : (
           <>

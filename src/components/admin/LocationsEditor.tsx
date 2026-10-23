@@ -119,14 +119,14 @@ export const LocationsEditor: React.FC<LocationsEditorProps> = ({ properties, on
   };
 
   const handleDelete = (id: string, name: string) => {
-    if (window.confirm(`Hapus lokasi/properti "${name}"?`)) {
+    if (window.confirm(`Delete location/property "${name}"?`)) {
       const filtered = properties.filter((p) => p.id !== id);
       saveAdminProperties(filtered);
       onRefreshData();
       if (editingProperty?.id === id) {
         setEditingProperty(null);
       }
-      setToastMsg(`Property "${name}" berhasil dihapus.`);
+      setToastMsg(`Property "${name}" successfully deleted.`);
       setTimeout(() => setToastMsg(''), 3000);
     }
   };
@@ -141,7 +141,7 @@ export const LocationsEditor: React.FC<LocationsEditorProps> = ({ properties, on
             Sanctuaries & Locations ({properties.length})
           </h2>
           <p className="text-xs text-slate-500">
-            Kelola data properti, harga kamar, fasilitas, dan gambar galeri.
+            Manage property data, room rates, amenities, and gallery visuals.
           </p>
         </div>
 
@@ -150,7 +150,7 @@ export const LocationsEditor: React.FC<LocationsEditorProps> = ({ properties, on
             <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
             <input
               type="text"
-              placeholder="Cari lokasi..."
+              placeholder="Search locations..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 outline-none focus:border-[#51867E]"
@@ -162,7 +162,7 @@ export const LocationsEditor: React.FC<LocationsEditorProps> = ({ properties, on
             className="px-4 py-2 bg-[#51867E] hover:bg-[#3f6d66] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-colors flex items-center justify-center gap-1.5 shrink-0 cursor-pointer shadow-sm w-full sm:w-auto"
           >
             <Plus className="w-4 h-4" />
-            <span>Tambah Lokasi</span>
+            <span>Add Location</span>
           </button>
         </div>
       </div>
@@ -181,7 +181,7 @@ export const LocationsEditor: React.FC<LocationsEditorProps> = ({ properties, on
             <div className="flex items-center gap-2 text-[#3A4F67]">
               <Building2 className="w-5 h-5 text-[#51867E]" />
               <h3 className="font-bold text-sm uppercase tracking-wider">
-                {isCreating ? 'Tambah Lokasi Baru' : `Edit: ${editingProperty.name}`}
+                {isCreating ? 'Add New Location' : `Edit: ${editingProperty.name}`}
               </h3>
             </div>
             <button
@@ -389,14 +389,14 @@ export const LocationsEditor: React.FC<LocationsEditorProps> = ({ properties, on
                 onClick={() => setEditingProperty(null)}
                 className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl cursor-pointer"
               >
-                Batal
+                Cancel
               </button>
               <button
                 type="submit"
                 className="px-5 py-2 bg-[#51867E] hover:bg-[#3f6d66] text-white font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md"
               >
                 <Save className="w-4 h-4" />
-                <span>Simpan Properti</span>
+                <span>Save Property</span>
               </button>
             </div>
           </form>
@@ -445,7 +445,7 @@ export const LocationsEditor: React.FC<LocationsEditorProps> = ({ properties, on
               <button
                 onClick={() => handleDelete(p.id, p.name)}
                 className="p-1.5 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                title="Hapus"
+                title="Delete"
               >
                 <Trash2 className="w-4 h-4" />
               </button>

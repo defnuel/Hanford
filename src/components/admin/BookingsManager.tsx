@@ -209,95 +209,99 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
   return (
     <div className="space-y-6">
       
-      {/* Header & Controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Header: Title & Action Buttons */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-            <h2 className="text-lg sm:text-xl font-serif font-semibold text-[#3A4F67]">
-              Reservations & Invoices ({bookings.length})
-            </h2>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setIsCreateInvoiceOpen(true)}
-                className="px-3.5 py-2 bg-[#51867E] hover:bg-[#3f6d66] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Create New Invoice</span>
-              </button>
-              <a
-                href="https://docs.google.com/spreadsheets/d/1a2WN_AqaV9WS15h-37FDCyVV_ZpLB1IaBDbvb2VYzeU/edit#gid=1881675892"
-                target="_blank"
-                rel="noreferrer"
-                className="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-bold uppercase tracking-wider rounded-xl shadow-2xs transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
-                title="Open Google Sheets Central Register"
-              >
-                <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-                <span>Google Sheet Register</span>
-                <ExternalLink className="w-3 h-3 text-emerald-600 ml-0.5" />
-              </a>
-            </div>
-          </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <h2 className="text-lg sm:text-xl font-serif font-semibold text-[#3A4F67]">
+            Reservations &amp; Invoices ({bookings.length})
+          </h2>
+          <p className="text-xs text-slate-500 mt-0.5">
             Review incoming reservations, update payment status, manage invoice records, or create custom invoices.
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          {/* Status Filter */}
-          <div className="flex bg-slate-100 rounded-xl p-1 border border-slate-200 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden shrink-0">
-            <button
-              onClick={() => setStatusFilter('ALL')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap ${
-                statusFilter === 'ALL' ? 'bg-[#3A4F67] text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              All ({bookings.length})
-            </button>
-            <button
-              onClick={() => setStatusFilter('UNPAID')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap ${
-                statusFilter === 'UNPAID' ? 'bg-amber-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Unpaid ({bookings.filter((b) => b.paymentStatus !== 'PAID').length})
-            </button>
-            <button
-              onClick={() => setStatusFilter('PAID')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap ${
-                statusFilter === 'PAID' ? 'bg-[#51867E] text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Paid ({bookings.filter((b) => b.paymentStatus === 'PAID').length})
-            </button>
-          </div>
+        {/* Action Buttons: Wrapped to prevent overflow on mobile and overlapping on desktop */}
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <button
+            onClick={() => setIsCreateInvoiceOpen(true)}
+            className="px-3.5 py-2 bg-[#51867E] hover:bg-[#3f6d66] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create New Invoice</span>
+          </button>
+          <a
+            href="https://docs.google.com/spreadsheets/d/1a2WN_AqaV9WS15h-37FDCyVV_ZpLB1IaBDbvb2VYzeU/edit#gid=1881675892"
+            target="_blank"
+            rel="noreferrer"
+            className="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-bold uppercase tracking-wider rounded-xl shadow-2xs transition-all cursor-pointer flex items-center justify-center gap-1.5"
+            title="Open Google Sheets Central Register"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+            <span>Google Sheet Register</span>
+            <ExternalLink className="w-3 h-3 text-emerald-600 ml-0.5" />
+          </a>
+        </div>
+      </div>
 
+      {/* Control Toolbar: Status Filter, Sort Selector, and Search Bar */}
+      <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        {/* Status Filter */}
+        <div className="flex bg-slate-100 rounded-xl p-1 border border-slate-200/80 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden shrink-0">
+          <button
+            onClick={() => setStatusFilter('ALL')}
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap ${
+              statusFilter === 'ALL' ? 'bg-[#3A4F67] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            All ({bookings.length})
+          </button>
+          <button
+            onClick={() => setStatusFilter('UNPAID')}
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap ${
+              statusFilter === 'UNPAID' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Unpaid ({bookings.filter((b) => b.paymentStatus !== 'PAID').length})
+          </button>
+          <button
+            onClick={() => setStatusFilter('PAID')}
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap ${
+              statusFilter === 'PAID' ? 'bg-[#51867E] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Paid ({bookings.filter((b) => b.paymentStatus === 'PAID').length})
+          </button>
+        </div>
+
+        {/* Right Controls: Sort & Search */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-grow lg:flex-grow-0">
           {/* Sort Selector */}
-          <div className="flex items-center gap-1.5 bg-slate-100 rounded-xl px-2.5 py-1 border border-slate-200 shrink-0">
-            <ArrowUpDown className="w-3.5 h-3.5 text-[#51867E]" />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Sort:</span>
+          <div className="flex items-center gap-1.5 bg-slate-100 rounded-xl px-2.5 py-1.5 border border-slate-200/80 shrink-0">
+            <ArrowUpDown className="w-3.5 h-3.5 text-[#51867E] shrink-0" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 shrink-0">Sort:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-transparent text-xs font-semibold text-slate-800 outline-none cursor-pointer py-1"
+              className="bg-transparent text-xs font-semibold text-slate-800 outline-none cursor-pointer py-0.5 w-full sm:w-auto"
             >
-              <option value="newest">Terbaru ke Terlama (Newest to Oldest)</option>
-              <option value="oldest">Terlama ke Terbaru (Oldest to Newest)</option>
-              <option value="amount_high">Total Tertinggi (Highest Amount)</option>
-              <option value="amount_low">Total Terendah (Lowest Amount)</option>
-              <option value="name_asc">Nama Tamu A-Z (Guest Name A-Z)</option>
-              <option value="name_desc">Nama Tamu Z-A (Guest Name Z-A)</option>
+              <option value="newest">Newest to Oldest</option>
+              <option value="oldest">Oldest to Newest</option>
+              <option value="amount_high">Highest Total Amount</option>
+              <option value="amount_low">Lowest Total Amount</option>
+              <option value="name_asc">Guest Name (A - Z)</option>
+              <option value="name_desc">Guest Name (Z - A)</option>
             </select>
           </div>
 
           {/* Search bar */}
-          <div className="relative flex-grow sm:w-56">
+          <div className="relative flex-grow sm:w-64">
             <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
             <input
               type="text"
               placeholder="Search guest, property, ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 outline-none focus:border-[#51867E]"
+              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-[#51867E] rounded-xl text-xs text-slate-800 outline-none transition-colors"
             />
           </div>
         </div>
@@ -519,7 +523,7 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
                     <th
                       className="py-3.5 px-4 cursor-pointer hover:bg-slate-700/80 transition-colors select-none"
                       onClick={() => setSortBy((prev) => (prev === 'newest' ? 'oldest' : 'newest'))}
-                      title="Klik untuk sortir tanggal terbaru / terlama"
+                      title="Click to sort by newest / oldest date"
                     >
                       <div className="flex items-center gap-1.5">
                         <span>Booking ID &amp; Date</span>
@@ -529,7 +533,7 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
                     <th
                       className="py-3.5 px-4 cursor-pointer hover:bg-slate-700/80 transition-colors select-none"
                       onClick={() => setSortBy((prev) => (prev === 'name_asc' ? 'name_desc' : 'name_asc'))}
-                      title="Klik untuk sortir nama tamu A-Z / Z-A"
+                      title="Click to sort by guest name A-Z / Z-A"
                     >
                       <div className="flex items-center gap-1.5">
                         <span>Guest Details</span>
@@ -540,7 +544,7 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
                     <th
                       className="py-3.5 px-4 text-right cursor-pointer hover:bg-slate-700/80 transition-colors select-none"
                       onClick={() => setSortBy((prev) => (prev === 'amount_high' ? 'amount_low' : 'amount_high'))}
-                      title="Klik untuk sortir nominal total invoice"
+                      title="Click to sort by total invoice amount"
                     >
                       <div className="flex items-center justify-end gap-1.5">
                         <span>Total Amount</span>

@@ -166,7 +166,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
               </strong>
               <KeyRound className="w-4 h-4 text-slate-500 group-hover:text-[#51867E]" />
             </div>
-            <p className="text-[11px] text-slate-600">Buat Key Card & Welcoming Card PNG untuk tamu.</p>
+            <p className="text-[11px] text-slate-600">Generate Key Cards, Welcoming Cards &amp; Galleries.</p>
           </button>
 
           <button
@@ -176,7 +176,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
             <strong className="text-xs font-bold text-[#3A4F67] group-hover:text-[#51867E] block">
               + Edit Sanctuaries
             </strong>
-            <p className="text-[11px] text-slate-500">Ubah nama, harga kamar, foto, dan status properti.</p>
+            <p className="text-[11px] text-slate-500">Update property names, room rates, photos, and live status.</p>
           </button>
 
           <button
@@ -186,7 +186,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
             <strong className="text-xs font-bold text-[#3A4F67] group-hover:text-[#51867E] block">
               + Edit Collaborations
             </strong>
-            <p className="text-[11px] text-slate-500">Kelola daftar projek, partner, link X, dan galeri.</p>
+            <p className="text-[11px] text-slate-500">Manage project directory, partners, X handles, and visual galleries.</p>
           </button>
 
           <button
@@ -194,9 +194,9 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
             className="p-4 bg-slate-50 hover:bg-[#EAF2F1] rounded-xl text-left border border-slate-200 transition-colors space-y-1 cursor-pointer group"
           >
             <strong className="text-xs font-bold text-[#3A4F67] group-hover:text-[#51867E] block">
-              + Bookings & Invoices
+              + Bookings &amp; Invoices
             </strong>
-            <p className="text-[11px] text-slate-500">Cetak invoice paid dan kelola reservasi tamu.</p>
+            <p className="text-[11px] text-slate-500">Print paid invoices and manage guest reservations.</p>
           </button>
         </div>
       </div>

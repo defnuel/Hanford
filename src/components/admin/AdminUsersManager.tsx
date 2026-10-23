@@ -31,15 +31,15 @@ export const AdminUsersManager: React.FC<AdminUsersManagerProps> = ({
   const handleApprove = (userId: string, name: string) => {
     approveAdminUser(userId);
     onRefreshData();
-    setToastMsg(`Akun Admin "${name}" telah disetujui (Approved)!`);
+    setToastMsg(`Admin account "${name}" has been approved!`);
     setTimeout(() => setToastMsg(''), 3000);
   };
 
   const handleReject = (userId: string, name: string) => {
-    if (window.confirm(`Tolak pendaftaran akun admin untuk "${name}"?`)) {
+    if (window.confirm(`Reject admin account registration for "${name}"?`)) {
       rejectAdminUser(userId);
       onRefreshData();
-      setToastMsg(`Pendaftaran admin "${name}" telah ditolak/dihapus.`);
+      setToastMsg(`Admin registration for "${name}" has been rejected/deleted.`);
       setTimeout(() => setToastMsg(''), 3000);
     }
   };
@@ -49,7 +49,7 @@ export const AdminUsersManager: React.FC<AdminUsersManagerProps> = ({
     setFormError('');
 
     if (!fullName || !email || !username || !password) {
-      setFormError('Harap lengkapi seluruh field yang wajib.');
+      setFormError('Please fill in all required fields.');
       return;
     }
 
@@ -75,7 +75,7 @@ export const AdminUsersManager: React.FC<AdminUsersManagerProps> = ({
       setUsername('');
       setPassword('');
       setDepartment('');
-      setToastMsg(`Akun admin baru "${fullName}" berhasil dibuat & langsung aktif!`);
+      setToastMsg(`New admin account "${fullName}" created successfully and is now active!`);
       setTimeout(() => setToastMsg(''), 3000);
     } else {
       setFormError(res.message);
@@ -92,7 +92,7 @@ export const AdminUsersManager: React.FC<AdminUsersManagerProps> = ({
             Admin Users & Approvals ({adminUsers.length})
           </h2>
           <p className="text-xs text-slate-500">
-            Kelola akses staf admin dan setujui (Accept) pendaftaran email admin baru.
+            Manage admin staff access and approve new admin registration requests.
           </p>
         </div>
 
@@ -101,7 +101,7 @@ export const AdminUsersManager: React.FC<AdminUsersManagerProps> = ({
           className="px-4 py-2 bg-[#51867E] hover:bg-[#3f6d66] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer shadow-sm"
         >
           <UserPlus className="w-4 h-4" />
-          <span>+ Buat Admin Baru</span>
+          <span>+ Create New Admin</span>
         </button>
       </div>
 
@@ -117,7 +117,7 @@ export const AdminUsersManager: React.FC<AdminUsersManagerProps> = ({
         <div className="p-6 bg-amber-500/10 border border-amber-500/30 rounded-2xl space-y-4">
           <div className="flex items-center gap-2 text-amber-900 font-bold uppercase tracking-wider text-xs">
             <Clock className="w-4 h-4 text-amber-600" />
-            <span>Permohonan Pendaftaran Admin (Pending - {pendingUsers.length})</span>
+            <span>Pending Admin Registrations ({pendingUsers.length})</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -138,7 +138,7 @@ export const AdminUsersManager: React.FC<AdminUsersManagerProps> = ({
                     Username: <strong>{user.username}</strong>
                   </div>
                   {user.department && (
-                    <div className="text-[10px] text-slate-400">Divisi: {user.department}</div>
+                    <div className="text-[10px] text-slate-400">Department: {user.department}</div>
                   )}
                 </div>
 
@@ -148,14 +148,14 @@ export const AdminUsersManager: React.FC<AdminUsersManagerProps> = ({
                     className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg flex items-center gap-1 transition-colors cursor-pointer"
                   >
                     <XCircle className="w-3.5 h-3.5" />
-                    <span>Tolak</span>
+                    <span>Reject</span>
                   </button>
                   <button
                     onClick={() => handleApprove(user.id, user.fullName)}
                     className="px-3.5 py-1.5 bg-[#51867E] hover:bg-[#3f6d66] text-white text-xs font-bold uppercase tracking-wider rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>Accept / Setujui</span>
+                    <span>Approve / Accept</span>
                   </button>
                 </div>
               </div>
@@ -168,7 +168,7 @@ export const AdminUsersManager: React.FC<AdminUsersManagerProps> = ({
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm space-y-4 p-4 sm:p-6">
         <h3 className="font-bold text-sm uppercase tracking-wider text-[#3A4F67] flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-[#51867E]" />
-          <span>Akun Admin Aktif ({approvedUsers.length})</span>
+          <span>Active Admin Accounts ({approvedUsers.length})</span>
         </h3>
 
         {/* Mobile Card List (screens < md) */}
@@ -212,10 +212,10 @@ export const AdminUsersManager: React.FC<AdminUsersManagerProps> = ({
           <table className="w-full text-left text-xs min-w-[650px]">
             <thead className="bg-slate-50 text-slate-600 uppercase tracking-wider text-[10px] border-b border-slate-200">
               <tr>
-                <th className="py-3 px-4">Nama Lengkap & Username</th>
+                <th className="py-3 px-4">Full Name & Username</th>
                 <th className="py-3 px-4">Email</th>
                 <th className="py-3 px-4">Role</th>
-                <th className="py-3 px-4">Divisi / Dept</th>
+                <th className="py-3 px-4">Division / Dept</th>
                 <th className="py-3 px-4 text-center">Status</th>
               </tr>
             </thead>
@@ -263,7 +263,7 @@ export const AdminUsersManager: React.FC<AdminUsersManagerProps> = ({
           <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="font-bold text-sm uppercase tracking-wider text-[#3A4F67]">
-                Tambah Admin Baru (Langsung Aktif)
+                Add New Admin (Instant Active)
               </h3>
               <button
                 onClick={() => setShowAddModal(false)}
@@ -281,13 +281,13 @@ export const AdminUsersManager: React.FC<AdminUsersManagerProps> = ({
 
             <form onSubmit={handleCreateAdminDirect} className="space-y-3 text-xs">
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Nama Lengkap *</label>
+                <label className="font-bold text-slate-700 block mb-1">Full Name *</label>
                 <input
                   type="text"
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Contoh: Eleanor Vance"
+                  placeholder="e.g. Eleanor Vance"
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg outline-none"
                 />
               </div>
@@ -331,7 +331,7 @@ export const AdminUsersManager: React.FC<AdminUsersManagerProps> = ({
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Divisi / Department</label>
+                <label className="font-bold text-slate-700 block mb-1">Division / Department</label>
                 <input
                   type="text"
                   value={department}
@@ -347,13 +347,13 @@ export const AdminUsersManager: React.FC<AdminUsersManagerProps> = ({
                   onClick={() => setShowAddModal(false)}
                   className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl cursor-pointer"
                 >
-                  Batal
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 bg-[#51867E] hover:bg-[#3f6d66] text-white font-bold rounded-xl cursor-pointer shadow-md"
                 >
-                  Buat Admin
+                  Create Admin
                 </button>
               </div>
             </form>

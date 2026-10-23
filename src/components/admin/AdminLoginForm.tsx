@@ -29,7 +29,7 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
     setLoginError('');
 
     if (!loginIdentifier.trim() || !loginPassword.trim()) {
-      setLoginError('Harap isi Username/Email dan Password.');
+      setLoginError('Please enter your Username/Email and Password.');
       return;
     }
 
@@ -47,7 +47,7 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
     setRegSuccessMsg('');
 
     if (!regFullName.trim() || !regEmail.trim() || !regUsername.trim() || !regPassword.trim()) {
-      setRegErrorMsg('Harap lengkapi semua bidang isian pendaftaran.');
+      setRegErrorMsg('Please complete all registration fields.');
       return;
     }
 
@@ -121,7 +121,7 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
             }`}
           >
             <UserPlus className="w-3.5 h-3.5" />
-            <span>Daftar Admin</span>
+            <span>Register Admin</span>
           </button>
         </div>
 
@@ -138,7 +138,7 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
 
             <div className="space-y-1">
               <label className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider block">
-                Username atau Email
+                Username or Email
               </label>
               <div className="relative">
                 <User className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
@@ -146,7 +146,7 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
                   type="text"
                   value={loginIdentifier}
                   onChange={(e) => setLoginIdentifier(e.target.value)}
-                  placeholder="admin atau email@hanford.com"
+                  placeholder="admin or email@hanford.com"
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-900/90 border border-slate-700 focus:border-[#51867E] rounded-xl text-xs text-white placeholder-slate-500 outline-none transition-colors"
                   required
                 />
@@ -174,7 +174,7 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
               type="submit"
               className="w-full py-3 bg-[#51867E] hover:bg-[#3f6d66] text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-colors shadow-lg shadow-[#51867E]/20 mt-4 cursor-pointer"
             >
-              Masuk ke Portal Admin
+              Sign In to Admin Portal
             </button>
           </form>
         )}
@@ -183,7 +183,7 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
         {activeTab === 'register' && (
           <form onSubmit={handleRegisterSubmit} className="space-y-3.5 pt-1">
             <p className="text-xs text-slate-400 leading-relaxed">
-              Daftarkan email dan username Anda. Akun baru akan berada dalam status <strong className="text-amber-400">PENDING</strong> hingga disetujui (Accepted) oleh Super Admin.
+              Register your email and username. New accounts will remain in <strong className="text-amber-400">PENDING</strong> status until approved by a Super Admin.
             </p>
 
             {regSuccessMsg && (
@@ -202,13 +202,13 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
 
             <div className="space-y-1">
               <label className="text-[10px] font-semibold text-slate-300 uppercase tracking-wider block">
-                Nama Lengkap
+                Full Name
               </label>
               <input
                 type="text"
                 value={regFullName}
                 onChange={(e) => setRegFullName(e.target.value)}
-                placeholder="Contoh: Alexander Wright"
+                placeholder="e.g. Alexander Wright"
                 className="w-full px-3.5 py-2 bg-slate-900/90 border border-slate-700 focus:border-[#51867E] rounded-xl text-xs text-white placeholder-slate-500 outline-none"
                 required
               />
@@ -260,13 +260,13 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
 
             <div className="space-y-1">
               <label className="text-[10px] font-semibold text-slate-300 uppercase tracking-wider block">
-                Departemen / Divisi (Opsional)
+                Department / Division (Optional)
               </label>
               <input
                 type="text"
                 value={regDept}
                 onChange={(e) => setRegDept(e.target.value)}
-                placeholder="Contoh: Reservations & Front Office"
+                placeholder="e.g. Reservations & Front Office"
                 className="w-full px-3.5 py-2 bg-slate-900/90 border border-slate-700 focus:border-[#51867E] rounded-xl text-xs text-white placeholder-slate-500 outline-none"
               />
             </div>
@@ -275,7 +275,7 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
               type="submit"
               className="w-full py-2.5 bg-[#51867E] hover:bg-[#3f6d66] text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-colors shadow-lg mt-3 cursor-pointer"
             >
-              Ajukan Pendaftaran Admin
+              Submit Admin Registration
             </button>
           </form>
         )}

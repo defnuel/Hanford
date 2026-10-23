@@ -243,16 +243,16 @@ export const GoodsReceivedManager: React.FC<GoodsReceivedManagerProps> = ({ prop
             <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
               <FileCheck2 className="w-6 h-6" />
             </div>
-            <h4 className="text-sm font-bold text-slate-700">Tidak ada dokumen GRN ditemukan</h4>
+            <h4 className="text-sm font-bold text-slate-700">No GRN documents found</h4>
             <p className="text-xs text-slate-400 max-w-sm mx-auto">
-              Klik tombol di bawah untuk membuat Goods Received Note otomatis dari teks invoice supplier.
+              Click the button below to generate a Goods Received Note automatically from supplier invoice text.
             </p>
             <button
               onClick={() => setIsCreateOpen(true)}
               className="px-4 py-2 bg-[#51867E] hover:bg-[#43726a] text-white rounded-xl text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5 cursor-pointer shadow-sm"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Buat GRN Baru dari Teks</span>
+              <span>Create New GRN from Text</span>
             </button>
           </div>
         ) : (
@@ -376,7 +376,7 @@ export const GoodsReceivedManager: React.FC<GoodsReceivedManagerProps> = ({ prop
                         <button
                           onClick={() => handleDelete(grn.id, grn.grnNumber)}
                           className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
-                          title="Hapus GRN"
+                          title="Delete GRN"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

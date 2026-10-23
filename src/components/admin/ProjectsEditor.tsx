@@ -101,14 +101,14 @@ export const ProjectsEditor: React.FC<ProjectsEditorProps> = ({ projects, onRefr
   };
 
   const handleDelete = (id: string, name: string) => {
-    if (window.confirm(`Hapus projek kolaborasi "${name}"?`)) {
+    if (window.confirm(`Delete collaboration project "${name}"?`)) {
       const filtered = projects.filter((p) => p.id !== id);
       saveAdminProjects(filtered);
       onRefreshData();
       if (editingProject?.id === id) {
         setEditingProject(null);
       }
-      setToastMsg(`Projek "${name}" berhasil dihapus.`);
+      setToastMsg(`Project "${name}" successfully deleted.`);
       setTimeout(() => setToastMsg(''), 3000);
     }
   };
@@ -122,7 +122,7 @@ export const ProjectsEditor: React.FC<ProjectsEditorProps> = ({ projects, onRefr
             Collaborations & Projects ({projects.length})
           </h2>
           <p className="text-xs text-slate-500">
-            Kelola daftar projek kolaborasi, mitra/partner, akun X, dan galeri dokumentasi.
+            Manage collaboration projects, partners, X handles, and documentation galleries.
           </p>
         </div>
 
@@ -131,7 +131,7 @@ export const ProjectsEditor: React.FC<ProjectsEditorProps> = ({ projects, onRefr
             <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
             <input
               type="text"
-              placeholder="Cari projek..."
+              placeholder="Search projects..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 outline-none focus:border-[#51867E]"
@@ -143,7 +143,7 @@ export const ProjectsEditor: React.FC<ProjectsEditorProps> = ({ projects, onRefr
             className="px-4 py-2 bg-[#51867E] hover:bg-[#3f6d66] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-colors flex items-center justify-center gap-1.5 shrink-0 cursor-pointer shadow-sm w-full sm:w-auto"
           >
             <Plus className="w-4 h-4" />
-            <span>Tambah Projek</span>
+            <span>Add Project</span>
           </button>
         </div>
       </div>
@@ -162,7 +162,7 @@ export const ProjectsEditor: React.FC<ProjectsEditorProps> = ({ projects, onRefr
             <div className="flex items-center gap-2 text-[#3A4F67]">
               <FolderGit2 className="w-5 h-5 text-[#51867E]" />
               <h3 className="font-bold text-sm uppercase tracking-wider">
-                {isCreating ? 'Tambah Projek Kolaborasi Baru' : `Edit: ${editingProject.projectName}`}
+                {isCreating ? 'Add New Collaboration Project' : `Edit: ${editingProject.projectName}`}
               </h3>
             </div>
             <button
@@ -321,14 +321,14 @@ export const ProjectsEditor: React.FC<ProjectsEditorProps> = ({ projects, onRefr
                 onClick={() => setEditingProject(null)}
                 className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl cursor-pointer"
               >
-                Batal
+                Cancel
               </button>
               <button
                 type="submit"
                 className="px-5 py-2 bg-[#51867E] hover:bg-[#3f6d66] text-white font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md"
               >
                 <Save className="w-4 h-4" />
-                <span>Simpan Projek</span>
+                <span>Save Project</span>
               </button>
             </div>
           </form>
@@ -377,7 +377,7 @@ export const ProjectsEditor: React.FC<ProjectsEditorProps> = ({ projects, onRefr
               <button
                 onClick={() => handleDelete(p.id, p.projectName)}
                 className="p-1.5 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                title="Hapus"
+                title="Delete"
               >
                 <Trash2 className="w-4 h-4" />
               </button>

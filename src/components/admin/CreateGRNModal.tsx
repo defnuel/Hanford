@@ -70,7 +70,7 @@ export const CreateGRNModal: React.FC<CreateGRNModalProps> = ({ onClose, onSave 
   // Action: Parse raw text into structured GRN form
   const handleAutoParse = async () => {
     if (!rawText.trim()) {
-      setParseError('Silakan masukkan atau tempel teks invoice/dokumen pengiriman terlebih dahulu.');
+      setParseError('Please enter or paste the supplier invoice/delivery document text first.');
       return;
     }
 
@@ -107,7 +107,7 @@ export const CreateGRNModal: React.FC<CreateGRNModalProps> = ({ onClose, onSave 
       setActiveTab('review');
     } catch (err: any) {
       console.error('Parsing error:', err);
-      setParseError('Gagal memproses teks invoice: ' + (err?.message || String(err)));
+      setParseError('Failed to process invoice text: ' + (err?.message || String(err)));
     } finally {
       setParsing(false);
     }

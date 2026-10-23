@@ -612,7 +612,7 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
               <span>2. Reservation Category & Service Type</span>
             </h4>
             <span className="text-[10px] text-slate-500 font-medium">
-              Pilih opsi reservasi melalui drop-down agar data tidak tercampur
+              Select reservation category from the dropdown to keep service types organized
             </span>
           </div>
 

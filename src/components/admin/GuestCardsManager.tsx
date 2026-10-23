@@ -135,30 +135,339 @@ const PRESET_COLLECTIONS: Record<string, GalleryPhotoItem[]> = {
   ],
 };
 
-// Helper to select 15 rich accommodation photos for a given property
-const get15PhotosForProperty = (propName: string, propObj?: Property): GalleryPhotoItem[] => {
-  const pLower = propName.toLowerCase();
-  if (pLower.includes('uluwatu')) return PRESET_COLLECTIONS.uluwatu;
-  if (pLower.includes('jeju')) return PRESET_COLLECTIONS.jeju;
-  if (pLower.includes('santorini')) return PRESET_COLLECTIONS.santorini;
-  if (pLower.includes('jakarta')) return PRESET_COLLECTIONS.jakarta;
-  if (pLower.includes('santa barbara')) return PRESET_COLLECTIONS.santabarbara;
-  if (pLower.includes('seoul')) return PRESET_COLLECTIONS.jakarta;
-  if (pLower.includes('tokyo')) return PRESET_COLLECTIONS.jakarta;
-  if (pLower.includes('aspen')) return PRESET_COLLECTIONS.santabarbara;
+// Helper to find a property matching by name, slug, id, or city
+export function findPropertyFromList(searchNameOrSlug: string, propList: Property[] = []): Property | undefined {
+  if (!searchNameOrSlug || !propList || propList.length === 0) return undefined;
+  const target = searchNameOrSlug.toLowerCase().trim();
+  const targetSlug = target.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
-  if (propObj && propObj.galleryImages && propObj.galleryImages.length > 0) {
-    const sheetPhotos: GalleryPhotoItem[] = propObj.galleryImages.map((url, i) => ({
-      id: `sheet-${i}`,
-      url,
-      title: i === 0 ? 'Master Suite & Ocean Terrace' : i === 1 ? 'Marble En-Suite Bathroom' : i === 2 ? 'Private Infinity Pool' : `Suite Area ${i + 1}`
-    }));
-    const needed = 15 - sheetPhotos.length;
-    const fillers = DEFAULT_GALLERY_PHOTOS.slice(0, Math.max(0, needed));
-    return [...sheetPhotos, ...fillers];
+  // 1. Exact name match
+  let found = propList.find((p) => p.name.toLowerCase() === target);
+  if (found) return found;
+
+  // 2. Exact slug match
+  found = propList.find((p) => p.slug.toLowerCase() === target || p.slug.toLowerCase() === targetSlug);
+  if (found) return found;
+
+  // 3. ID match
+  found = propList.find((p) => p.id.toLowerCase() === target);
+  if (found) return found;
+
+  // 4. Substring inclusion
+  found = propList.find((p) => {
+    const pName = p.name.toLowerCase();
+    const pSlug = p.slug.toLowerCase();
+    return pName.includes(target) || target.includes(pName) || pSlug.includes(targetSlug) || targetSlug.includes(pSlug);
+  });
+  if (found) return found;
+
+  // 5. City token matching
+  const cityKeywords = [
+    'jakarta', 'uluwatu', 'bali', 'jeju', 'santorini', 'santa barbara',
+    'london', 'new york', 'seoul', 'sydney', 'vancouver', 'yogyakarta',
+    'como', 'maui', 'busan', 'key west', 'montreal', 'aspen', 'tokyo'
+  ];
+  for (const c of cityKeywords) {
+    if (target.includes(c)) {
+      found = propList.find((p) => p.name.toLowerCase().includes(c) || p.slug.toLowerCase().includes(c));
+      if (found) return found;
+    }
   }
-  return DEFAULT_GALLERY_PHOTOS;
+
+  return undefined;
+}
+
+// Helper to provide 15 distinct, high-end accommodation titles tailored to property destination
+export function getPhotoTitlesForProperty(propName: string = ''): string[] {
+  const pLower = propName.toLowerCase();
+
+  if (pLower.includes('jakarta')) {
+    return [
+      'Grand Presidential Master Bedroom',
+      'Italian Marble En-Suite Bathroom',
+      'Private Penthouse Rooftop Pool',
+      'Executive Skyline Living Salon',
+      'Deep Soaking Tub with City Panorama',
+      'Private Balcony Overlooking Golden Triangle',
+      'Formal Dining Salon with Butler Service',
+      'Walk-In Dressing Room & Vanity Suite',
+      'Second Deluxe King Guest Suite',
+      'Rainfall Shower & Steam En-Suite',
+      'Executive Library & Workspace',
+      'Private Butler Pantry & Kitchen',
+      'Sunken Terrace Cocktail Lounge',
+      'Powder Room & Marble Double Vanity',
+      'Grand Penthouse Foyer Entrance'
+    ];
+  }
+
+  if (pLower.includes('uluwatu') || pLower.includes('bali')) {
+    return [
+      'Master Villa Bedroom Oceanfront Panorama',
+      'Handcrafted Stone En-Suite Bathroom',
+      'Private Cliffside Infinity Pool',
+      'Open-Air Balinese Living Pavilion',
+      'Deep Soaking Marble Jacuzzi',
+      'Sunset Daybed & Poolside Deck',
+      'Dining Terrace with Candlelit Ocean View',
+      'Tropical Flora Courtyard & Sanctuary',
+      'Deluxe Ocean View Guest Suite',
+      'Villa Entrance Aling-Aling Gate',
+      'Rain Shower & Spa En-Suite',
+      'Private Chef Kitchenette & Bar',
+      'Balinese Yoga Bale Pavilion',
+      'Ocean Horizon Sunset Observation Point',
+      'Grand Suite Foyer & Water Feature'
+    ];
+  }
+
+  if (pLower.includes('jeju')) {
+    return [
+      'Hanok-Inspired Minimalist Master Bedroom',
+      'Marble Jjimjilbang Soaking Tub',
+      'Private Heated Plunge Pool & Ocean View',
+      'Zen Tea Garden Sunken Living Lounge',
+      'Natural Hot Spring Onsen Bath',
+      'Jeju Volcanic Cliff Ocean Suite',
+      'Timber Ocean Terrace & Fire Pit',
+      'Gourmet In-Room Dining Alcove',
+      'Cedar Wood Aromatherapy Guest Suite',
+      'Panoramic Volcanic Coastline Bedroom',
+      'Camellia Garden Private Courtyard',
+      'Korean Ceramic Tea Corner',
+      'Forest Path & Olle Trail Access',
+      'Seongsan Sunrise Observation Deck',
+      'Basalt Stone Courtyard Gate'
+    ];
+  }
+
+  if (pLower.includes('santorini')) {
+    return [
+      'Cave Style Master Bedroom',
+      'Sunken Cycladic Bathroom',
+      'Infinity Pool Above Aegean Sea',
+      'Whitewashed Caldera Suite Horizon',
+      'Aegean Private Heated Jacuzzi',
+      'Oia Sunset Observation Balcony',
+      'Private Alfresco Dining Pergola',
+      'Sun Loungers on Stone Deck',
+      'Aegean View Guest Suite',
+      'Greek Cave Spa Soaking Tub',
+      'Indigenous Wine Cellar Bar',
+      'Private Courtyard Entry',
+      'Caldera Cliff Morning Breakfast Nook',
+      'Private Horizon Plunge Pool',
+      'Traditional Blue Dome Terrace'
+    ];
+  }
+
+  if (pLower.includes('santa barbara')) {
+    return [
+      'Oceanfront Spanish Master Bedroom',
+      'Handcrafted Marble En-Suite Bathroom',
+      'Private Saline Plunge Pool with Ocean View',
+      'Coastal Living Pavilion & Fireplace',
+      'Deep Soaking Jacuzzi with Pacific Vistas',
+      'Jasmine Sun Patio & Private Daybeds',
+      'Terracotta Alfresco Dining Terrace',
+      'Botanical Courtyard & Fountain',
+      'Pacific Coastal King Guest Suite',
+      'Walk-in Redwood Dressing Suite',
+      'Private Beach Trail & Central Coast Vista',
+      'Spanish Tile Courtyard Gate',
+      'Sunset Oceanview Fire Pit Veranda',
+      'Sommelier In-Suite Wine Pantry',
+      'Grand Mission Foyer Entrance'
+    ];
+  }
+
+  if (pLower.includes('london')) {
+    return [
+      'Mayfair Grand Master Bedroom Suite',
+      'Carrara Marble En-Suite Bathroom',
+      'Private Rooftop Terrace Overlooking Skyline',
+      'Heritage Executive Living Drawing Room',
+      'Clawfoot Soaking Tub with Park Views',
+      'Private Library & Reading Salon',
+      'Formal Dining Salon with Bespoke Crystal',
+      'Walk-In Dressing Room & Cedar Wardrobe',
+      'Second Deluxe King Guest Suite',
+      'Rainfall Walk-in Shower & Steam Room',
+      'Private Butler Bar & Kitchenette',
+      'Gentleman Study & Executive Workspace',
+      'Conservatory Breakfast Lounge',
+      'Marble Powder Room & Double Vanity',
+      'Private Georgian Foyer Entrance'
+    ];
+  }
+
+  if (pLower.includes('new york') || pLower.includes('manhattan')) {
+    return [
+      'Manhattan Penthouse Master Bedroom',
+      'Imported Italian Marble En-Suite Bathroom',
+      'Private Rooftop Terrace Above Central Park',
+      'Fifth Avenue Living Salon & Fireplace',
+      'Panoramic Deep Soaking Jacuzzi Tub',
+      'Private Skyline Observation Balcony',
+      'Formal In-Suite Dining Room',
+      'Bespoke Walk-in Dressing Suite',
+      'Corner View Deluxe King Suite',
+      'Rainfall Glass Shower & Spa Bench',
+      'Executive Manhattan Workspace & Library',
+      'Private Butler Pantry & Wine Cellar',
+      'Cocktail Lounge with Skyline Vistas',
+      'Double Marble Vanity Powder Room',
+      'Grand Penthouse Elevator Foyer'
+    ];
+  }
+
+  if (pLower.includes('seoul')) {
+    return [
+      'Gangnam Skyline Master Suite',
+      'Granite & Marble En-Suite Bathroom',
+      'Private Heated Rooftop Plunge Pool',
+      'Contemporary Korean Living Salon',
+      'Deep Soaking Tub with Han River View',
+      'Private City View Balcony',
+      'In-Suite Gourmet Dining Room',
+      'Custom Walk-in Dressing Room',
+      'Deluxe High-Floor King Suite',
+      'Rainfall Shower & Steam Spa',
+      'Executive Workspace & Meeting Alcove',
+      'Modern Butler Kitchenette',
+      'Sunset Cocktail Terrace',
+      'Double Vanity Powder Suite',
+      'Grand Foyer Entrance'
+    ];
+  }
+
+  if (pLower.includes('como')) {
+    return [
+      'Lakefront Villa Master Bedroom',
+      'Italian Marble En-Suite Bathroom',
+      'Private Lakeside Heated Plunge Pool',
+      'Historic Fresco Living Pavilion',
+      'Soaking Tub with Lake Como Panorama',
+      'Private Balcony Overlooking Bellagio',
+      'Al Fresco Dining Terrace with Lake Views',
+      'Walk-In Dressing Suite & Wardrobe',
+      'Second Deluxe King Bedroom Suite',
+      'Rainfall Shower & Steam Pavilion',
+      'Wine Library & Tasting Salon',
+      'Private Chef Kitchenette',
+      'Lakeside Garden Sun Loungers',
+      'Double Marble Vanity En-Suite',
+      'Grand Villa Entrance Foyer'
+    ];
+  }
+
+  if (pLower.includes('maui') || pLower.includes('hawaii')) {
+    return [
+      'Oceanfront Lanai Master Bedroom',
+      'Tropical Stone En-Suite Bathroom',
+      'Private Plunge Pool & Waterfall',
+      'Open-Air Island Living Salon',
+      'Deep Soaking Tub with Pacific Vistas',
+      'Private Wrap-around Sunset Lanai',
+      'Outdoor Dining Pavilion & BBQ',
+      'Walk-in Teak Dressing Suite',
+      'Deluxe Ocean View Guest Room',
+      'Outdoor Lava Rock Rain Shower',
+      'Island Workspace & Reading Nook',
+      'Wet Bar & Sommelier Refrigerator',
+      'Daybed Terrace & Fire Table',
+      'Double Vanity Stone Bathroom',
+      'Private Tropical Foyer Entrance'
+    ];
+  }
+
+  if (pLower.includes('yogyakarta')) {
+    return [
+      'Royal Javanese Master Bedroom Suite',
+      'Volcanic Stone En-Suite Bathroom',
+      'Private Courtyard Plunge Pool',
+      'Traditional Joglo Living Pavilion',
+      'Deep Soaking Tub with Garden Views',
+      'Private Veranda Overlooking Merapi',
+      'In-Villa Dining Gazebo',
+      'Handcarved Teak Dressing Room',
+      'Deluxe Heritage King Suite',
+      'Tropical Rain Shower En-Suite',
+      'Batik Art Library & Study',
+      'Private Butler Kitchenette',
+      'Sunset Lotus Pond Relaxation Deck',
+      'Marble Double Vanity Powder Room',
+      'Grand Pendopo Foyer Entrance'
+    ];
+  }
+
+  // Default luxury accommodation room titles
+  return [
+    'Grand Master Bedroom Suite',
+    'Italian Marble En-Suite Bathroom',
+    'Private Swimming Pool & Sun Deck',
+    'Executive Living Pavilion & Salon',
+    'Deep Soaking Tub with Scenic Panorama',
+    'Private Balcony & Observation Terrace',
+    'Formal Dining Salon with Butler Service',
+    'Walk-In Dressing Room & Vanity Suite',
+    'Second Deluxe King Guest Suite',
+    'Rainfall Shower & Steam En-Suite',
+    'Executive Library & Workspace',
+    'Private Butler Pantry & Kitchenette',
+    'Sunken Terrace Cocktail Lounge',
+    'Powder Room & Double Marble Vanity',
+    'Grand Penthouse Foyer Entrance'
+  ];
+}
+
+// Helper to select ALL accommodation photos from Google Spreadsheet Location data
+// (If there are 28, 30, or 100 links, all links appear in the management list.
+// The Live Preview and A4 PNG always render the top 15 photos from this list.)
+const getAllPhotosForProperty = (
+  propName: string,
+  propObj?: Property,
+  propList: Property[] = []
+): GalleryPhotoItem[] => {
+  // 1. Resolve property from Google Sheets Locations list if not passed directly
+  const resolvedProp = propObj || findPropertyFromList(propName, propList);
+  const titles = getPhotoTitlesForProperty(resolvedProp?.name || propName);
+
+  // 2. PRIMARY SOURCE: Real Google Spreadsheet Gallery Images (all links included)
+  if (resolvedProp && resolvedProp.galleryImages && resolvedProp.galleryImages.length > 0) {
+    const rawImages = resolvedProp.galleryImages.filter((u) => Boolean(u && u.trim()));
+    const sheetPhotos: GalleryPhotoItem[] = rawImages.map((url, i) => ({
+      id: `sheet-${resolvedProp.slug || 'prop'}-${i + 1}`,
+      url: url.trim(),
+      title: titles[i] || `${resolvedProp.name || 'Suite'} Visual ${i + 1}`
+    }));
+
+    // If Google Sheet has at least 15 photos, return all photos from Google Sheet!
+    if (sheetPhotos.length >= 15) {
+      return sheetPhotos;
+    }
+
+    // If Google Sheet row has fewer than 15 photos (e.g. Busan which has 1),
+    // keep all sheet photos first, and pad remaining slots with default luxury suite visuals
+    if (sheetPhotos.length > 0) {
+      const needed = 15 - sheetPhotos.length;
+      const fillers: GalleryPhotoItem[] = DEFAULT_GALLERY_PHOTOS.slice(0, needed).map((f, idx) => ({
+        id: `fill-${idx + 1}`,
+        url: f.url,
+        title: titles[sheetPhotos.length + idx] || f.title
+      }));
+      return [...sheetPhotos, ...fillers];
+    }
+  }
+
+  // 3. Fallback only if Google Sheet data is completely unreachable
+  return DEFAULT_GALLERY_PHOTOS.map((p, idx) => ({
+    ...p,
+    title: titles[idx] || p.title
+  }));
 };
+
+const get15PhotosForProperty = getAllPhotosForProperty;
 
 // Helper: Format date for autofill booking dropdown (e.g. "1 Jan 2026")
 function formatAutofillDate(dateStr?: string): string {
@@ -347,12 +656,29 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
     return fallback > 0 ? fallback : 1;
   };
 
-  // Load Initial Booking if provided
+  // Load Initial Booking or sync with properties when available
   useEffect(() => {
-    if (initialBooking) {
-      applyBookingData(initialBooking);
+    if (properties && properties.length > 0) {
+      if (initialBooking) {
+        applyBookingData(initialBooking);
+      } else if (selectedBookingId) {
+        const found = bookings.find((b) => (b.bookingId || b.id) === selectedBookingId);
+        if (found) {
+          applyBookingData(found);
+        }
+      } else if (bookings.length > 0) {
+        // Sync with first reservation by default
+        applyBookingData(bookings[0]);
+      } else {
+        // If no bookings, sync with first property from Google Sheet
+        const firstProp = properties[0];
+        if (firstProp) {
+          handlePropertySelectForGallery(firstProp.name);
+          handlePropertySelectForWelcome(firstProp.name);
+        }
+      }
     }
-  }, [initialBooking]);
+  }, [properties, initialBooking]);
 
   const applyBookingData = (b: BookingInquiry) => {
     setSelectedBookingId(b.bookingId || b.id || '');
@@ -436,19 +762,23 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
     setGalleryRef(formattedRef);
 
     // Find matched property from Sheet Locations
-    const matchedProp = properties.find(
-      (p) =>
-        p.name.toLowerCase() === propName.toLowerCase() ||
-        p.slug.toLowerCase() === (b.propertySlug || '').toLowerCase()
-    );
+    const matchedProp =
+      findPropertyFromList(propName, properties) ||
+      (b.propertySlug ? findPropertyFromList(b.propertySlug, properties) : undefined);
 
-    if (matchedProp && matchedProp.heroImage) {
-      setWelcomeHeroImage(matchedProp.heroImage);
+    if (matchedProp) {
+      setWelcomeProperty(matchedProp.name);
+      setGalleryProperty(matchedProp.name);
+      if (matchedProp.heroImage) {
+        setWelcomeHeroImage(matchedProp.heroImage);
+      }
+      // Auto-select 15 curated photos from Google Spreadsheet Location data
+      const propPhotos = get15PhotosForProperty(matchedProp.name, matchedProp, properties);
+      setGalleryPhotos(propPhotos);
+    } else {
+      const propPhotos = get15PhotosForProperty(propName, undefined, properties);
+      setGalleryPhotos(propPhotos);
     }
-
-    // Auto-select 15 curated photos with clear room, bathroom, pool visuals
-    const propPhotos = get15PhotosForProperty(propName, matchedProp);
-    setGalleryPhotos(propPhotos);
   };
 
   const extractShortCity = (name: string): string => {
@@ -498,7 +828,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
 
   const handlePropertySelectForWelcome = (propName: string) => {
     setWelcomeProperty(propName);
-    const matched = properties.find((p) => p.name.toLowerCase() === propName.toLowerCase());
+    const matched = findPropertyFromList(propName, properties);
     if (matched && matched.heroImage) {
       setWelcomeHeroImage(matched.heroImage);
     }
@@ -506,8 +836,8 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
 
   const handlePropertySelectForGallery = (propName: string) => {
     setGalleryProperty(propName);
-    const matched = properties.find((p) => p.name.toLowerCase() === propName.toLowerCase());
-    const propPhotos = get15PhotosForProperty(propName, matched);
+    const matched = findPropertyFromList(propName, properties);
+    const propPhotos = get15PhotosForProperty(propName, matched, properties);
     setGalleryPhotos(propPhotos);
   };
 
@@ -516,16 +846,14 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
     setKeyLocationShort(extractShortCity(propName));
   };
 
-  // Upload Local Images (Up to 15 photos)
+  // Upload Local Images (All files supported)
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     const fileList: File[] = Array.from(files);
-    const remainingSlots = 15 - galleryPhotos.length;
-    const filesToRead = fileList.slice(0, Math.max(remainingSlots, 15));
 
-    filesToRead.forEach((file: File, idx: number) => {
+    fileList.forEach((file: File, idx: number) => {
       const reader = new FileReader();
       reader.onload = (event) => {
         const resultUrl = event.target?.result as string;
@@ -534,17 +862,14 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
             .replace(/\.[^/.]+$/, '')
             .replace(/[-_]/g, ' ')
             .replace(/\b\w/g, (c) => c.toUpperCase());
-          setGalleryPhotos((prev) => {
-            if (prev.length >= 15) return prev;
-            return [
-              ...prev,
-              {
-                id: `upload-${Date.now()}-${idx}-${Math.random()}`,
-                url: resultUrl,
-                title: autoTitle || `Uploaded Photo ${prev.length + 1}`,
-              },
-            ];
-          });
+          setGalleryPhotos((prev) => [
+            ...prev,
+            {
+              id: `upload-${Date.now()}-${idx}-${Math.random()}`,
+              url: resultUrl,
+              title: autoTitle || `Uploaded Photo ${prev.length + 1}`,
+            },
+          ]);
         }
       };
       reader.readAsDataURL(file);
@@ -557,10 +882,6 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
 
   const handleAddPhotoByUrl = () => {
     if (!newPhotoUrl.trim()) return;
-    if (galleryPhotos.length >= 15) {
-      alert('Maksimal 15 foto dalam galeri visual akomodasi.');
-      return;
-    }
     setGalleryPhotos((prev) => [
       ...prev,
       {
@@ -604,31 +925,31 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
       if (activeCardType === 'keycard') {
         const exportElem = keyExportRef.current || document.getElementById('hanford-key-card-export');
         const onscreenElem = keyCardRef.current || document.getElementById('hanford-key-card-canvas');
-        if (!exportElem && !onscreenElem) throw new Error('Elemen Key Card Canvas tidak ditemukan.');
+        if (!exportElem && !onscreenElem) throw new Error('Key Card Canvas element not found.');
         const cleanName = (keyGuestName || 'Guest').replace(/[^a-zA-Z0-9]/g, '_');
         const fileName = `Hanford_KeyCard_${cleanName}.png`;
         await exportCardAsImage(exportElem as HTMLElement, onscreenElem as HTMLElement, fileName);
-        setExportSuccess(`Key Card untuk ${keyGuestName} berhasil diunduh sebagai PNG!`);
+        setExportSuccess(`Key Card for ${keyGuestName} successfully exported as PNG!`);
       } else if (activeCardType === 'welcomecard') {
         const exportElem = welcomeExportRef.current || document.getElementById('hanford-welcome-card-export');
         const onscreenElem = welcomeCardRef.current || document.getElementById('hanford-welcome-card-canvas');
-        if (!exportElem && !onscreenElem) throw new Error('Elemen Welcoming Card Canvas tidak ditemukan.');
+        if (!exportElem && !onscreenElem) throw new Error('Welcoming Card Canvas element not found.');
         const cleanName = (welcomeGuestName || 'Guest').replace(/[^a-zA-Z0-9]/g, '_');
         const fileName = `Hanford_WelcomingCard_${cleanName}.png`;
         await exportCardAsImage(exportElem as HTMLElement, onscreenElem as HTMLElement, fileName);
-        setExportSuccess(`Welcoming Card untuk ${welcomeGuestName} berhasil diunduh sebagai PNG ukuran A4!`);
+        setExportSuccess(`Welcoming Card for ${welcomeGuestName} successfully exported as A4 PNG!`);
       } else {
         const exportElem = galleryExportRef.current || document.getElementById('hanford-gallery-card-export');
         const onscreenElem = galleryCardRef.current || document.getElementById('hanford-gallery-card-canvas');
-        if (!exportElem && !onscreenElem) throw new Error('Elemen Accommodation Gallery Canvas tidak ditemukan.');
+        if (!exportElem && !onscreenElem) throw new Error('Accommodation Gallery Canvas element not found.');
         const cleanName = (galleryGuestName || 'Guest').replace(/[^a-zA-Z0-9]/g, '_');
         const fileName = `Hanford_AccomGallery_${cleanName}.png`;
         await exportCardAsImage(exportElem as HTMLElement, onscreenElem as HTMLElement, fileName);
-        setExportSuccess(`Accommodation Gallery untuk ${galleryGuestName} berhasil diunduh sebagai PNG ukuran A4!`);
+        setExportSuccess(`Accommodation Gallery for ${galleryGuestName} successfully exported as A4 PNG!`);
       }
     } catch (err: any) {
       console.error('Download card error:', err);
-      setExportError(err.message || 'Gagal mengunduh gambar. Silakan coba lagi.');
+      setExportError(err.message || 'Failed to download image. Please try again.');
     } finally {
       setIsExporting(false);
       setTimeout(() => {
@@ -705,7 +1026,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
               Autofill Booking Data
             </div>
             <div className="text-[11px] text-slate-500">
-              Pilih data Reservasi untuk mengisi data otomatis
+              Select reservation record to autofill data automatically
             </div>
           </div>
         </div>
@@ -721,7 +1042,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                 setAutofillSearchQuery(e.target.value);
                 setIsAutofillOpen(true);
               }}
-              placeholder="Search: Nama - City - Date..."
+              placeholder="Search: Guest Name - City - Date..."
               className="w-full px-3.5 py-2 pr-8 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-[#51867E] focus:bg-white transition-all"
             />
             <button
@@ -781,7 +1102,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                     );
                   })}
                 {bookings.length === 0 && (
-                  <div className="p-3 text-center text-slate-400 text-xs">Tidak ada data reservasi</div>
+                  <div className="p-3 text-center text-slate-400 text-xs">No reservation records found</div>
                 )}
               </div>
             )}
@@ -1101,26 +1422,24 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                   onChange={(e) => handlePropertySelectForWelcome(e.target.value)}
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-[#51867E] focus:outline-none cursor-pointer"
                 >
-                  <option value="Hanford Hotel & Resort Uluwatu, Bali">Hanford Hotel & Resort Uluwatu, Bali</option>
-                  <option value="Hanford Eco Resort Jeju">Hanford Eco Resort Jeju</option>
-                  <option value="Hanford Grand Hotel Jakarta">Hanford Grand Hotel Jakarta</option>
-                  <option value="Hanford Eco Resort Santa Barbara">Hanford Eco Resort Santa Barbara</option>
-                  <option value="Hanford Eco Resort Santorini">Hanford Eco Resort Santorini</option>
-                  <option value="Hanford Grand Hotel Seoul">Hanford Grand Hotel Seoul</option>
-                  <option value="Hanford Grand Hotel Tokyo">Hanford Grand Hotel Tokyo</option>
-                  <option value="Hanford Resort & Spa Aspen">Hanford Resort & Spa Aspen</option>
-                  {properties
-                    .filter(
-                      (p) =>
-                        !['Uluwatu', 'Jeju', 'Jakarta', 'Santa Barbara', 'Santorini', 'Seoul', 'Tokyo', 'Aspen'].some(
-                          (k) => p.name.includes(k)
-                        )
-                    )
-                    .map((p) => (
-                      <option key={p.id} value={p.name}>
+                  {properties && properties.length > 0 ? (
+                    properties.map((p) => (
+                      <option key={p.id || p.slug} value={p.name}>
                         {p.name}
                       </option>
-                    ))}
+                    ))
+                  ) : (
+                    <>
+                      <option value="Hanford Grand Hotel Jakarta">Hanford Grand Hotel Jakarta</option>
+                      <option value="Hanford Hotel & Resort Uluwatu, Bali">Hanford Hotel & Resort Uluwatu, Bali</option>
+                      <option value="Hanford Eco Resort Jeju">Hanford Eco Resort Jeju</option>
+                      <option value="Hanford Eco Resort Santorini">Hanford Eco Resort Santorini</option>
+                      <option value="Hanford Eco Resort Santa Barbara">Hanford Eco Resort Santa Barbara</option>
+                      <option value="Hanford Grand Hotel London">Hanford Grand Hotel London</option>
+                      <option value="Hanford Grand Hotel New York">Hanford Grand Hotel New York</option>
+                      <option value="Hanford Grand Hotel Seoul">Hanford Grand Hotel Seoul</option>
+                    </>
+                  )}
                 </select>
               </div>
 
@@ -1367,26 +1686,24 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                     onChange={(e) => handlePropertySelectForGallery(e.target.value)}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-[#51867E] focus:outline-none cursor-pointer"
                   >
-                    <option value="Hanford Hotel & Resort Uluwatu, Bali">Hanford Hotel & Resort Uluwatu, Bali</option>
-                    <option value="Hanford Eco Resort Jeju">Hanford Eco Resort Jeju</option>
-                    <option value="Hanford Grand Hotel Jakarta">Hanford Grand Hotel Jakarta</option>
-                    <option value="Hanford Eco Resort Santa Barbara">Hanford Eco Resort Santa Barbara</option>
-                    <option value="Hanford Eco Resort Santorini">Hanford Eco Resort Santorini</option>
-                    <option value="Hanford Grand Hotel Seoul">Hanford Grand Hotel Seoul</option>
-                    <option value="Hanford Grand Hotel Tokyo">Hanford Grand Hotel Tokyo</option>
-                    <option value="Hanford Resort & Spa Aspen">Hanford Resort & Spa Aspen</option>
-                    {properties
-                      .filter(
-                        (p) =>
-                          !['Uluwatu', 'Jeju', 'Jakarta', 'Santa Barbara', 'Santorini', 'Seoul', 'Tokyo', 'Aspen'].some(
-                            (k) => p.name.includes(k)
-                          )
-                      )
-                      .map((p) => (
-                        <option key={p.id} value={p.name}>
+                    {properties && properties.length > 0 ? (
+                      properties.map((p) => (
+                        <option key={p.id || p.slug} value={p.name}>
                           {p.name}
                         </option>
-                      ))}
+                      ))
+                    ) : (
+                      <>
+                        <option value="Hanford Grand Hotel Jakarta">Hanford Grand Hotel Jakarta</option>
+                        <option value="Hanford Hotel & Resort Uluwatu, Bali">Hanford Hotel & Resort Uluwatu, Bali</option>
+                        <option value="Hanford Eco Resort Jeju">Hanford Eco Resort Jeju</option>
+                        <option value="Hanford Eco Resort Santorini">Hanford Eco Resort Santorini</option>
+                        <option value="Hanford Eco Resort Santa Barbara">Hanford Eco Resort Santa Barbara</option>
+                        <option value="Hanford Grand Hotel London">Hanford Grand Hotel London</option>
+                        <option value="Hanford Grand Hotel New York">Hanford Grand Hotel New York</option>
+                        <option value="Hanford Grand Hotel Seoul">Hanford Grand Hotel Seoul</option>
+                      </>
+                    )}
                   </select>
                 </div>
 
@@ -1408,48 +1725,86 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
               <div className="space-y-2 pt-2 border-t border-slate-100">
                 <div className="flex items-center justify-between">
                   <label className="block font-bold text-slate-700 uppercase tracking-wider text-[10.5px]">
-                    Preset 15-Foto Hotel
+                    Location Photo Presets (Google Spreadsheet)
                   </label>
                   <span className="text-[10px] text-[#51867E] font-bold">
-                    {galleryPhotos.length}/15 Foto Aktif
+                    {galleryPhotos.length} Photos Loaded
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   <button
                     type="button"
-                    onClick={() => setGalleryPhotos(PRESET_COLLECTIONS.uluwatu)}
+                    onClick={() => {
+                      const p = findPropertyFromList('Hanford Grand Hotel Jakarta', properties);
+                      if (p) {
+                        setGalleryProperty(p.name);
+                        setGalleryPhotos(get15PhotosForProperty(p.name, p, properties));
+                      }
+                    }}
                     className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[10.5px] font-semibold cursor-pointer transition-colors"
                   >
-                    🏝️ 15 Foto Uluwatu
+                    🏢 Jakarta Photos
                   </button>
                   <button
                     type="button"
-                    onClick={() => setGalleryPhotos(PRESET_COLLECTIONS.jeju)}
+                    onClick={() => {
+                      const p = findPropertyFromList('Hanford Hotel & Resort Uluwatu', properties);
+                      if (p) {
+                        setGalleryProperty(p.name);
+                        setGalleryPhotos(get15PhotosForProperty(p.name, p, properties));
+                      }
+                    }}
                     className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[10.5px] font-semibold cursor-pointer transition-colors"
                   >
-                    ⛰️ 15 Foto Jeju
+                    🏝️ Uluwatu Photos
                   </button>
                   <button
                     type="button"
-                    onClick={() => setGalleryPhotos(PRESET_COLLECTIONS.santorini)}
+                    onClick={() => {
+                      const p = findPropertyFromList('Hanford Eco Resort Jeju', properties);
+                      if (p) {
+                        setGalleryProperty(p.name);
+                        setGalleryPhotos(get15PhotosForProperty(p.name, p, properties));
+                      }
+                    }}
                     className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[10.5px] font-semibold cursor-pointer transition-colors"
                   >
-                    🏛️ 15 Foto Santorini
+                    ⛰️ Jeju Photos
                   </button>
                   <button
                     type="button"
-                    onClick={() => setGalleryPhotos(DEFAULT_GALLERY_PHOTOS)}
+                    onClick={() => {
+                      const p = findPropertyFromList('Hanford Eco Resort Santorini', properties);
+                      if (p) {
+                        setGalleryProperty(p.name);
+                        setGalleryPhotos(get15PhotosForProperty(p.name, p, properties));
+                      }
+                    }}
                     className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[10.5px] font-semibold cursor-pointer transition-colors"
                   >
-                    ✨ Default Pack (15 Foto)
+                    🏛️ Santorini Photos
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const p = findPropertyFromList(galleryProperty, properties);
+                      if (p) {
+                        setGalleryPhotos(get15PhotosForProperty(p.name, p, properties));
+                      }
+                    }}
+                    className="px-2.5 py-1 bg-[#EAF2F1] hover:bg-[#d5e7e4] text-[#2D5A53] rounded-lg text-[10.5px] font-bold cursor-pointer transition-colors flex items-center gap-1"
+                    title="Reload all photos directly from Google Spreadsheet for this location"
+                  >
+                    <RefreshCw className="w-3 h-3 text-[#51867E]" />
+                    <span>Reload Location Photos</span>
                   </button>
                 </div>
               </div>
 
-              {/* Upload Multiple Local Photos (Up to 15) */}
+              {/* Upload Multiple Local Photos */}
               <div className="space-y-2 pt-2 border-t border-slate-100">
                 <label className="block font-bold text-slate-700 uppercase tracking-wider text-[10.5px]">
-                  Upload Foto dari Perangkat (Bisa Pilih hingga 15 File)
+                  Upload Photos from Device (Multiple Files Supported)
                 </label>
                 
                 <input
@@ -1467,14 +1822,14 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                   className="w-full py-2.5 px-3 border-2 border-dashed border-[#51867E]/40 hover:border-[#51867E] bg-[#51867E]/5 hover:bg-[#51867E]/10 text-[#51867E] rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-all font-bold text-[11px]"
                 >
                   <Upload className="w-4 h-4" />
-                  <span>Pilih &amp; Upload Foto (PNG/JPG, Maks 15)</span>
+                  <span>Select &amp; Upload Photos (PNG/JPG)</span>
                 </label>
               </div>
 
               {/* Add Single Image by URL */}
               <div className="space-y-2 pt-2 border-t border-slate-100">
                 <label className="block font-bold text-slate-700 uppercase tracking-wider text-[10.5px]">
-                  Tambah Foto Melalui Link URL
+                  Add Photo via Image URL
                 </label>
                 <div className="space-y-1.5">
                   <input
@@ -1489,17 +1844,17 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                       type="text"
                       value={newPhotoTitle}
                       onChange={(e) => setNewPhotoTitle(e.target.value)}
-                      placeholder="Judul / Keterangan Foto..."
+                      placeholder="Photo Title / Caption..."
                       className="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-800 focus:bg-white focus:ring-2 focus:ring-[#51867E] focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={handleAddPhotoByUrl}
-                      disabled={!newPhotoUrl.trim() || galleryPhotos.length >= 15}
+                      disabled={!newPhotoUrl.trim()}
                       className="px-3 py-1.5 bg-[#51867E] hover:bg-[#3f6d66] text-white rounded-xl text-xs font-bold uppercase transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1"
                     >
                       <Plus className="w-3.5 h-3.5" />
-                      <span>Tambah</span>
+                      <span>Add</span>
                     </button>
                   </div>
                 </div>
@@ -1508,83 +1863,103 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
               {/* Manage Active Gallery Photos List (Reorder, Edit Title, Delete) */}
               <div className="space-y-2 pt-2 border-t border-slate-100">
                 <div className="flex items-center justify-between">
-                  <label className="block font-bold text-slate-700 uppercase tracking-wider text-[10.5px]">
-                    Daftar Foto Galeri ({galleryPhotos.length}/15)
-                  </label>
+                  <div className="flex flex-col">
+                    <label className="block font-bold text-slate-700 uppercase tracking-wider text-[10.5px]">
+                      Gallery Photos List ({galleryPhotos.length} Total)
+                    </label>
+                    <span className="text-[10px] text-emerald-700 font-medium">
+                      Top 15 are displayed on the A4 Document
+                    </span>
+                  </div>
                   {galleryPhotos.length > 0 && (
                     <button
                       type="button"
                       onClick={() => setGalleryPhotos([])}
                       className="text-[10px] text-rose-500 hover:text-rose-700 font-semibold cursor-pointer"
                     >
-                      Hapus Semua
+                      Clear All
                     </button>
                   )}
                 </div>
 
-                <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
-                  {galleryPhotos.map((photo, idx) => (
-                    <div
-                      key={photo.id || idx}
-                      className="flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs"
-                    >
-                      <div className="w-10 h-10 rounded-lg overflow-hidden bg-slate-200 shrink-0 border border-slate-300">
-                        <img
-                          src={photo.url}
-                          alt={photo.title}
-                          className="w-full h-full object-cover"
-                          referrerPolicy="no-referrer"
-                        />
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-mono font-bold text-[10px] text-[#51867E]">
-                            #{idx + 1}
-                          </span>
-                          <input
-                            type="text"
-                            value={photo.title}
-                            onChange={(e) => handleUpdatePhotoTitle(idx, e.target.value)}
-                            className="w-full px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[11px] font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#51867E]"
+                <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                  {galleryPhotos.map((photo, idx) => {
+                    const isFeaturedOnA4 = idx < 15;
+                    return (
+                      <div
+                        key={photo.id || idx}
+                        className={`flex items-center gap-2 p-2 rounded-xl text-xs border transition-colors ${
+                          isFeaturedOnA4
+                            ? 'bg-slate-50 border-slate-200'
+                            : 'bg-slate-100/60 border-dashed border-slate-300 opacity-80'
+                        }`}
+                      >
+                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-slate-200 shrink-0 border border-slate-300 relative">
+                          <img
+                            src={photo.url}
+                            alt={photo.title}
+                            className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
                           />
                         </div>
-                      </div>
 
-                      <div className="flex items-center gap-1 shrink-0">
-                        <button
-                          type="button"
-                          disabled={idx === 0}
-                          onClick={() => handleMovePhoto(idx, 'up')}
-                          className="p-1 hover:bg-slate-200 rounded text-slate-500 disabled:opacity-30 cursor-pointer"
-                          title="Pindah ke Atas"
-                        >
-                          <ArrowUp className="w-3 h-3" />
-                        </button>
-                        <button
-                          type="button"
-                          disabled={idx === galleryPhotos.length - 1}
-                          onClick={() => handleMovePhoto(idx, 'down')}
-                          className="p-1 hover:bg-slate-200 rounded text-slate-500 disabled:opacity-30 cursor-pointer"
-                          title="Pindah ke Bawah"
-                        >
-                          <ArrowDown className="w-3 h-3" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleRemovePhoto(idx)}
-                          className="p-1 hover:bg-rose-100 rounded text-rose-500 cursor-pointer"
-                          title="Hapus Foto"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-1.5">
+                              {isFeaturedOnA4 ? (
+                                <span className="font-mono font-bold text-[9px] px-1.5 py-0.5 rounded bg-[#EAF2F1] text-[#2D5A53] border border-[#CDE1DC] shrink-0">
+                                  A4 #{idx + 1}
+                                </span>
+                              ) : (
+                                <span className="font-mono font-medium text-[9px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-600 border border-slate-300 shrink-0">
+                                  #{idx + 1} Queue
+                                </span>
+                              )}
+                              <input
+                                type="text"
+                                value={photo.title}
+                                onChange={(e) => handleUpdatePhotoTitle(idx, e.target.value)}
+                                className="w-full px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[11px] font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#51867E]"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            type="button"
+                            disabled={idx === 0}
+                            onClick={() => handleMovePhoto(idx, 'up')}
+                            className="p-1 hover:bg-slate-200 rounded text-slate-500 disabled:opacity-30 cursor-pointer"
+                            title="Move Up"
+                          >
+                            <ArrowUp className="w-3 h-3" />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={idx === galleryPhotos.length - 1}
+                            onClick={() => handleMovePhoto(idx, 'down')}
+                            className="p-1 hover:bg-slate-200 rounded text-slate-500 disabled:opacity-30 cursor-pointer"
+                            title="Move Down"
+                          >
+                            <ArrowDown className="w-3 h-3" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleRemovePhoto(idx)}
+                            className="p-1 hover:bg-rose-100 rounded text-rose-500 cursor-pointer"
+                            title="Remove Photo"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
 
                   {galleryPhotos.length === 0 && (
                     <div className="p-4 text-center text-slate-400 italic text-[11px] bg-slate-50 rounded-xl">
-                      Belum ada foto. Upload foto atau klik tombol Preset di atas untuk memuat 10 foto.
+                      No photos loaded yet. Upload photos or click a preset button above to load location photos.
                     </div>
                   )}
                 </div>

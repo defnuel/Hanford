@@ -173,7 +173,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
       );
     } catch (err) {
       console.error('Failed to download invoice image:', err);
-      alert('Gagal mengunduh gambar invoice. Silakan coba lagi.');
+      alert('Failed to download invoice image. Please try again.');
     } finally {
       setIsDownloadingImage(false);
     }

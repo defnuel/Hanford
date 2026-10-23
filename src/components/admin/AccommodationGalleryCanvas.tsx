@@ -175,6 +175,10 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
                     alt={photo.title || `Photo ${idx + 1}`}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src =
+                        'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80';
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
                   
@@ -209,6 +213,10 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
                       alt={photo.title || `Hero Photo ${idx + 1}`}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src =
+                          'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80';
+                      }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
                     
@@ -241,6 +249,10 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
                         alt={photo.title || `Photo ${photoNumber}`}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src =
+                            'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80';
+                        }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
                       
@@ -273,6 +285,10 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
                     alt={photo.title || `Photo ${idx + 1}`}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src =
+                        'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80';
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
                   

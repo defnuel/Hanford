@@ -1450,7 +1450,7 @@ export function registerAdminRequest(req: {
   if (exists) {
     return {
       success: false,
-      message: 'Username atau Email sudah terdaftar dalam sistem Admin.'
+      message: 'Username or Email is already registered in the Admin system.'
     };
   }
 
@@ -1471,7 +1471,7 @@ export function registerAdminRequest(req: {
 
   return {
     success: true,
-    message: 'Pendaftaran admin berhasil diajukan! Akun Anda sedang menunggu persetujuan (Accept) dari Super Admin.'
+    message: 'Admin registration submitted successfully! Your account is pending approval from a Super Admin.'
   };
 }
 
@@ -1511,35 +1511,35 @@ export function authenticateAdmin(usernameOrEmail: string, passwordAttempt: stri
   if (!matched) {
     return {
       success: false,
-      message: 'Username atau Email admin tidak ditemukan.'
+      message: 'Admin Username or Email not found.'
     };
   }
 
   if (matched.password && matched.password !== passwordAttempt) {
     return {
       success: false,
-      message: 'Password yang Anda masukkan salah.'
+      message: 'Incorrect password entered.'
     };
   }
 
   if (matched.status === 'Pending') {
     return {
       success: false,
-      message: 'Akun Anda masih dalam status PENDING (Menunggu persetujuan / Accept dari Super Admin).'
+      message: 'Your account is still in PENDING status (Awaiting approval from a Super Admin).'
     };
   }
 
   if (matched.status === 'Rejected') {
     return {
       success: false,
-      message: 'Permohonan pendaftaran akun Anda telah ditolak oleh Super Admin.'
+      message: 'Your account registration request has been declined by a Super Admin.'
     };
   }
 
   return {
     success: true,
     user: matched,
-    message: 'Login berhasil.'
+    message: 'Login successful.'
   };
 }
 
