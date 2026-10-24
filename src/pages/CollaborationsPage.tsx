@@ -230,7 +230,7 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
               >
                 <div>
                   {/* Card Image Wrapper */}
-                  <div className="relative aspect-[16/10] sm:aspect-[4/3] bg-[#2C3744] overflow-hidden flex items-center justify-center p-2 sm:p-3">
+                  <div className="relative aspect-[16/10] sm:aspect-[4/3] bg-[#2C3744] overflow-hidden">
                     {/* Soft ambient blurred background matching the image colors */}
                     <img
                       src={project.heroImage}
@@ -239,33 +239,35 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
                       aria-hidden="true"
                     />
 
-                    {/* Main Image - uncropped and adjusting to natural aspect ratio */}
-                    <img
-                      src={project.heroImage}
-                      alt={project.projectName}
-                      className="relative z-10 max-w-full max-h-full w-auto h-auto object-contain group-hover:scale-105 transition-transform duration-500 rounded-lg shadow-sm"
-                      loading="lazy"
-                    />
+                    {/* Gradient Overlay for backdrop atmosphere */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/30 pointer-events-none z-[5]" />
 
-                    {/* Gradient Overlay for text contrast */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none z-10" />
+                    {/* Main Image - uncropped and strictly contained within bounds for iOS Safari and all devices */}
+                    <div className="absolute inset-2 sm:inset-3 z-10 flex items-center justify-center pointer-events-none">
+                      <img
+                        src={project.heroImage}
+                        alt={project.projectName}
+                        className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-500 rounded-lg drop-shadow-md"
+                        loading="lazy"
+                      />
+                    </div>
 
                     {/* Top Badges */}
-                    <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between gap-2 z-20">
+                    <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between gap-2 z-20 pointer-events-none">
                       <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 bg-[#EAF2F1]/90 backdrop-blur-md text-[#3A4F67] text-[9px] font-bold tracking-widest uppercase rounded-full shadow-sm border border-[#88B2AB]/30">
                         {project.projectType}
                       </span>
                     </div>
 
                     {/* Bottom Metadata Overlay */}
-                    <div className="absolute bottom-3 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between text-white text-[10px] sm:text-[11px] font-light z-20">
+                    <div className="absolute bottom-3 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between text-white text-[10px] sm:text-[11px] font-light z-20 pointer-events-none">
                       <div className="flex items-center gap-1.5 truncate max-w-[60%]">
                         <MapPin className="w-3.5 h-3.5 text-[#88B2AB] shrink-0" />
-                        <span className="truncate">{project.location}</span>
+                        <span className="truncate drop-shadow-sm">{project.location}</span>
                       </div>
                       <div className="flex items-center gap-1.5 shrink-0">
                         <Calendar className="w-3.5 h-3.5 text-[#88B2AB] shrink-0" />
-                        <span>{project.date}</span>
+                        <span className="drop-shadow-sm">{project.date}</span>
                       </div>
                     </div>
                   </div>

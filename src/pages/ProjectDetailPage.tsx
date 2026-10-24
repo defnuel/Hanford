@@ -167,11 +167,13 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20 pointer-events-none" />
 
             {/* Foreground Main Image - Full Natural Aspect Ratio, zero cropping */}
-            <img
-              src={allImages[activeImageIndex]}
-              alt={`${project.projectName} view ${activeImageIndex + 1}`}
-              className="relative z-10 max-w-full max-h-full w-auto h-auto object-contain rounded-lg shadow-2xl transition-all duration-300"
-            />
+            <div className="absolute inset-3 sm:inset-6 z-10 flex items-center justify-center pointer-events-none">
+              <img
+                src={allImages[activeImageIndex]}
+                alt={`${project.projectName} view ${activeImageIndex + 1}`}
+                className="w-full h-full object-contain object-center rounded-lg shadow-2xl transition-all duration-300"
+              />
+            </div>
 
             {/* Slide Navigation Buttons */}
             {allImages.length > 1 && (

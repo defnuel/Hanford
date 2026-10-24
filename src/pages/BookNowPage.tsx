@@ -8,7 +8,7 @@ import { exportInvoiceAsImage } from '../utils/exportInvoiceImage';
 import {
   CheckCircle2,
   AlertCircle,
-  Sparkles,
+  CalendarCheck,
   Building2,
   ExternalLink,
   Hotel,
@@ -488,20 +488,15 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
         {/* Header */}
         <div className="text-center space-y-3 sm:space-y-4 mb-8 sm:mb-10">
           <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 bg-[#3A4F67] text-[#EAF2F1] rounded-full text-[9px] sm:text-[10px] font-bold tracking-[0.25em] sm:tracking-[0.3em] uppercase shadow border border-[#88B2AB]/30">
-            <Sparkles className="w-3.5 h-3.5 text-[#88B2AB]" />
-            <span>CENTRAL RESERVATIONS & BOOKING SYSTEM</span>
+            <CalendarCheck className="w-3.5 h-3.5 text-[#88B2AB]" />
+            <span>CENTRAL RESERVATIONS</span>
           </div>
           <h1 className="font-serif italic text-3xl sm:text-6xl text-[#3A4F67] font-semibold">
-            Book Your Experience
+            Book Your Stay
           </h1>
           <p className="text-xs sm:text-sm text-[#2C3744] max-w-xl mx-auto font-light leading-relaxed">
-            Real-time hotel booking application.
-            <span className="block text-[10px] sm:text-[11px] text-[#3A4F67] font-medium italic mt-0.5">
-              Sistem reservasi hotel real-time.
-            </span>
+            Real-time hotel booking system from HANFORD H&R.
           </p>
-
-          {/* Remove Live Central Register button per user request */}
         </div>
 
         {/* ------------------------------------------------------------------ */}
@@ -2276,7 +2271,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 <span>Registering Reservation...</span>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4 text-white shrink-0" />
+                  <CalendarCheck className="w-4 h-4 text-white shrink-0" />
                   <span className="text-center">CONFIRM & REGISTER RESERVATION</span>
                 </>
               )}
@@ -2301,7 +2296,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
               disabled={submitting}
               className="px-5 py-2 bg-[#51867E] active:bg-[#3f6d66] text-white text-[11px] font-bold uppercase tracking-wider rounded-full shadow border border-[#88B2AB]/40 flex items-center gap-1.5"
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <CalendarCheck className="w-3.5 h-3.5" />
               <span>Book Now</span>
             </button>
           </div>
