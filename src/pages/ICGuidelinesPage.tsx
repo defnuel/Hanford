@@ -3,7 +3,9 @@ import {
   Compass, 
   Calendar, 
   Building2, 
-  Sparkles, 
+  Feather,
+  Crown,
+  Flower2, 
   Tag, 
   Share2, 
   Heart, 
@@ -34,7 +36,7 @@ export const ICGuidelinesPage: React.FC<ICGuidelinesPageProps> = ({ onNavigate }
       {/* Top Banner / Header */}
       <div className="max-w-4xl mx-auto px-4 sm:px-8 text-center space-y-4 mb-12 sm:mb-16">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#51867E]/10 border border-[#51867E]/20 text-[#51867E] rounded-full text-xs font-bold uppercase tracking-widest">
-          <Sparkles className="w-3.5 h-3.5" />
+          <Feather className="w-3.5 h-3.5" />
           <span>Roleplay & Writer's Guidelines</span>
         </div>
 
@@ -208,7 +210,7 @@ export const ICGuidelinesPage: React.FC<ICGuidelinesPageProps> = ({ onNavigate }
               <div className="flex flex-wrap gap-2 sm:gap-2.5 pt-1">
                 {[
                   { name: 'Golf Course', icon: Flag },
-                  { name: 'Spa', icon: Sparkles },
+                  { name: 'Spa', icon: Flower2 },
                   { name: 'Swimming Pool', icon: Waves },
                   { name: 'Restaurant', icon: Utensils },
                   { name: 'Beach Club', icon: Sun },
@@ -295,7 +297,7 @@ export const ICGuidelinesPage: React.FC<ICGuidelinesPageProps> = ({ onNavigate }
 
             <div className="space-y-4 flex-grow">
               <div className="flex items-center gap-2 text-[#88B2AB] text-xs font-bold uppercase tracking-widest font-mono">
-                <Sparkles className="w-4 h-4" />
+                <Crown className="w-4 h-4" />
                 <span>WELCOME TO HANFORD Hotels & Resorts</span>
               </div>
 

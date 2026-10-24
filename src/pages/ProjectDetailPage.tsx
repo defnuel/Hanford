@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Sparkles, MapPin, Calendar, Tag, ChevronLeft, ChevronRight, Share2, Compass, CheckCircle2, MessageSquare, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Handshake, MapPin, Calendar, Tag, ChevronLeft, ChevronRight, Share2, Compass, CheckCircle2, MessageSquare, ExternalLink } from 'lucide-react';
 import { Project } from '../types';
 import { fetchProjectBySlug, fetchLocations } from '../services/dataService';
 import { CleanPropertyDetails } from '../components/CleanPropertyDetails';
@@ -138,7 +138,7 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
 
           <div className="flex flex-wrap items-center gap-6 text-xs sm:text-sm text-[#3A4F67] font-medium pt-2">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#51867E]" />
+              <Handshake className="w-4 h-4 text-[#51867E]" />
               <span>with: <strong className="font-serif italic text-[#3A4F67]">{project.partnerName}</strong> {project.xUsername && <span className="text-xs text-[#51867E] font-semibold">({project.xUsername})</span>}</span>
             </div>
             <div className="flex items-center gap-2">

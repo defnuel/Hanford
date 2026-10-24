@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Building2, 
-  Sparkles, 
+  BookOpen,
+  Feather,
+  Crown,
+  Flower2,
   Compass, 
   Calendar, 
   BedDouble, 
@@ -58,7 +61,7 @@ export const GuidelinesPage: React.FC<GuidelinesPageProps> = ({ onNavigate, defa
       {/* Top Banner & Tab Toggle Selector */}
       <div className="max-w-4xl mx-auto px-4 sm:px-8 text-center space-y-6 mb-10 sm:mb-14">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#51867E]/10 border border-[#51867E]/20 text-[#51867E] rounded-full text-xs font-bold uppercase tracking-widest">
-          <Sparkles className="w-3.5 h-3.5" />
+          <BookOpen className="w-3.5 h-3.5" />
           <span>HANFORD H&R GUIDELINES</span>
         </div>
 
@@ -91,7 +94,7 @@ export const GuidelinesPage: React.FC<GuidelinesPageProps> = ({ onNavigate, defa
                   : 'text-slate-600 hover:text-[#51867E] hover:bg-white/50'
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-200 shrink-0" />
+              <Feather className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-200 shrink-0" />
               <span className="leading-tight">Writer's Guidelines</span>
             </button>
           </div>
@@ -703,7 +706,7 @@ const ICGuidelinesSection: React.FC<{ onNavigate: (path: string) => void }> = ({
             <div className="flex flex-wrap gap-2 sm:gap-2.5 pt-1">
               {[
                 { name: 'Golf Course', icon: Flag },
-                { name: 'Spa', icon: Sparkles },
+                { name: 'Spa', icon: Flower2 },
                 { name: 'Swimming Pool', icon: Waves },
                 { name: 'Restaurant', icon: Utensils },
                 { name: 'Beach Club', icon: Sun },
@@ -788,7 +791,7 @@ const ICGuidelinesSection: React.FC<{ onNavigate: (path: string) => void }> = ({
 
           <div className="space-y-4 flex-grow">
             <div className="flex items-center gap-2 text-[#88B2AB] text-xs font-bold uppercase tracking-widest font-mono">
-              <Sparkles className="w-4 h-4" />
+              <Crown className="w-4 h-4" />
               <span>WELCOME TO HANFORD Hotels & Resorts</span>
             </div>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Award, Building2, Trees, HeartHandshake, Sparkles, ChevronLeft, ChevronRight, UserCheck, Hotel } from 'lucide-react';
+import { Award, Building2, Trees, HeartHandshake, Crown, ChevronLeft, ChevronRight, UserCheck, Hotel } from 'lucide-react';
 import { fetchLocations } from '../services/dataService';
 import { Property } from '../types';
 
@@ -89,7 +89,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
         {/* Hero Text Content */}
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center my-auto py-8 sm:py-12">
           <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 bg-[#1E293B]/90 backdrop-blur-md border border-[#88B2AB]/60 rounded-full shadow-lg mb-4 sm:mb-6">
-            <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#88B2AB]" />
+            <Crown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#88B2AB]" />
             <span className="text-[9px] sm:text-[11px] font-bold tracking-[0.25em] sm:tracking-[0.35em] uppercase text-white">
               EST. 1920 • VANCOUVER, CANADA
             </span>

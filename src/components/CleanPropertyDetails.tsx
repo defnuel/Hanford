@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Compass, Sparkles, Eye, UtensilsCrossed, Info, BedDouble, ChevronDown, ChevronUp } from 'lucide-react';
+import { Compass, CalendarCheck, Bookmark, Crown, Eye, UtensilsCrossed, Info, BedDouble, ChevronDown, ChevronUp } from 'lucide-react';
 import { AmenityBadge } from './AmenityBadge';
 
 interface CleanPropertyDetailsProps {
@@ -19,10 +19,12 @@ interface CollapsibleSectionCardProps {
 }
 
 const CollapsibleSectionCard: React.FC<CollapsibleSectionCardProps> = ({ sec }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
   const titleLower = sec.title.toLowerCase();
-  let Icon = Sparkles;
+  const isEventSection = titleLower.includes('event');
+  const [isOpen, setIsOpen] = useState(isEventSection);
+
+  let Icon = Bookmark;
+  if (isEventSection) Icon = CalendarCheck;
   if (titleLower.includes('look') || titleLower.includes('design')) Icon = Eye;
   if (titleLower.includes('restaurant') || titleLower.includes('dining')) Icon = UtensilsCrossed;
   if (titleLower.includes('know') || titleLower.includes('info')) Icon = Info;
@@ -92,7 +94,7 @@ const AmenitiesPrivilegesCard: React.FC<{ amenities: string[] }> = ({ amenities 
       >
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-[#51867E] flex items-center justify-center text-white shrink-0 border border-[#88B2AB]/30 group-hover:scale-105 transition-transform">
-            <Sparkles className="w-4 h-4 text-[#88B2AB]" />
+            <Crown className="w-4 h-4 text-[#88B2AB]" />
           </div>
           <div>
             <h3 className="font-serif italic text-xl sm:text-2xl text-[#3A4F67]">

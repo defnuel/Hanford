@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Property } from '../types';
 import { fetchLocations } from '../services/dataService';
-import { Calendar, ArrowRight, ShieldCheck, Sparkles, MapPin, Award, ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import { Calendar, ArrowRight, ShieldCheck, Sparkles, MapPin, Award, ChevronLeft, ChevronRight, Star, Crown } from 'lucide-react';
 
 interface HomePageProps {
   onNavigate: (path: string) => void;
@@ -70,7 +70,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <div className="lg:col-span-8 space-y-4 sm:space-y-6">
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-1.5 bg-[#1E293B]/90 backdrop-blur-md border border-[#88B2AB]/80 rounded-full shadow-lg">
-                <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#88B2AB]" />
+                <Crown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#88B2AB]" />
                 <span className="text-[9px] sm:text-[11px] font-bold tracking-[0.25em] sm:tracking-[0.35em] uppercase text-white">
                   EST 1920
                 </span>
