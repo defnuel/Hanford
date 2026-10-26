@@ -271,7 +271,7 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
                   >
                     <ExternalLink className="w-3.5 h-3.5 shrink-0 text-[#88B2AB]" />
                     <span className="truncate max-w-full">
-                      View Post on X {project.xUsername ? `(${project.xUsername})` : ''}
+                      View Post
                     </span>
                   </a>
                 )}

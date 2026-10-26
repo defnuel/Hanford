@@ -2170,7 +2170,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                           discountCode: code
                         });
                       }}
-                      className="w-28 sm:w-36 px-3 py-1.5 bg-white text-[#2C3744] font-bold text-xs uppercase rounded-lg focus:outline-none focus:ring-2 focus:ring-[#88B2AB]"
+                      className="w-48 sm:w-56 px-3 py-1.5 bg-white text-[#2C3744] font-bold text-xs uppercase rounded-lg focus:outline-none focus:ring-2 focus:ring-[#88B2AB]"
                     />
                     {couponResult.isValid && (
                       <span className="bg-[#88B2AB] text-[#1E293B] font-extrabold text-[10px] px-2 py-1 rounded-lg shrink-0">
