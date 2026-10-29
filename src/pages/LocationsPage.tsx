@@ -56,6 +56,34 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
     };
   }, []);
 
+  // Dynamic Continent list based on spreadsheet column Continent (no redundancy)
+  const continents = useMemo(() => {
+    const map = new Map<string, string>();
+    properties.forEach((p) => {
+      const raw = p.continent?.trim();
+      if (raw && raw.length > 0 && raw.toLowerCase() !== 'all') {
+        const lower = raw.toLowerCase();
+        if (!map.has(lower)) {
+          // Normalize capitalization: e.g. "north america" -> "North America"
+          const titleCased = raw
+            .split(/\s+/)
+            .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+            .join(' ');
+          map.set(lower, titleCased);
+        }
+      }
+    });
+    const uniqueContinents = Array.from(map.values()).sort((a, b) => a.localeCompare(b));
+    return ['All', ...uniqueContinents];
+  }, [properties]);
+
+  // Reset selected continent to 'All' if previous selection does not exist in new list
+  useEffect(() => {
+    if (selectedContinent !== 'All' && !continents.some((c) => c.toLowerCase() === selectedContinent.toLowerCase())) {
+      setSelectedContinent('All');
+    }
+  }, [continents, selectedContinent]);
+
   // Filter logic
   const filteredProperties = useMemo(() => {
     return properties.filter((p) => {
@@ -67,13 +95,12 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
         (p.address && p.address.toLowerCase().includes(searchQuery.toLowerCase()));
 
       const matchesContinent =
-        selectedContinent === 'All' || p.continent.toLowerCase() === selectedContinent.toLowerCase();
+        selectedContinent === 'All' ||
+        (p.continent && p.continent.trim().toLowerCase() === selectedContinent.trim().toLowerCase());
 
       return matchesSearch && matchesContinent;
     });
   }, [properties, searchQuery, selectedContinent]);
-
-  const continents = ['All', 'Asia', 'Europe', 'America', 'Australia'];
 
   return (
     <div className="bg-[#FFFFFF] text-[#2C3744] pt-24 sm:pt-32 pb-16 sm:pb-24 min-h-screen">

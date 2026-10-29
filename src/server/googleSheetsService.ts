@@ -182,7 +182,7 @@ export function transformSheetRowToProperty(row: RawGoogleSheetsPropertyRow, ind
     tagline: row.Tagline || 'Exclusive Luxury Sanctuary',
     address: row.Address || 'Exclusive Location',
     country: row.Country || 'International Destination',
-    continent: row.Continent || 'Global',
+    continent: getRowVal('Continent', 'continent', 'Region', 'Kontinen') || row.Continent || 'Global',
     status,
     detailsHtml: row.Details || '<p>A timeless luxury sanctuary with world-class amenities.</p>',
     driveFolderUrl: '', // Internal field omitted as requested
