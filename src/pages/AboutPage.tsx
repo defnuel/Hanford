@@ -173,21 +173,15 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 items-center">
             {/* CEO Portrait Column */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="relative group">
-                <a
-                  href="https://drive.google.com/file/d/14KNJPGrt7V0li_E4_-HOqpyODonQy0zX/view?usp=sharing"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-56 sm:w-72 h-72 sm:h-96 rounded-2xl overflow-hidden border-2 border-[#88B2AB] shadow-xl relative z-10 bg-[#3A4F67]"
-                  title="View Trevor Finn Hanford portrait on Google Drive"
-                >
+              <div className="relative">
+                <div className="w-56 sm:w-72 h-72 sm:h-96 rounded-2xl overflow-hidden border-2 border-[#88B2AB] shadow-xl relative z-10 bg-[#3A4F67]">
                   <img
                     src="https://lh3.googleusercontent.com/d/14KNJPGrt7V0li_E4_-HOqpyODonQy0zX"
                     alt="Trevor Finn Hanford"
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-full object-cover object-center"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#3A4F67]/60 via-transparent to-transparent" />
-                </a>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#3A4F67]/60 via-transparent to-transparent pointer-events-none" />
+                </div>
                 {/* Decorative Frame Underlay */}
                 <div className="absolute -bottom-4 -right-4 w-56 sm:w-72 h-72 sm:h-96 rounded-2xl border border-[#3A4F67]/30 bg-[#3A4F67]/10 z-0 hidden sm:block" />
               </div>

@@ -50,7 +50,10 @@ export const Header: React.FC<HeaderProps> = ({ currentPath, onNavigate }) => {
           className="text-left group flex items-center gap-3 focus:outline-none"
         >
           <div className="site-logo text-xl sm:text-2xl font-medium tracking-[0.25em] sm:tracking-[0.3em] uppercase text-[#3A4F67] flex items-center gap-1.5 sm:gap-2">
-            <span>Hanford</span>
+            <span className="inline-flex items-baseline">
+              <span>Hanford</span>
+              <sup className="text-[12px] sm:text-[13px] font-bold tracking-normal ml-1 text-[#3A4F67]">H&amp;R</sup>
+            </span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#88B2AB]" />
           </div>
         </button>

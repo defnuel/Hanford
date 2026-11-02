@@ -12,8 +12,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           {/* Brand Column */}
           <div className="md:col-span-1 space-y-3 sm:space-y-4">
             <div className="flex items-center gap-3">
-              <span className="font-serif text-2xl sm:text-3xl tracking-[0.2em] sm:tracking-[0.25em] text-[#88B2AB] font-semibold uppercase">
-                HANFORD
+              <span className="font-serif text-2xl sm:text-3xl tracking-[0.2em] sm:tracking-[0.25em] text-[#88B2AB] font-semibold uppercase inline-flex items-baseline">
+                <span>HANFORD</span>
+                <sup className="text-xs sm:text-sm font-bold tracking-normal ml-1.5 text-[#88B2AB]">H&amp;R</sup>
               </span>
             </div>
             <p className="text-xs text-[#EAF2F1] leading-relaxed font-normal">
