@@ -7,6 +7,69 @@ interface CollaborationsPageProps {
   onNavigate: (path: string) => void;
 }
 
+const CollaborationCardImage: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
+  const [isPortrait, setIsPortrait] = useState<boolean>(false);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+
+  const checkDimensions = (img: HTMLImageElement) => {
+    if (img.naturalHeight && img.naturalWidth) {
+      if (img.naturalHeight > img.naturalWidth * 1.05) {
+        setIsPortrait(true);
+      } else {
+        setIsPortrait(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete) {
+      checkDimensions(imgRef.current);
+    }
+  }, [src]);
+
+  return (
+    <div className="relative w-full h-full overflow-hidden">
+      {/* Background layer: Always fills edge-to-edge full width & height like Card Location */}
+      <img
+        src={src}
+        alt=""
+        aria-hidden="true"
+        className={`absolute inset-0 w-full h-full object-cover ${
+          isPortrait
+            ? 'blur-md scale-110 opacity-60 filter brightness-90'
+            : 'transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100'
+        }`}
+        referrerPolicy="no-referrer"
+      />
+
+      {/* Foreground layer for portrait photos: Display full uncropped image centered */}
+      {isPortrait ? (
+        <div className="absolute inset-0 z-10 flex items-center justify-center p-1">
+          <img
+            ref={imgRef}
+            src={src}
+            alt={alt}
+            onLoad={(e) => checkDimensions(e.currentTarget)}
+            className="h-full w-auto max-w-full object-contain group-hover:scale-105 transition-transform duration-500 rounded drop-shadow-md"
+            loading="lazy"
+            referrerPolicy="no-referrer"
+          />
+        </div>
+      ) : (
+        <img
+          ref={imgRef}
+          src={src}
+          alt={alt}
+          onLoad={(e) => checkDimensions(e.currentTarget)}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100"
+          loading="lazy"
+          referrerPolicy="no-referrer"
+        />
+      )}
+    </div>
+  );
+};
+
 export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNavigate }) => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -226,54 +289,41 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
               <div
                 key={project.id}
                 onClick={() => onNavigate(`/collaborations/${project.slug}`)}
-                className="group cursor-pointer bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between hover:border-[#51867E]"
+                className="group cursor-pointer bg-white border border-[#88B2AB]/30 rounded-[32px] sm:rounded-[36px] overflow-hidden shadow-[0_12px_32px_rgba(58,79,103,0.08)] hover:shadow-[0_24px_48px_rgba(58,79,103,0.18)] transition-all duration-500 flex flex-col justify-between hover:border-[#51867E]"
               >
                 <div>
-                  {/* Card Image Wrapper */}
-                  <div className="relative aspect-[16/10] sm:aspect-[4/3] bg-[#2C3744] overflow-hidden">
-                    {/* Soft ambient blurred background matching the image colors */}
-                    <img
+                  {/* Card Image Wrapper with Full Bleed & Portrait Crop Protection */}
+                  <div className="relative h-56 sm:h-64 overflow-hidden bg-[#3A4F67]">
+                    <CollaborationCardImage
                       src={project.heroImage}
-                      alt=""
-                      className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-35 pointer-events-none"
-                      aria-hidden="true"
+                      alt={project.projectName}
                     />
 
-                    {/* Gradient Overlay for backdrop atmosphere */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/30 pointer-events-none z-[5]" />
-
-                    {/* Main Image - uncropped and strictly contained within bounds for iOS Safari and all devices */}
-                    <div className="absolute inset-2 sm:inset-3 z-10 flex items-center justify-center pointer-events-none">
-                      <img
-                        src={project.heroImage}
-                        alt={project.projectName}
-                        className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-500 rounded-lg drop-shadow-md"
-                        loading="lazy"
-                      />
-                    </div>
-
-                    {/* Top Badges */}
-                    <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between gap-2 z-20 pointer-events-none">
-                      <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 bg-[#EAF2F1]/90 backdrop-blur-md text-[#3A4F67] text-[9px] font-bold tracking-widest uppercase rounded-full shadow-sm border border-[#88B2AB]/30">
+                    {/* Top Floating Badges (Category on Left, Date on Right) */}
+                    <div className="absolute top-3.5 sm:top-4 left-3.5 sm:left-4 right-3.5 sm:right-4 flex items-center justify-between gap-2 z-20 pointer-events-none">
+                      <span className="bg-[#1E293B]/80 backdrop-blur-md text-[#EAF2F1] px-3 sm:px-3.5 py-1 text-[9px] sm:text-[10px] font-bold tracking-[0.15em] sm:tracking-[0.2em] uppercase rounded-full border border-white/20 shadow-md whitespace-nowrap">
                         {project.projectType}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 bg-[#1E293B]/80 backdrop-blur-md text-[#EAF2F1] px-3 sm:px-3.5 py-1 text-[9px] sm:text-[10px] font-bold tracking-[0.15em] sm:tracking-[0.2em] uppercase rounded-full border border-white/20 shadow-md whitespace-nowrap shrink-0">
+                        <Calendar className="w-3 h-3 text-[#88B2AB] shrink-0" />
+                        <span>{project.date}</span>
                       </span>
                     </div>
 
-                    {/* Bottom Metadata Overlay */}
-                    <div className="absolute bottom-3 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between text-white text-[10px] sm:text-[11px] font-light z-20 pointer-events-none">
-                      <div className="flex items-center gap-1.5 truncate max-w-[60%]">
-                        <MapPin className="w-3.5 h-3.5 text-[#88B2AB] shrink-0" />
-                        <span className="truncate drop-shadow-sm">{project.location}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <Calendar className="w-3.5 h-3.5 text-[#88B2AB] shrink-0" />
-                        <span className="drop-shadow-sm">{project.date}</span>
-                      </div>
+                    {/* Smooth Gradient Fade at Bottom of Image into Card Body */}
+                    <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-10" />
+
+                    {/* Bottom Metadata Overlay (Location Centered & Extended) */}
+                    <div className="absolute bottom-2.5 sm:bottom-3 left-4 sm:left-6 right-4 sm:right-6 flex items-center justify-center z-20 pointer-events-none">
+                      <span className="inline-flex items-center gap-1.5 bg-[#3A4F67]/85 backdrop-blur-md px-3.5 py-1 rounded-full text-[9px] sm:text-[10px] uppercase font-bold tracking-wider text-[#EAF2F1] truncate max-w-full border border-[#88B2AB]/30 shadow-xs">
+                        <MapPin className="w-3 h-3 text-[#88B2AB] shrink-0" />
+                        <span className="truncate">{project.location}</span>
+                      </span>
                     </div>
                   </div>
 
                   {/* Card Content */}
-                  <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                  <div className="px-6 sm:px-8 pb-4 pt-2 space-y-3 sm:space-y-4 bg-white">
                     <div className="space-y-1.5">
                       <h3 className="text-lg sm:text-xl font-serif font-medium text-[#3A4F67] group-hover:text-[#51867E] transition-colors leading-snug">
                         {project.projectName}
@@ -287,16 +337,18 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
                       </div>
                     </div>
 
-                    <p className="text-xs text-[#2C3744]/80 font-light leading-relaxed line-clamp-3">
+                    <p className="text-xs sm:text-[13px] text-[#2C3744]/80 font-normal leading-relaxed line-clamp-3">
                       {project.shortDescription || project.description}
                     </p>
                   </div>
                 </div>
 
-                {/* Card Footer */}
-                <div className="px-4 sm:px-6 pb-4 sm:pb-6 pt-2 border-t border-[#88B2AB]/20 flex items-center justify-between text-xs font-semibold tracking-wider text-[#3A4F67] group-hover:text-[#51867E] transition-colors">
-                  <span className="uppercase text-[10px]">View Collaboration Details</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                {/* Card Footer / Action */}
+                <div className="px-6 sm:px-8 pb-6 sm:pb-8 pt-2 border-t border-[#88B2AB]/20 bg-white">
+                  <div className="w-full py-3 px-6 bg-[#51867E] text-white hover:bg-[#3f6d66] rounded-full text-[10px] font-bold tracking-[0.2em] uppercase transition-all flex items-center justify-between border border-[#51867E]/30 shadow-sm hover:shadow-md group">
+                    <span>View Details</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-white group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
               </div>
             ))}

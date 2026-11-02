@@ -270,7 +270,7 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-80 sm:h-96 bg-[#EAF2F1] animate-pulse rounded-t-[40px] sm:rounded-t-[50px]" />
+              <div key={i} className="h-80 sm:h-96 bg-[#EAF2F1] animate-pulse rounded-[32px] sm:rounded-[36px]" />
             ))}
           </div>
         ) : filteredProperties.length === 0 ? (
@@ -298,12 +298,12 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
               return (
                 <div
                   key={property.id}
-                  className="bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-t-[40px] sm:rounded-t-[60px] overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col group hover:border-[#51867E]"
+                  className="bg-white border border-[#88B2AB]/30 rounded-[32px] sm:rounded-[36px] overflow-hidden shadow-[0_12px_32px_rgba(58,79,103,0.08)] hover:shadow-[0_24px_48px_rgba(58,79,103,0.18)] transition-all duration-500 flex flex-col group hover:border-[#51867E]"
                 >
-                  {/* Property Hero Image */}
+                  {/* Property Hero Image with Smooth Fade */}
                   <div
                     onClick={() => isLive && onNavigate(`/locations/${property.slug}`)}
-                    className={`relative h-48 sm:h-64 overflow-hidden bg-[#3A4F67] ${
+                    className={`relative h-56 sm:h-64 overflow-hidden bg-[#3A4F67] ${
                       isLive ? 'cursor-pointer' : ''
                     }`}
                   >
@@ -315,25 +315,29 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
                       }`}
                       referrerPolicy="no-referrer"
                     />
-                    {/* Upper Middle Badges (Country & Status) */}
-                    <div className="absolute top-3 sm:top-4 inset-x-0 flex items-center justify-center gap-1.5 sm:gap-2 z-10 px-3 sm:px-4 pointer-events-none">
-                      <span className="bg-[#3A4F67]/95 backdrop-blur-md text-[#EAF2F1] px-2.5 sm:px-3.5 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-bold tracking-[0.15em] sm:tracking-[0.2em] uppercase rounded-full border border-[#88B2AB]/40 shadow-md whitespace-nowrap">
+
+                    {/* Top Floating Badges (Country & Status) */}
+                    <div className="absolute top-3.5 sm:top-4 left-3.5 sm:left-4 right-3.5 sm:right-4 flex items-center justify-between gap-2 z-20 pointer-events-none">
+                      <span className="bg-[#1E293B]/80 backdrop-blur-md text-[#EAF2F1] px-3 sm:px-3.5 py-1 text-[9px] sm:text-[10px] font-bold tracking-[0.15em] sm:tracking-[0.2em] uppercase rounded-full border border-white/20 shadow-md whitespace-nowrap">
                         {property.country}
                       </span>
                       <span
-                        className={`px-2.5 sm:px-3 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-bold tracking-[0.15em] sm:tracking-[0.2em] uppercase rounded-full border shadow-md whitespace-nowrap ${
+                        className={`px-3 sm:px-3.5 py-1 text-[9px] sm:text-[10px] font-bold tracking-[0.15em] sm:tracking-[0.2em] uppercase rounded-full border shadow-md backdrop-blur-md whitespace-nowrap ${
                           isLive
-                            ? 'bg-emerald-950/90 text-emerald-300 border-emerald-500/30'
-                            : 'bg-[#3A4F67]/90 text-[#88B2AB] border-[#88B2AB]/30'
+                            ? 'bg-emerald-950/85 text-emerald-300 border-emerald-400/30'
+                            : 'bg-[#1E293B]/80 text-[#88B2AB] border-white/20'
                         }`}
                       >
                         {isLive ? 'LIVE' : 'COMING SOON'}
                       </span>
                     </div>
 
-                    {/* Continent / Country Pill */}
-                    <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between text-white text-[11px] font-medium tracking-wider pointer-events-none">
-                      <span className="inline-flex items-center gap-1.5 bg-[#3A4F67]/90 backdrop-blur-md px-2.5 sm:px-3 py-1 rounded-full text-[9px] sm:text-[10px] uppercase font-bold tracking-wider text-[#EAF2F1] truncate max-w-full">
+                    {/* Smooth Gradient Fade at Bottom of Image into Card Body */}
+                    <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-10" />
+
+                    {/* Continent / Address Pill */}
+                    <div className="absolute bottom-2.5 sm:bottom-3 left-4 sm:left-6 right-4 sm:right-6 flex items-center justify-between text-white text-[11px] font-medium tracking-wider pointer-events-none z-20">
+                      <span className="inline-flex items-center gap-1.5 bg-[#3A4F67]/85 backdrop-blur-md px-3 py-1 rounded-full text-[9px] sm:text-[10px] uppercase font-bold tracking-wider text-[#EAF2F1] truncate max-w-full border border-[#88B2AB]/30 shadow-xs">
                         <MapPin className="w-3 h-3 text-[#88B2AB] shrink-0" />
                         <span className="truncate">{property.address}</span>
                       </span>
@@ -341,30 +345,30 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
                   </div>
 
                   {/* Card Body */}
-                  <div className="p-5 sm:p-8 flex-1 flex flex-col justify-between space-y-4 sm:space-y-6">
+                  <div className="px-6 sm:px-8 pb-6 sm:pb-8 pt-1 flex-1 flex flex-col justify-between space-y-4 sm:space-y-6 bg-white">
                     <div>
-                      <span className="text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#3A4F67] uppercase block mb-1">
+                      <span className="text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#51867E] uppercase block mb-1">
                         {property.continent} • {property.country}
                       </span>
                       <h3
                         onClick={() => isLive && onNavigate(`/locations/${property.slug}`)}
-                        className={`font-serif italic text-xl sm:text-2xl text-[#3A4F67] hover:text-[#51867E] transition-colors mb-2 ${
+                        className={`font-serif italic text-xl sm:text-2xl text-[#3A4F67] hover:text-[#51867E] transition-colors mb-2 leading-tight ${
                           isLive ? 'cursor-pointer' : ''
                         }`}
                       >
                         {property.name}
                       </h3>
-                      <p className="text-xs text-[#2C3744] font-light leading-relaxed italic">
+                      <p className="text-xs text-[#2C3744]/85 font-normal leading-relaxed italic">
                         "{property.tagline}"
                       </p>
                     </div>
 
                     {/* Card Actions */}
-                    <div className="pt-4 border-t border-[#88B2AB]/30 flex items-center justify-between">
+                    <div className="pt-4 border-t border-[#88B2AB]/20 flex items-center justify-between">
                       {isLive ? (
                         <button
                           onClick={() => onNavigate(`/locations/${property.slug}`)}
-                          className="w-full py-3 bg-[#51867E] text-white hover:bg-[#3f6d66] rounded-full text-[10px] font-bold tracking-[0.2em] uppercase transition-colors flex items-center justify-center gap-2 border border-[#88B2AB]/30 group cursor-pointer"
+                          className="w-full py-3 px-6 bg-[#51867E] text-white hover:bg-[#3f6d66] rounded-full text-[10px] font-bold tracking-[0.2em] uppercase transition-all flex items-center justify-center gap-2 border border-[#51867E]/30 shadow-sm hover:shadow-md group cursor-pointer"
                         >
                           <span>VIEW SANCTUARY</span>
                           <ArrowRight className="w-3.5 h-3.5 text-white group-hover:translate-x-1 transition-transform" />
@@ -372,7 +376,7 @@ export const LocationsPage: React.FC<LocationsPageProps> = ({ onNavigate }) => {
                       ) : (
                         <button
                           disabled
-                          className="w-full py-3 bg-[#3A4F67]/15 text-[#3A4F67] rounded-full text-[10px] font-bold tracking-[0.2em] uppercase cursor-not-allowed flex items-center justify-center gap-2"
+                          className="w-full py-3 px-6 bg-[#3A4F67]/10 text-[#3A4F67]/60 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase cursor-not-allowed flex items-center justify-center gap-2"
                         >
                           <span>COMING SOON</span>
                         </button>

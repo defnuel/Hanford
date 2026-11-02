@@ -188,7 +188,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {[1, 2, 3].map((n) => (
-              <div key={n} className="h-80 sm:h-96 bg-[#EAF2F1] animate-pulse rounded-t-[40px] sm:rounded-t-[50px]" />
+              <div key={n} className="h-80 sm:h-96 bg-[#EAF2F1] animate-pulse rounded-[32px] sm:rounded-[36px]" />
             ))}
           </div>
         ) : (
@@ -197,41 +197,45 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <div
                 key={property.id}
                 onClick={() => onNavigate(`/locations/${property.slug}`)}
-                className="group cursor-pointer bg-white border border-[#666666]/30 rounded-t-[40px] sm:rounded-t-[60px] overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col hover:border-[#51867E]"
+                className="group cursor-pointer bg-white border border-[#88B2AB]/30 rounded-[32px] sm:rounded-[36px] overflow-hidden shadow-[0_12px_32px_rgba(58,79,103,0.08)] hover:shadow-[0_24px_48px_rgba(58,79,103,0.18)] transition-all duration-500 flex flex-col hover:border-[#51867E]"
               >
-                <div className="relative h-48 sm:h-72 overflow-hidden bg-[#3A4F67]">
+                <div className="relative h-56 sm:h-72 overflow-hidden bg-[#3A4F67]">
                   <img
                     src={property.heroImage}
                     alt={property.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute top-4 inset-x-0 flex justify-center z-10 px-4">
-                    <span className="bg-[#3A4F67]/95 backdrop-blur-md text-[#EAF2F1] px-3.5 py-1 text-[10px] uppercase font-bold tracking-[0.2em] rounded-full border border-[#88B2AB]/40 shadow-md whitespace-nowrap">
+                  {/* Floating pill badge at top */}
+                  <div className="absolute top-4 left-4 right-4 flex justify-start z-20 pointer-events-none">
+                    <span className="bg-[#1E293B]/80 backdrop-blur-md text-[#EAF2F1] px-3.5 py-1 text-[10px] uppercase font-bold tracking-[0.2em] rounded-full border border-white/20 shadow-md whitespace-nowrap">
                       {property.country}
                     </span>
                   </div>
+
+                  {/* Smooth Gradient Fade at Bottom of Image into Card Body */}
+                  <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-10" />
                 </div>
 
-                <div className="p-5 sm:p-8 flex-1 flex flex-col justify-between bg-white">
+                <div className="px-6 sm:px-8 pb-6 sm:pb-8 pt-1 flex-1 flex flex-col justify-between bg-white">
                   <div>
-                    <span className="text-[10px] font-bold tracking-[0.2em] text-[#3A4F67] uppercase block mb-1">
+                    <span className="text-[10px] font-bold tracking-[0.2em] text-[#51867E] uppercase block mb-1">
                       {property.continent}
                     </span>
-                    <h3 className="font-serif text-xl sm:text-2xl font-semibold italic text-[#3A4F67] mb-2 group-hover:text-[#51867E] transition-colors">
+                    <h3 className="font-serif text-xl sm:text-2xl font-semibold italic text-[#3A4F67] mb-2 group-hover:text-[#51867E] transition-colors leading-tight">
                       {property.name}
                     </h3>
-                    <p className="text-xs text-[#2C3744] font-normal leading-relaxed mb-4 sm:mb-6 italic">
+                    <p className="text-xs text-[#2C3744]/80 font-normal leading-relaxed mb-4 sm:mb-6 italic">
                       "{property.tagline}"
                     </p>
                   </div>
 
-                  <div className="pt-4 border-t border-[#666666]/20 flex items-center justify-between">
+                  <div className="pt-4 border-t border-[#88B2AB]/20 flex items-center justify-between">
                     <span className="text-xs font-bold tracking-wider text-[#3A4F67]">
-                      From ${(property.priceStandard || property.priceFrom)?.toLocaleString()} <span className="text-[#3A4F67] font-medium">/ night</span>
+                      From ${(property.priceStandard || property.priceFrom)?.toLocaleString()} <span className="text-[#3A4F67]/70 font-normal">/ night</span>
                     </span>
                     <button
-                      className="cta-button bg-[#51867E] text-white px-4 sm:px-5 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase hover:bg-[#3f6d66] transition-colors inline-flex items-center gap-1 border border-[#51867E]/30 cursor-pointer"
+                      className="cta-button bg-[#51867E] text-white px-5 py-2.5 rounded-full text-[10px] font-bold tracking-widest uppercase hover:bg-[#3f6d66] transition-all inline-flex items-center gap-1.5 border border-[#51867E]/30 shadow-xs group-hover:shadow-md cursor-pointer"
                     >
                       <span>VIEW</span>
                       <ArrowRight className="w-3 h-3 text-white" />
