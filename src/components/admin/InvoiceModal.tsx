@@ -160,7 +160,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
   const cleanBookingNotes = booking.notes && booking.notes.trim().toUpperCase() !== 'N/A' ? booking.notes.trim() : '';
   const cleanCustomerNote = booking.noteToCustomer && booking.noteToCustomer.trim().toUpperCase() !== 'N/A' ? booking.noteToCustomer.trim() : '';
   const hasDistinctCustomerNote = Boolean(cleanCustomerNote && cleanCustomerNote !== cleanBookingNotes);
-  const primaryNoteText = cleanBookingNotes || cleanCustomerNote || 'Reservation is processed under Hanford Central Hospitality guidelines.';
+  const primaryNoteText = cleanBookingNotes || cleanCustomerNote || 'N/A';
 
   const handleDownloadImage = async () => {
     try {
@@ -279,9 +279,13 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
           {/* Header & Logo */}
           <div className="flex flex-col sm:flex-row justify-between items-start border-b border-slate-200 pb-8 gap-6">
             <div className="flex-1 min-w-0">
-              <div className="text-2xl sm:text-3xl font-serif font-semibold text-[#3A4F67] tracking-[0.2em] uppercase flex items-center gap-2">
-                <span>HANFORD</span>
-                <span className="w-2 h-2 rounded-full bg-[#51867E]" />
+              <div className="flex items-baseline">
+                <span className="text-2xl sm:text-3xl font-serif font-semibold text-[#3A4F67] tracking-[0.2em] uppercase">
+                  HANFORD
+                </span>
+                <span className="text-[11px] sm:text-[13px] font-sans font-bold tracking-normal text-[#3A4F67] ml-2.5 self-start pt-0.5 sm:pt-1 select-none">
+                  H&amp;R
+                </span>
               </div>
               <p className="text-[10.5px] sm:text-[11px] font-semibold text-[#51867E] uppercase tracking-[0.14em] mt-1 leading-normal whitespace-nowrap">
                 HOTELS & RESORTS &bull; CENTRAL RESERVATIONS
@@ -297,13 +301,12 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               </div>
             </div>
 
-            <div className="sm:text-right space-y-1 shrink-0">
-              <div className="inline-block px-3 py-1 bg-slate-100 rounded-lg text-slate-600 font-mono text-xs font-bold uppercase tracking-wider mb-2">
-                OFFICIAL RECEIPT / INVOICE
+            <div className="sm:text-right space-y-1 shrink-0 min-w-fit">
+              <div className="inline-block px-3 py-1 bg-slate-100 rounded-lg text-slate-600 font-mono text-xs font-bold uppercase tracking-wider mb-2 whitespace-nowrap">
+                OFFICIAL INVOICE
               </div>
-              <div className="text-sm font-bold text-[#3A4F67]">Invoice No: <span className="font-mono">{bookingId}</span></div>
-              <div className="text-xs text-slate-500 font-mono">Ref No: <span className="text-[#3A4F67] font-semibold">{bookingId}</span></div>
-              <div className="text-xs text-slate-500">Date Issued: {dateStr}</div>
+              <div className="text-sm font-bold text-[#3A4F67] whitespace-nowrap">Invoice No: <span className="font-mono">{bookingId}</span></div>
+              <div className="text-xs text-slate-500 whitespace-nowrap">Date Issued: {dateStr}</div>
 
               {/* Status Stamp */}
               <div className="pt-2 flex justify-start sm:justify-end">
@@ -675,9 +678,13 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             {/* Header & Logo */}
             <div className="flex flex-row justify-between items-start border-b border-slate-200 pb-8 gap-6">
               <div className="flex-1 min-w-0">
-                <div className="text-3xl font-serif font-semibold text-[#3A4F67] tracking-[0.2em] uppercase flex items-center gap-2">
-                  <span>HANFORD</span>
-                  <span className="w-2 h-2 rounded-full bg-[#51867E]" />
+                <div className="flex items-baseline">
+                  <span className="text-3xl font-serif font-semibold text-[#3A4F67] tracking-[0.2em] uppercase">
+                    HANFORD
+                  </span>
+                  <span className="text-[13px] font-sans font-bold tracking-normal text-[#3A4F67] ml-2.5 self-start pt-1 select-none">
+                    H&amp;R
+                  </span>
                 </div>
                 <p className="text-[10.5px] font-semibold text-[#51867E] uppercase tracking-[0.14em] mt-1 leading-normal whitespace-nowrap">
                   HOTELS & RESORTS &bull; CENTRAL RESERVATIONS
@@ -693,13 +700,12 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 </div>
               </div>
 
-              <div className="text-right space-y-1 shrink-0">
-                <div className="inline-block px-3 py-1 bg-slate-100 rounded-lg text-slate-600 font-mono text-xs font-bold uppercase tracking-wider mb-2">
-                  OFFICIAL RECEIPT / INVOICE
+              <div className="text-right space-y-1 shrink-0 min-w-fit">
+                <div className="inline-block px-3 py-1 bg-slate-100 rounded-lg text-slate-600 font-mono text-xs font-bold uppercase tracking-wider mb-2 whitespace-nowrap">
+                  OFFICIAL INVOICE
                 </div>
-                <div className="text-sm font-bold text-[#3A4F67]">Invoice No: <span className="font-mono">{bookingId}</span></div>
-                <div className="text-xs text-slate-500 font-mono">Ref No: <span className="text-[#3A4F67] font-semibold">{bookingId}</span></div>
-                <div className="text-xs text-slate-500">Date Issued: {dateStr}</div>
+                <div className="text-sm font-bold text-[#3A4F67] whitespace-nowrap">Invoice No: <span className="font-mono">{bookingId}</span></div>
+                <div className="text-xs text-slate-500 whitespace-nowrap">Date Issued: {dateStr}</div>
 
                 {/* Status Stamp */}
                 <div className="pt-2 flex justify-end">

@@ -112,7 +112,8 @@ export async function exportInvoiceAsImage(
         text === 'PAID IN FULL' ||
         text.includes('PAID IN FULL') ||
         text.includes('UNPAID - INVOICE PENDING') ||
-        text.includes('OFFICIAL RECEIPT')
+        text.includes('OFFICIAL RECEIPT') ||
+        text.includes('OFFICIAL INVOICE')
       ) {
         el.style.whiteSpace = 'nowrap';
         el.style.wordBreak = 'keep-all';

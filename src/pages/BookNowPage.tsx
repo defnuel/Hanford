@@ -559,11 +559,13 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
               {/* Invoice Header */}
               <div className="border-b border-slate-200 pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-serif text-2xl sm:text-3xl font-bold tracking-wider text-[#3A4F67]">
+                  <div className="flex items-baseline">
+                    <span className="font-serif text-2xl sm:text-3xl font-semibold tracking-[0.2em] text-[#3A4F67] uppercase">
                       HANFORD
                     </span>
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#51867E] inline-block"></span>
+                    <span className="text-[11px] sm:text-[13px] font-sans font-bold tracking-normal text-[#3A4F67] ml-2.5 self-start pt-0.5 sm:pt-1 select-none">
+                      H&amp;R
+                    </span>
                   </div>
                   <div className="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] text-[#51867E] uppercase">
                     HOTELS & RESORTS • CENTRAL RESERVATIONS
@@ -584,17 +586,14 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   </a>
                 </div>
 
-                <div className="flex flex-col sm:items-end space-y-1">
-                  <span className="px-2.5 py-0.5 bg-slate-100 text-slate-600 rounded-full text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider inline-block self-start sm:self-auto">
-                    OFFICIAL RECEIPT / INVOICE
+                <div className="flex flex-col sm:items-end space-y-1 shrink-0 min-w-fit sm:text-right">
+                  <span className="px-2.5 py-0.5 bg-slate-100 text-slate-600 rounded-full text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider inline-block self-start sm:self-auto whitespace-nowrap">
+                    OFFICIAL INVOICE
                   </span>
-                  <div className="text-sm sm:text-base font-bold text-[#3A4F67]">
+                  <div className="text-sm sm:text-base font-bold text-[#3A4F67] whitespace-nowrap">
                     Invoice No: <span className="font-mono text-[#3A4F67]">{confirmedBooking.bookingId}</span>
                   </div>
-                  <div className="text-xs text-slate-500 font-mono">
-                    Ref No: <span className="text-[#3A4F67] font-semibold">{confirmedBooking.bookingId}</span>
-                  </div>
-                  <div className="text-xs text-slate-500">
+                  <div className="text-xs text-slate-500 whitespace-nowrap">
                     Date Issued: {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
 
@@ -809,7 +808,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       ? confirmedBooking.inquiry.notes.trim()
                       : (confirmedBooking.inquiry.noteToCustomer && confirmedBooking.inquiry.noteToCustomer.trim().toUpperCase() !== 'N/A'
                           ? confirmedBooking.inquiry.noteToCustomer.trim()
-                          : 'Reservation is processed under Hanford Central Hospitality guidelines.')}
+                          : 'N/A')}
                   </p>
                 </div>
 
@@ -863,12 +862,12 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 <div className="flex items-center gap-2 border-b border-[#88B2AB]/20 pb-1.5">
                   <CreditCard className="w-4 h-4 text-[#51867E]" />
                   <span className="text-xs font-bold text-[#3A4F67] uppercase tracking-wider">
-                    PAYMENT DETAILS / DETAIL PEMBAYARAN
+                    PAYMENT DETAILS
                   </span>
                 </div>
 
                 <p className="text-xs text-slate-600 font-medium">
-                  Please process your payment to / Silakan lakukan pembayaran ke:
+                  Please process your payment to:
                 </p>
 
                 <div className="bg-white p-3 sm:p-4 rounded-xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 text-xs items-center shadow-2xs">
@@ -902,12 +901,8 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
               </div>
 
               {/* Footer Stamp */}
-              <div className="pt-3 border-t border-slate-200/80 mt-3 text-center text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-2">
+              <div className="pt-3 border-t border-slate-200/80 mt-3 text-center text-xs text-slate-400 flex items-center justify-center">
                 <span>© 2026 Hanford Hotels & Resorts Central Register</span>
-                <span className="flex items-center gap-1.5 font-semibold text-[#51867E]">
-                  <ShieldCheck className="w-4 h-4" />
-                  Verified Reservation
-                </span>
               </div>
             </div>
 
@@ -920,11 +915,13 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 {/* Invoice Header (Desktop Side-by-Side) */}
                 <div className="border-b border-slate-200 pb-4 flex flex-row items-start justify-between gap-4">
                   <div className="space-y-1 flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-serif text-3xl font-bold tracking-wider text-[#3A4F67]">
+                    <div className="flex items-baseline">
+                      <span className="font-serif text-3xl font-semibold tracking-[0.2em] text-[#3A4F67] uppercase">
                         HANFORD
                       </span>
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#51867E] inline-block"></span>
+                      <span className="text-[13px] font-sans font-bold tracking-normal text-[#3A4F67] ml-2.5 self-start pt-1 select-none">
+                        H&amp;R
+                      </span>
                     </div>
                     <div className="text-[11px] font-bold tracking-[0.2em] text-[#51867E] uppercase whitespace-nowrap leading-normal">
                       HOTELS & RESORTS • CENTRAL RESERVATIONS
@@ -940,17 +937,14 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-end space-y-1 text-right shrink-0">
-                    <span className="px-2.5 py-0.5 bg-slate-100 text-slate-600 rounded-full text-[10px] font-bold uppercase tracking-wider inline-block">
-                      OFFICIAL RECEIPT / INVOICE
+                  <div className="flex flex-col items-end space-y-1 text-right shrink-0 min-w-fit">
+                    <span className="px-2.5 py-0.5 bg-slate-100 text-slate-600 rounded-full text-[10px] font-bold uppercase tracking-wider inline-block whitespace-nowrap">
+                      OFFICIAL INVOICE
                     </span>
-                    <div className="text-base font-bold text-[#3A4F67]">
+                    <div className="text-base font-bold text-[#3A4F67] whitespace-nowrap">
                       Invoice No: <span className="font-mono text-[#3A4F67]">{confirmedBooking.bookingId}</span>
                     </div>
-                    <div className="text-xs text-slate-500 font-mono">
-                      Ref No: <span className="text-[#3A4F67] font-semibold">{confirmedBooking.bookingId}</span>
-                    </div>
-                    <div className="text-xs text-slate-500">
+                    <div className="text-xs text-slate-500 whitespace-nowrap">
                       Date Issued: {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </div>
 
@@ -1162,7 +1156,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         ? confirmedBooking.inquiry.notes.trim()
                         : (confirmedBooking.inquiry.noteToCustomer && confirmedBooking.inquiry.noteToCustomer.trim().toUpperCase() !== 'N/A'
                             ? confirmedBooking.inquiry.noteToCustomer.trim()
-                            : 'Reservation is processed under Hanford Central Hospitality guidelines.')}
+                            : 'N/A')}
                     </p>
                   </div>
 
@@ -1215,12 +1209,12 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   <div className="flex items-center gap-2 border-b border-[#88B2AB]/20 pb-1.5">
                     <CreditCard className="w-4 h-4 text-[#51867E]" />
                     <span className="text-xs font-bold text-[#3A4F67] uppercase tracking-wider">
-                      PAYMENT DETAILS / DETAIL PEMBAYARAN
+                      PAYMENT DETAILS
                     </span>
                   </div>
 
                   <p className="text-xs text-slate-600 font-medium">
-                    Please process your payment to / Silakan lakukan pembayaran ke:
+                    Please process your payment to:
                   </p>
 
                   <div className="bg-white p-4 rounded-xl border border-slate-200/80 grid grid-cols-3 gap-4 text-xs items-center shadow-2xs">
@@ -1254,12 +1248,8 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 </div>
 
                 {/* Footer Stamp */}
-                <div className="pt-3 border-t border-slate-200/80 mt-3 text-center text-xs text-slate-400 flex flex-row items-center justify-between gap-2">
+                <div className="pt-3 border-t border-slate-200/80 mt-3 text-center text-xs text-slate-400 flex items-center justify-center">
                   <span>© 2026 Hanford Hotels & Resorts Central Register</span>
-                  <span className="flex items-center gap-1.5 font-semibold text-[#51867E]">
-                    <ShieldCheck className="w-4 h-4" />
-                    Verified Reservation
-                  </span>
                 </div>
               </div>
             </div>

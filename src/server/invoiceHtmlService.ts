@@ -133,8 +133,21 @@ export function generateInvoiceHtml(booking: BookingInquiry, requestedStatus?: '
       font-size: 24px;
       letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: #0F172A;
+      color: #3A4F67;
       font-weight: 700;
+      display: inline-flex;
+      align-items: baseline;
+    }
+    .brand-title .brand-hr {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: normal;
+      margin-left: 8px;
+      align-self: flex-start;
+      padding-top: 2px;
+      color: #3A4F67;
+      user-select: none;
     }
     .brand-subtitle {
       font-size: 12px;
@@ -264,7 +277,7 @@ export function generateInvoiceHtml(booking: BookingInquiry, requestedStatus?: '
 
       <div class="header">
         <div>
-          <div class="brand-title">HANFORD</div>
+          <div class="brand-title"><span>HANFORD</span><span class="brand-hr">H&amp;R</span></div>
           <div class="brand-subtitle">Hotels &amp; Resorts</div>
           <div style="font-size: 12px; color: #64748B; margin-top: 8px;">
             Central Reservations &amp; Billing Office
@@ -272,12 +285,9 @@ export function generateInvoiceHtml(booking: BookingInquiry, requestedStatus?: '
         </div>
 
         <div class="invoice-title-block">
-          <div class="invoice-title">INVOICE</div>
+          <div class="invoice-title">OFFICIAL INVOICE</div>
           <div style="font-size: 14px; font-weight: 700; color: #1E293B; margin-top: 2px;">
             Invoice No: ${escapeHtml(bookingId)}
-          </div>
-          <div style="font-size: 11px; font-family: monospace; font-weight: 600; color: #64748B; margin-top: 2px;">
-            Ref No: ${escapeHtml(bookingId)}
           </div>
           <div class="badge-status">
             ${isPaid ? '✓ OFFICIAL RECEIPT (PAID)' : '⏳ PAYMENT PENDING (UNPAID)'}
