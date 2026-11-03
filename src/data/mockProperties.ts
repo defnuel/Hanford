@@ -616,9 +616,9 @@ export const MOCK_PROPERTIES: Property[] = RAW_PROPERTIES_DATA.map((p) => {
     priceEventHall,
     priceCateringPerPax,
     isEcoResort,
-    capacityStandard: 'Max 3 guests (2 Adults + 1 Child)',
-    capacityDeluxe: 'Max 3 guests (2 Adults + 1 Child)',
-    capacityPresidential: 'Max 5 guests (4 Adults + 1 Child)',
-    capacityPrivateVilla: hasPrivateVilla ? 'Max 6 guests (4 Adults + 2 Children)' : undefined
+    capacityStandard: 'Max 2 guests',
+    capacityDeluxe: 'Max 2 guests',
+    capacityPresidential: 'Max 4 guests',
+    capacityPrivateVilla: hasPrivateVilla ? 'Max 6 guests' : undefined
   };
 });

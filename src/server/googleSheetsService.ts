@@ -199,11 +199,11 @@ export function transformSheetRowToProperty(row: RawGoogleSheetsPropertyRow, ind
     priceEventHall,
     priceCateringPerPax,
     isEcoResort,
-    capacityStandard: (row as any)['Standard Room Capacity'] || (row as any)['Standard Capacity'] || 'Max 3 guests (2 Adults + 1 Child)',
-    capacityDeluxe: (row as any)['Deluxe Room Capacity'] || (row as any)['Deluxe Capacity'] || 'Max 3 guests (2 Adults + 1 Child)',
-    capacityPresidential: (row as any)['Presidential Suite Capacity'] || (row as any)['Presidential Capacity'] || 'Max 5 guests (4 Adults + 1 Child)',
+    capacityStandard: (row as any)['Standard Room Capacity'] || (row as any)['Standard Capacity'] || 'Max 2 guests',
+    capacityDeluxe: (row as any)['Deluxe Room Capacity'] || (row as any)['Deluxe Capacity'] || 'Max 2 guests',
+    capacityPresidential: (row as any)['Presidential Suite Capacity'] || (row as any)['Presidential Capacity'] || 'Max 4 guests',
     capacityPrivateVilla: hasPrivateVilla
-      ? ((row as any)['Private Villa Capacity'] || (row as any)['Villa Capacity'] || 'Max 6 guests (4 Adults + 2 Children)')
+      ? ((row as any)['Private Villa Capacity'] || (row as any)['Villa Capacity'] || 'Max 6 guests')
       : undefined,
     discountCode,
     discountPercent

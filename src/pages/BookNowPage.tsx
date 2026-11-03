@@ -170,6 +170,19 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
     ? (selectedProperty?.pricePrivateVilla || Math.round(priceStandard * 5.2))
     : undefined;
 
+  const stdCapacityNum = (selectedProperty?.capacityStandard && !selectedProperty.capacityStandard.includes('Max 3'))
+    ? (selectedProperty.capacityStandard.match(/\d+/)?.[0] || '2')
+    : '2';
+  const dlxCapacityNum = (selectedProperty?.capacityDeluxe && !selectedProperty.capacityDeluxe.includes('Max 3'))
+    ? (selectedProperty.capacityDeluxe.match(/\d+/)?.[0] || '2')
+    : '2';
+  const presCapacityNum = (selectedProperty?.capacityPresidential && !selectedProperty.capacityPresidential.includes('Max 5'))
+    ? (selectedProperty.capacityPresidential.match(/\d+/)?.[0] || '4')
+    : '4';
+  const villaCapacityNum = (selectedProperty?.capacityPrivateVilla && !selectedProperty.capacityPrivateVilla.includes('(4 Adults'))
+    ? (selectedProperty.capacityPrivateVilla.match(/\d+/)?.[0] || '6')
+    : '6';
+
   const priceMeetingRoom = selectedProperty?.priceMeetingRoom || 120;
   const priceEventHall = selectedProperty?.priceEventHall || 3200;
   const priceCateringPerPax = selectedProperty?.priceCateringPerPax || 75;
@@ -1513,29 +1526,41 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 </span>
               </label>
 
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
                 {/* Category: ROOM */}
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, bookOption: 'room' })}
-                  className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all flex flex-col justify-between space-y-1.5 sm:space-y-2 cursor-pointer ${
+                  className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between min-h-[112px] sm:min-h-[124px] cursor-pointer group relative ${
                     formData.bookOption === 'room'
                       ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
-                      : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
+                      : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E] hover:bg-[#EAF2F1]/30 shadow-xs'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <Hotel className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${formData.bookOption === 'room' ? 'text-white' : 'text-[#51867E]'}`} />
-                    <span className={`text-[8.5px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full uppercase ${
-                      formData.bookOption === 'room' ? 'bg-[#88B2AB] text-[#1E293B]' : 'bg-[#3A4F67]/15 text-[#3A4F67]'
+                    <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center transition-colors ${
+                      formData.bookOption === 'room' ? 'bg-white/20 text-white' : 'bg-[#EAF2F1] text-[#51867E] group-hover:bg-[#51867E]/10'
                     }`}>
-                      ROOM
-                    </span>
+                      <Hotel className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    </div>
+                    <div className={`w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center transition-all ${
+                      formData.bookOption === 'room'
+                        ? 'bg-[#88B2AB] text-[#1E293B]'
+                        : 'border-2 border-[#88B2AB]/40 bg-transparent'
+                    }`}>
+                      {formData.bookOption === 'room' && (
+                        <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#1E293B] stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <h3 className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider ${formData.bookOption === 'room' ? 'text-white' : 'text-[#3A4F67]'}`}>ROOM STAY</h3>
-                    <p className={`text-[9px] sm:text-[10px] mt-0.5 font-medium leading-tight ${formData.bookOption === 'room' ? 'text-[#EAF2F1]' : 'text-[#3A4F67]'}`}>
-                      Standard, Deluxe, Suite, Villa
+                  <div className="mt-2.5">
+                    <h3 className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider ${formData.bookOption === 'room' ? 'text-white' : 'text-[#3A4F67]'}`}>
+                      ROOM STAY
+                    </h3>
+                    <p className={`text-[9.5px] sm:text-[10px] mt-1 font-medium leading-relaxed ${formData.bookOption === 'room' ? 'text-[#EAF2F1]' : 'text-[#3A4F67]/75'}`}>
+                      Overnight stay across luxury rooms & suites
                     </p>
                   </div>
                 </button>
@@ -1544,24 +1569,36 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, bookOption: 'event' })}
-                  className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all flex flex-col justify-between space-y-1.5 sm:space-y-2 cursor-pointer ${
+                  className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between min-h-[112px] sm:min-h-[124px] cursor-pointer group relative ${
                     formData.bookOption === 'event'
                       ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
-                      : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
+                      : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E] hover:bg-[#EAF2F1]/30 shadow-xs'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <PartyPopper className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${formData.bookOption === 'event' ? 'text-white' : 'text-[#51867E]'}`} />
-                    <span className={`text-[8.5px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full uppercase ${
-                      formData.bookOption === 'event' ? 'bg-[#88B2AB] text-[#1E293B]' : 'bg-[#3A4F67]/15 text-[#3A4F67]'
+                    <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center transition-colors ${
+                      formData.bookOption === 'event' ? 'bg-white/20 text-white' : 'bg-[#EAF2F1] text-[#51867E] group-hover:bg-[#51867E]/10'
                     }`}>
-                      EVENT
-                    </span>
+                      <PartyPopper className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    </div>
+                    <div className={`w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center transition-all ${
+                      formData.bookOption === 'event'
+                        ? 'bg-[#88B2AB] text-[#1E293B]'
+                        : 'border-2 border-[#88B2AB]/40 bg-transparent'
+                    }`}>
+                      {formData.bookOption === 'event' && (
+                        <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#1E293B] stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <h3 className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider ${formData.bookOption === 'event' ? 'text-white' : 'text-[#3A4F67]'}`}>EVENT LOCATION</h3>
-                    <p className={`text-[9px] sm:text-[10px] mt-0.5 font-medium leading-tight ${formData.bookOption === 'event' ? 'text-[#EAF2F1]' : 'text-[#3A4F67]'}`}>
-                      Hall / Ballroom rental & Catering
+                  <div className="mt-2.5">
+                    <h3 className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider ${formData.bookOption === 'event' ? 'text-white' : 'text-[#3A4F67]'}`}>
+                      EVENT LOCATION
+                    </h3>
+                    <p className={`text-[9.5px] sm:text-[10px] mt-1 font-medium leading-relaxed ${formData.bookOption === 'event' ? 'text-[#EAF2F1]' : 'text-[#3A4F67]/75'}`}>
+                      Ballroom & hall venue rental for events
                     </p>
                   </div>
                 </button>
@@ -1570,24 +1607,36 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, bookOption: 'both' })}
-                  className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all flex flex-col justify-between space-y-1.5 sm:space-y-2 cursor-pointer ${
+                  className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between min-h-[112px] sm:min-h-[124px] cursor-pointer group relative ${
                     formData.bookOption === 'both'
                       ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
-                      : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
+                      : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E] hover:bg-[#EAF2F1]/30 shadow-xs'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <Layers className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${formData.bookOption === 'both' ? 'text-white' : 'text-[#51867E]'}`} />
-                    <span className={`text-[8.5px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full uppercase ${
-                      formData.bookOption === 'both' ? 'bg-[#88B2AB] text-[#1E293B]' : 'bg-[#3A4F67]/15 text-[#3A4F67]'
+                    <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center transition-colors ${
+                      formData.bookOption === 'both' ? 'bg-white/20 text-white' : 'bg-[#EAF2F1] text-[#51867E] group-hover:bg-[#51867E]/10'
                     }`}>
-                      BOTH
-                    </span>
+                      <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    </div>
+                    <div className={`w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center transition-all ${
+                      formData.bookOption === 'both'
+                        ? 'bg-[#88B2AB] text-[#1E293B]'
+                        : 'border-2 border-[#88B2AB]/40 bg-transparent'
+                    }`}>
+                      {formData.bookOption === 'both' && (
+                        <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#1E293B] stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <h3 className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider ${formData.bookOption === 'both' ? 'text-white' : 'text-[#3A4F67]'}`}>ROOM & EVENT</h3>
-                    <p className={`text-[9px] sm:text-[10px] mt-0.5 font-medium leading-tight ${formData.bookOption === 'both' ? 'text-[#EAF2F1]' : 'text-[#3A4F67]'}`}>
-                      Combined stay & event venue
+                  <div className="mt-2.5">
+                    <h3 className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider ${formData.bookOption === 'both' ? 'text-white' : 'text-[#3A4F67]'}`}>
+                      ROOM & EVENT
+                    </h3>
+                    <p className={`text-[9.5px] sm:text-[10px] mt-1 font-medium leading-relaxed ${formData.bookOption === 'both' ? 'text-[#EAF2F1]' : 'text-[#3A4F67]/75'}`}>
+                      Complete package of room stay & event venue
                     </p>
                   </div>
                 </button>
@@ -1596,24 +1645,36 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, bookOption: 'meeting' })}
-                  className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all flex flex-col justify-between space-y-1.5 sm:space-y-2 cursor-pointer ${
+                  className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between min-h-[112px] sm:min-h-[124px] cursor-pointer group relative ${
                     formData.bookOption === 'meeting'
                       ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
-                      : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
+                      : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E] hover:bg-[#EAF2F1]/30 shadow-xs'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <Users className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${formData.bookOption === 'meeting' ? 'text-white' : 'text-[#51867E]'}`} />
-                    <span className={`text-[8.5px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full uppercase ${
-                      formData.bookOption === 'meeting' ? 'bg-[#88B2AB] text-[#1E293B]' : 'bg-[#3A4F67]/15 text-[#3A4F67]'
+                    <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center transition-colors ${
+                      formData.bookOption === 'meeting' ? 'bg-white/20 text-white' : 'bg-[#EAF2F1] text-[#51867E] group-hover:bg-[#51867E]/10'
                     }`}>
-                      MEETING
-                    </span>
+                      <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    </div>
+                    <div className={`w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center transition-all ${
+                      formData.bookOption === 'meeting'
+                        ? 'bg-[#88B2AB] text-[#1E293B]'
+                        : 'border-2 border-[#88B2AB]/40 bg-transparent'
+                    }`}>
+                      {formData.bookOption === 'meeting' && (
+                        <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#1E293B] stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <h3 className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider ${formData.bookOption === 'meeting' ? 'text-white' : 'text-[#3A4F67]'}`}>MEETING ROOM</h3>
-                    <p className={`text-[9px] sm:text-[10px] mt-0.5 font-medium leading-tight ${formData.bookOption === 'meeting' ? 'text-[#EAF2F1]' : 'text-[#3A4F67]'}`}>
-                      Meeting room per pax
+                  <div className="mt-2.5">
+                    <h3 className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider ${formData.bookOption === 'meeting' ? 'text-white' : 'text-[#3A4F67]'}`}>
+                      MEETING ROOM
+                    </h3>
+                    <p className={`text-[9.5px] sm:text-[10px] mt-1 font-medium leading-relaxed ${formData.bookOption === 'meeting' ? 'text-[#EAF2F1]' : 'text-[#3A4F67]/75'}`}>
+                      Professional meeting & conference space
                     </p>
                   </div>
                 </button>
@@ -1943,190 +2004,244 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
                 <div className={`grid grid-cols-2 ${hasPrivateVilla ? 'lg:grid-cols-4' : 'sm:grid-cols-3'} gap-2 sm:gap-3.5`}>
                   {/* Standard Room */}
-                  <div className="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-[#88B2AB]/30 flex flex-col justify-between space-y-2 shadow-xs">
-                    <div>
-                      <h4 className="text-[11px] sm:text-xs font-bold text-[#3A4F67] leading-tight">Standard Room</h4>
-                      <span className="text-[10px] sm:text-[11px] font-semibold text-[#51867E] block mt-0.5">
-                        ${priceStandard.toLocaleString()} / night
-                      </span>
+                  <div className="bg-white rounded-xl sm:rounded-2xl border border-[#88B2AB]/30 flex flex-col justify-between overflow-hidden shadow-xs hover:shadow-md transition-all group hover:border-[#51867E]">
+                    {/* Room Thumbnail with Card Location Effect */}
+                    <div className="relative h-16 sm:h-22 w-full overflow-hidden bg-[#3A4F67]">
+                      <img
+                        src={isGrandHotel ? "https://lh3.googleusercontent.com/d/12gNkiKCl47jpWejfMS23O64x-nrZuE3c" : "https://lh3.googleusercontent.com/d/1pdVL4CVRACOrcrzC5oaxdSqxamiEh5xl"}
+                        alt="Standard Room"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute inset-x-0 bottom-0 h-5 sm:h-7 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
 
-                      {/* Room Capacity Note */}
-                      <div className="text-[8.5px] sm:text-[10px] text-[#51867E] font-medium bg-[#EAF2F1] px-1.5 sm:px-2.5 py-1 rounded-md sm:rounded-lg border border-[#88B2AB]/20 flex items-start gap-1 mt-1.5 leading-tight">
-                        <Users className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0 mt-0.5" />
-                        <span>{selectedProperty?.capacityStandard || 'Max 3 guests (2 Adults + 1 Child)'}</span>
+                      {/* Guest Capacity Badge in Top Right Corner */}
+                      <div className="absolute top-1.5 right-1.5 z-10 flex items-center gap-1 bg-[#1E293B]/75 backdrop-blur-xs text-white px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold border border-white/20 shadow-xs">
+                        <Users className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#88B2AB]" />
+                        <span>{stdCapacityNum}</span>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between bg-[#EAF2F1]/50 p-1 sm:p-2 rounded-lg sm:rounded-xl border border-[#88B2AB]/20 mt-1.5">
-                      <button
-                        type="button"
-                        onClick={() => handleRoomCountChange('standardRooms', (formData.standardRooms || 0) - 1)}
-                        className="w-6 h-6 sm:w-8 sm:h-8 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs sm:text-sm text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
-                      >
-                        -
-                      </button>
-                      <input
-                        type="number"
-                        min="0"
-                        value={formData.standardRooms ?? ''}
-                        onChange={(e) => {
-                          const raw = e.target.value;
-                          const num = raw === '' ? undefined : parseInt(raw, 10);
-                          handleRoomCountChange('standardRooms', num);
-                        }}
-                        placeholder="0"
-                        className="w-8 sm:w-16 text-center bg-transparent border-0 py-0.5 text-xs font-bold text-[#3A4F67] focus:outline-none"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRoomCountChange('standardRooms', (formData.standardRooms || 0) + 1)}
-                        className="w-6 h-6 sm:w-8 sm:h-8 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs sm:text-sm text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Deluxe Room */}
-                  <div className="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-[#88B2AB]/30 flex flex-col justify-between space-y-2 shadow-xs">
-                    <div>
-                      <h4 className="text-[11px] sm:text-xs font-bold text-[#3A4F67] leading-tight">Deluxe Room</h4>
-                      <span className="text-[10px] sm:text-[11px] font-semibold text-[#51867E] block mt-0.5">
-                        ${priceDeluxe.toLocaleString()} / night
-                      </span>
-
-                      {/* Room Capacity Note */}
-                      <div className="text-[8.5px] sm:text-[10px] text-[#51867E] font-medium bg-[#EAF2F1] px-1.5 sm:px-2.5 py-1 rounded-md sm:rounded-lg border border-[#88B2AB]/20 flex items-start gap-1 mt-1.5 leading-tight">
-                        <Users className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0 mt-0.5" />
-                        <span>{selectedProperty?.capacityDeluxe || 'Max 3 guests (2 Adults + 1 Child)'}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between bg-[#EAF2F1]/50 p-1 sm:p-2 rounded-lg sm:rounded-xl border border-[#88B2AB]/20 mt-1.5">
-                      <button
-                        type="button"
-                        onClick={() => handleRoomCountChange('deluxeRooms', (formData.deluxeRooms || 0) - 1)}
-                        className="w-6 h-6 sm:w-8 sm:h-8 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs sm:text-sm text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
-                      >
-                        -
-                      </button>
-                      <input
-                        type="number"
-                        min="0"
-                        value={formData.deluxeRooms ?? ''}
-                        onChange={(e) => {
-                          const raw = e.target.value;
-                          const num = raw === '' ? undefined : parseInt(raw, 10);
-                          handleRoomCountChange('deluxeRooms', num);
-                        }}
-                        placeholder="0"
-                        className="w-8 sm:w-16 text-center bg-transparent border-0 py-0.5 text-xs font-bold text-[#3A4F67] focus:outline-none"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRoomCountChange('deluxeRooms', (formData.deluxeRooms || 0) + 1)}
-                        className="w-6 h-6 sm:w-8 sm:h-8 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs sm:text-sm text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Presidential Suite */}
-                  <div className={`bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-[#88B2AB]/30 flex flex-col justify-between space-y-2 shadow-xs ${!hasPrivateVilla ? 'col-span-2 sm:col-span-1' : ''}`}>
-                    <div>
-                      <h4 className="text-[11px] sm:text-xs font-bold text-[#3A4F67] leading-tight">Presidential Suite</h4>
-                      <span className="text-[10px] sm:text-[11px] font-semibold text-[#51867E] block mt-0.5">
-                        ${pricePresidential.toLocaleString()} / night
-                      </span>
-
-                      {/* Room Capacity Note */}
-                      <div className="text-[8.5px] sm:text-[10px] text-[#51867E] font-medium bg-[#EAF2F1] px-1.5 sm:px-2.5 py-1 rounded-md sm:rounded-lg border border-[#88B2AB]/20 flex items-start gap-1 mt-1.5 leading-tight">
-                        <Users className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0 mt-0.5" />
-                        <span>{selectedProperty?.capacityPresidential || 'Max 5 guests (4 Adults + 1 Child)'}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between bg-[#EAF2F1]/50 p-1 sm:p-2 rounded-lg sm:rounded-xl border border-[#88B2AB]/20 mt-1.5">
-                      <button
-                        type="button"
-                        onClick={() => handleRoomCountChange('presidentialSuites', (formData.presidentialSuites || 0) - 1)}
-                        className="w-6 h-6 sm:w-8 sm:h-8 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs sm:text-sm text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
-                      >
-                        -
-                      </button>
-                      <input
-                        type="number"
-                        min="0"
-                        value={formData.presidentialSuites ?? ''}
-                        onChange={(e) => {
-                          const raw = e.target.value;
-                          const num = raw === '' ? undefined : parseInt(raw, 10);
-                          handleRoomCountChange('presidentialSuites', num);
-                        }}
-                        placeholder="0"
-                        className="w-8 sm:w-16 text-center bg-transparent border-0 py-0.5 text-xs font-bold text-[#3A4F67] focus:outline-none"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRoomCountChange('presidentialSuites', (formData.presidentialSuites || 0) + 1)}
-                        className="w-6 h-6 sm:w-8 sm:h-8 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs sm:text-sm text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Private Villa (Eco Resort & Hotel & Resort) */}
-                  {hasPrivateVilla && pricePrivateVilla && (
-                    <div className="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-[#51867E]/40 flex flex-col justify-between space-y-2 shadow-xs">
+                    <div className="p-2 sm:p-2.5 pt-1.5 flex-1 flex flex-col justify-between gap-1.5">
                       <div>
-                        <div className="flex justify-between items-start gap-1">
-                          <div>
-                            <h4 className="text-[11px] sm:text-xs font-bold text-[#3A4F67] leading-tight">Private Villa</h4>
-                            <span className="text-[10px] sm:text-[11px] font-semibold text-[#51867E] block mt-0.5">
-                              ${pricePrivateVilla.toLocaleString()} / night
-                            </span>
-                          </div>
-                          <span className="text-[8px] sm:text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#51867E] text-white shrink-0">
-                            {isEcoResort ? 'ECO' : 'RESORT'}
-                          </span>
-                        </div>
-
-                        {/* Room Capacity Note */}
-                        <div className="text-[8.5px] sm:text-[10px] text-[#51867E] font-medium bg-[#EAF2F1] px-1.5 sm:px-2.5 py-1 rounded-md sm:rounded-lg border border-[#88B2AB]/20 flex items-start gap-1 mt-1.5 leading-tight">
-                          <Users className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0 mt-0.5" />
-                          <span>{selectedProperty?.capacityPrivateVilla || 'Max 6 guests (4 Adults + 2 Children)'}</span>
-                        </div>
+                        <h4 className="text-[11px] sm:text-xs font-bold text-[#3A4F67] leading-tight truncate">Standard Room</h4>
+                        <span className="text-[10px] sm:text-[11px] font-semibold text-[#51867E] block mt-0.5">
+                          ${priceStandard.toLocaleString()}<span className="text-[8.5px] sm:text-[9.5px] font-normal text-[#51867E]/75"> / night</span>
+                        </span>
                       </div>
 
-                      <div className="flex items-center justify-between bg-[#EAF2F1]/50 p-1 sm:p-2 rounded-lg sm:rounded-xl border border-[#88B2AB]/20 mt-1.5">
+                      <div className="flex items-center justify-between bg-[#EAF2F1]/50 p-1 rounded-lg border border-[#88B2AB]/20">
                         <button
                           type="button"
-                          onClick={() => handleRoomCountChange('privateVillas', (formData.privateVillas || 0) - 1)}
-                          className="w-6 h-6 sm:w-8 sm:h-8 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs sm:text-sm text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
+                          onClick={() => handleRoomCountChange('standardRooms', (formData.standardRooms || 0) - 1)}
+                          className="w-6 h-6 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
                         >
                           -
                         </button>
                         <input
                           type="number"
                           min="0"
-                          value={formData.privateVillas ?? ''}
+                          value={formData.standardRooms ?? ''}
                           onChange={(e) => {
                             const raw = e.target.value;
                             const num = raw === '' ? undefined : parseInt(raw, 10);
-                            handleRoomCountChange('privateVillas', num);
+                            handleRoomCountChange('standardRooms', num);
                           }}
                           placeholder="0"
-                          className="w-8 sm:w-16 text-center bg-transparent border-0 py-0.5 text-xs font-bold text-[#3A4F67] focus:outline-none"
+                          className="w-8 sm:w-12 text-center bg-transparent border-0 py-0.5 text-xs font-bold text-[#3A4F67] focus:outline-none"
                         />
                         <button
                           type="button"
-                          onClick={() => handleRoomCountChange('privateVillas', (formData.privateVillas || 0) + 1)}
-                          className="w-6 h-6 sm:w-8 sm:h-8 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs sm:text-sm text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
+                          onClick={() => handleRoomCountChange('standardRooms', (formData.standardRooms || 0) + 1)}
+                          className="w-6 h-6 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
                         >
                           +
                         </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Deluxe Room */}
+                  <div className="bg-white rounded-xl sm:rounded-2xl border border-[#88B2AB]/30 flex flex-col justify-between overflow-hidden shadow-xs hover:shadow-md transition-all group hover:border-[#51867E]">
+                    {/* Room Thumbnail with Card Location Effect */}
+                    <div className="relative h-16 sm:h-22 w-full overflow-hidden bg-[#3A4F67]">
+                      <img
+                        src={isGrandHotel ? "https://lh3.googleusercontent.com/d/161ghdo5QRlDM07boCUHyTWosqE19Kwsl" : "https://lh3.googleusercontent.com/d/1fwntDhMiuVExz5dh3hfenUrs2CDYqtVz"}
+                        alt="Deluxe Room"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute inset-x-0 bottom-0 h-5 sm:h-7 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
+
+                      {/* Guest Capacity Badge in Top Right Corner */}
+                      <div className="absolute top-1.5 right-1.5 z-10 flex items-center gap-1 bg-[#1E293B]/75 backdrop-blur-xs text-white px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold border border-white/20 shadow-xs">
+                        <Users className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#88B2AB]" />
+                        <span>{dlxCapacityNum}</span>
+                      </div>
+                    </div>
+
+                    <div className="p-2 sm:p-2.5 pt-1.5 flex-1 flex flex-col justify-between gap-1.5">
+                      <div>
+                        <h4 className="text-[11px] sm:text-xs font-bold text-[#3A4F67] leading-tight truncate">Deluxe Room</h4>
+                        <span className="text-[10px] sm:text-[11px] font-semibold text-[#51867E] block mt-0.5">
+                          ${priceDeluxe.toLocaleString()}<span className="text-[8.5px] sm:text-[9.5px] font-normal text-[#51867E]/75"> / night</span>
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between bg-[#EAF2F1]/50 p-1 rounded-lg border border-[#88B2AB]/20">
+                        <button
+                          type="button"
+                          onClick={() => handleRoomCountChange('deluxeRooms', (formData.deluxeRooms || 0) - 1)}
+                          className="w-6 h-6 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
+                        >
+                          -
+                        </button>
+                        <input
+                          type="number"
+                          min="0"
+                          value={formData.deluxeRooms ?? ''}
+                          onChange={(e) => {
+                            const raw = e.target.value;
+                            const num = raw === '' ? undefined : parseInt(raw, 10);
+                            handleRoomCountChange('deluxeRooms', num);
+                          }}
+                          placeholder="0"
+                          className="w-8 sm:w-12 text-center bg-transparent border-0 py-0.5 text-xs font-bold text-[#3A4F67] focus:outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRoomCountChange('deluxeRooms', (formData.deluxeRooms || 0) + 1)}
+                          className="w-6 h-6 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Presidential Suite */}
+                  <div className={`bg-white rounded-xl sm:rounded-2xl border border-[#88B2AB]/30 flex flex-col justify-between overflow-hidden shadow-xs hover:shadow-md transition-all group hover:border-[#51867E] ${!hasPrivateVilla ? 'col-span-2 sm:col-span-1' : ''}`}>
+                    {/* Room Thumbnail with Card Location Effect */}
+                    <div className="relative h-16 sm:h-22 w-full overflow-hidden bg-[#3A4F67]">
+                      <img
+                        src={isGrandHotel ? "https://lh3.googleusercontent.com/d/1HtUthGgPB_sXZi4_XEw4H2CS4bXsx5p0" : "https://lh3.googleusercontent.com/d/1uxMtKuoMw1RaPUT1Wej64Dcj9s-gJCJq"}
+                        alt="Presidential Suite"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute inset-x-0 bottom-0 h-5 sm:h-7 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
+
+                      {/* Guest Capacity Badge in Top Right Corner */}
+                      <div className="absolute top-1.5 right-1.5 z-10 flex items-center gap-1 bg-[#1E293B]/75 backdrop-blur-xs text-white px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold border border-white/20 shadow-xs">
+                        <Users className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#88B2AB]" />
+                        <span>{presCapacityNum}</span>
+                      </div>
+                    </div>
+
+                    <div className="p-2 sm:p-2.5 pt-1.5 flex-1 flex flex-col justify-between gap-1.5">
+                      <div>
+                        <h4 className="text-[11px] sm:text-xs font-bold text-[#3A4F67] leading-tight truncate">Presidential Suite</h4>
+                        <span className="text-[10px] sm:text-[11px] font-semibold text-[#51867E] block mt-0.5">
+                          ${pricePresidential.toLocaleString()}<span className="text-[8.5px] sm:text-[9.5px] font-normal text-[#51867E]/75"> / night</span>
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between bg-[#EAF2F1]/50 p-1 rounded-lg border border-[#88B2AB]/20">
+                        <button
+                          type="button"
+                          onClick={() => handleRoomCountChange('presidentialSuites', (formData.presidentialSuites || 0) - 1)}
+                          className="w-6 h-6 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
+                        >
+                          -
+                        </button>
+                        <input
+                          type="number"
+                          min="0"
+                          value={formData.presidentialSuites ?? ''}
+                          onChange={(e) => {
+                            const raw = e.target.value;
+                            const num = raw === '' ? undefined : parseInt(raw, 10);
+                            handleRoomCountChange('presidentialSuites', num);
+                          }}
+                          placeholder="0"
+                          className="w-8 sm:w-12 text-center bg-transparent border-0 py-0.5 text-xs font-bold text-[#3A4F67] focus:outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRoomCountChange('presidentialSuites', (formData.presidentialSuites || 0) + 1)}
+                          className="w-6 h-6 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Private Villa (Eco Resort & Hotel & Resort) */}
+                  {hasPrivateVilla && pricePrivateVilla && (
+                    <div className="bg-white rounded-xl sm:rounded-2xl border border-[#51867E]/40 flex flex-col justify-between overflow-hidden shadow-xs hover:shadow-md transition-all group hover:border-[#51867E]">
+                      {/* Room Thumbnail with Card Location Effect */}
+                      <div className="relative h-16 sm:h-22 w-full overflow-hidden bg-[#3A4F67]">
+                        <img
+                          src="https://lh3.googleusercontent.com/d/1XxsTU8tI5fMEHBHYD7rhwu-sp7wbneRc"
+                          alt="Private Villa"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          loading="lazy"
+                          referrerPolicy="no-referrer"
+                        />
+                        <div className="absolute inset-x-0 bottom-0 h-5 sm:h-7 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
+
+                        {/* Top Left Badge */}
+                        <div className="absolute top-1.5 left-1.5 z-10 px-1.5 py-0.5 rounded bg-[#51867E] text-white text-[7.5px] sm:text-[8.5px] font-bold shadow-xs">
+                          {isEcoResort ? 'ECO' : 'RESORT'}
+                        </div>
+
+                        {/* Guest Capacity Badge in Top Right Corner */}
+                        <div className="absolute top-1.5 right-1.5 z-10 flex items-center gap-1 bg-[#1E293B]/75 backdrop-blur-xs text-white px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold border border-white/20 shadow-xs">
+                          <Users className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#88B2AB]" />
+                          <span>{villaCapacityNum}</span>
+                        </div>
+                      </div>
+
+                      <div className="p-2 sm:p-2.5 pt-1.5 flex-1 flex flex-col justify-between gap-1.5">
+                        <div>
+                          <h4 className="text-[11px] sm:text-xs font-bold text-[#3A4F67] leading-tight truncate">Private Villa</h4>
+                          <span className="text-[10px] sm:text-[11px] font-semibold text-[#51867E] block mt-0.5">
+                            ${pricePrivateVilla.toLocaleString()}<span className="text-[8.5px] sm:text-[9.5px] font-normal text-[#51867E]/75"> / night</span>
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between bg-[#EAF2F1]/50 p-1 rounded-lg border border-[#88B2AB]/20">
+                          <button
+                            type="button"
+                            onClick={() => handleRoomCountChange('privateVillas', (formData.privateVillas || 0) - 1)}
+                            className="w-6 h-6 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
+                          >
+                            -
+                          </button>
+                          <input
+                            type="number"
+                            min="0"
+                            value={formData.privateVillas ?? ''}
+                            onChange={(e) => {
+                              const raw = e.target.value;
+                              const num = raw === '' ? undefined : parseInt(raw, 10);
+                              handleRoomCountChange('privateVillas', num);
+                            }}
+                            placeholder="0"
+                            className="w-8 sm:w-12 text-center bg-transparent border-0 py-0.5 text-xs font-bold text-[#3A4F67] focus:outline-none"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRoomCountChange('privateVillas', (formData.privateVillas || 0) + 1)}
+                            className="w-6 h-6 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
+                          >
+                            +
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}

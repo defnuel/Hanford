@@ -153,11 +153,11 @@ async function fetchGoogleSheetsClientDirect(): Promise<Property[]> {
       amenitiesList = ['Bespoke Butler', 'Thermal Spa', 'Private Dining', 'Concierge Fleet'];
     }
 
-    const capacityStandard = rowObj['Standard Room Capacity'] || rowObj['Standard Capacity'] || 'Max 3 guests (2 Adults + 1 Child)';
-    const capacityDeluxe = rowObj['Deluxe Room Capacity'] || rowObj['Deluxe Capacity'] || 'Max 3 guests (2 Adults + 1 Child)';
-    const capacityPresidential = rowObj['Presidential Suite Capacity'] || rowObj['Presidential Capacity'] || 'Max 5 guests (4 Adults + 1 Child)';
+    const capacityStandard = rowObj['Standard Room Capacity'] || rowObj['Standard Capacity'] || 'Max 2 guests';
+    const capacityDeluxe = rowObj['Deluxe Room Capacity'] || rowObj['Deluxe Capacity'] || 'Max 2 guests';
+    const capacityPresidential = rowObj['Presidential Suite Capacity'] || rowObj['Presidential Capacity'] || 'Max 4 guests';
     const capacityPrivateVilla = hasPrivateVilla
-      ? (rowObj['Private Villa Capacity'] || rowObj['Villa Capacity'] || 'Max 6 guests (4 Adults + 2 Children)')
+      ? (rowObj['Private Villa Capacity'] || rowObj['Villa Capacity'] || 'Max 6 guests')
       : undefined;
 
     const discountCode = getRowObjVal('Discount Code', 'DiscountCode', 'Coupon Code', 'Kupon', 'Discount code', 'discount_code', 'Kode Diskon', 'Kode Promo');
