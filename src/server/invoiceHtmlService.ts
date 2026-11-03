@@ -143,7 +143,7 @@ export function generateInvoiceHtml(booking: BookingInquiry, requestedStatus?: '
       font-size: 11px;
       font-weight: 700;
       letter-spacing: normal;
-      margin-left: 8px;
+      margin-left: 20px;
       align-self: flex-start;
       padding-top: 2px;
       color: #3A4F67;

@@ -563,7 +563,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     <span className="font-serif text-2xl sm:text-3xl font-semibold tracking-[0.2em] text-[#3A4F67] uppercase">
                       HANFORD
                     </span>
-                    <span className="text-[11px] sm:text-[13px] font-sans font-bold tracking-normal text-[#3A4F67] ml-2.5 self-start pt-0.5 sm:pt-1 select-none">
+                    <span className="text-[11px] sm:text-[13px] font-sans font-bold tracking-normal text-[#3A4F67] ml-5 sm:ml-6 self-start pt-0.5 sm:pt-1 select-none">
                       H&amp;R
                     </span>
                   </div>
@@ -919,7 +919,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       <span className="font-serif text-3xl font-semibold tracking-[0.2em] text-[#3A4F67] uppercase">
                         HANFORD
                       </span>
-                      <span className="text-[13px] font-sans font-bold tracking-normal text-[#3A4F67] ml-2.5 self-start pt-1 select-none">
+                      <span className="text-[13px] font-sans font-bold tracking-normal text-[#3A4F67] ml-6 self-start pt-1 select-none">
                         H&amp;R
                       </span>
                     </div>
