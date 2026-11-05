@@ -149,64 +149,81 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
   }
 
   return (
-    <div className="pt-28 pb-24 min-h-screen bg-[#FFFFFF] text-[#2C3744]">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 space-y-10">
-        {/* Navigation Breadcrumb & Back Action */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#88B2AB]/30">
+    <div className="bg-[#FFFFFF] pt-20 sm:pt-24 pb-16 sm:pb-24 text-[#2C3744]">
+      {/* Breadcrumb Navigation Bar */}
+      <div className="bg-[#FFFFFF] border-b border-[#88B2AB]/30 py-3 sm:py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 flex items-center justify-between text-xs gap-2">
           <button
             onClick={() => onNavigate('/collaborations')}
-            className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#3A4F67] hover:text-[#51867E] transition-colors focus:outline-none cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-[#3A4F67] hover:text-[#51867E] font-bold tracking-wider transition-colors cursor-pointer shrink-0"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to All Collaborations</span>
+            <ArrowLeft className="w-3.5 h-3.5 text-[#3A4F67]" />
+            <span className="text-[10px] sm:text-xs">BACK</span>
           </button>
+        </div>
+      </div>
 
-          <div className="flex items-center gap-2 text-[11px] font-medium text-[#2C3744] uppercase tracking-wider">
-            <span>Home</span>
-            <span>/</span>
-            <button onClick={() => onNavigate('/collaborations')} className="hover:text-[#51867E]">Collaborations</button>
-            <span>/</span>
-            <span className="text-[#3A4F67] font-bold truncate max-w-[200px]">{project.projectName}</span>
+      {/* Main Hero Header */}
+      <section className="relative bg-gradient-to-br from-[#1E293B] via-[#24354A] to-[#1E293B] text-[#EAF2F1] py-8 sm:py-12 lg:py-14 overflow-hidden border-b border-[#88B2AB]/30 shadow-sm">
+        {/* Ambient Glow Effects */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#51867E]/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-[#3A4F67]/30 rounded-full blur-2xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
+          <div className="space-y-3 sm:space-y-4 max-w-4xl">
+            {/* Badges Bar */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+              <span className="bg-[#1E293B]/70 backdrop-blur-md text-[#EAF2F1] px-3 sm:px-3.5 py-1 text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase rounded-full border border-white/15 shadow-xs">
+                {project.projectType}
+              </span>
+              <span className="inline-flex items-center gap-1.5 bg-[#1E293B]/70 backdrop-blur-md text-[#EAF2F1] px-3 sm:px-3.5 py-1 text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase rounded-full border border-white/15 shadow-xs">
+                <Calendar className="w-3 h-3 text-[#88B2AB] shrink-0" />
+                <span>{project.date}</span>
+              </span>
+            </div>
+
+            {/* Project Title */}
+            <h1 className="font-serif italic text-3xl sm:text-5xl lg:text-6xl font-semibold text-white tracking-tight leading-[1.15]">
+              {project.projectName}
+            </h1>
+
+            {/* Meta Badges */}
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-1">
+              <span className="inline-flex items-center gap-2 bg-[#1E293B]/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[#88B2AB]/30 text-xs text-[#EAF2F1] shadow-xs">
+                <Handshake className="w-3.5 h-3.5 text-[#88B2AB] shrink-0" />
+                <span>with: <strong className="font-serif italic text-white">{project.partnerName}</strong> {project.xUsername && <span className="text-xs text-[#88B2AB] font-semibold">({project.xUsername})</span>}</span>
+              </span>
+              <span className="inline-flex items-center gap-2 bg-[#1E293B]/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[#88B2AB]/30 text-xs text-[#EAF2F1] shadow-xs">
+                <MapPin className="w-3.5 h-3.5 text-[#88B2AB] shrink-0" />
+                <span className="font-medium">{project.location}</span>
+              </span>
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Project Header Banner */}
-        <div className="space-y-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="px-3.5 py-1 bg-[#3A4F67] text-white text-[10px] font-bold tracking-[0.2em] uppercase rounded-full">
-              {project.projectType}
-            </span>
-          </div>
-
-          <h1 className="text-3xl sm:text-5xl font-serif font-semibold text-[#3A4F67] tracking-wide leading-tight">
-            {project.projectName}
-          </h1>
-
-          <div className="flex flex-wrap items-center gap-6 text-xs sm:text-sm text-[#3A4F67] font-medium pt-2">
-            <div className="flex items-center gap-2">
-              <Handshake className="w-4 h-4 text-[#51867E]" />
-              <span>with: <strong className="font-serif italic text-[#3A4F67]">{project.partnerName}</strong> {project.xUsername && <span className="text-xs text-[#51867E] font-semibold">({project.xUsername})</span>}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-[#51867E]" />
-              <span>{project.location}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-[#51867E]" />
-              <span>{project.date}</span>
-            </div>
-          </div>
-        </div>
+      {/* Main Content Area */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-8 sm:pt-12 space-y-10">
 
         {/* Gallery Viewer */}
         <div className="space-y-3.5 sm:space-y-4">
           {/* Main Architectural Stage */}
           <div className="relative w-full aspect-[16/10] sm:aspect-video sm:h-[480px] bg-[#1E293B] border border-[#88B2AB]/30 rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_16px_36px_rgba(58,79,103,0.12)] group hover:border-[#51867E] transition-all">
+            {/* Soft Ambient Blurred Background */}
+            <img
+              src={allImages[activeImageIndex] || project.heroImage}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110 opacity-35 pointer-events-none transition-all duration-500"
+              referrerPolicy="no-referrer"
+            />
+
+            {/* Main Uncropped Image (Full Portrait & Landscape Support) */}
             <img
               src={allImages[activeImageIndex] || project.heroImage}
               alt={`${project.projectName} photograph ${activeImageIndex + 1}`}
               onClick={() => setIsLightboxOpen(true)}
-              className="w-full h-full object-cover transition-transform duration-700 ease-out cursor-pointer group-hover:scale-[1.02] select-none"
+              className="relative z-10 w-full h-full object-contain object-center transition-transform duration-700 ease-out cursor-pointer group-hover:scale-[1.01] select-none"
               referrerPolicy="no-referrer"
             />
 
@@ -493,7 +510,7 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

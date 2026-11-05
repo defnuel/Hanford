@@ -14,7 +14,7 @@ import {
   Flag,
   Trophy,
   Wifi,
-  Sparkles,
+  CheckCircle2,
   BedDouble
 } from 'lucide-react';
 
@@ -44,7 +44,7 @@ export const getAmenityIcon = (name: string) => {
   if (lower.includes('tennis') || lower.includes('sport')) return Trophy;
   if (lower.includes('wi-fi') || lower.includes('wifi') || lower.includes('internet')) return Wifi;
   if (lower.includes('villa') || lower.includes('suite') || lower.includes('room')) return BedDouble;
-  return Sparkles;
+  return CheckCircle2;
 };
 
 export const AmenityBadge: React.FC<AmenityBadgeProps> = ({ name }) => {

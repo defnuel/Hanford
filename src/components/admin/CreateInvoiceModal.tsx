@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Property, BookingInquiry, BookOption, EventAddonOption, InvoiceLineItem } from '../../types';
 import { 
-  X, Plus, Calculator, Building, Calendar, User, Tag, Sparkles, 
+  X, Plus, Calculator, Building, Calendar, User, Tag, Package, 
   CheckCircle2, ShieldCheck, GripVertical, Trash2, FileText, ArrowLeft,
   ChevronDown, PartyPopper, Layers, Users, RefreshCw
 } from 'lucide-react';
@@ -649,7 +649,7 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
                   {bookOption === 'both' && <Layers className="w-4 h-4" />}
                   {bookOption === 'meeting' && <Users className="w-4 h-4" />}
                   {bookOption === 'room_meeting' && <Building className="w-4 h-4" />}
-                  {bookOption === 'custom_only' && <Sparkles className="w-4 h-4" />}
+                  {bookOption === 'custom_only' && <Package className="w-4 h-4" />}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="font-bold text-slate-800 text-[11px] truncate">
@@ -843,7 +843,7 @@ export const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({
         <div className="space-y-3 pt-2">
           <div className="flex items-center justify-between border-b border-slate-200 pb-2">
             <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#51867E]" />
+              <Package className="w-3.5 h-3.5 text-[#51867E]" />
               Product or service
             </h4>
             <span className="text-[10px] text-slate-400 font-medium">

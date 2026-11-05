@@ -611,56 +611,114 @@ const ICGuidelinesSection: React.FC<{ onNavigate: (path: string) => void }> = ({
             </div>
 
             <h2 className="text-xl sm:text-2xl font-serif text-[#3A4F67] font-semibold">
-              OFFICIAL BOOKING
+              OFFICIAL BOOKING & PAYMENT
             </h2>
 
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              Untuk kebutuhan IC yang melibatkan penggunaan secara resmi atau terstruktur, Hanford H&R saat ini melayani sistem booking untuk:
+              Untuk kebutuhan IC atau Acara yang melibatkan penggunaan lokasi secara resmi, Hanford H&R saat ini melayani sistem booking dengan alur sebagai berikut:
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-              <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-1.5 hover:border-[#51867E]/40 transition-colors">
-                <div className="flex items-center gap-2 font-bold text-xs text-[#3A4F67]">
-                  <BedDouble className="w-4 h-4 text-[#51867E]" />
-                  <span>Room Booking</span>
+            {/* Integrated 2-Column Layout: Left = Booking Options, Right = Booking & Payment Flow */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 pt-1 items-stretch">
+              {/* Left Column: 3 Booking Types + Event Note */}
+              <div className="lg:col-span-6 flex flex-col justify-between bg-slate-50/90 border border-slate-200/80 rounded-2xl p-4 space-y-3">
+                <div className="space-y-2.5">
+                  <div className="text-[11px] font-bold text-[#3A4F67] uppercase tracking-wider">
+                    Pilihan Layanan Booking
+                  </div>
+
+                  <div className="p-3 bg-white border border-slate-200/80 rounded-xl space-y-1 hover:border-[#51867E]/40 transition-colors">
+                    <div className="flex items-center gap-2 font-bold text-xs text-[#3A4F67]">
+                      <BedDouble className="w-4 h-4 text-[#51867E] shrink-0" />
+                      <span>Room Booking</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 leading-normal">
+                      Untuk kebutuhan menginap atau menggunakan kamar hotel dan resort.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-white border border-slate-200/80 rounded-xl space-y-1 hover:border-[#51867E]/40 transition-colors">
+                    <div className="flex items-center gap-2 font-bold text-xs text-[#3A4F67]">
+                      <Users className="w-4 h-4 text-[#51867E] shrink-0" />
+                      <span>Meeting Room</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 leading-normal">
+                      Untuk meeting, workshop, seminar, gathering, dan kebutuhan profesional lainnya.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-white border border-slate-200/80 rounded-xl space-y-1 hover:border-[#51867E]/40 transition-colors">
+                    <div className="flex items-center gap-2 font-bold text-xs text-[#3A4F67]">
+                      <PartyPopper className="w-4 h-4 text-[#51867E] shrink-0" />
+                      <span>Event Hall / Ballroom</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 leading-normal">
+                      Untuk wedding, gala dinner, celebration, reception, corporate event, dan acara lainnya.
+                    </p>
+                  </div>
                 </div>
-                <p className="text-[11px] text-slate-500 leading-normal">
-                  Untuk kebutuhan menginap atau menggunakan kamar hotel dan resort.
+
+                <p className="text-[11px] text-slate-600 leading-relaxed bg-white/80 border border-slate-200/70 rounded-xl px-3 py-2">
+                  Untuk event, kami hanya menyediakan sewa lokasi, dekorasi, dan buffet, segala hal terkait pengaturan kegiatan di dalam acara tidak termasuk.
                 </p>
               </div>
 
-              <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-1.5 hover:border-[#51867E]/40 transition-colors">
-                <div className="flex items-center gap-2 font-bold text-xs text-[#3A4F67]">
-                  <Users className="w-4 h-4 text-[#51867E]" />
-                  <span>Meeting Room</span>
-                </div>
-                <p className="text-[11px] text-slate-500 leading-normal">
-                  Untuk meeting, workshop, seminar, gathering, dan kebutuhan profesional lainnya.
-                </p>
-              </div>
+              {/* Right Column: Tata Cara Booking & Pembayaran */}
+              <div className="lg:col-span-6 flex flex-col justify-between bg-[#EAF2F1]/60 border border-[#88B2AB]/40 rounded-2xl p-4 space-y-3">
+                <div className="space-y-2.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#3A4F67] uppercase tracking-wider">
+                    <CreditCard className="w-3.5 h-3.5 text-[#51867E]" />
+                    <span>Tata Cara Booking & Pembayaran</span>
+                  </div>
 
-              <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-1.5 hover:border-[#51867E]/40 transition-colors">
-                <div className="flex items-center gap-2 font-bold text-xs text-[#3A4F67]">
-                  <PartyPopper className="w-4 h-4 text-[#51867E]" />
-                  <span>Event Hall / Ballroom</span>
+                  <div className="p-3 bg-white/90 border border-[#88B2AB]/30 rounded-xl space-y-1">
+                    <div className="text-xs font-bold text-[#3A4F67]">1. Isi Formulir Reservasi</div>
+                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                      Buka <strong className="text-slate-800">Book Now</strong>, pilih properti, isi data tamu (IC Name & @username X), kategori booking, jadwal, jumlah kamar/tamu, serta catatan jika ada.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-white/90 border border-[#88B2AB]/30 rounded-xl space-y-1">
+                    <div className="text-xs font-bold text-[#3A4F67]">2. Submit & Unduh Invoice</div>
+                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                      Klik <strong className="text-slate-800">Submit Booking</strong> untuk menerbitkan <strong className="text-slate-800">Official Invoice</strong>, lalu unduh invoice dalam format PNG.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-white/90 border border-[#88B2AB]/30 rounded-xl space-y-1.5">
+                    <div className="text-xs font-bold text-[#3A4F67]">3. Pembayaran & Konfirmasi DM</div>
+                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                      Transfer sesuai total tagihan pada invoice ke rekening resmi:
+                    </p>
+                    <div className="bg-[#FAFBF9] border border-[#88B2AB]/30 rounded-lg px-2.5 py-1.5 font-mono text-[10.5px] text-[#3A4F67] space-y-0.5">
+                      <div>Bank: <strong>CHOBANK</strong> • A/N: <strong>Hanford Hotels and Resorts</strong></div>
+                      <div>No. Rek: <strong className="text-[#51867E]">3076 6324 4788 9928</strong></div>
+                    </div>
+                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                      Setelah bayar, <strong className="text-[#3A4F67]">wajib DM</strong> ke{' '}
+                      <a href="https://x.com/Hanford_HnR" target="_blank" rel="noopener noreferrer" className="font-bold text-[#3A4F67] hover:text-[#51867E] underline decoration-dotted">@Hanford_HnR</a>
+                      {' '}dengan melampirkan <strong className="text-slate-800">Official Invoice</strong> & <strong className="text-slate-800">bukti payment</strong>.
+                    </p>
+                  </div>
                 </div>
-                <p className="text-[11px] text-slate-500 leading-normal">
-                  Untuk wedding, gala dinner, celebration, reception, corporate event, dan acara lainnya.
-                </p>
               </div>
             </div>
 
-            <div className="p-3.5 bg-[#EAF2F1]/80 border border-[#88B2AB]/40 rounded-2xl text-xs text-slate-700 leading-relaxed flex items-start gap-2.5">
-              <Bookmark className="w-4 h-4 text-[#51867E] shrink-0 mt-0.5" />
-              <div>
-                Untuk kebutuhan acara atau bentuk kolaborasi lain di luar pilihan booking tersebut, silakan menghubungi <a href="https://x.com/Deflictive" target="_blank" rel="noopener noreferrer" className="font-bold text-[#3A4F67] hover:text-[#51867E] underline decoration-dotted">@Deflictive</a> untuk informasi dan koordinasi lebih lanjut.
+            {/* Bottom Bar: Coordination Notice & CTA Button */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+              <div className="p-3 bg-slate-50 border border-slate-200/80 rounded-xl text-[11px] text-slate-600 leading-relaxed flex items-start gap-2 flex-1">
+                <Bookmark className="w-3.5 h-3.5 text-[#51867E] shrink-0 mt-0.5" />
+                <span>
+                  Untuk acara/kolaborasi di luar pilihan booking tersebut, hubungi{' '}
+                  <a href="https://x.com/Deflictive" target="_blank" rel="noopener noreferrer" className="font-bold text-[#3A4F67] hover:text-[#51867E] underline decoration-dotted">@Deflictive</a>
+                  {' '}atau{' '}
+                  <a href="https://x.com/Hanford_HnR" target="_blank" rel="noopener noreferrer" className="font-bold text-[#3A4F67] hover:text-[#51867E] underline decoration-dotted">@Hanford_HnR</a>.
+                </span>
               </div>
-            </div>
 
-            <div className="pt-1">
               <button
                 onClick={() => onNavigate('/book-now')}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#3A4F67] hover:bg-[#2C3744] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm cursor-pointer group/btn"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#3A4F67] hover:bg-[#2C3744] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm cursor-pointer group/btn shrink-0"
               >
                 <span>Go to Booking Form</span>
                 <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Property } from '../types';
 import { fetchLocations } from '../services/dataService';
-import { Calendar, ArrowRight, ShieldCheck, Sparkles, MapPin, Award, ChevronLeft, ChevronRight, Star, Crown } from 'lucide-react';
+import { Calendar, ArrowRight, ShieldCheck, Flower2, MapPin, Award, ChevronLeft, ChevronRight, Star, Crown } from 'lucide-react';
 
 interface HomePageProps {
   onNavigate: (path: string) => void;
@@ -318,7 +318,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
           <div className="info-panel p-5 sm:p-8 bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl text-center space-y-3 sm:space-y-4 shadow-sm hover:border-[#51867E] transition-colors">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#51867E] border border-[#88B2AB]/30 flex items-center justify-center mx-auto text-[#88B2AB]">
-              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
+              <Flower2 className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <h3 className="font-serif text-lg sm:text-xl font-medium italic text-[#3A4F67]">Holistic Thermal Spas</h3>
             <p className="text-xs text-[#2C3744] leading-relaxed font-normal">

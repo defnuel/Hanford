@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, FolderGit2, CalendarCheck, FileCheck, FileX, Users, ArrowRight, Sparkles, KeyRound, FileCheck2 } from 'lucide-react';
+import { Building2, FolderGit2, CalendarCheck, FileCheck, FileX, Users, ArrowRight, ShieldCheck, KeyRound, FileCheck2 } from 'lucide-react';
 import { Property, Project, BookingInquiry, AdminUser } from '../../types';
 
 interface AdminOverviewProps {
@@ -27,7 +27,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
       <div className="p-5 sm:p-8 bg-gradient-to-r from-[#3A4F67] to-[#2C3744] text-white rounded-2xl shadow-lg border border-slate-700 relative overflow-hidden">
         <div className="relative z-10 space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#51867E]/30 text-[#88B2AB] rounded-full text-[10px] font-bold uppercase tracking-widest border border-[#51867E]/40">
-            <Sparkles className="w-3.5 h-3.5" />
+            <ShieldCheck className="w-3.5 h-3.5" />
             <span>Central Admin Workspace</span>
           </div>
           <h2 className="text-xl sm:text-3xl font-serif font-semibold tracking-wide text-white">

@@ -3,7 +3,7 @@ import {
   KeyRound,
   Mail,
   Download,
-  Sparkles,
+  Crown,
   RefreshCw,
   Plus,
   Trash2,
@@ -964,7 +964,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-[#182233] to-[#253347] p-6 sm:p-8 rounded-2xl text-white shadow-xl border border-slate-700">
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#D4AF37]/20 text-[#F3D796] rounded-full text-[10px] font-bold tracking-widest uppercase border border-[#D4AF37]/30">
-            <Sparkles className="w-3.5 h-3.5" />
+            <Crown className="w-3.5 h-3.5" />
             <span>Hanford Guest Visual Assets Studio</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-serif font-semibold tracking-wide text-white">
@@ -2080,7 +2080,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
 
           {/* Hint / Helper Tip */}
           <div className="text-center text-[11px] text-slate-500 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-[#51867E]" />
+            <Info className="w-3.5 h-3.5 text-[#51867E]" />
             <span>
               Klik &quot;Download&quot; untuk mengunduh berkas PNG
             </span>

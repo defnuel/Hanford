@@ -31,45 +31,47 @@ const CollapsibleSectionCard: React.FC<CollapsibleSectionCardProps> = ({ sec }) 
   if (titleLower.includes('room') || titleLower.includes('suite')) Icon = BedDouble;
 
   return (
-    <div className="info-panel bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
+    <div className="info-panel bg-white border border-slate-200/90 rounded-3xl shadow-sm hover:shadow-md overflow-hidden transition-all duration-300 relative group">
+      <div className="absolute top-0 right-0 w-28 h-28 bg-[#3A4F67]/5 rounded-bl-full pointer-events-none" />
+
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-6 sm:p-8 flex items-center justify-between text-left hover:bg-[#88B2AB]/15 transition-colors focus:outline-none cursor-pointer group"
+        className="w-full p-6 sm:p-8 flex items-center justify-between text-left hover:bg-slate-50/70 transition-colors focus:outline-none cursor-pointer relative z-10"
         aria-expanded={isOpen}
       >
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#51867E] flex items-center justify-center text-white shrink-0 border border-[#88B2AB]/30 group-hover:scale-105 transition-transform">
-            <Icon className="w-4 h-4 text-[#88B2AB]" />
+        <div className="flex items-center gap-3.5">
+          <div className="w-9 h-9 rounded-2xl bg-[#3A4F67] group-hover:bg-[#51867E] flex items-center justify-center text-white shrink-0 shadow-xs transition-colors">
+            <Icon className="w-4 h-4 text-[#88B2AB] group-hover:text-white transition-colors" />
           </div>
-          <h3 className="font-serif italic text-xl sm:text-2xl text-[#3A4F67]">
+          <h3 className="font-serif italic text-xl sm:text-2xl text-[#3A4F67] font-semibold">
             {sec.title}
           </h3>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] uppercase font-bold tracking-widest text-[#666666] group-hover:text-[#51867E] transition-colors hidden sm:inline">
+        <div className="flex items-center gap-2 shrink-0 ml-3">
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 group-hover:text-[#51867E] transition-colors hidden sm:inline">
             {isOpen ? 'Minimize' : 'Expand'}
           </span>
-          <div className="w-8 h-8 rounded-full bg-[#51867E]/10 flex items-center justify-center text-[#51867E] group-hover:bg-[#51867E] group-hover:text-white transition-all">
+          <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[#3A4F67] group-hover:bg-[#51867E] group-hover:text-white transition-all">
             {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </div>
         </div>
       </button>
 
       {isOpen && (
-        <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-2 border-t border-[#88B2AB]/20">
+        <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-3 border-t border-slate-100 relative z-10">
           {sec.items.length > 0 ? (
-            <ul className="space-y-3.5 pt-2">
+            <ul className="space-y-3 pt-1">
               {sec.items.map((item, i) => (
-                <li key={i} className="flex items-start gap-3 text-xs sm:text-sm text-[#2C3744] font-light leading-relaxed">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#88B2AB] mt-2 shrink-0" />
+                <li key={i} className="flex items-start gap-3 text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#51867E] mt-2 shrink-0" />
                   <span>{item}</span>
                 </li>
               ))}
             </ul>
           ) : sec.paragraphs.length > 0 ? (
-            <div className="space-y-3 pt-2 text-xs sm:text-sm text-[#2C3744] font-light leading-relaxed">
+            <div className="space-y-3 pt-1 text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
               {sec.paragraphs.map((p, i) => (
                 <p key={i}>{p}</p>
               ))}
@@ -85,40 +87,42 @@ const AmenitiesPrivilegesCard: React.FC<{ amenities: string[] }> = ({ amenities 
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className="info-panel bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
+    <div className="info-panel bg-white border border-slate-200/90 rounded-3xl shadow-sm hover:shadow-md overflow-hidden transition-all duration-300 relative group">
+      <div className="absolute top-0 right-0 w-28 h-28 bg-[#3A4F67]/5 rounded-bl-full pointer-events-none" />
+
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-6 sm:p-8 flex items-center justify-between text-left hover:bg-[#88B2AB]/15 transition-colors focus:outline-none cursor-pointer group"
+        className="w-full p-6 sm:p-8 flex items-center justify-between text-left hover:bg-slate-50/70 transition-colors focus:outline-none cursor-pointer relative z-10"
         aria-expanded={isOpen}
       >
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#51867E] flex items-center justify-center text-white shrink-0 border border-[#88B2AB]/30 group-hover:scale-105 transition-transform">
-            <Crown className="w-4 h-4 text-[#88B2AB]" />
+        <div className="flex items-center gap-3.5">
+          <div className="w-9 h-9 rounded-2xl bg-[#3A4F67] group-hover:bg-[#51867E] flex items-center justify-center text-white shrink-0 shadow-xs transition-colors">
+            <Crown className="w-4 h-4 text-[#88B2AB] group-hover:text-white transition-colors" />
           </div>
           <div>
-            <h3 className="font-serif italic text-xl sm:text-2xl text-[#3A4F67]">
+            <h3 className="font-serif italic text-xl sm:text-2xl text-[#3A4F67] font-semibold">
               Amenities & Privileges
             </h3>
-            <p className="text-xs text-[#3A4F67] font-medium mt-0.5">
+            <p className="text-xs text-slate-500 font-normal mt-0.5">
               Complimentary estate services provided to all guests.
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0 ml-3">
-          <span className="text-[10px] uppercase font-bold tracking-widest text-[#666666] group-hover:text-[#51867E] transition-colors hidden sm:inline">
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 group-hover:text-[#51867E] transition-colors hidden sm:inline">
             {isOpen ? 'Minimize' : 'Expand'}
           </span>
-          <div className="w-8 h-8 rounded-full bg-[#51867E]/10 flex items-center justify-center text-[#51867E] group-hover:bg-[#51867E] group-hover:text-white transition-all">
+          <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[#3A4F67] group-hover:bg-[#51867E] group-hover:text-white transition-all">
             {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </div>
         </div>
       </button>
 
       {isOpen && (
-        <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-2 border-t border-[#88B2AB]/20 space-y-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-[#3A4F67] block pt-1">
+        <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-3 border-t border-slate-100 space-y-3 relative z-10">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#3A4F67] block pt-1">
             COMPLIMENTARY FACILITIES MAY INCLUDE:
           </span>
           <div className="flex flex-wrap gap-2 sm:gap-2.5">
@@ -191,30 +195,36 @@ export const CleanPropertyDetails: React.FC<CleanPropertyDetailsProps> = ({ deta
     <div className="space-y-8">
       {/* Overview Card */}
       {overviewParagraphs.length > 0 && (
-        <div className="info-panel bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
+        <div className="info-panel bg-white border border-slate-200/90 rounded-3xl shadow-sm hover:shadow-md overflow-hidden transition-all duration-300 relative group">
+          <div className="absolute top-0 right-0 w-28 h-28 bg-[#3A4F67]/5 rounded-bl-full pointer-events-none" />
+
           <button
             type="button"
             onClick={() => setIsOverviewOpen(!isOverviewOpen)}
-            className="w-full p-6 sm:p-8 flex items-center justify-between text-left hover:bg-[#88B2AB]/15 transition-colors focus:outline-none cursor-pointer group"
+            className="w-full p-6 sm:p-8 flex items-center justify-between text-left hover:bg-slate-50/70 transition-colors focus:outline-none cursor-pointer relative z-10"
             aria-expanded={isOverviewOpen}
           >
-            <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.3em] text-[#51867E] uppercase">
-              <Compass className="w-4 h-4 text-[#51867E]" />
-              <span>OVERVIEW</span>
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-2xl bg-[#3A4F67] group-hover:bg-[#51867E] flex items-center justify-center text-white shrink-0 shadow-xs transition-colors">
+                <Compass className="w-4 h-4 text-[#88B2AB] group-hover:text-white transition-colors" />
+              </div>
+              <span className="text-xs font-bold tracking-[0.25em] text-[#3A4F67] uppercase">
+                OVERVIEW
+              </span>
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase font-bold tracking-widest text-[#666666] group-hover:text-[#51867E] transition-colors hidden sm:inline">
+            <div className="flex items-center gap-2 shrink-0 ml-3">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 group-hover:text-[#51867E] transition-colors hidden sm:inline">
                 {isOverviewOpen ? 'Minimize' : 'Expand'}
               </span>
-              <div className="w-8 h-8 rounded-full bg-[#51867E]/10 flex items-center justify-center text-[#51867E] group-hover:bg-[#51867E] group-hover:text-white transition-all">
+              <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[#3A4F67] group-hover:bg-[#51867E] group-hover:text-white transition-all">
                 {isOverviewOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </div>
             </div>
           </button>
 
           {isOverviewOpen && (
-            <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-2 border-t border-[#88B2AB]/20 space-y-4 text-[#2C3744] font-light leading-relaxed text-sm sm:text-base">
+            <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-3 border-t border-slate-100 space-y-4 text-slate-600 font-normal leading-relaxed text-sm sm:text-base relative z-10">
               {overviewParagraphs.map((para, idx) => (
                 <p key={idx} className="leading-relaxed">
                   {para}

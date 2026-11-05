@@ -205,9 +205,9 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
                     </div>
                   ) : (
                     <div className="divide-y divide-slate-100">
-                      {searchDropdownResults.map((project) => (
+                      {searchDropdownResults.map((project, idx) => (
                         <div
-                          key={project.id || project.slug}
+                          key={`${project.id || project.slug}-${idx}`}
                           onClick={() => handleSelectProject(project.slug)}
                           className="p-3 hover:bg-[#EAF2F1] cursor-pointer transition-colors flex items-center gap-3 group text-left"
                         >
@@ -285,9 +285,9 @@ export const CollaborationsPage: React.FC<CollaborationsPageProps> = ({ onNaviga
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {filteredProjects.map((project) => (
+            {filteredProjects.map((project, idx) => (
               <div
-                key={project.id}
+                key={`${project.id || project.slug}-${idx}`}
                 onClick={() => onNavigate(`/collaborations/${project.slug}`)}
                 className="group cursor-pointer bg-white border border-[#88B2AB]/30 rounded-[32px] sm:rounded-[36px] overflow-hidden shadow-[0_12px_32px_rgba(58,79,103,0.08)] hover:shadow-[0_24px_48px_rgba(58,79,103,0.18)] transition-all duration-500 flex flex-col justify-between hover:border-[#51867E]"
               >

@@ -10,7 +10,7 @@ import {
   Eye,
   Building2,
   Calendar,
-  Sparkles,
+  FilePlus2,
   ClipboardPaste,
   ShieldCheck,
   Truck,
@@ -123,7 +123,7 @@ export const GoodsReceivedManager: React.FC<GoodsReceivedManagerProps> = ({ prop
             onClick={() => setIsCreateOpen(true)}
             className="px-4 py-2.5 bg-[#51867E] hover:bg-[#43726a] text-white rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow-md cursor-pointer active:scale-95"
           >
-            <Sparkles className="w-4 h-4 text-amber-300" />
+            <FilePlus2 className="w-4 h-4 text-amber-300" />
             <span>+ Create GRN from Text / Invoice</span>
           </button>
         </div>
@@ -251,7 +251,7 @@ export const GoodsReceivedManager: React.FC<GoodsReceivedManagerProps> = ({ prop
               onClick={() => setIsCreateOpen(true)}
               className="px-4 py-2 bg-[#51867E] hover:bg-[#43726a] text-white rounded-xl text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5 cursor-pointer shadow-sm"
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <FilePlus2 className="w-3.5 h-3.5" />
               <span>Create New GRN from Text</span>
             </button>
           </div>
