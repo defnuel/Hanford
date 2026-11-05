@@ -125,7 +125,7 @@ const AmenitiesPrivilegesCard: React.FC<{ amenities: string[] }> = ({ amenities 
           <span className="text-[11px] font-bold uppercase tracking-wider text-[#3A4F67] block pt-1">
             COMPLIMENTARY FACILITIES MAY INCLUDE:
           </span>
-          <div className="flex flex-wrap gap-2 sm:gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
             {amenities.map((amenity, i) => (
               <AmenityBadge key={i} name={amenity} />
             ))}

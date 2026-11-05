@@ -52,9 +52,11 @@ export const AmenityBadge: React.FC<AmenityBadgeProps> = ({ name }) => {
   const Icon = getAmenityIcon(displayName);
 
   return (
-    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#F0F4F8] border border-slate-200/90 rounded-full text-xs sm:text-sm shadow-2xs hover:bg-slate-200/70 transition-colors">
-      <Icon className="w-4 h-4 text-[#51867E] shrink-0" />
-      <span className="font-semibold text-[#1E293B]">{displayName}</span>
+    <div
+      className="flex items-center gap-2 px-2.5 sm:px-3 py-2 bg-slate-50/90 hover:bg-[#EAF2F1]/60 border border-slate-200/80 hover:border-[#88B2AB]/50 rounded-xl text-[11px] sm:text-xs transition-colors"
+    >
+      <Icon className="w-3.5 h-3.5 text-[#51867E] shrink-0" />
+      <span className="font-medium text-[#1E293B] leading-snug">{displayName}</span>
     </div>
   );
 };
