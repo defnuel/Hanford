@@ -1850,7 +1850,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 w-full">
                 {showRoomsAndDates && (
                   <>
-                    <div className="min-w-0 w-full">
+                    <div className="min-w-0 w-full overflow-hidden">
                       <label className="block text-[10.5px] sm:text-[11px] font-bold text-[#3A4F67] mb-1">
                         <span className="flex items-center gap-1.5">
                           <Calendar className="w-3.5 h-3.5 text-[#51867E]" />
@@ -1863,11 +1863,11 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         min={todayStr}
                         value={formData.checkInDate}
                         onChange={(e) => setFormData({ ...formData, checkInDate: e.target.value })}
-                        className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium cursor-pointer"
+                        className="appearance-none block box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium cursor-pointer"
                       />
                     </div>
 
-                    <div className="min-w-0 w-full">
+                    <div className="min-w-0 w-full overflow-hidden">
                       <label className="block text-[10.5px] sm:text-[11px] font-bold text-[#3A4F67] mb-1">
                         <span className="flex items-center gap-1.5">
                           <Calendar className="w-3.5 h-3.5 text-[#51867E]" />
@@ -1880,14 +1880,14 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         min={formData.checkInDate || todayStr}
                         value={formData.checkOutDate}
                         onChange={(e) => setFormData({ ...formData, checkOutDate: e.target.value })}
-                        className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium cursor-pointer"
+                        className="appearance-none block box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium cursor-pointer"
                       />
                     </div>
                   </>
                 )}
 
                 {showVenueSettings && (
-                  <div className="min-w-0 w-full">
+                  <div className="min-w-0 w-full overflow-hidden">
                     <label className="block text-[10.5px] sm:text-[11px] font-bold text-[#3A4F67] mb-1">
                       <span className="flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5 text-[#51867E]" />
@@ -1900,7 +1900,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       min={todayStr}
                       value={formData.eventDate}
                       onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
-                      className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium cursor-pointer"
+                      className="appearance-none block box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium cursor-pointer"
                     />
                   </div>
                 )}
