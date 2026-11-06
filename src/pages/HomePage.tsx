@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Property } from '../types';
 import { fetchLocations } from '../services/dataService';
-import { Calendar, ArrowRight, ShieldCheck, Flower2, MapPin, Award, ChevronLeft, ChevronRight, Star, Crown } from 'lucide-react';
+import { Calendar, ArrowRight, ShieldCheck, Flower2, MapPin, Award, ChevronLeft, ChevronRight, Star, Crown, Utensils, Recycle, Zap, Sprout } from 'lucide-react';
 
 interface HomePageProps {
   onNavigate: (path: string) => void;
@@ -291,48 +291,55 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             UNRIVALED STANDARD
           </span>
           <h2 className="font-serif text-2xl sm:text-5xl font-medium italic text-[#3A4F67]">
-            Signature Elements of Hanford
+            Leading the Way in Sustainable Hospitality
           </h2>
+          <p className="text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto mt-3 sm:mt-4 leading-relaxed font-normal">
+            At Hanford Hotels &amp; Resorts, we are deeply committed to sustainability, recognizing that the pristine beauty of the properties is not just a backdrop, but a responsibility we share.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
-          <div className="info-panel p-5 sm:p-8 bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl text-center space-y-3 sm:space-y-4 shadow-sm hover:border-[#51867E] transition-colors">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#51867E] border border-[#88B2AB]/30 flex items-center justify-center mx-auto text-[#88B2AB]">
-              <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6" />
+          <div className="info-panel p-5 sm:p-8 bg-white border border-slate-200/90 rounded-3xl text-center space-y-3 sm:space-y-4 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-[#3A4F67]/5 rounded-bl-full pointer-events-none" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#3A4F67] group-hover:bg-[#51867E] flex items-center justify-center mx-auto text-[#88B2AB] group-hover:text-white shadow-xs transition-colors relative z-10">
+              <Utensils className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <h3 className="font-serif text-lg sm:text-xl font-medium italic text-[#3A4F67]">St. James Butler Service</h3>
-            <p className="text-xs text-[#2C3744] leading-relaxed font-normal">
-              Intuitive 24-hour white-glove service rooted in the finest traditions of world-class hospitality.
+            <h3 className="font-serif text-lg sm:text-xl font-medium italic text-[#3A4F67] relative z-10">Sustainable Food</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-normal relative z-10">
+              Our culinary team is delighted to serve local, organic and/or sustainable menu items whenever possible. Hanford Hotels &amp; Resorts also participates in the Ocean Wise sustainability food program.
             </p>
           </div>
 
-          <div className="info-panel p-5 sm:p-8 bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl text-center space-y-3 sm:space-y-4 shadow-sm hover:border-[#51867E] transition-colors">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#51867E] border border-[#88B2AB]/30 flex items-center justify-center mx-auto text-[#88B2AB]">
-              <Award className="w-5 h-5 sm:w-6 sm:h-6" />
+          <div className="info-panel p-5 sm:p-8 bg-white border border-slate-200/90 rounded-3xl text-center space-y-3 sm:space-y-4 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-[#3A4F67]/5 rounded-bl-full pointer-events-none" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#3A4F67] group-hover:bg-[#51867E] flex items-center justify-center mx-auto text-[#88B2AB] group-hover:text-white shadow-xs transition-colors relative z-10">
+              <Recycle className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <h3 className="font-serif text-lg sm:text-xl font-medium italic text-[#3A4F67]">Michelin-Starred Dining</h3>
-            <p className="text-xs text-[#2C3744] leading-relaxed font-normal">
-              Hyper-local and seasonal gastronomy crafted by renowned international master chefs, complemented by expert sommelier pairings.
+            <h3 className="font-serif text-lg sm:text-xl font-medium italic text-[#3A4F67] relative z-10">Circular Economy</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-normal relative z-10">
+              We partner with Audubon International to protect local wildlife and ecosystems, ensuring our grounds are managed with environmental care.
             </p>
           </div>
 
-          <div className="info-panel p-5 sm:p-8 bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl text-center space-y-3 sm:space-y-4 shadow-sm hover:border-[#51867E] transition-colors">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#51867E] border border-[#88B2AB]/30 flex items-center justify-center mx-auto text-[#88B2AB]">
-              <Flower2 className="w-5 h-5 sm:w-6 sm:h-6" />
+          <div className="info-panel p-5 sm:p-8 bg-white border border-slate-200/90 rounded-3xl text-center space-y-3 sm:space-y-4 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-[#3A4F67]/5 rounded-bl-full pointer-events-none" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#3A4F67] group-hover:bg-[#51867E] flex items-center justify-center mx-auto text-[#88B2AB] group-hover:text-white shadow-xs transition-colors relative z-10">
+              <Zap className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <h3 className="font-serif text-lg sm:text-xl font-medium italic text-[#3A4F67]">Holistic Thermal Spas</h3>
-            <p className="text-xs text-[#2C3744] leading-relaxed font-normal">
-              Natural thermal springs, elegant hydrotherapy marble pools, and personalized herbal wellness treatments.
+            <h3 className="font-serif text-lg sm:text-xl font-medium italic text-[#3A4F67] relative z-10">Energy management</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-normal relative z-10">
+              Through our carbon management program, we aim to reduce emissions by improving energy efficiency and using renewable energy sources.
             </p>
           </div>
 
-          <div className="info-panel p-5 sm:p-8 bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl text-center space-y-3 sm:space-y-4 shadow-sm hover:border-[#51867E] transition-colors">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#51867E] border border-[#88B2AB]/30 flex items-center justify-center mx-auto text-[#88B2AB]">
-              <MapPin className="w-5 h-5 sm:w-6 sm:h-6" />
+          <div className="info-panel p-5 sm:p-8 bg-white border border-slate-200/90 rounded-3xl text-center space-y-3 sm:space-y-4 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-[#3A4F67]/5 rounded-bl-full pointer-events-none" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#3A4F67] group-hover:bg-[#51867E] flex items-center justify-center mx-auto text-[#88B2AB] group-hover:text-white shadow-xs transition-colors relative z-10">
+              <Sprout className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <h3 className="font-serif text-lg sm:text-xl font-medium italic text-[#3A4F67]">Rare Global Destinations</h3>
-            <p className="text-xs text-[#2C3744] leading-relaxed font-normal">
-              Carefully selected locations that offer unparalleled privacy, breathtaking natural beauty, and deep cultural resonance.
+            <h3 className="font-serif text-lg sm:text-xl font-medium italic text-[#3A4F67] relative z-10">Biodiversity</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-normal relative z-10">
+              Leftover soap, hygiene products, and linens that would otherwise be discarded from guest rooms are donated to multiple Hotel Soap Recycling Organizations nearest, which processes and distributes amenities to vulnerable communities worldwide.
             </p>
           </div>
         </div>
