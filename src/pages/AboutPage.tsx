@@ -226,71 +226,74 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           <h2 className="font-serif italic text-2xl sm:text-5xl text-[#3A4F67] font-semibold">
             Our Collections
           </h2>
-          <p className="text-xs text-[#2C3744] font-medium mt-1.5 sm:mt-2">
+          <p className="text-xs text-slate-600 font-normal mt-1.5 sm:mt-2">
             Today, Hanford Hotels & Resorts operates three distinct collections tailored to every traveler.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {/* Hanford Grand Hotel */}
-          <div className="p-6 sm:p-8 bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl space-y-4 sm:space-y-6 flex flex-col justify-between shadow-sm hover:border-[#51867E] transition-colors">
-            <div className="space-y-3 sm:space-y-4">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-[#88B2AB]/40 flex items-center justify-center text-[#88B2AB] bg-[#51867E]">
+          <div className="p-6 sm:p-8 bg-white border border-slate-200/90 rounded-3xl space-y-4 sm:space-y-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-[#3A4F67]/5 rounded-bl-full pointer-events-none" />
+            <div className="space-y-3 sm:space-y-4 relative z-10">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#3A4F67] group-hover:bg-[#51867E] flex items-center justify-center text-[#88B2AB] group-hover:text-white shadow-xs transition-colors">
                 <Building2 className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <span className="text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#3A4F67] uppercase block">
+              <span className="text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#51867E] uppercase block">
                 CITY LANDMARKS
               </span>
               <h3 className="font-serif italic text-2xl sm:text-3xl text-[#3A4F67] font-semibold">
                 Hanford Grand Hotel
               </h3>
-              <p className="text-xs sm:text-sm text-[#2C3744] font-normal leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
                 A collection of luxury five-star hotels located in the world’s leading cities. Positioned within prestigious business districts and cultural landmarks, each property offers refined accommodations, award-winning dining, grand event venues, wellness facilities, and personalized service for business and leisure travelers alike.
               </p>
             </div>
-            <div className="pt-3 sm:pt-4 border-t border-[#88B2AB]/20 flex items-center justify-end text-xs font-medium text-[#3A4F67]">
+            <div className="pt-3 sm:pt-4 border-t border-slate-100 flex items-center justify-end text-xs font-medium text-[#3A4F67] relative z-10">
               <span className="font-mono text-[10px] uppercase text-[#3A4F67] font-semibold">5-Star Urban Luxury</span>
             </div>
           </div>
 
           {/* Hanford Hotel & Resort */}
-          <div className="p-6 sm:p-8 bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl space-y-4 sm:space-y-6 flex flex-col justify-between shadow-sm hover:border-[#51867E] transition-colors">
-            <div className="space-y-3 sm:space-y-4">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-[#88B2AB]/40 flex items-center justify-center text-[#88B2AB] bg-[#51867E]">
+          <div className="p-6 sm:p-8 bg-white border border-slate-200/90 rounded-3xl space-y-4 sm:space-y-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-[#3A4F67]/5 rounded-bl-full pointer-events-none" />
+            <div className="space-y-3 sm:space-y-4 relative z-10">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#3A4F67] group-hover:bg-[#51867E] flex items-center justify-center text-[#88B2AB] group-hover:text-white shadow-xs transition-colors">
                 <Hotel className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <span className="text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#3A4F67] uppercase block">
+              <span className="text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#51867E] uppercase block">
                 PREMIER DESTINATIONS
               </span>
               <h3 className="font-serif italic text-2xl sm:text-3xl text-[#3A4F67] font-semibold">
                 Hanford Hotel & Resort
               </h3>
-              <p className="text-xs sm:text-sm text-[#2C3744] font-normal leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
                 A collection of sophisticated hotels and resorts in select premier destinations worldwide. Offering the perfect balance of urban convenience and resort serenity, each property delivers elegant accommodations, exceptional dining, versatile event spaces, and attentive service for discerning travelers.
               </p>
             </div>
-            <div className="pt-3 sm:pt-4 border-t border-[#88B2AB]/20 flex items-center justify-end text-xs font-medium text-[#3A4F67]">
+            <div className="pt-3 sm:pt-4 border-t border-slate-100 flex items-center justify-end text-xs font-medium text-[#3A4F67] relative z-10">
               <span className="font-mono text-[10px] uppercase text-[#3A4F67] font-semibold">Sophisticated All-Around Luxury</span>
             </div>
           </div>
 
           {/* Hanford Eco Resort */}
-          <div className="p-6 sm:p-8 bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-2xl space-y-4 sm:space-y-6 flex flex-col justify-between shadow-sm hover:border-[#51867E] transition-colors">
-            <div className="space-y-3 sm:space-y-4">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-[#88B2AB]/40 flex items-center justify-center text-[#88B2AB] bg-[#51867E]">
+          <div className="p-6 sm:p-8 bg-white border border-slate-200/90 rounded-3xl space-y-4 sm:space-y-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-[#3A4F67]/5 rounded-bl-full pointer-events-none" />
+            <div className="space-y-3 sm:space-y-4 relative z-10">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#3A4F67] group-hover:bg-[#51867E] flex items-center justify-center text-[#88B2AB] group-hover:text-white shadow-xs transition-colors">
                 <Trees className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <span className="text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#3A4F67] uppercase block">
+              <span className="text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#51867E] uppercase block">
                 NATURAL SANCTUARIES
               </span>
               <h3 className="font-serif italic text-2xl sm:text-3xl text-[#3A4F67] font-semibold">
                 Hanford Eco Resort
               </h3>
-              <p className="text-xs sm:text-sm text-[#2C3744] font-normal leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
                 A collection of sustainable luxury resorts set within remarkable coastal destinations. Designed to immerse guests in nature while preserving the surrounding environment, each resort features private accommodations, locally inspired experiences, wellness programs, and unforgettable connections with the landscape.
               </p>
             </div>
-            <div className="pt-3 sm:pt-4 border-t border-[#88B2AB]/20 flex items-center justify-end text-xs font-medium text-[#3A4F67]">
+            <div className="pt-3 sm:pt-4 border-t border-slate-100 flex items-center justify-end text-xs font-medium text-[#3A4F67] relative z-10">
               <span className="font-mono text-[10px] uppercase text-[#3A4F67] font-semibold">Sustainable Coastal Retreats</span>
             </div>
           </div>
