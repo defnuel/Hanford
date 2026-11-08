@@ -278,17 +278,17 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
           
           {/* Header & Logo */}
           <div className="flex flex-col sm:flex-row justify-between items-start border-b border-slate-200 pb-8 gap-6">
-            <div className="flex-1 min-w-0">
+            <div className="space-y-1 flex-1 min-w-0">
               <div className="flex items-baseline">
                 <span className="text-2xl sm:text-3xl font-serif font-semibold text-[#3A4F67] tracking-[0.2em] uppercase">
                   HANFORD
                 </span>
-                <span className="text-[11px] sm:text-[13px] font-sans font-bold tracking-normal text-[#3A4F67] ml-5 sm:ml-6 self-start pt-0.5 sm:pt-1 select-none">
+                <span className="text-[11px] sm:text-[13px] font-sans font-bold tracking-normal text-[#3A4F67] ml-4 sm:ml-5 self-start pt-0.5 sm:pt-1 select-none">
                   H&amp;R
                 </span>
               </div>
               <p className="text-[10.5px] sm:text-[11px] font-semibold text-[#51867E] uppercase tracking-[0.14em] mt-1 leading-normal whitespace-nowrap">
-                HOTELS & RESORTS &bull; CENTRAL RESERVATIONS
+                HOTELS &amp; RESORTS &bull; CENTRAL RESERVATIONS
               </p>
               <p className="text-xs text-slate-600 mt-1 font-medium italic leading-normal whitespace-nowrap">
                 An Elevated Way of Staying
@@ -297,7 +297,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 <svg className="w-3.5 h-3.5 fill-current text-slate-800 shrink-0" viewBox="0 0 24 24">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                 </svg>
-                <span>x.com/Hanford_HnR</span>
+                <span>Hanford_HnR</span>
               </div>
             </div>
 
@@ -334,11 +334,11 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               </span>
               <div className="space-y-1 text-[#2C3744] leading-normal">
                 <div><strong>Name:</strong> {booking.guestName || 'Trevor'}</div>
-                <div>
-                  <strong>X Username:</strong>{' '}
-                  <span className="text-[#51867E] font-medium font-mono">
-                    @{booking.xUsername ? booking.xUsername.replace(/^@/, '') : 'DEF'}
-                  </span>
+                <div className="flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5 fill-current text-slate-700 shrink-0" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                  <strong className="text-[#51867E] font-medium font-mono">@{booking.xUsername ? booking.xUsername.replace(/^@/, '') : 'DEF'}</strong>
                 </div>
                 {booking.businessName && booking.businessName.trim() && booking.businessName.trim().toUpperCase() !== 'HANFORD' ? (
                   <div>
@@ -615,7 +615,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
           {/* Pricing Summary */}
           <div className="flex flex-col sm:flex-row justify-between items-start gap-6 border-t border-slate-200 pt-6">
             <div className="text-xs text-slate-500 space-y-2 max-w-xs text-left">
-              <div className="font-bold text-slate-700 uppercase tracking-wider text-[10px]">Notes / Instructions:</div>
+              <div className="font-bold text-slate-700 uppercase tracking-wider text-[10px]">Notes:</div>
               <p className="text-slate-700 whitespace-pre-wrap leading-relaxed">{primaryNoteText}</p>
               {hasDistinctCustomerNote && cleanBookingNotes && (
                 <div className="p-2.5 bg-[#51867E]/5 border border-[#51867E]/20 rounded-xl text-xs">
@@ -666,8 +666,9 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
           </div>
 
           {/* Footer Notice */}
-          <div className="mt-10 pt-6 border-t border-slate-100 text-center text-[10px] text-slate-400 font-light tracking-wider">
-            Thank you for choosing Hanford Hotels & Resorts. For questions regarding this invoice, contact central reservations at @Hanford_HnR on X.
+          <div className="mt-10 pt-6 border-t border-slate-100 text-center text-[10px] text-slate-400 font-light tracking-wider leading-relaxed">
+            Thank you for choosing Hanford Hotels & Resorts.<br />
+            For any inquiry, please contact central reservations at @Hanford_HnR on X.
           </div>
 
         </div>
@@ -677,17 +678,17 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
           <div className="p-10 bg-white text-[#2C3744] w-[800px] min-w-[800px] text-left box-border" ref={exportInvoiceRef}>
             {/* Header & Logo */}
             <div className="flex flex-row justify-between items-start border-b border-slate-200 pb-8 gap-6">
-              <div className="flex-1 min-w-0">
+              <div className="space-y-1 flex-1 min-w-0">
                 <div className="flex items-baseline">
                   <span className="text-3xl font-serif font-semibold text-[#3A4F67] tracking-[0.2em] uppercase">
                     HANFORD
                   </span>
-                  <span className="text-[13px] font-sans font-bold tracking-normal text-[#3A4F67] ml-6 self-start pt-1 select-none">
+                  <span className="text-[13px] font-sans font-bold tracking-normal text-[#3A4F67] ml-5 self-start pt-1 select-none">
                     H&amp;R
                   </span>
                 </div>
                 <p className="text-[10.5px] font-semibold text-[#51867E] uppercase tracking-[0.14em] mt-1 leading-normal whitespace-nowrap">
-                  HOTELS & RESORTS &bull; CENTRAL RESERVATIONS
+                  HOTELS &amp; RESORTS &bull; CENTRAL RESERVATIONS
                 </p>
                 <p className="text-xs text-slate-600 mt-1 font-medium italic leading-normal whitespace-nowrap">
                   An Elevated Way of Staying
@@ -696,7 +697,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                   <svg className="w-3.5 h-3.5 fill-current text-slate-800 shrink-0" viewBox="0 0 24 24">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                   </svg>
-                  <span>x.com/Hanford_HnR</span>
+                  <span>Hanford_HnR</span>
                 </div>
               </div>
 
@@ -733,11 +734,11 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 </span>
                 <div className="space-y-1 text-[#2C3744] leading-normal">
                   <div><strong>Name:</strong> {booking.guestName || 'Trevor'}</div>
-                  <div>
-                    <strong>X Username:</strong>{' '}
-                    <span className="text-[#51867E] font-medium font-mono">
-                      @{booking.xUsername ? booking.xUsername.replace(/^@/, '') : 'DEF'}
-                    </span>
+                  <div className="flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5 fill-current text-slate-700 shrink-0" viewBox="0 0 24 24">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    <strong className="text-[#51867E] font-medium font-mono">@{booking.xUsername ? booking.xUsername.replace(/^@/, '') : 'DEF'}</strong>
                   </div>
                   {booking.businessName && booking.businessName.trim() && booking.businessName.trim().toUpperCase() !== 'HANFORD' ? (
                     <div>
@@ -893,7 +894,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             {/* Pricing Summary */}
             <div className="flex flex-row justify-between items-start gap-6 border-t border-slate-200 pt-6">
               <div className="text-xs text-slate-500 space-y-2 max-w-xs text-left">
-                <div className="font-bold text-slate-700 uppercase tracking-wider text-[10px]">Notes / Instructions:</div>
+                <div className="font-bold text-slate-700 uppercase tracking-wider text-[10px]">Notes:</div>
                 <p className="text-slate-700 whitespace-pre-wrap leading-relaxed">{primaryNoteText}</p>
                 {hasDistinctCustomerNote && cleanBookingNotes && (
                   <div className="p-2.5 bg-[#51867E]/5 border border-[#51867E]/20 rounded-xl text-xs">
@@ -944,8 +945,9 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             </div>
 
             {/* Footer Notice */}
-            <div className="mt-10 pt-6 border-t border-slate-100 text-center text-[10px] text-slate-400 font-light tracking-wider">
-              Thank you for choosing Hanford Hotels & Resorts. For questions regarding this invoice, contact central reservations at @Hanford_HnR on X.
+            <div className="mt-10 pt-6 border-t border-slate-100 text-center text-[10px] text-slate-400 font-light tracking-wider leading-relaxed">
+              Thank you for choosing Hanford Hotels & Resorts.<br />
+              For any inquiry, please contact central reservations at @Hanford_HnR on X.
             </div>
           </div>
         </div>

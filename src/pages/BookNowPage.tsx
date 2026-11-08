@@ -568,7 +568,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     </span>
                   </div>
                   <div className="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] text-[#51867E] uppercase">
-                    HOTELS & RESORTS • CENTRAL RESERVATIONS
+                    HOTELS &amp; RESORTS • CENTRAL RESERVATIONS
                   </div>
                   <div className="text-xs sm:text-sm italic font-serif text-slate-500 pt-0.5">
                     An Elevated Way of Staying
@@ -582,7 +582,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     <svg className="w-3.5 h-3.5 fill-current text-slate-700 shrink-0" viewBox="0 0 24 24">
                       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                     </svg>
-                    <span className="underline font-medium">x.com/Hanford_HnR</span>
+                    <span className="underline font-medium">Hanford_HnR</span>
                   </a>
                 </div>
 
@@ -626,7 +626,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       <svg className="w-3.5 h-3.5 fill-current text-slate-700 shrink-0" viewBox="0 0 24 24">
                         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                       </svg>
-                      <span>X Handle: <strong className="text-[#51867E]">@{confirmedBooking.inquiry.xUsername ? confirmedBooking.inquiry.xUsername.replace(/^@/, '') : 'def'}</strong></span>
+                      <strong className="text-[#51867E]">@{confirmedBooking.inquiry.xUsername ? confirmedBooking.inquiry.xUsername.replace(/^@/, '') : 'def'}</strong>
                     </div>
                     {confirmedBooking.inquiry.businessName && confirmedBooking.inquiry.businessName.trim() !== '' && (
                       <div>Business Name: <strong className="text-slate-700">{confirmedBooking.inquiry.businessName.trim()}</strong></div>
@@ -801,7 +801,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 {/* Notes / Instructions */}
                 <div className="sm:col-span-6 space-y-1">
                   <span className="text-[10px] font-bold text-[#3A4F67] uppercase tracking-wider block">
-                    NOTES / INSTRUCTIONS:
+                    NOTES:
                   </span>
                   <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap">
                     {confirmedBooking.inquiry.notes && confirmedBooking.inquiry.notes.trim() !== '' && confirmedBooking.inquiry.notes.trim().toUpperCase() !== 'N/A'
@@ -853,22 +853,19 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
               </div>
 
               {/* Thank you note */}
-              <div className="py-2 border-t border-slate-100 text-center text-[11px] text-slate-400 italic">
-                Thank you for choosing Hanford Hotels & Resorts. For questions regarding this invoice, contact central reservations at @Hanford_HnR on X.
+              <div className="py-2 border-t border-slate-100 text-center text-[11px] text-slate-400 italic leading-relaxed">
+                Thank you for choosing Hanford Hotels & Resorts.<br />
+                For any inquiry, please contact central reservations at @Hanford_HnR on X.
               </div>
 
               {/* Payment Details / Detail Pembayaran Card */}
               <div className="bg-[#F2F7F6] border border-[#88B2AB]/30 p-3.5 sm:p-4 rounded-xl text-left space-y-2 mt-3 shadow-2xs">
                 <div className="flex items-center gap-2 border-b border-[#88B2AB]/20 pb-1.5">
                   <CreditCard className="w-4 h-4 text-[#51867E]" />
-                  <span className="text-xs font-bold text-[#3A4F67] uppercase tracking-wider">
-                    PAYMENT DETAILS
+                  <span className="text-xs font-bold text-[#3A4F67] tracking-wider">
+                    Please process your payment to:
                   </span>
                 </div>
-
-                <p className="text-xs text-slate-600 font-medium">
-                  Please process your payment to:
-                </p>
 
                 <div className="bg-white p-3 sm:p-4 rounded-xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 text-xs items-center shadow-2xs">
                   <div>
@@ -902,7 +899,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
               {/* Footer Stamp */}
               <div className="pt-3 border-t border-slate-200/80 mt-3 text-center text-xs text-slate-400 flex items-center justify-center">
-                <span>© 2026 Hanford Hotels & Resorts Central Register</span>
+                <span>© 2026 Hanford Hotels & Resorts</span>
               </div>
             </div>
 
@@ -919,12 +916,12 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       <span className="font-serif text-3xl font-semibold tracking-[0.2em] text-[#3A4F67] uppercase">
                         HANFORD
                       </span>
-                      <span className="text-[13px] font-sans font-bold tracking-normal text-[#3A4F67] ml-6 self-start pt-1 select-none">
+                      <span className="text-[13px] font-sans font-bold tracking-normal text-[#3A4F67] ml-5 self-start pt-1 select-none">
                         H&amp;R
                       </span>
                     </div>
                     <div className="text-[11px] font-bold tracking-[0.2em] text-[#51867E] uppercase whitespace-nowrap leading-normal">
-                      HOTELS & RESORTS • CENTRAL RESERVATIONS
+                      HOTELS &amp; RESORTS • CENTRAL RESERVATIONS
                     </div>
                     <div className="text-sm italic font-serif text-slate-500 pt-0.5 whitespace-nowrap leading-normal">
                       An Elevated Way of Staying
@@ -933,7 +930,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       <svg className="w-3.5 h-3.5 fill-current text-slate-700 shrink-0" viewBox="0 0 24 24">
                         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                       </svg>
-                      <span className="underline font-medium">x.com/Hanford_HnR</span>
+                      <span className="underline font-medium">Hanford_HnR</span>
                     </div>
                   </div>
 
@@ -977,7 +974,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         <svg className="w-3.5 h-3.5 fill-current text-slate-700 shrink-0" viewBox="0 0 24 24">
                           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                         </svg>
-                        <span>X Handle: <strong className="text-[#51867E]">@{confirmedBooking.inquiry.xUsername ? confirmedBooking.inquiry.xUsername.replace(/^@/, '') : 'def'}</strong></span>
+                        <strong className="text-[#51867E]">@{confirmedBooking.inquiry.xUsername ? confirmedBooking.inquiry.xUsername.replace(/^@/, '') : 'def'}</strong>
                       </div>
                       {confirmedBooking.inquiry.businessName && confirmedBooking.inquiry.businessName.trim() !== '' && (
                         <div>Business Name: <strong className="text-slate-700">{confirmedBooking.inquiry.businessName.trim()}</strong></div>
@@ -1149,7 +1146,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 <div className="grid grid-cols-12 gap-6 my-3 text-left items-start">
                   <div className="col-span-6 space-y-1">
                     <span className="text-[10px] font-bold text-[#3A4F67] uppercase tracking-wider block">
-                      NOTES / INSTRUCTIONS:
+                      NOTES:
                     </span>
                     <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap">
                       {confirmedBooking.inquiry.notes && confirmedBooking.inquiry.notes.trim() !== '' && confirmedBooking.inquiry.notes.trim().toUpperCase() !== 'N/A'
@@ -1200,22 +1197,19 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 </div>
 
                 {/* Thank you note */}
-                <div className="py-2 border-t border-slate-100 text-center text-[11px] text-slate-400 italic">
-                  Thank you for choosing Hanford Hotels & Resorts. For questions regarding this invoice, contact central reservations at @Hanford_HnR on X.
+                <div className="py-2 border-t border-slate-100 text-center text-[11px] text-slate-400 italic leading-relaxed">
+                  Thank you for choosing Hanford Hotels & Resorts.<br />
+                  For any inquiry, please contact central reservations at @Hanford_HnR on X.
                 </div>
 
                 {/* Payment Details Card */}
                 <div className="bg-[#F2F7F6] border border-[#88B2AB]/30 p-4 rounded-xl text-left space-y-2 mt-3 shadow-2xs">
                   <div className="flex items-center gap-2 border-b border-[#88B2AB]/20 pb-1.5">
                     <CreditCard className="w-4 h-4 text-[#51867E]" />
-                    <span className="text-xs font-bold text-[#3A4F67] uppercase tracking-wider">
-                      PAYMENT DETAILS
+                    <span className="text-xs font-bold text-[#3A4F67] tracking-wider">
+                      Please process your payment to:
                     </span>
                   </div>
-
-                  <p className="text-xs text-slate-600 font-medium">
-                    Please process your payment to:
-                  </p>
 
                   <div className="bg-white p-4 rounded-xl border border-slate-200/80 grid grid-cols-3 gap-4 text-xs items-center shadow-2xs">
                     <div>
@@ -1249,7 +1243,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
                 {/* Footer Stamp */}
                 <div className="pt-3 border-t border-slate-200/80 mt-3 text-center text-xs text-slate-400 flex items-center justify-center">
-                  <span>© 2026 Hanford Hotels & Resorts Central Register</span>
+                  <span>© 2026 Hanford Hotels & Resorts</span>
                 </div>
               </div>
             </div>

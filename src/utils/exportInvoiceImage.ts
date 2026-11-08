@@ -44,6 +44,96 @@ function runWithTimeout<T>(promise: Promise<T>, ms: number, stepLabel: string): 
   });
 }
 
+const dataUrlCache = new Map<string, string>();
+
+/**
+ * Fetch an image URL (including local assets) and convert to Base64 Data URL.
+ */
+async function fetchAsDataUrl(url: string): Promise<string> {
+  if (!url) return '';
+  if (url.startsWith('data:')) return url;
+  if (dataUrlCache.has(url)) return dataUrlCache.get(url)!;
+
+  // 1. Try direct fetch
+  try {
+    const res = await runWithTimeout(fetch(url, { mode: 'cors' }), 3000, 'direct image fetch');
+    if (res.ok) {
+      const blob = await res.blob();
+      const result = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+        reader.onerror = () => resolve('');
+        reader.readAsDataURL(blob);
+      });
+      if (result) {
+        dataUrlCache.set(url, result);
+        return result;
+      }
+    }
+  } catch {
+    // direct fetch failed, fallback to proxy if external
+  }
+
+  // 2. If external URL, try backend proxy endpoint
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    try {
+      const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`;
+      const res = await runWithTimeout(fetch(proxyUrl), 3500, 'proxy image fetch');
+      if (res.ok) {
+        const blob = await res.blob();
+        const result = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+          reader.onerror = () => resolve('');
+          reader.readAsDataURL(blob);
+        });
+        if (result) {
+          dataUrlCache.set(url, result);
+          return result;
+        }
+      }
+    } catch (err) {
+      console.warn('[Invoice Exporter] Proxy fetch error for:', url, err);
+    }
+  }
+
+  return url;
+}
+
+/**
+ * Inlines all <img> tags inside an element as Base64 Data URLs so canvas rendering engines
+ * never suffer from missing images, CORS blocking, or offscreen decoding failures.
+ */
+async function inlineImagesInElement(element: HTMLElement) {
+  const images = Array.from(element.querySelectorAll('img'));
+  await Promise.allSettled(
+    images.map(async (img) => {
+      const src = img.src || img.getAttribute('src');
+      if (src && !src.startsWith('data:')) {
+        const dataUrl = await fetchAsDataUrl(src);
+        if (dataUrl && dataUrl.startsWith('data:')) {
+          img.src = dataUrl;
+          img.removeAttribute('crossorigin');
+          img.removeAttribute('referrerpolicy');
+        }
+      }
+      if (!img.complete) {
+        await new Promise((res) => {
+          img.onload = res;
+          img.onerror = res;
+        });
+      }
+      if (img.decode) {
+        try {
+          await img.decode();
+        } catch {
+          // Non-blocking decode failure
+        }
+      }
+    })
+  );
+}
+
 /**
  * Exports the 800px desktop-format invoice layout as a PNG image for direct download on Mobile & Desktop.
  */
@@ -58,6 +148,16 @@ export async function exportInvoiceAsImage(
 
   if (!primaryNode) {
     throw new Error('Tidak ditemukan elemen invoice untuk diunduh.');
+  }
+
+  // Pre-inline all images (especially Hanford brand logo) as Base64 so canvas captures them reliably
+  try {
+    await inlineImagesInElement(primaryNode);
+    if (secondaryNode) {
+      await inlineImagesInElement(secondaryNode);
+    }
+  } catch (imgErr) {
+    console.warn('[Invoice Exporter] Image inlining non-blocking warning:', imgErr);
   }
 
   // Ensure all web fonts (Plus Jakarta Sans, Cormorant Garamond, etc.) are loaded before rendering
@@ -103,6 +203,16 @@ export async function exportInvoiceAsImage(
     element.style.display = 'block';
     element.style.backgroundColor = '#FFFFFF';
     element.style.boxSizing = 'border-box';
+
+    // Synchronize cloned images with Base64 sources from primaryNode
+    const origImages = Array.from(primaryNode.querySelectorAll('img'));
+    const clonedImages = Array.from(element.querySelectorAll('img'));
+    clonedImages.forEach((clonedImg, idx) => {
+      const orig = origImages[idx];
+      if (orig && orig.src) {
+        clonedImg.src = orig.src;
+      }
+    });
 
     // Ensure status stamps/badges never wrap words or break onto two lines during canvas capture
     clonedDoc.querySelectorAll('*').forEach((node: Element) => {

@@ -276,11 +276,13 @@ export function generateInvoiceHtml(booking: BookingInquiry, requestedStatus?: '
       <div class="watermark">${statusLabel}</div>
 
       <div class="header">
-        <div>
-          <div class="brand-title"><span>HANFORD</span><span class="brand-hr">H&amp;R</span></div>
-          <div class="brand-subtitle">Hotels &amp; Resorts</div>
-          <div style="font-size: 12px; color: #64748B; margin-top: 8px;">
-            Central Reservations &amp; Billing Office
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <div>
+            <div class="brand-title"><span>HANFORD</span><span class="brand-hr">H&amp;R</span></div>
+            <div class="brand-subtitle">Hotels &amp; Resorts</div>
+            <div style="font-size: 12px; color: #64748B; margin-top: 4px;">
+              Central Reservations &amp; Billing Office
+            </div>
           </div>
         </div>
 
@@ -299,7 +301,7 @@ export function generateInvoiceHtml(booking: BookingInquiry, requestedStatus?: '
         <div class="details-box">
           <h3>Billed To (Guest Details)</h3>
           <p><strong>Name:</strong> ${escapeHtml(guestName)}</p>
-          ${xUsername ? `<p><strong>X Handle:</strong> ${escapeHtml(xUsername)}</p>` : ''}
+          ${xUsername ? `<p style="display: flex; align-items: center; gap: 6px;"><svg style="width: 13px; height: 13px; fill: currentColor;" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><strong style="color: #51867E;">@${escapeHtml(xUsername.replace(/^@/, ''))}</strong></p>` : ''}
           <p><strong>Issued Date:</strong> ${escapeHtml(issueDate)}</p>
         </div>
 
@@ -349,7 +351,7 @@ export function generateInvoiceHtml(booking: BookingInquiry, requestedStatus?: '
 
       <div class="footer-note">
         <p>Thank you for choosing Hanford Hotels &amp; Resorts.</p>
-        <p>For questions or custom billing adjustments, please contact billing@hanfordhotels.com</p>
+        <p>For any inquiry, please contact central reservations at @Hanford_HnR on X.</p>
       </div>
     </div>
   </div>
