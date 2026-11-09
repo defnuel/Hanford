@@ -860,9 +860,9 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
               {/* Payment Details / Detail Pembayaran Card */}
               <div className="bg-[#F2F7F6] border border-[#88B2AB]/30 p-3.5 sm:p-4 rounded-xl text-left space-y-2 mt-3 shadow-2xs">
-                <div className="flex items-center gap-2 border-b border-[#88B2AB]/20 pb-1.5">
-                  <CreditCard className="w-4 h-4 text-[#51867E]" />
-                  <span className="text-xs font-bold text-[#3A4F67] tracking-wider">
+                <div className="flex items-center gap-2 border-b border-[#88B2AB]/20 pb-1.5 flex-nowrap">
+                  <CreditCard className="w-4 h-4 text-[#51867E] shrink-0" />
+                  <span className="text-xs font-bold text-[#3A4F67] tracking-wider whitespace-nowrap inline-block">
                     Please process your payment to:
                   </span>
                 </div>
@@ -899,7 +899,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
               {/* Footer Stamp */}
               <div className="pt-3 border-t border-slate-200/80 mt-3 text-center text-xs text-slate-400 flex items-center justify-center">
-                <span>© 2026 Hanford Hotels & Resorts</span>
+                <span className="whitespace-nowrap inline-block">© 2026 Hanford Hotels & Resorts</span>
               </div>
             </div>
 
@@ -1204,9 +1204,9 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
                 {/* Payment Details Card */}
                 <div className="bg-[#F2F7F6] border border-[#88B2AB]/30 p-4 rounded-xl text-left space-y-2 mt-3 shadow-2xs">
-                  <div className="flex items-center gap-2 border-b border-[#88B2AB]/20 pb-1.5">
-                    <CreditCard className="w-4 h-4 text-[#51867E]" />
-                    <span className="text-xs font-bold text-[#3A4F67] tracking-wider">
+                  <div className="flex items-center gap-2 border-b border-[#88B2AB]/20 pb-1.5 flex-nowrap">
+                    <CreditCard className="w-4 h-4 text-[#51867E] shrink-0" />
+                    <span className="text-xs font-bold text-[#3A4F67] tracking-wider whitespace-nowrap inline-block">
                       Please process your payment to:
                     </span>
                   </div>
@@ -1243,7 +1243,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
                 {/* Footer Stamp */}
                 <div className="pt-3 border-t border-slate-200/80 mt-3 text-center text-xs text-slate-400 flex items-center justify-center">
-                  <span>© 2026 Hanford Hotels & Resorts</span>
+                  <span className="whitespace-nowrap inline-block">© 2026 Hanford Hotels & Resorts</span>
                 </div>
               </div>
             </div>
@@ -1272,20 +1272,20 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
               <div>
                 <h4 className="font-bold text-[#3A4F67] uppercase tracking-wider flex items-center gap-2 border-b border-[#88B2AB]/30 pb-1.5 text-xs sm:text-sm">
                   <CreditCard className="w-4 h-4 text-[#51867E]" />
-                  Payment & Confirmation Instructions
+                  PAYMENT &amp; CONFIRMATION INSTRUCTIONS
                 </h4>
                 <p className="text-[11px] text-[#5A6E82] italic leading-tight mt-1">
-                  Instruksi Pembayaran dan Konfirmasi Booking
+                  (Instruksi Pembayaran &amp; Konfirmasi)
                 </p>
               </div>
 
               <div className="space-y-3 text-xs text-[#2C3744]">
-                <div className="bg-[#EAF2F1]/30 p-2.5 rounded-lg border border-[#88B2AB]/20">
-                  <p className="font-semibold text-[#3A4F67] text-xs">
-                    Please complete payment within 48 hours to confirm your reservation.
+                <div className="bg-[#EAF2F1]/50 p-3 rounded-xl border border-[#88B2AB]/30 text-xs text-[#2C3744] space-y-1">
+                  <p className="leading-relaxed">
+                    <strong className="text-[#3A4F67]">Time Limit / Batas Waktu:</strong> Please complete payment within <strong className="text-[#3A4F67]">48 hours</strong> to confirm your reservation.
                   </p>
-                  <p className="text-[10.5px] text-[#5A6E82] italic leading-tight mt-0.5">
-                    (Silakan lakukan pembayaran dalam waktu 48 jam untuk mengonfirmasi reservasi Anda.)
+                  <p className="text-[10.5px] text-[#5A6E82] italic leading-tight">
+                    Silakan lakukan pembayaran dalam waktu 48 jam untuk mengonfirmasi reservasi Anda.
                   </p>
                 </div>
 
@@ -1294,16 +1294,22 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   <div className="bg-[#EAF2F1]/50 p-3.5 rounded-xl border border-[#88B2AB]/30 space-y-2 flex flex-col justify-between">
                     <div>
                       <strong className="text-[#3A4F67] block font-bold text-xs uppercase tracking-wider leading-snug">
-                        1. Send your payment to our Bank Account:
+                        1. Complete Form &amp; Transfer Payment
                       </strong>
                       <span className="text-[10px] text-[#5A6E82] italic block leading-tight mt-0.5">
-                        (Transfer pembayaran anda ke Rekening Bank kami:)
+                        Isi Form &amp; Transfer Pembayaran
                       </span>
+                      <p className="text-[11px] text-[#2C3744] leading-snug mt-2">
+                        After filling out the reservation form, send your payment to:
+                      </p>
+                      <p className="text-[10px] text-[#5A6E82] italic leading-tight mt-0.5">
+                        (Setelah mengisi formulir reservasi, lakukan transfer bank ke:)
+                      </p>
 
                       <div className="space-y-1 text-xs pt-2.5 border-t border-[#88B2AB]/20 mt-2">
-                        <div>Bank Name: <strong className="text-[#3A4F67]">CHOBANK</strong></div>
-                        <div>Account Name: <strong className="text-[#3A4F67]">Hanford Hotels and Resorts</strong></div>
-                        <div>Account Number: <strong className="text-[#51867E] font-mono font-bold text-sm">3076 6324 4788 9928</strong></div>
+                        <div>&bull; <strong className="text-[#3A4F67]">Bank Name:</strong> CHOBANK</div>
+                        <div className="text-slate-700 font-medium pl-3">Hanford Hotels and Resorts</div>
+                        <div className="pl-3 font-mono font-bold text-sm text-[#51867E]">3076 6324 4788 9928</div>
                       </div>
                     </div>
                     <div className="text-[10.5px] text-[#5A6E82] italic pt-1 border-t border-[#88B2AB]/20">
@@ -1315,19 +1321,18 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   <div className="bg-[#EAF2F1]/50 p-3.5 rounded-xl border border-[#88B2AB]/30 space-y-2 flex flex-col justify-between">
                     <div>
                       <strong className="text-[#3A4F67] block font-bold text-xs uppercase tracking-wider leading-snug">
-                        2. Follow us on @Hanford_HnR
+                        2. Follow Us on X (Twitter)
                       </strong>
                       <span className="text-[10px] text-[#5A6E82] italic block leading-tight mt-0.5">
-                        (Ikuti akun resmi kami di @Hanford_HnR)
+                        Follow Akun X (Twitter)
                       </span>
 
                       <div className="space-y-1.5 text-xs pt-2.5 border-t border-[#88B2AB]/20 mt-2">
-                        <div>Official Account: <a href="https://x.com/Hanford_HnR" target="_blank" rel="noopener noreferrer" className="text-[#51867E] underline font-bold">@Hanford_HnR</a></div>
                         <p className="text-[11px] text-[#2C3744] leading-relaxed">
-                          Follow our official X account to receive direct updates & confirmation.
+                          Follow <a href="https://x.com/Hanford_HnR" target="_blank" rel="noopener noreferrer" className="text-[#51867E] underline font-bold">@Hanford_HnR</a> on X to receive direct updates &amp; confirmation.
                         </p>
                         <p className="text-[10px] text-[#5A6E82] italic leading-tight">
-                          (Ikuti akun X resmi kami untuk mendapatkan pembaruan & konfirmasi langsung.)
+                          (Ikuti akun X resmi kami di @Hanford_HnR untuk mendapatkan pembaruan &amp; konfirmasi langsung.)
                         </p>
                       </div>
                     </div>
@@ -1337,18 +1342,18 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   <div className="bg-[#EAF2F1]/50 p-3.5 rounded-xl border border-[#88B2AB]/30 space-y-2 flex flex-col justify-between">
                     <div>
                       <strong className="text-[#3A4F67] block font-bold text-xs uppercase tracking-wider leading-snug">
-                        3. Send your Confirmation on X (Twitter)
+                        3. Send Your Confirmation
                       </strong>
                       <span className="text-[10px] text-[#5A6E82] italic block leading-tight mt-0.5">
-                        (Kirim Konfirmasi Anda melalui X (Twitter))
+                        Kirim Konfirmasi
                       </span>
 
                       <div className="space-y-1.5 text-xs pt-2.5 border-t border-[#88B2AB]/20 mt-2">
                         <p className="text-[11px] text-[#2C3744] leading-snug">
-                          Send a DM or post a tweet mentioning <strong className="text-[#51867E]">@Hanford_HnR</strong> with your Invoice & Transfer Proof.
+                          Send a DM or post a tweet mentioning <strong className="text-[#51867E]">@Hanford_HnR</strong> with your <strong className="text-[#3A4F67]">Invoice &amp; Transfer Proof</strong>.
                         </p>
                         <p className="text-[10px] text-[#5A6E82] italic leading-tight">
-                          (Kirim DM atau unggah tweet dengan menyebut @Hanford_HnR beserta Invoice & Bukti Transfer Anda.)
+                          (Kirim DM atau unggah tweet dengan menyebut @Hanford_HnR beserta Invoice &amp; Bukti Transfer Anda.)
                         </p>
                       </div>
                     </div>

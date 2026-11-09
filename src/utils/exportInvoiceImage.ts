@@ -214,7 +214,7 @@ export async function exportInvoiceAsImage(
       }
     });
 
-    // Ensure status stamps/badges never wrap words or break onto two lines during canvas capture
+    // Ensure status stamps/badges, payment instructions header, and copyright never wrap words or break onto two lines during canvas capture
     clonedDoc.querySelectorAll('*').forEach((node: Element) => {
       const el = node as HTMLElement;
       const text = el.textContent ? el.textContent.trim() : '';
@@ -223,17 +223,23 @@ export async function exportInvoiceAsImage(
         text.includes('PAID IN FULL') ||
         text.includes('UNPAID - INVOICE PENDING') ||
         text.includes('OFFICIAL RECEIPT') ||
-        text.includes('OFFICIAL INVOICE')
+        text.includes('OFFICIAL INVOICE') ||
+        text === 'Please process your payment to:' ||
+        text.includes('Please process your payment to:') ||
+        text === '© 2026 Hanford Hotels & Resorts' ||
+        text.includes('© 2026 Hanford Hotels & Resorts')
       ) {
         el.style.whiteSpace = 'nowrap';
         el.style.wordBreak = 'keep-all';
         el.style.overflowWrap = 'normal';
         if (el.tagName === 'SPAN') {
           el.style.display = 'inline-block';
+          el.style.whiteSpace = 'nowrap';
         } else if (el.tagName === 'DIV') {
           el.style.display = 'inline-flex';
           el.style.flexWrap = 'nowrap';
           el.style.alignItems = 'center';
+          el.style.whiteSpace = 'nowrap';
         }
       }
     });
