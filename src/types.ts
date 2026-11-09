@@ -196,6 +196,7 @@ export interface BookingInquiry {
 
   createdAt?: string;
   status?: 'Pending' | 'Confirmed' | 'Reviewed';
+  source?: string;
 }
 
 export interface ApiResponse<T> {

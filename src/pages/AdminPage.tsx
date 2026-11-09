@@ -157,7 +157,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             }`}
           >
             <Building2 className="w-4 h-4" />
-            <span>Locations ({properties.length})</span>
+            <span>Locations</span>
           </button>
 
           <button
@@ -169,7 +169,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             }`}
           >
             <FolderGit2 className="w-4 h-4" />
-            <span>Collaborations ({projects.length})</span>
+            <span>Collaborations</span>
           </button>
 
           <button
@@ -181,7 +181,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             }`}
           >
             <FileText className="w-4 h-4" />
-            <span>Invoices ({bookings.length})</span>
+            <span>Invoices</span>
           </button>
 
           <button
@@ -220,7 +220,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             }`}
           >
             <Users className="w-4 h-4" />
-            <span>Admin Users ({adminUsers.length})</span>
+            <span>Admin Users</span>
             {pendingCount > 0 && (
               <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
             )}

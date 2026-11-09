@@ -913,111 +913,8 @@ export function saveAdminProjects(projects: Project[]) {
   }
 }
 
-const DEFAULT_MOCK_BOOKINGS: BookingInquiry[] = [
-  {
-    id: 'HNF-2026-U8821',
-    bookingId: 'HNF-2026-U8821',
-    createdAt: new Date(Date.now() - 3600000 * 12).toISOString(),
-    propertySlug: 'hanford-hotel-resort-uluwatu-bali',
-    propertyName: 'Hanford Hotel & Resort Uluwatu, Bali',
-    guestName: 'Agatha Madeleine',
-    xUsername: '@pendxnts',
-    guestEmail: 'agatha.madeleine@example.com',
-    bookOption: 'both', // Room & Event
-    deluxeRooms: 1,
-    privateVillas: 1,
-    checkInDate: '2026-08-13',
-    checkOutDate: '2026-08-16',
-    numberOfNights: 3,
-    eventDate: undefined,
-    totalAmount: 5850,
-    paymentStatus: 'PAID',
-    status: 'Confirmed',
-    notes: 'Room & Event booking. VIP guest pass and welcome arrangement requested.'
-  },
-  {
-    id: 'HNF-2026-G1042',
-    bookingId: 'HNF-2026-G1042',
-    createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
-    propertySlug: 'hanford-hotel-resort-uluwatu-bali',
-    propertyName: 'Hanford Hotel & Resort Uluwatu, Bali',
-    guestName: 'Gavin Elian Baskoro',
-    xUsername: '@gavinbaskoro',
-    guestEmail: 'gavin.elian@example.com',
-    bookOption: 'room',
-    privateVillas: 1,
-    checkInDate: '2026-08-15',
-    checkOutDate: '2026-08-18',
-    numberOfNights: 3,
-    totalAmount: 4950,
-    paymentStatus: 'PAID',
-    status: 'Confirmed',
-    notes: 'Private Pool Villa PMV - 03 - A reserved.'
-  },
-  {
-    id: 'HNF-2026-X8921',
-    bookingId: 'HNF-2026-X8921',
-    createdAt: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
-    propertySlug: 'hanford-resort-spa-aspen',
-    propertyName: 'Hanford Resort & Spa Aspen',
-    guestName: 'Alexander Wright',
-    xUsername: '@alexwright_x',
-    guestEmail: 'alex.wright@example.com',
-    bookOption: 'room',
-    standardRooms: 1,
-    deluxeRooms: 1,
-    checkInDate: '2026-08-10',
-    checkOutDate: '2026-08-14',
-    numberOfNights: 4,
-    totalAmount: 3250,
-    paymentStatus: 'UNPAID',
-    status: 'Pending',
-    notes: 'Requires mountain view and early check-in if available.'
-  },
-  {
-    id: 'HNF-2026-M4109',
-    bookingId: 'HNF-2026-M4109',
-    createdAt: new Date(Date.now() - 3600000 * 24 * 4).toISOString(),
-    propertySlug: 'hanford-grand-hotel-tokyo',
-    propertyName: 'Hanford Grand Hotel Tokyo',
-    guestName: 'Eleanor Vance',
-    xUsername: '@eleanor_vance',
-    guestEmail: 'eleanor.vance@tokyogroup.jp',
-    bookOption: 'event',
-    eventAttendees: 80,
-    eventAddons: 'catering',
-    cateringPax: 80,
-    eventDate: '2026-09-01',
-    totalAmount: 8500,
-    paymentStatus: 'PAID',
-    status: 'Confirmed',
-    notes: 'Corporate networking evening with customized menu.'
-  },
-  {
-    id: 'HNF-2026-K7304',
-    bookingId: 'HNF-2026-K7304',
-    createdAt: new Date(Date.now() - 3600000 * 24 * 6).toISOString(),
-    propertySlug: 'hanford-eco-resort-bali',
-    propertyName: 'Hanford Eco Resort Bali',
-    guestName: 'Davenport Luxury Group',
-    xUsername: '@davenport_co',
-    guestEmail: 'contact@davenport.com',
-    bookOption: 'both',
-    deluxeRooms: 2,
-    privateVillas: 1,
-    checkInDate: '2026-08-20',
-    checkOutDate: '2026-08-25',
-    numberOfNights: 5,
-    eventAttendees: 25,
-    eventAddons: 'both',
-    cateringPax: 25,
-    eventDate: '2026-08-22',
-    totalAmount: 14200,
-    paymentStatus: 'UNPAID',
-    status: 'Pending',
-    notes: 'VIP guest retreat and private villa welcome ceremony.'
-  }
-];
+// Empty default mock bookings list - data is exclusively sourced from Google Sheets
+const DEFAULT_MOCK_BOOKINGS: BookingInquiry[] = [];
 
 function transformSheetRowToBookingClient(row: Record<string, string>, index: number): BookingInquiry {
   const getVal = (...keys: string[]): string => {
@@ -1244,18 +1141,24 @@ function mergeBookingWithLocal(sb: BookingInquiry, matchedLocal: BookingInquiry)
     subtotalBeforeDiscount: matchedLocal.subtotalBeforeDiscount !== undefined ? matchedLocal.subtotalBeforeDiscount : sb.subtotalBeforeDiscount,
     subtotalBeforeTax: matchedLocal.subtotalBeforeTax !== undefined ? matchedLocal.subtotalBeforeTax : sb.subtotalBeforeTax,
     taxAmount: matchedLocal.taxAmount !== undefined ? matchedLocal.taxAmount : sb.taxAmount,
-    paymentStatus: matchedLocal.paymentStatus || sb.paymentStatus,
-    status: matchedLocal.status || sb.status
+    paymentStatus: (sb.paymentStatus === 'PAID' || sb.paymentStatus === 'UNPAID')
+      ? sb.paymentStatus
+      : (matchedLocal.paymentStatus || 'UNPAID'),
+    status: sb.paymentStatus === 'PAID'
+      ? 'Confirmed'
+      : (sb.paymentStatus === 'UNPAID' ? 'Pending' : (matchedLocal.status || 'Pending'))
   };
 }
 
 export async function fetchBookings(): Promise<BookingInquiry[]> {
   const deletedIds = getDeletedBookingIds();
+  const dummyIds = ['HNF-2026-U8821', 'HNF-2026-G1042', 'HNF-2026-X8921', 'HNF-2026-M4109', 'HNF-2026-K7304'];
+
   try {
     const res = await fetch('/api/bookings');
     if (res.ok) {
       const json = await res.json();
-      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+      if (json.success && Array.isArray(json.data)) {
         const localBookings = fetchBookingsFromStorage();
         const sheetBookings: BookingInquiry[] = json.data;
 
@@ -1267,13 +1170,22 @@ export async function fetchBookings(): Promise<BookingInquiry[]> {
           return sb;
         });
 
+        // Only include manual admin bookings if any exist and are not dummy
         localBookings.forEach((lb) => {
-          if (!merged.some((m) => (m.bookingId || m.id) === (lb.bookingId || lb.id))) {
+          const id = lb.bookingId || lb.id || '';
+          if (
+            lb.source === 'admin_manual' &&
+            !dummyIds.includes(id) &&
+            !merged.some((m) => (m.bookingId || m.id) === id)
+          ) {
             merged.unshift(lb);
           }
         });
 
-        const activeMerged = merged.filter((b) => !deletedIds.includes(b.bookingId || b.id || ''));
+        const activeMerged = merged.filter((b) => {
+          const id = b.bookingId || b.id || '';
+          return !deletedIds.includes(id) && !dummyIds.includes(id);
+        });
         saveBookingsToStorage(activeMerged);
         return activeMerged;
       }
@@ -1296,12 +1208,20 @@ export async function fetchBookings(): Promise<BookingInquiry[]> {
       });
 
       localBookings.forEach((lb) => {
-        if (!merged.some((m) => (m.bookingId || m.id) === (lb.bookingId || lb.id))) {
+        const id = lb.bookingId || lb.id || '';
+        if (
+          lb.source === 'admin_manual' &&
+          !dummyIds.includes(id) &&
+          !merged.some((m) => (m.bookingId || m.id) === id)
+        ) {
           merged.unshift(lb);
         }
       });
 
-      const activeMerged = merged.filter((b) => !deletedIds.includes(b.bookingId || b.id || ''));
+      const activeMerged = merged.filter((b) => {
+        const id = b.bookingId || b.id || '';
+        return !deletedIds.includes(id) && !dummyIds.includes(id);
+      });
       saveBookingsToStorage(activeMerged);
       return activeMerged;
     }
@@ -1314,23 +1234,22 @@ export async function fetchBookings(): Promise<BookingInquiry[]> {
 
 export function fetchBookingsFromStorage(): BookingInquiry[] {
   const deletedIds = getDeletedBookingIds();
+  const dummyIds = ['HNF-2026-U8821', 'HNF-2026-G1042', 'HNF-2026-X8921', 'HNF-2026-M4109', 'HNF-2026-K7304'];
   try {
     const raw = localStorage.getItem('hanford_booking_requests');
     if (!raw) {
-      const filteredDefault = DEFAULT_MOCK_BOOKINGS.filter((b) => !deletedIds.includes(b.bookingId || b.id || ''));
-      localStorage.setItem('hanford_booking_requests', JSON.stringify(filteredDefault));
-      return filteredDefault;
+      return [];
     }
     const list: BookingInquiry[] = JSON.parse(raw);
     if (!Array.isArray(list) || list.length === 0) {
-      const filteredDefault = DEFAULT_MOCK_BOOKINGS.filter((b) => !deletedIds.includes(b.bookingId || b.id || ''));
-      localStorage.setItem('hanford_booking_requests', JSON.stringify(filteredDefault));
-      return filteredDefault;
+      return [];
     }
-    return list.filter((b) => !deletedIds.includes(b.bookingId || b.id || ''));
+    return list.filter((b) => {
+      const id = b.bookingId || b.id || '';
+      return !deletedIds.includes(id) && !dummyIds.includes(id);
+    });
   } catch (e) {
-    console.error('Error reading booking requests:', e);
-    return DEFAULT_MOCK_BOOKINGS.filter((b) => !deletedIds.includes(b.bookingId || b.id || ''));
+    return [];
   }
 }
 

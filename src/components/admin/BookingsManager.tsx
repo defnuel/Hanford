@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BookingInquiry, Property } from '../../types';
-import { Search, Printer, CheckCircle, Clock, Trash2, FileText, Building, Plus, AlertTriangle, CheckCircle2, X, ExternalLink, FileSpreadsheet, KeyRound, Mail, LayoutGrid, Edit3, ArrowUpDown } from 'lucide-react';
+import { Search, Printer, CheckCircle, Clock, Trash2, FileText, Building, Plus, AlertTriangle, CheckCircle2, X, ExternalLink, FileSpreadsheet, KeyRound, Mail, LayoutGrid, Edit3, ArrowUpDown, ChevronDown, Calendar } from 'lucide-react';
 import { updateBookingPaymentStatus, deleteBookingInquiry } from '../../services/dataService';
 import { getBookingTypeLabel } from '../../utils/bookingUtils';
 import { InvoiceModal } from './InvoiceModal';
@@ -25,6 +25,7 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
   const [selectedInvoiceBooking, setSelectedInvoiceBooking] = useState<BookingInquiry | null>(null);
   const [isCreateInvoiceOpen, setIsCreateInvoiceOpen] = useState(false);
   const [editingBooking, setEditingBooking] = useState<BookingInquiry | null>(null);
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
   // Bulk Selection State
   const [selectedBookingIds, setSelectedBookingIds] = useState<string[]>([]);
@@ -229,17 +230,6 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
             <Plus className="w-4 h-4" />
             <span>Create New Invoice</span>
           </button>
-          <a
-            href="https://docs.google.com/spreadsheets/d/1a2WN_AqaV9WS15h-37FDCyVV_ZpLB1IaBDbvb2VYzeU/edit#gid=1881675892"
-            target="_blank"
-            rel="noreferrer"
-            className="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-bold uppercase tracking-wider rounded-xl shadow-2xs transition-all cursor-pointer flex items-center justify-center gap-1.5"
-            title="Open Google Sheets Central Register"
-          >
-            <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-            <span>Google Sheet Register</span>
-            <ExternalLink className="w-3 h-3 text-emerald-600 ml-0.5" />
-          </a>
         </div>
       </div>
 
@@ -352,6 +342,12 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
         </div>
       ) : (
         <>
+          {openDropdownId && (
+            <div
+              className="fixed inset-0 z-20"
+              onClick={() => setOpenDropdownId(null)}
+            />
+          )}
           {/* Mobile Card List View (For screens < md) */}
           <div className="md:hidden space-y-3">
             {sortedBookings.map((b) => {
@@ -407,21 +403,33 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
                       {b.businessName && b.businessName.trim() && b.businessName.trim().toUpperCase() !== 'HANFORD' && (
                         <div className="text-xs text-slate-600 font-medium">{b.businessName.trim()}</div>
                       )}
-                      <div className="flex flex-wrap items-center gap-x-3 text-[11px] text-slate-500 pt-0.5">
-                        {b.xUsername && <span className="text-[#51867E]">X: {b.xUsername}</span>}
-                        {b.guestEmail && <span>{b.guestEmail}</span>}
-                      </div>
+                      {b.xUsername && (
+                        <div className="text-[11px] text-[#51867E] pt-0.5">
+                          <span>X: {b.xUsername}</span>
+                        </div>
+                      )}
                     </div>
 
-                    <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 space-y-1">
+                    <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 space-y-1.5">
                       <div className="font-bold text-slate-800 flex items-center gap-1.5 text-xs">
                         <Building className="w-3.5 h-3.5 text-[#51867E] shrink-0" />
                         <span>{b.propertyName}</span>
                       </div>
-                      <div className="text-[11px] text-slate-500">
+                      <div className="text-[11px] text-slate-600 font-medium">
                         {getBookingTypeLabel(b)}
-                        {b.checkInDate ? ` (${b.checkInDate})` : ''}
                       </div>
+                      {(b.checkInDate || b.checkOutDate || b.eventDate) && (
+                        <div className="flex items-center gap-1.5 text-[10.5px] text-slate-500 pt-0.5">
+                          <Calendar className="w-3 h-3 text-[#51867E] shrink-0" />
+                          <span>
+                            {b.checkInDate && b.checkOutDate
+                              ? `${b.checkInDate} • ${b.checkOutDate}`
+                              : (b.checkInDate
+                                  ? `${b.checkInDate}`
+                                  : (b.eventDate ? `${b.eventDate}` : ''))}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -444,59 +452,78 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
                       })()}
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 shrink-0 relative">
+                      <button
+                        onClick={() => setSelectedInvoiceBooking(b)}
+                        className="px-2.5 py-1.5 bg-[#3A4F67] hover:bg-[#2C3744] text-white rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer shadow-xs"
+                        title="View / Print Official Invoice"
+                      >
+                        <Printer className="w-3.5 h-3.5 text-[#88B2AB]" />
+                        <span>Invoice</span>
+                      </button>
+
                       {onOpenCardGenerator && (
-                        <>
+                        <div className="relative">
                           <button
-                            onClick={() => onOpenCardGenerator(b, 'keycard')}
-                            className="px-2 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 rounded-xl text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
-                            title="Generate Key Card PNG"
+                            type="button"
+                            onClick={() => setOpenDropdownId(openDropdownId === id ? null : id)}
+                            className="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
+                            title="Guest Assets"
                           >
-                            <KeyRound className="w-3 h-3 text-amber-700" />
-                            <span>Key</span>
+                            <span>Cards</span>
+                            <ChevronDown className="w-3 h-3 text-slate-500" />
                           </button>
-                          <button
-                            onClick={() => onOpenCardGenerator(b, 'welcomecard')}
-                            className="px-2 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
-                            title="Generate Welcome Card PNG"
-                          >
-                            <Mail className="w-3 h-3 text-emerald-700" />
-                            <span>Card</span>
-                          </button>
-                          <button
-                            onClick={() => onOpenCardGenerator(b, 'gallery')}
-                            className="px-2 py-1.5 bg-[#EAF2F1] hover:bg-[#d8e9e6] text-[#2D5A53] border border-[#B3D4CD] rounded-xl text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
-                            title="Generate Accommodation Visual Gallery PNG"
-                          >
-                            <LayoutGrid className="w-3 h-3 text-[#2D5A53]" />
-                            <span>Gallery</span>
-                          </button>
-                        </>
+                          {openDropdownId === id && (
+                            <div className="absolute right-0 bottom-full mb-1.5 w-44 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-30 text-left animate-in fade-in zoom-in-95 duration-100">
+                              <div className="px-3 py-1 text-[9.5px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 mb-1">
+                                Guest Assets
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => { onOpenCardGenerator(b, 'keycard'); setOpenDropdownId(null); }}
+                                className="w-full px-3 py-1.5 text-left text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer text-xs font-medium"
+                              >
+                                <KeyRound className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                                <span>Key Card</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => { onOpenCardGenerator(b, 'welcomecard'); setOpenDropdownId(null); }}
+                                className="w-full px-3 py-1.5 text-left text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer text-xs font-medium"
+                              >
+                                <Mail className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                <span>Welcoming Card</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => { onOpenCardGenerator(b, 'gallery'); setOpenDropdownId(null); }}
+                                className="w-full px-3 py-1.5 text-left text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer text-xs font-medium"
+                              >
+                                <LayoutGrid className="w-3.5 h-3.5 text-[#51867E] shrink-0" />
+                                <span>Room Gallery</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       )}
+
                       <button
                         onClick={() => {
                           setEditingBooking(b);
                           setIsCreateInvoiceOpen(true);
                         }}
-                        className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 rounded-xl text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
+                        className="p-1.5 text-slate-500 hover:text-[#3A4F67] hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
                         title="Edit Invoice"
                       >
-                        <Edit3 className="w-3.5 h-3.5 text-slate-600" />
-                        <span>Edit</span>
+                        <Edit3 className="w-3.5 h-3.5" />
                       </button>
-                      <button
-                        onClick={() => setSelectedInvoiceBooking(b)}
-                        className="px-3 py-1.5 bg-[#51867E] hover:bg-[#3f6d66] text-white rounded-xl text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer shadow-sm"
-                      >
-                        <Printer className="w-3.5 h-3.5" />
-                        <span>Print</span>
-                      </button>
+
                       <button
                         onClick={() => requestDelete(id, b.guestName)}
-                        className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
+                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                         title="Delete Invoice"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
@@ -508,10 +535,10 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
           {/* Desktop Table View (For screens >= md) */}
           <div className="hidden md:block bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="overflow-x-auto w-full">
-              <table className="w-full text-left text-xs min-w-[800px]">
-                <thead className="bg-[#3A4F67] text-white uppercase tracking-wider text-[10px]">
+              <table className="w-full text-left text-xs min-w-[960px]">
+                <thead className="bg-[#3A4F67] text-white uppercase tracking-wider text-[9px]">
                   <tr>
-                    <th className="py-3.5 px-4 w-10 text-center">
+                    <th className="py-3 px-3 w-10 text-center">
                       <input
                         type="checkbox"
                         checked={isAllSelected}
@@ -521,49 +548,49 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
                       />
                     </th>
                     <th
-                      className="py-3.5 px-4 cursor-pointer hover:bg-slate-700/80 transition-colors select-none"
+                      className="py-3 px-3 w-32 min-w-[125px] cursor-pointer hover:bg-slate-700/80 transition-colors select-none text-[9px]"
                       onClick={() => setSortBy((prev) => (prev === 'newest' ? 'oldest' : 'newest'))}
                       title="Click to sort by newest / oldest date"
                     >
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1">
                         <span>Booking ID &amp; Date</span>
-                        <ArrowUpDown className={`w-3 h-3 ${sortBy === 'newest' || sortBy === 'oldest' ? 'text-[#88B2AB]' : 'opacity-40'}`} />
+                        <ArrowUpDown className={`w-2.5 h-2.5 ${sortBy === 'newest' || sortBy === 'oldest' ? 'text-[#88B2AB]' : 'opacity-40'}`} />
                       </div>
                     </th>
                     <th
-                      className="py-3.5 px-4 cursor-pointer hover:bg-slate-700/80 transition-colors select-none"
+                      className="py-3 px-3 w-44 min-w-[160px] max-w-[190px] cursor-pointer hover:bg-slate-700/80 transition-colors select-none text-[9px]"
                       onClick={() => setSortBy((prev) => (prev === 'name_asc' ? 'name_desc' : 'name_asc'))}
                       title="Click to sort by guest name A-Z / Z-A"
                     >
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1">
                         <span>Guest Details</span>
-                        <ArrowUpDown className={`w-3 h-3 ${sortBy === 'name_asc' || sortBy === 'name_desc' ? 'text-[#88B2AB]' : 'opacity-40'}`} />
+                        <ArrowUpDown className={`w-2.5 h-2.5 ${sortBy === 'name_asc' || sortBy === 'name_desc' ? 'text-[#88B2AB]' : 'opacity-40'}`} />
                       </div>
                     </th>
-                    <th className="py-3.5 px-4">Sanctuary &amp; Option</th>
+                    <th className="py-3 px-4 min-w-[270px] text-[9px]">Sanctuary &amp; Option</th>
                     <th
-                      className="py-3.5 px-4 text-right cursor-pointer hover:bg-slate-700/80 transition-colors select-none"
+                      className="py-3 px-3 text-right w-28 min-w-[100px] cursor-pointer hover:bg-slate-700/80 transition-colors select-none text-[9px]"
                       onClick={() => setSortBy((prev) => (prev === 'amount_high' ? 'amount_low' : 'amount_high'))}
                       title="Click to sort by total invoice amount"
                     >
-                      <div className="flex items-center justify-end gap-1.5">
+                      <div className="flex items-center justify-end gap-1">
                         <span>Total Amount</span>
-                        <ArrowUpDown className={`w-3 h-3 ${sortBy === 'amount_high' || sortBy === 'amount_low' ? 'text-[#88B2AB]' : 'opacity-40'}`} />
+                        <ArrowUpDown className={`w-2.5 h-2.5 ${sortBy === 'amount_high' || sortBy === 'amount_low' ? 'text-[#88B2AB]' : 'opacity-40'}`} />
                       </div>
                     </th>
-                    <th className="py-3.5 px-4 text-center">Invoice Status</th>
-                    <th className="py-3.5 px-4 text-right">Actions</th>
+                    <th className="py-3 px-3 text-center w-28 min-w-[100px] text-[9px]">Invoice Status</th>
+                    <th className="py-3 px-4 text-right w-44 min-w-[170px] text-[9px]">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                  {sortedBookings.map((b) => {
+                  {sortedBookings.map((b, idx) => {
                     const id = b.bookingId || b.id || 'N/A';
                     const isPaid = b.paymentStatus === 'PAID';
                     const isSelected = selectedBookingIds.includes(id);
 
                     return (
                       <tr key={id} className={`${isSelected ? 'bg-rose-50/40' : 'hover:bg-slate-50/80'} transition-colors`}>
-                        <td className="py-3.5 px-4 text-center">
+                        <td className="py-3 px-3 text-center w-10">
                           <input
                             type="checkbox"
                             checked={isSelected}
@@ -572,38 +599,46 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
                           />
                         </td>
 
-                        <td className="py-3.5 px-4 space-y-1">
-                          <div className="font-mono font-bold text-[#3A4F67] text-xs">#{id}</div>
-                          <div className="text-[10px] text-slate-400">
+                        <td className="py-3 px-3 space-y-0.5 w-32 min-w-[125px]">
+                          <div className="font-mono font-bold text-[#3A4F67] text-[10px]">#{id}</div>
+                          <div className="text-[8.5px] text-slate-400">
                             {b.createdAt ? new Date(b.createdAt).toLocaleDateString() : 'Recent'}
                           </div>
                         </td>
 
-                        <td className="py-3.5 px-4 space-y-0.5">
-                          <div className="font-bold text-slate-900 text-xs">{b.guestName}</div>
+                        <td className="py-3 px-3 space-y-0.5 w-44 min-w-[160px] max-w-[190px]">
+                          <div className="font-bold text-slate-900 text-xs truncate" title={b.guestName}>{b.guestName}</div>
                           {b.businessName && b.businessName.trim() && b.businessName.trim().toUpperCase() !== 'HANFORD' && (
-                            <div className="text-[10.5px] text-slate-600 font-medium">{b.businessName.trim()}</div>
+                            <div className="text-[10px] text-slate-600 font-medium truncate" title={b.businessName.trim()}>{b.businessName.trim()}</div>
                           )}
                           {b.xUsername && (
-                            <div className="text-[11px] text-[#51867E]">X: {b.xUsername}</div>
-                          )}
-                          {b.guestEmail && (
-                            <div className="text-[10px] text-slate-500">{b.guestEmail}</div>
+                            <div className="text-[10.5px] text-[#51867E] truncate">X: {b.xUsername}</div>
                           )}
                         </td>
 
-                        <td className="py-3.5 px-4 space-y-0.5">
-                          <div className="font-bold text-slate-800 flex items-center gap-1">
-                            <Building className="w-3.5 h-3.5 text-[#51867E]" />
+                        <td className="py-3 px-4 space-y-1 min-w-[270px]">
+                          <div className="font-bold text-slate-800 flex items-center gap-1.5 text-xs">
+                            <Building className="w-3.5 h-3.5 text-[#51867E] shrink-0" />
                             <span>{b.propertyName}</span>
                           </div>
-                          <div className="text-[10px] text-slate-500">
+                          <div className="text-[10.5px] text-slate-600 font-medium">
                             {getBookingTypeLabel(b)}
-                            {b.checkInDate ? ` (${b.checkInDate})` : ''}
                           </div>
+                          {(b.checkInDate || b.checkOutDate || b.eventDate) && (
+                            <div className="flex items-center gap-1.5 text-[10px] text-slate-500 pt-0.5">
+                              <Calendar className="w-3 h-3 text-[#51867E] shrink-0" />
+                              <span>
+                                {b.checkInDate && b.checkOutDate
+                                  ? `${b.checkInDate} • ${b.checkOutDate}`
+                                  : (b.checkInDate
+                                      ? `${b.checkInDate}`
+                                      : (b.eventDate ? `${b.eventDate}` : ''))}
+                              </span>
+                            </div>
+                          )}
                         </td>
 
-                        <td className="py-3.5 px-4 text-right">
+                        <td className="py-3 px-3 text-right w-28 min-w-[100px]">
                           <div className="font-mono font-bold text-xs text-[#3A4F67]">
                             ${b.totalAmount ? b.totalAmount.toLocaleString() : '0'}
                           </div>
@@ -619,10 +654,10 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
                           })()}
                         </td>
 
-                        <td className="py-3.5 px-4 text-center">
+                        <td className="py-3 px-3 text-center w-28 min-w-[100px]">
                           <button
                             onClick={() => requestToggleStatus(id, b.guestName, b.paymentStatus)}
-                            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
                               isPaid
                                 ? 'bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100'
                                 : 'bg-amber-50 text-amber-700 border border-amber-300 hover:bg-amber-100'
@@ -643,35 +678,60 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
                           </button>
                         </td>
 
-                        <td className="py-3.5 px-4 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
+                        <td className="py-3 px-4 text-right w-44 min-w-[170px]">
+                          <div className="flex items-center justify-end gap-1.5 relative">
+                            <button
+                              onClick={() => setSelectedInvoiceBooking(b)}
+                              className="px-2.5 py-1.5 bg-[#3A4F67] hover:bg-[#2C3744] text-white rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                              title="View / Print Official Invoice"
+                            >
+                              <Printer className="w-3.5 h-3.5 text-[#88B2AB]" />
+                              <span>Invoice</span>
+                            </button>
+
                             {onOpenCardGenerator && (
-                              <>
+                              <div className="relative">
                                 <button
-                                  onClick={() => onOpenCardGenerator(b, 'keycard')}
-                                  className="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
-                                  title="Generate Guest Key Card PNG"
+                                  type="button"
+                                  onClick={() => setOpenDropdownId(openDropdownId === id ? null : id)}
+                                  className="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
+                                  title="Guest Assets & Cards"
                                 >
-                                  <KeyRound className="w-3.5 h-3.5 text-amber-700" />
-                                  <span>Key</span>
+                                  <span>Cards</span>
+                                  <ChevronDown className="w-3 h-3 text-slate-500" />
                                 </button>
-                                <button
-                                  onClick={() => onOpenCardGenerator(b, 'welcomecard')}
-                                  className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
-                                  title="Generate Welcoming Card PNG"
-                                >
-                                  <Mail className="w-3.5 h-3.5 text-emerald-700" />
-                                  <span>Card</span>
-                                </button>
-                                <button
-                                  onClick={() => onOpenCardGenerator(b, 'gallery')}
-                                  className="px-2.5 py-1.5 bg-[#EAF2F1] hover:bg-[#d8e9e6] text-[#2D5A53] border border-[#B3D4CD] rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
-                                  title="Generate Accommodation Visual Gallery PNG"
-                                >
-                                  <LayoutGrid className="w-3.5 h-3.5 text-[#2D5A53]" />
-                                  <span>Gallery</span>
-                                </button>
-                              </>
+                                {openDropdownId === id && (
+                                  <div className={`absolute right-0 ${idx >= sortedBookings.length - 2 && sortedBookings.length > 2 ? 'bottom-full mb-1.5' : 'top-full mt-1.5'} w-44 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-30 text-left animate-in fade-in zoom-in-95 duration-100`}>
+                                    <div className="px-3 py-1 text-[9.5px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 mb-1">
+                                      Guest Assets
+                                    </div>
+                                    <button
+                                      type="button"
+                                      onClick={() => { onOpenCardGenerator(b, 'keycard'); setOpenDropdownId(null); }}
+                                      className="w-full px-3 py-1.5 text-left text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer text-xs font-medium"
+                                    >
+                                      <KeyRound className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                                      <span>Key Card</span>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => { onOpenCardGenerator(b, 'welcomecard'); setOpenDropdownId(null); }}
+                                      className="w-full px-3 py-1.5 text-left text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer text-xs font-medium"
+                                    >
+                                      <Mail className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                      <span>Welcoming Card</span>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => { onOpenCardGenerator(b, 'gallery'); setOpenDropdownId(null); }}
+                                      className="w-full px-3 py-1.5 text-left text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer text-xs font-medium"
+                                    >
+                                      <LayoutGrid className="w-3.5 h-3.5 text-[#51867E] shrink-0" />
+                                      <span>Room Gallery</span>
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
                             )}
 
                             <button
@@ -679,27 +739,18 @@ export const BookingsManager: React.FC<BookingsManagerProps> = ({
                                 setEditingBooking(b);
                                 setIsCreateInvoiceOpen(true);
                               }}
-                              className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
+                              className="p-1.5 text-slate-500 hover:text-[#3A4F67] hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
                               title="Edit Invoice"
                             >
-                              <Edit3 className="w-3.5 h-3.5 text-slate-600" />
-                              <span>Edit</span>
-                            </button>
-
-                            <button
-                              onClick={() => setSelectedInvoiceBooking(b)}
-                              className="px-3 py-1.5 bg-[#51867E] hover:bg-[#3f6d66] text-white rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer shadow-sm"
-                            >
-                              <Printer className="w-3.5 h-3.5" />
-                              <span>Invoice</span>
+                              <Edit3 className="w-3.5 h-3.5" />
                             </button>
 
                             <button
                               onClick={() => requestDelete(id, b.guestName)}
-                              className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                               title="Delete Invoice"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         </td>
