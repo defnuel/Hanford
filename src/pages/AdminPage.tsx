@@ -134,66 +134,66 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
       {/* Main Admin Tab Nav - Desktop Only */}
       <div className="hidden md:block bg-white border-b border-slate-200 shadow-sm sticky top-[61px] z-30">
-        <div className="max-w-7xl mx-auto px-8 flex items-center gap-4 py-2 text-xs">
+        <div className="max-w-7xl mx-auto px-6 py-2 flex items-center gap-2">
           
           <button
             onClick={() => setActiveTab('overview')}
-            className={`px-4 py-2 rounded-xl font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 text-center rounded-xl font-bold uppercase tracking-wider transition-all cursor-pointer text-[11px] ${
               activeTab === 'overview'
                 ? 'bg-[#51867E] text-white shadow-sm'
                 : 'text-slate-600 hover:text-[#3A4F67] hover:bg-slate-50'
             }`}
           >
-            <LayoutDashboard className="w-4 h-4" />
-            <span>Overview</span>
+            <LayoutDashboard className="w-4 h-4 shrink-0" />
+            <span className="truncate">Overview</span>
           </button>
 
           <button
             onClick={() => setActiveTab('locations')}
-            className={`px-4 py-2 rounded-xl font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 text-center rounded-xl font-bold uppercase tracking-wider transition-all cursor-pointer text-[11px] ${
               activeTab === 'locations'
                 ? 'bg-[#51867E] text-white shadow-sm'
                 : 'text-slate-600 hover:text-[#3A4F67] hover:bg-slate-50'
             }`}
           >
-            <Building2 className="w-4 h-4" />
-            <span>Locations</span>
+            <Building2 className="w-4 h-4 shrink-0" />
+            <span className="truncate">Locations</span>
           </button>
 
           <button
             onClick={() => setActiveTab('collaborations')}
-            className={`px-4 py-2 rounded-xl font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 text-center rounded-xl font-bold uppercase tracking-wider transition-all cursor-pointer text-[11px] ${
               activeTab === 'collaborations'
                 ? 'bg-[#51867E] text-white shadow-sm'
                 : 'text-slate-600 hover:text-[#3A4F67] hover:bg-slate-50'
             }`}
           >
-            <FolderGit2 className="w-4 h-4" />
-            <span>Collaborations</span>
+            <FolderGit2 className="w-4 h-4 shrink-0" />
+            <span className="truncate">Collaborations</span>
           </button>
 
           <button
             onClick={() => setActiveTab('bookings')}
-            className={`px-4 py-2 rounded-xl font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 text-center rounded-xl font-bold uppercase tracking-wider transition-all cursor-pointer text-[11px] ${
               activeTab === 'bookings'
                 ? 'bg-[#51867E] text-white shadow-sm'
                 : 'text-slate-600 hover:text-[#3A4F67] hover:bg-slate-50'
             }`}
           >
-            <FileText className="w-4 h-4" />
-            <span>Invoices</span>
+            <FileText className="w-4 h-4 shrink-0" />
+            <span className="truncate">Invoices</span>
           </button>
 
           <button
             onClick={() => setActiveTab('grn')}
-            className={`px-4 py-2 rounded-xl font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 text-center rounded-xl font-bold uppercase tracking-wider transition-all cursor-pointer text-[11px] ${
               activeTab === 'grn'
                 ? 'bg-[#51867E] text-white shadow-sm'
                 : 'text-slate-600 hover:text-[#3A4F67] hover:bg-slate-50'
             }`}
           >
-            <FileCheck2 className="w-4 h-4" />
-            <span>Goods Received (GRN)</span>
+            <FileCheck2 className="w-4 h-4 shrink-0" />
+            <span className="truncate">Goods Received (GRN)</span>
           </button>
 
           <button
@@ -201,28 +201,28 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               setCardTargetBooking(null);
               setActiveTab('cards');
             }}
-            className={`px-4 py-2 rounded-xl font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 text-center rounded-xl font-bold uppercase tracking-wider transition-all cursor-pointer text-[11px] ${
               activeTab === 'cards'
                 ? 'bg-[#51867E] text-white shadow-sm'
                 : 'text-slate-600 hover:text-[#3A4F67] hover:bg-slate-50'
             }`}
           >
-            <KeyRound className="w-4 h-4" />
-            <span>Guest Cards</span>
+            <KeyRound className="w-4 h-4 shrink-0" />
+            <span className="truncate">Guest Cards</span>
           </button>
 
           <button
             onClick={() => setActiveTab('users')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer relative ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 text-center rounded-xl font-bold uppercase tracking-wider transition-all cursor-pointer text-[11px] relative ${
               activeTab === 'users'
                 ? 'bg-[#51867E] text-white shadow-sm'
                 : 'text-slate-600 hover:text-[#3A4F67] hover:bg-slate-50'
             }`}
           >
-            <Users className="w-4 h-4" />
-            <span>Admin Users</span>
+            <Users className="w-4 h-4 shrink-0" />
+            <span className="truncate">Admin Users</span>
             {pendingCount > 0 && (
-              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
             )}
           </button>
 
