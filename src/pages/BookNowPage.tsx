@@ -495,20 +495,21 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
     'https://docs.google.com/spreadsheets/d/1a2WN_AqaV9WS15h-37FDCyVV_ZpLB1IaBDbvb2VYzeU/edit?gid=0#gid=0';
 
   return (
-    <div className="bg-[#FFFFFF] text-[#2C3744] pt-20 sm:pt-28 pb-16 sm:pb-24 min-h-screen">
+    <div className="bg-[#FAFBF9] text-[#2C3744] pt-20 sm:pt-28 pb-16 sm:pb-24 min-h-screen">
       <div className="max-w-4xl mx-auto px-4 sm:px-8">
         
         {/* Header */}
         <div className="text-center space-y-3 sm:space-y-4 mb-8 sm:mb-10">
-          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 bg-[#3A4F67] text-[#EAF2F1] rounded-full text-[9px] sm:text-[10px] font-bold tracking-[0.25em] sm:tracking-[0.3em] uppercase shadow border border-[#88B2AB]/30">
-            <CalendarCheck className="w-3.5 h-3.5 text-[#88B2AB]" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#51867E]/10 border border-[#51867E]/20 text-[#51867E] rounded-full text-[9px] sm:text-[10px] font-bold tracking-[0.25em] sm:tracking-[0.3em] uppercase">
+            <CalendarCheck className="w-3.5 h-3.5 text-[#51867E]" />
             <span>CENTRAL RESERVATIONS</span>
           </div>
           <h1 className="font-serif italic text-3xl sm:text-6xl text-[#3A4F67] font-semibold">
             Book Your Stay
           </h1>
-          <p className="text-xs sm:text-sm text-[#2C3744] max-w-xl mx-auto font-light leading-relaxed">
-            Real-time hotel booking system from HANFORD H&R.
+          <div className="w-16 h-0.5 bg-[#88B2AB] mx-auto rounded-full" />
+          <p className="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto font-medium leading-relaxed">
+            Real-time hotel booking system from HANFORD H&amp;R.
           </p>
         </div>
 
@@ -519,7 +520,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
           <div className="space-y-6 animate-in fade-in duration-500">
             
             {/* Download Action Bar */}
-            <div className="bg-[#3A4F67] p-4 rounded-2xl border border-[#88B2AB]/30 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+            <div className="bg-gradient-to-r from-[#3A4F67] to-[#2C3744] p-4 sm:p-5 rounded-2xl border border-slate-700 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
               <div className="flex items-center gap-3 text-left">
                 <div className="p-2.5 bg-[#51867E] text-white rounded-xl shrink-0">
                   <CheckCircle2 className="w-6 h-6" />
@@ -1268,70 +1269,70 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
             </div>
 
             {/* Full Payment Instructions placed BELOW the action buttons */}
-            <div className="bg-white border-2 border-[#88B2AB]/40 p-4 sm:p-6 rounded-2xl shadow-lg text-left space-y-4">
+            <div className="bg-white border border-slate-200/90 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm text-left space-y-4">
               <div>
-                <h4 className="font-bold text-[#3A4F67] uppercase tracking-wider flex items-center gap-2 border-b border-[#88B2AB]/30 pb-1.5 text-xs sm:text-sm">
+                <h4 className="font-bold text-[#3A4F67] uppercase tracking-wider flex items-center gap-2 border-b border-slate-200/80 pb-2 text-xs sm:text-sm">
                   <CreditCard className="w-4 h-4 text-[#51867E]" />
                   PAYMENT &amp; CONFIRMATION INSTRUCTIONS
                 </h4>
-                <p className="text-[11px] text-[#5A6E82] italic leading-tight mt-1">
+                <p className="text-[11px] text-slate-500 italic leading-tight mt-1">
                   (Instruksi Pembayaran &amp; Konfirmasi)
                 </p>
               </div>
 
-              <div className="space-y-3 text-xs text-[#2C3744]">
-                <div className="bg-[#EAF2F1]/50 p-3 rounded-xl border border-[#88B2AB]/30 text-xs text-[#2C3744] space-y-1">
+              <div className="space-y-3 text-xs text-slate-700">
+                <div className="bg-slate-50 p-3.5 rounded-xl sm:rounded-2xl border border-slate-200/80 text-xs text-slate-700 space-y-1">
                   <p className="leading-relaxed">
                     <strong className="text-[#3A4F67]">Time Limit / Batas Waktu:</strong> Please complete payment within <strong className="text-[#3A4F67]">48 hours</strong> to confirm your reservation.
                   </p>
-                  <p className="text-[10.5px] text-[#5A6E82] italic leading-tight">
+                  <p className="text-[10.5px] text-slate-500 italic leading-tight">
                     Silakan lakukan pembayaran dalam waktu 48 jam untuk mengonfirmasi reservasi Anda.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
                   {/* Step 1 */}
-                  <div className="bg-[#EAF2F1]/50 p-3.5 rounded-xl border border-[#88B2AB]/30 space-y-2 flex flex-col justify-between">
+                  <div className="bg-slate-50 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 space-y-2 flex flex-col justify-between">
                     <div>
                       <strong className="text-[#3A4F67] block font-bold text-xs uppercase tracking-wider leading-snug">
                         1. Complete Form &amp; Transfer Payment
                       </strong>
-                      <span className="text-[10px] text-[#5A6E82] italic block leading-tight mt-0.5">
+                      <span className="text-[10px] text-slate-500 italic block leading-tight mt-0.5">
                         Isi Form &amp; Transfer Pembayaran
                       </span>
-                      <p className="text-[11px] text-[#2C3744] leading-snug mt-2">
+                      <p className="text-[11px] text-slate-700 leading-snug mt-2">
                         After filling out the reservation form, send your payment to:
                       </p>
-                      <p className="text-[10px] text-[#5A6E82] italic leading-tight mt-0.5">
+                      <p className="text-[10px] text-slate-500 italic leading-tight mt-0.5">
                         (Setelah mengisi formulir reservasi, lakukan transfer bank ke:)
                       </p>
 
-                      <div className="space-y-1 text-xs pt-2.5 border-t border-[#88B2AB]/20 mt-2">
+                      <div className="space-y-1 text-xs pt-2.5 border-t border-slate-200/80 mt-2">
                         <div>&bull; <strong className="text-[#3A4F67]">Bank Name:</strong> CHOBANK</div>
                         <div className="text-slate-700 font-medium pl-3">Hanford Hotels and Resorts</div>
                         <div className="pl-3 font-mono font-bold text-sm text-[#51867E]">3076 6324 4788 9928</div>
                       </div>
                     </div>
-                    <div className="text-[10.5px] text-[#5A6E82] italic pt-1 border-t border-[#88B2AB]/20">
+                    <div className="text-[10.5px] text-slate-500 italic pt-1 border-t border-slate-200/80">
                       Reference: Booking ID <strong className="text-[#3A4F67]">{confirmedBooking.bookingId}</strong>
                     </div>
                   </div>
 
                   {/* Step 2 */}
-                  <div className="bg-[#EAF2F1]/50 p-3.5 rounded-xl border border-[#88B2AB]/30 space-y-2 flex flex-col justify-between">
+                  <div className="bg-slate-50 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 space-y-2 flex flex-col justify-between">
                     <div>
                       <strong className="text-[#3A4F67] block font-bold text-xs uppercase tracking-wider leading-snug">
                         2. Follow Us on X (Twitter)
                       </strong>
-                      <span className="text-[10px] text-[#5A6E82] italic block leading-tight mt-0.5">
+                      <span className="text-[10px] text-slate-500 italic block leading-tight mt-0.5">
                         Follow Akun X (Twitter)
                       </span>
 
-                      <div className="space-y-1.5 text-xs pt-2.5 border-t border-[#88B2AB]/20 mt-2">
-                        <p className="text-[11px] text-[#2C3744] leading-relaxed">
+                      <div className="space-y-1.5 text-xs pt-2.5 border-t border-slate-200/80 mt-2">
+                        <p className="text-[11px] text-slate-700 leading-relaxed">
                           Follow <a href="https://x.com/Hanford_HnR" target="_blank" rel="noopener noreferrer" className="text-[#51867E] underline font-bold">@Hanford_HnR</a> on X to receive direct updates &amp; confirmation.
                         </p>
-                        <p className="text-[10px] text-[#5A6E82] italic leading-tight">
+                        <p className="text-[10px] text-slate-500 italic leading-tight">
                           (Ikuti akun X resmi kami di @Hanford_HnR untuk mendapatkan pembaruan &amp; konfirmasi langsung.)
                         </p>
                       </div>
@@ -1339,25 +1340,25 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   </div>
 
                   {/* Step 3 */}
-                  <div className="bg-[#EAF2F1]/50 p-3.5 rounded-xl border border-[#88B2AB]/30 space-y-2 flex flex-col justify-between">
+                  <div className="bg-slate-50 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 space-y-2 flex flex-col justify-between">
                     <div>
                       <strong className="text-[#3A4F67] block font-bold text-xs uppercase tracking-wider leading-snug">
                         3. Send Your Confirmation
                       </strong>
-                      <span className="text-[10px] text-[#5A6E82] italic block leading-tight mt-0.5">
+                      <span className="text-[10px] text-slate-500 italic block leading-tight mt-0.5">
                         Kirim Konfirmasi
                       </span>
 
-                      <div className="space-y-1.5 text-xs pt-2.5 border-t border-[#88B2AB]/20 mt-2">
-                        <p className="text-[11px] text-[#2C3744] leading-snug">
+                      <div className="space-y-1.5 text-xs pt-2.5 border-t border-slate-200/80 mt-2">
+                        <p className="text-[11px] text-slate-700 leading-snug">
                           Send a DM or post a tweet mentioning <strong className="text-[#51867E]">@Hanford_HnR</strong> with your <strong className="text-[#3A4F67]">Invoice &amp; Transfer Proof</strong>.
                         </p>
-                        <p className="text-[10px] text-[#5A6E82] italic leading-tight">
+                        <p className="text-[10px] text-slate-500 italic leading-tight">
                           (Kirim DM atau unggah tweet dengan menyebut @Hanford_HnR beserta Invoice &amp; Bukti Transfer Anda.)
                         </p>
                       </div>
                     </div>
-                    <div className="text-[10.5px] text-[#5A6E82] italic pt-1 border-t border-[#88B2AB]/20">
+                    <div className="text-[10.5px] text-slate-500 italic pt-1 border-t border-slate-200/80">
                       Booking ID: <strong className="text-[#3A4F67]">{confirmedBooking.bookingId}</strong>
                     </div>
                   </div>
@@ -1371,7 +1372,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
           /* ------------------------------------------------------------------ */
           <form
             onSubmit={handleSubmit}
-            className="info-panel bg-[#EAF2F1] border border-[#88B2AB]/30 rounded-xl sm:rounded-2xl p-3.5 sm:p-10 shadow-xl space-y-4 sm:space-y-8 text-left pb-16 sm:pb-10 w-full max-w-full overflow-hidden"
+            className="info-panel bg-white border border-slate-200/90 rounded-2xl sm:rounded-3xl p-3.5 sm:p-10 shadow-sm space-y-4 sm:space-y-8 text-left pb-16 sm:pb-10 w-full max-w-full overflow-hidden"
           >
             {errorMessage && (
               <div className="p-3.5 bg-rose-100 border border-rose-300 text-rose-900 text-xs rounded-xl flex items-center gap-2.5">
@@ -1384,13 +1385,13 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
             <div className="space-y-2.5 sm:space-y-3">
               <label className="block text-[11px] sm:text-xs font-bold tracking-[0.15em] sm:tracking-[0.2em] text-[#3A4F67] uppercase">
                 1. HOTEL / RESORT LOCATION *
-                <span className="block text-[9.5px] sm:text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
+                <span className="block text-[9.5px] sm:text-[10px] text-slate-500 font-medium italic lowercase tracking-normal">
                   pilih lokasi hotel atau resort hanford
                 </span>
               </label>
 
               {loadingLocations ? (
-                <div className="h-10 sm:h-12 bg-[#88B2AB]/20 animate-pulse rounded-full" />
+                <div className="h-10 sm:h-12 bg-slate-200/60 animate-pulse rounded-full" />
               ) : (
                 <PropertySearchSelect
                   properties={properties}
@@ -1401,13 +1402,13 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
               {/* Dynamic Rates Banner */}
               {selectedProperty && (
-                <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-[#88B2AB]/30 space-y-2 text-xs">
-                  <div className="flex items-center justify-between border-b border-[#88B2AB]/20 pb-2">
+                <div className="bg-slate-50 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 space-y-2 text-xs">
+                  <div className="flex items-center justify-between border-b border-slate-200/80 pb-2">
                     <span className="font-bold text-[#3A4F67] flex items-center gap-1.5 text-[11px] sm:text-xs">
                       <DollarSign className="w-3.5 h-3.5 text-[#51867E]" />
                       Rates & Pricing
                     </span>
-                    <span className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full font-bold bg-[#EAF2F1] text-[#3A4F67] border border-[#88B2AB]/30 uppercase">
+                    <span className="text-[9px] sm:text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-[#51867E]/10 text-[#51867E] border border-[#51867E]/20 uppercase">
                       {propertyTypeLabel}
                     </span>
                   </div>
@@ -1415,17 +1416,17 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10.5px] sm:text-[11px] pt-0.5">
                     <div>
                       <span className="text-[#3A4F67] block font-medium">Standard Room:</span>
-                      <strong className="text-[#2C3744]">${priceStandard.toLocaleString()} / night</strong>
+                      <strong className="text-slate-800">${priceStandard.toLocaleString()} / night</strong>
                     </div>
 
                     <div>
                       <span className="text-[#3A4F67] block font-medium">Deluxe Room:</span>
-                      <strong className="text-[#2C3744]">${priceDeluxe.toLocaleString()} / night</strong>
+                      <strong className="text-slate-800">${priceDeluxe.toLocaleString()} / night</strong>
                     </div>
 
                     <div>
                       <span className="text-[#3A4F67] block font-medium">Presidential Suite:</span>
-                      <strong className="text-[#2C3744]">${pricePresidential.toLocaleString()} / night</strong>
+                      <strong className="text-slate-800">${pricePresidential.toLocaleString()} / night</strong>
                     </div>
 
                     {hasPrivateVilla && pricePrivateVilla ? (
@@ -1434,7 +1435,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         <strong className="text-[#51867E]">${pricePrivateVilla.toLocaleString()} / night</strong>
                       </div>
                     ) : (
-                      <div className="text-gray-400 italic">
+                      <div className="text-slate-400 italic">
                         <span className="block font-medium">Private Villa:</span>
                         <span>Not Available (Grand Hotel)</span>
                       </div>
@@ -1445,10 +1446,10 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
             </div>
 
             {/* 2. Customer Information */}
-            <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t border-[#88B2AB]/30">
+            <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t border-slate-200/80">
               <label className="block text-[11px] sm:text-xs font-bold tracking-[0.15em] sm:tracking-[0.2em] text-[#3A4F67] uppercase">
                 2. GUEST INFORMATION *
-                <span className="block text-[9.5px] sm:text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
+                <span className="block text-[9.5px] sm:text-[10px] text-slate-500 font-medium italic lowercase tracking-normal">
                   informasi data lengkap pemesan
                 </span>
               </label>
@@ -1467,7 +1468,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     placeholder="e.g. Eleanor Vance"
                     value={formData.guestName}
                     onChange={(e) => setFormData({ ...formData, guestName: e.target.value })}
-                    className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium"
+                    className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-slate-50/70 hover:bg-white focus:bg-white border border-slate-200 rounded-xl sm:rounded-full text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#51867E] focus:ring-2 focus:ring-[#51867E]/20 font-medium transition-all"
                   />
                 </div>
 
@@ -1484,7 +1485,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     placeholder="@username"
                     value={formData.xUsername}
                     onChange={(e) => setFormData({ ...formData, xUsername: e.target.value })}
-                    className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium"
+                    className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-slate-50/70 hover:bg-white focus:bg-white border border-slate-200 rounded-xl sm:rounded-full text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#51867E] focus:ring-2 focus:ring-[#51867E]/20 font-medium transition-all"
                   />
                 </div>
 
@@ -1500,17 +1501,17 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     placeholder="e.g. Acme Corporation"
                     value={formData.businessName || ''}
                     onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                    className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium"
+                    className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-slate-50/70 hover:bg-white focus:bg-white border border-slate-200 rounded-xl sm:rounded-full text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#51867E] focus:ring-2 focus:ring-[#51867E]/20 font-medium transition-all"
                   />
                 </div>
               </div>
             </div>
 
             {/* 3. Booking Category Selection */}
-            <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t border-[#88B2AB]/30">
+            <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t border-slate-200/80">
               <label className="block text-[11px] sm:text-xs font-bold tracking-[0.15em] sm:tracking-[0.2em] text-[#3A4F67] uppercase">
                 3. BOOKING CATEGORY *
-                <span className="block text-[9.5px] sm:text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
+                <span className="block text-[9.5px] sm:text-[10px] text-slate-500 font-medium italic lowercase tracking-normal">
                   pilih kategori jenis pemesanan
                 </span>
               </label>
@@ -1522,20 +1523,20 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   onClick={() => setFormData({ ...formData, bookOption: 'room' })}
                   className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between min-h-[112px] sm:min-h-[124px] cursor-pointer group relative ${
                     formData.bookOption === 'room'
-                      ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
-                      : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E] hover:bg-[#EAF2F1]/30 shadow-xs'
+                      ? 'bg-[#3A4F67] text-white border-[#3A4F67] shadow-md ring-2 ring-[#51867E]/40'
+                      : 'bg-slate-50 text-[#3A4F67] border-slate-200/90 hover:border-[#51867E] hover:bg-white shadow-2xs'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center transition-colors ${
-                      formData.bookOption === 'room' ? 'bg-white/20 text-white' : 'bg-[#EAF2F1] text-[#51867E] group-hover:bg-[#51867E]/10'
+                      formData.bookOption === 'room' ? 'bg-white/20 text-white' : 'bg-white border border-slate-200 text-[#51867E] group-hover:border-[#51867E]/40'
                     }`}>
                       <Hotel className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </div>
                     <div className={`w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center transition-all ${
                       formData.bookOption === 'room'
                         ? 'bg-[#88B2AB] text-[#1E293B]'
-                        : 'border-2 border-[#88B2AB]/40 bg-transparent'
+                        : 'border-2 border-slate-300 bg-transparent'
                     }`}>
                       {formData.bookOption === 'room' && (
                         <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#1E293B] stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1548,7 +1549,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     <h3 className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider ${formData.bookOption === 'room' ? 'text-white' : 'text-[#3A4F67]'}`}>
                       ROOM STAY
                     </h3>
-                    <p className={`text-[9.5px] sm:text-[10px] mt-1 font-medium leading-relaxed ${formData.bookOption === 'room' ? 'text-[#EAF2F1]' : 'text-[#3A4F67]/75'}`}>
+                    <p className={`text-[9.5px] sm:text-[10px] mt-1 font-medium leading-relaxed ${formData.bookOption === 'room' ? 'text-slate-200' : 'text-slate-500'}`}>
                       Overnight stay across luxury rooms & suites
                     </p>
                   </div>
@@ -1560,20 +1561,20 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   onClick={() => setFormData({ ...formData, bookOption: 'event' })}
                   className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between min-h-[112px] sm:min-h-[124px] cursor-pointer group relative ${
                     formData.bookOption === 'event'
-                      ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
-                      : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E] hover:bg-[#EAF2F1]/30 shadow-xs'
+                      ? 'bg-[#3A4F67] text-white border-[#3A4F67] shadow-md ring-2 ring-[#51867E]/40'
+                      : 'bg-slate-50 text-[#3A4F67] border-slate-200/90 hover:border-[#51867E] hover:bg-white shadow-2xs'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center transition-colors ${
-                      formData.bookOption === 'event' ? 'bg-white/20 text-white' : 'bg-[#EAF2F1] text-[#51867E] group-hover:bg-[#51867E]/10'
+                      formData.bookOption === 'event' ? 'bg-white/20 text-white' : 'bg-white border border-slate-200 text-[#51867E] group-hover:border-[#51867E]/40'
                     }`}>
                       <PartyPopper className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </div>
                     <div className={`w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center transition-all ${
                       formData.bookOption === 'event'
                         ? 'bg-[#88B2AB] text-[#1E293B]'
-                        : 'border-2 border-[#88B2AB]/40 bg-transparent'
+                        : 'border-2 border-slate-300 bg-transparent'
                     }`}>
                       {formData.bookOption === 'event' && (
                         <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#1E293B] stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1586,7 +1587,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     <h3 className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider ${formData.bookOption === 'event' ? 'text-white' : 'text-[#3A4F67]'}`}>
                       EVENT LOCATION
                     </h3>
-                    <p className={`text-[9.5px] sm:text-[10px] mt-1 font-medium leading-relaxed ${formData.bookOption === 'event' ? 'text-[#EAF2F1]' : 'text-[#3A4F67]/75'}`}>
+                    <p className={`text-[9.5px] sm:text-[10px] mt-1 font-medium leading-relaxed ${formData.bookOption === 'event' ? 'text-slate-200' : 'text-slate-500'}`}>
                       Ballroom & hall venue rental for events
                     </p>
                   </div>
@@ -1598,20 +1599,20 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   onClick={() => setFormData({ ...formData, bookOption: 'both' })}
                   className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between min-h-[112px] sm:min-h-[124px] cursor-pointer group relative ${
                     formData.bookOption === 'both'
-                      ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
-                      : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E] hover:bg-[#EAF2F1]/30 shadow-xs'
+                      ? 'bg-[#3A4F67] text-white border-[#3A4F67] shadow-md ring-2 ring-[#51867E]/40'
+                      : 'bg-slate-50 text-[#3A4F67] border-slate-200/90 hover:border-[#51867E] hover:bg-white shadow-2xs'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center transition-colors ${
-                      formData.bookOption === 'both' ? 'bg-white/20 text-white' : 'bg-[#EAF2F1] text-[#51867E] group-hover:bg-[#51867E]/10'
+                      formData.bookOption === 'both' ? 'bg-white/20 text-white' : 'bg-white border border-slate-200 text-[#51867E] group-hover:border-[#51867E]/40'
                     }`}>
                       <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </div>
                     <div className={`w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center transition-all ${
                       formData.bookOption === 'both'
                         ? 'bg-[#88B2AB] text-[#1E293B]'
-                        : 'border-2 border-[#88B2AB]/40 bg-transparent'
+                        : 'border-2 border-slate-300 bg-transparent'
                     }`}>
                       {formData.bookOption === 'both' && (
                         <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#1E293B] stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1624,7 +1625,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     <h3 className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider ${formData.bookOption === 'both' ? 'text-white' : 'text-[#3A4F67]'}`}>
                       ROOM & EVENT
                     </h3>
-                    <p className={`text-[9.5px] sm:text-[10px] mt-1 font-medium leading-relaxed ${formData.bookOption === 'both' ? 'text-[#EAF2F1]' : 'text-[#3A4F67]/75'}`}>
+                    <p className={`text-[9.5px] sm:text-[10px] mt-1 font-medium leading-relaxed ${formData.bookOption === 'both' ? 'text-slate-200' : 'text-slate-500'}`}>
                       Complete package of room stay & event venue
                     </p>
                   </div>
@@ -1636,20 +1637,20 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   onClick={() => setFormData({ ...formData, bookOption: 'meeting' })}
                   className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between min-h-[112px] sm:min-h-[124px] cursor-pointer group relative ${
                     formData.bookOption === 'meeting'
-                      ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
-                      : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E] hover:bg-[#EAF2F1]/30 shadow-xs'
+                      ? 'bg-[#3A4F67] text-white border-[#3A4F67] shadow-md ring-2 ring-[#51867E]/40'
+                      : 'bg-slate-50 text-[#3A4F67] border-slate-200/90 hover:border-[#51867E] hover:bg-white shadow-2xs'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center transition-colors ${
-                      formData.bookOption === 'meeting' ? 'bg-white/20 text-white' : 'bg-[#EAF2F1] text-[#51867E] group-hover:bg-[#51867E]/10'
+                      formData.bookOption === 'meeting' ? 'bg-white/20 text-white' : 'bg-white border border-slate-200 text-[#51867E] group-hover:border-[#51867E]/40'
                     }`}>
                       <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </div>
                     <div className={`w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center transition-all ${
                       formData.bookOption === 'meeting'
                         ? 'bg-[#88B2AB] text-[#1E293B]'
-                        : 'border-2 border-[#88B2AB]/40 bg-transparent'
+                        : 'border-2 border-slate-300 bg-transparent'
                     }`}>
                       {formData.bookOption === 'meeting' && (
                         <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#1E293B] stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1662,7 +1663,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     <h3 className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider ${formData.bookOption === 'meeting' ? 'text-white' : 'text-[#3A4F67]'}`}>
                       MEETING ROOM
                     </h3>
-                    <p className={`text-[9.5px] sm:text-[10px] mt-1 font-medium leading-relaxed ${formData.bookOption === 'meeting' ? 'text-[#EAF2F1]' : 'text-[#3A4F67]/75'}`}>
+                    <p className={`text-[9.5px] sm:text-[10px] mt-1 font-medium leading-relaxed ${formData.bookOption === 'meeting' ? 'text-slate-200' : 'text-slate-500'}`}>
                       Professional meeting & conference space
                     </p>
                   </div>
@@ -1672,10 +1673,10 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
             {/* 3.1 MEETING ROOM ACCOMMODATION OPTION (Only for Meeting Room Category) */}
             {formData.bookOption === 'meeting' && (
-              <div className="space-y-3 pt-4 border-t border-[#88B2AB]/30 animate-in fade-in duration-300">
+              <div className="space-y-3 pt-4 border-t border-slate-200/80 animate-in fade-in duration-300">
                 <label className="block text-xs font-bold tracking-[0.2em] text-[#3A4F67] uppercase">
                   ACCOMMODATION OPTION *
-                  <span className="block text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
+                  <span className="block text-[10px] text-slate-500 font-medium italic lowercase tracking-normal">
                     pilih opsi penginapan untuk pemesanan meeting room
                   </span>
                 </label>
@@ -1686,15 +1687,15 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     onClick={() => setFormData({ ...formData, accommodationOption: 'without' })}
                     className={`p-4 rounded-2xl border text-left transition-all space-y-1.5 cursor-pointer ${
                       formData.accommodationOption === 'without'
-                        ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
-                        : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
+                        ? 'bg-[#3A4F67] text-white border-[#3A4F67] shadow-md ring-2 ring-[#51867E]/40'
+                        : 'bg-slate-50 text-[#3A4F67] border-slate-200/90 hover:border-[#51867E] hover:bg-white shadow-2xs'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold uppercase tracking-wider">WITHOUT ACCOMMODATION</span>
                       {formData.accommodationOption === 'without' && <CheckCircle2 className="w-4 h-4 text-white" />}
                     </div>
-                    <p className={`text-[11px] font-light leading-snug ${formData.accommodationOption === 'without' ? 'text-[#EAF2F1]' : 'text-[#2C3744]'}`}>
+                    <p className={`text-[11px] font-light leading-snug ${formData.accommodationOption === 'without' ? 'text-slate-200' : 'text-slate-600'}`}>
                       Meeting room / venue rental only. No overnight accommodation included.
                     </p>
                   </button>
@@ -1704,15 +1705,15 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     onClick={() => setFormData({ ...formData, accommodationOption: 'with' })}
                     className={`p-4 rounded-2xl border text-left transition-all space-y-1.5 cursor-pointer ${
                       formData.accommodationOption === 'with'
-                        ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
-                        : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
+                        ? 'bg-[#3A4F67] text-white border-[#3A4F67] shadow-md ring-2 ring-[#51867E]/40'
+                        : 'bg-slate-50 text-[#3A4F67] border-slate-200/90 hover:border-[#51867E] hover:bg-white shadow-2xs'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold uppercase tracking-wider">WITH ACCOMMODATION</span>
                       {formData.accommodationOption === 'with' && <CheckCircle2 className="w-4 h-4 text-white" />}
                     </div>
-                    <p className={`text-[11px] font-light leading-snug ${formData.accommodationOption === 'with' ? 'text-[#EAF2F1]' : 'text-[#2C3744]'}`}>
+                    <p className={`text-[11px] font-light leading-snug ${formData.accommodationOption === 'with' ? 'text-slate-200' : 'text-slate-600'}`}>
                       Meeting room / venue rental with overnight accommodation.
                     </p>
                   </button>
@@ -1722,10 +1723,10 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
             {/* 3.2 MEETING PACKAGE PER PAX (Only for Meeting Room) */}
             {formData.bookOption === 'meeting' && (
-              <div className="space-y-3 pt-3 sm:pt-4 border-t border-[#88B2AB]/30 animate-in fade-in duration-300">
+              <div className="space-y-3 pt-3 sm:pt-4 border-t border-slate-200/80 animate-in fade-in duration-300">
                 <label className="block text-[11px] sm:text-xs font-bold tracking-[0.15em] sm:tracking-[0.2em] text-[#3A4F67] uppercase">
                   MEETING PACKAGE PER PAX *
-                  <span className="block text-[9.5px] sm:text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
+                  <span className="block text-[9.5px] sm:text-[10px] text-slate-500 font-medium italic lowercase tracking-normal">
                     pilih paket durasi dan layanan venue meeting room
                   </span>
                 </label>
@@ -1737,8 +1738,8 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     onClick={() => setFormData({ ...formData, venueRentalRate: 'half_day' })}
                     className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all space-y-1 sm:space-y-1.5 cursor-pointer ${
                       formData.venueRentalRate === 'half_day'
-                        ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
-                        : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
+                        ? 'bg-[#3A4F67] text-white border-[#3A4F67] shadow-md ring-2 ring-[#51867E]/40'
+                        : 'bg-slate-50 text-[#3A4F67] border-slate-200/90 hover:border-[#51867E] hover:bg-white shadow-2xs'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-1">
@@ -1750,7 +1751,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     <p className={`text-[10.5px] sm:text-[11px] font-bold ${formData.venueRentalRate === 'half_day' ? 'text-white' : 'text-[#3A4F67]'}`}>
                       Maximum 4–5 hours
                     </p>
-                    <p className={`text-[9.5px] sm:text-[10px] font-light leading-snug ${formData.venueRentalRate === 'half_day' ? 'text-[#EAF2F1]' : 'text-[#2C3744]'}`}>
+                    <p className={`text-[9.5px] sm:text-[10px] font-light leading-snug ${formData.venueRentalRate === 'half_day' ? 'text-slate-200' : 'text-slate-600'}`}>
                       Includes 1× coffee break or 1× meal
                     </p>
                   </button>
@@ -1761,8 +1762,8 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     onClick={() => setFormData({ ...formData, venueRentalRate: 'full_day' })}
                     className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all space-y-1 sm:space-y-1.5 cursor-pointer ${
                       formData.venueRentalRate === 'full_day'
-                        ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
-                        : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
+                        ? 'bg-[#3A4F67] text-white border-[#3A4F67] shadow-md ring-2 ring-[#51867E]/40'
+                        : 'bg-slate-50 text-[#3A4F67] border-slate-200/90 hover:border-[#51867E] hover:bg-white shadow-2xs'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-1">
@@ -1774,7 +1775,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     <p className={`text-[10.5px] sm:text-[11px] font-bold ${formData.venueRentalRate === 'full_day' ? 'text-white' : 'text-[#3A4F67]'}`}>
                       Maximum 8–9 hours
                     </p>
-                    <p className={`text-[9.5px] sm:text-[10px] font-light leading-snug ${formData.venueRentalRate === 'full_day' ? 'text-[#EAF2F1]' : 'text-[#2C3744]'}`}>
+                    <p className={`text-[9.5px] sm:text-[10px] font-light leading-snug ${formData.venueRentalRate === 'full_day' ? 'text-slate-200' : 'text-slate-600'}`}>
                       Includes 2× coffee breaks and 1× meal
                     </p>
                   </button>
@@ -1785,8 +1786,8 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     onClick={() => setFormData({ ...formData, venueRentalRate: 'full_board' })}
                     className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all space-y-1 sm:space-y-1.5 cursor-pointer ${
                       formData.venueRentalRate === 'full_board'
-                        ? 'bg-[#51867E] text-white border-[#88B2AB] shadow-md ring-2 ring-[#88B2AB]/50'
-                        : 'bg-white text-[#3A4F67] border-[#88B2AB]/30 hover:border-[#51867E]'
+                        ? 'bg-[#3A4F67] text-white border-[#3A4F67] shadow-md ring-2 ring-[#51867E]/40'
+                        : 'bg-slate-50 text-[#3A4F67] border-slate-200/90 hover:border-[#51867E] hover:bg-white shadow-2xs'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-1">
@@ -1798,7 +1799,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                     <p className={`text-[10.5px] sm:text-[11px] font-bold ${formData.venueRentalRate === 'full_board' ? 'text-white' : 'text-[#3A4F67]'}`}>
                       Maximum 10–12 hours
                     </p>
-                    <p className={`text-[9.5px] sm:text-[10px] font-light leading-snug ${formData.venueRentalRate === 'full_board' ? 'text-[#EAF2F1]' : 'text-[#2C3744]'}`}>
+                    <p className={`text-[9.5px] sm:text-[10px] font-light leading-snug ${formData.venueRentalRate === 'full_board' ? 'text-slate-200' : 'text-slate-600'}`}>
                       Includes 2× coffee breaks, 1× lunch, and 1× dinner
                     </p>
                   </button>
@@ -1808,40 +1809,40 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
             {/* 3.3 EVENT HALL RENTAL PRICE (For Event Location or Room & Event) */}
             {(formData.bookOption === 'event' || formData.bookOption === 'both') && (
-              <div className="space-y-3 pt-4 border-t border-[#88B2AB]/30 animate-in fade-in duration-300">
+              <div className="space-y-3 pt-4 border-t border-slate-200/80 animate-in fade-in duration-300">
                 <label className="block text-xs font-bold tracking-[0.2em] text-[#3A4F67] uppercase">
                   EVENT HALL RENTAL PRICE *
-                  <span className="block text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
+                  <span className="block text-[10px] text-slate-500 font-medium italic lowercase tracking-normal">
                     biaya sewa venue gedung / ballroom acara
                   </span>
                 </label>
 
-                <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#88B2AB]/40 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-3 bg-[#EAF2F1] text-[#51867E] rounded-xl border border-[#88B2AB]/30 shrink-0">
+                    <div className="p-3 bg-white text-[#51867E] rounded-xl border border-slate-200 shadow-2xs shrink-0">
                       <PartyPopper className="w-6 h-6" />
                     </div>
                     <div>
                       <h4 className="text-xs font-bold text-[#3A4F67] uppercase tracking-wider">Grand Event Hall & Ballroom Rental</h4>
-                      <p className="text-[11px] text-[#2C3744] font-light mt-0.5">
+                      <p className="text-[11px] text-slate-600 font-light mt-0.5">
                         Includes full venue access, stage, AV system, and dedicated event management team.
                       </p>
                     </div>
                   </div>
-                  <div className="bg-[#EAF2F1] px-4 py-2.5 rounded-xl border border-[#88B2AB]/40 text-left sm:text-right w-full sm:w-auto shrink-0">
+                  <div className="bg-white px-4 py-2.5 rounded-xl border border-slate-200 text-left sm:text-right w-full sm:w-auto shrink-0 shadow-2xs">
                     <span className="text-[10px] font-bold text-[#3A4F67] uppercase tracking-wider block">Standard Rate</span>
                     <span className="text-base sm:text-lg font-serif font-bold text-[#51867E]">${priceEventHall.toLocaleString()} USD</span>
-                    <span className="text-[10px] text-[#3A4F67] block italic font-normal">flat rate / venue rental</span>
+                    <span className="text-[10px] text-slate-500 block italic font-normal">flat rate / venue rental</span>
                   </div>
                 </div>
               </div>
             )}
 
             {/* 4. Dates Selection (Conditional based on showRoomsAndDates or showVenueSettings) */}
-            <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t border-[#88B2AB]/30">
+            <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t border-slate-200/80">
               <label className="block text-[11px] sm:text-xs font-bold tracking-[0.15em] sm:tracking-[0.2em] text-[#3A4F67] uppercase">
                 4. SCHEDULE & DATES *
-                <span className="block text-[9.5px] sm:text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
+                <span className="block text-[9.5px] sm:text-[10px] text-slate-500 font-medium italic lowercase tracking-normal">
                   tentukan tanggal reservasi stay / event
                 </span>
               </label>
@@ -1862,7 +1863,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         min={todayStr}
                         value={formData.checkInDate}
                         onChange={(e) => setFormData({ ...formData, checkInDate: e.target.value })}
-                        className="appearance-none block box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium cursor-pointer"
+                        className="appearance-none block box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-slate-50/70 hover:bg-white focus:bg-white border border-slate-200 rounded-xl sm:rounded-full text-xs text-slate-800 focus:outline-none focus:border-[#51867E] focus:ring-2 focus:ring-[#51867E]/20 font-medium cursor-pointer transition-all"
                       />
                     </div>
 
@@ -1879,7 +1880,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         min={formData.checkInDate || todayStr}
                         value={formData.checkOutDate}
                         onChange={(e) => setFormData({ ...formData, checkOutDate: e.target.value })}
-                        className="appearance-none block box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium cursor-pointer"
+                        className="appearance-none block box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-slate-50/70 hover:bg-white focus:bg-white border border-slate-200 rounded-xl sm:rounded-full text-xs text-slate-800 focus:outline-none focus:border-[#51867E] focus:ring-2 focus:ring-[#51867E]/20 font-medium cursor-pointer transition-all"
                       />
                     </div>
                   </>
@@ -1899,7 +1900,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                       min={todayStr}
                       value={formData.eventDate}
                       onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
-                      className="appearance-none block box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium cursor-pointer"
+                      className="appearance-none block box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-slate-50/70 hover:bg-white focus:bg-white border border-slate-200 rounded-xl sm:rounded-full text-xs text-slate-800 focus:outline-none focus:border-[#51867E] focus:ring-2 focus:ring-[#51867E]/20 font-medium cursor-pointer transition-all"
                     />
                   </div>
                 )}
@@ -1908,10 +1909,10 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
             {/* 5. Venue Attendees & Event Addons (Only for Event or Meeting) */}
             {showVenueSettings && (
-              <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t border-[#88B2AB]/30 animate-in fade-in duration-300">
+              <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t border-slate-200/80 animate-in fade-in duration-300">
                 <label className="block text-[11px] sm:text-xs font-bold tracking-[0.15em] sm:tracking-[0.2em] text-[#3A4F67] uppercase">
                   5. VENUE & ATTENDEES CONFIGURATION *
-                  <span className="block text-[9.5px] sm:text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
+                  <span className="block text-[9.5px] sm:text-[10px] text-slate-500 font-medium italic lowercase tracking-normal">
                     konfigurasi kapasitas tamu dan fasilitas tambahan
                   </span>
                 </label>
@@ -1939,9 +1940,9 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         });
                       }}
                       placeholder=""
-                      className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-bold"
+                      className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-slate-50/70 hover:bg-white focus:bg-white border border-slate-200 rounded-xl sm:rounded-full text-xs text-slate-800 focus:outline-none focus:border-[#51867E] focus:ring-2 focus:ring-[#51867E]/20 font-bold transition-all"
                     />
-                    <span className="text-[10px] text-[#3A4F67] mt-1 block">
+                    <span className="text-[10px] text-slate-500 mt-1 block">
                       Rate:{' '}
                       {formData.bookOption === 'meeting'
                         ? `$${Math.round(priceMeetingRoom * getVenueMultiplier(formData.venueRentalRate))} / pax`
@@ -1962,7 +1963,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         required
                         value={formData.eventAddons || ''}
                         onChange={(e) => setFormData({ ...formData, eventAddons: e.target.value as EventAddonOption })}
-                        className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-full text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-semibold cursor-pointer"
+                        className="box-border w-full max-w-full min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3 bg-slate-50/70 hover:bg-white focus:bg-white border border-slate-200 rounded-xl sm:rounded-full text-xs text-slate-800 focus:outline-none focus:border-[#51867E] focus:ring-2 focus:ring-[#51867E]/20 font-semibold cursor-pointer transition-all"
                       >
                         <option value="" disabled hidden>-- Select Catering Option --</option>
                         <option value="none">Venue Only (No Catering)</option>
@@ -1977,23 +1978,23 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
             {/* 6. Room Quantities & Capacity Info (If ROOM, BOTH, or MEETING WITH ACCOMMODATION) */}
             {showRoomsAndDates && (
-              <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t border-[#88B2AB]/30 animate-in fade-in duration-300">
+              <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t border-slate-200/80 animate-in fade-in duration-300">
                 <div className="flex items-center justify-between gap-2">
                   <label className="block text-[11px] sm:text-xs font-bold tracking-[0.15em] sm:tracking-[0.2em] text-[#3A4F67] uppercase">
                     ROOM QUANTITIES & SELECTION *
-                    <span className="block text-[9.5px] sm:text-[10px] text-[#3A4F67] font-medium italic lowercase tracking-normal">
+                    <span className="block text-[9.5px] sm:text-[10px] text-slate-500 font-medium italic lowercase tracking-normal">
                       pilih jumlah unit untuk setiap tipe kamar
                     </span>
                   </label>
 
-                  <span className="text-[9px] sm:text-[10px] font-bold text-[#3A4F67] bg-white px-2.5 py-1 rounded-full border border-[#88B2AB]/30 shrink-0">
+                  <span className="text-[9px] sm:text-[10px] font-bold text-[#3A4F67] bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200 shrink-0">
                     Total: {(formData.standardRooms || 0) + (formData.deluxeRooms || 0) + (formData.presidentialSuites || 0) + (formData.privateVillas || 0)} Room(s)
                   </span>
                 </div>
 
                 <div className={`grid grid-cols-2 ${hasPrivateVilla ? 'lg:grid-cols-4' : 'sm:grid-cols-3'} gap-2 sm:gap-3.5`}>
                   {/* Standard Room */}
-                  <div className="bg-white rounded-xl sm:rounded-2xl border border-[#88B2AB]/30 flex flex-col justify-between overflow-hidden shadow-xs hover:shadow-md transition-all group hover:border-[#51867E]">
+                  <div className="bg-slate-50 rounded-xl sm:rounded-2xl border border-slate-200/90 flex flex-col justify-between overflow-hidden shadow-2xs hover:shadow-md transition-all group hover:border-[#51867E]">
                     {/* Room Thumbnail with Card Location Effect */}
                     <div className="relative h-16 sm:h-22 w-full overflow-hidden bg-[#3A4F67]">
                       <img
@@ -2003,7 +2004,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         loading="lazy"
                         referrerPolicy="no-referrer"
                       />
-                      <div className="absolute inset-x-0 bottom-0 h-5 sm:h-7 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
+                      <div className="absolute inset-x-0 bottom-0 h-5 sm:h-7 bg-gradient-to-t from-slate-50 via-slate-50/80 to-transparent pointer-events-none" />
 
                       {/* Guest Capacity Badge in Top Right Corner */}
                       <div className="absolute top-1.5 right-1.5 z-10 flex items-center gap-1 bg-[#1E293B]/75 backdrop-blur-xs text-white px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold border border-white/20 shadow-xs">
@@ -2020,11 +2021,11 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between bg-[#EAF2F1]/50 p-1 rounded-lg border border-[#88B2AB]/20">
+                      <div className="flex items-center justify-between bg-white p-1 rounded-lg border border-slate-200">
                         <button
                           type="button"
                           onClick={() => handleRoomCountChange('standardRooms', (formData.standardRooms || 0) - 1)}
-                          className="w-6 h-6 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
+                          className="w-6 h-6 rounded-md bg-slate-50 border border-slate-200 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-slate-100 cursor-pointer shrink-0"
                         >
                           -
                         </button>
@@ -2043,7 +2044,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         <button
                           type="button"
                           onClick={() => handleRoomCountChange('standardRooms', (formData.standardRooms || 0) + 1)}
-                          className="w-6 h-6 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
+                          className="w-6 h-6 rounded-md bg-slate-50 border border-slate-200 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-slate-100 cursor-pointer shrink-0"
                         >
                           +
                         </button>
@@ -2052,7 +2053,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   </div>
 
                   {/* Deluxe Room */}
-                  <div className="bg-white rounded-xl sm:rounded-2xl border border-[#88B2AB]/30 flex flex-col justify-between overflow-hidden shadow-xs hover:shadow-md transition-all group hover:border-[#51867E]">
+                  <div className="bg-slate-50 rounded-xl sm:rounded-2xl border border-slate-200/90 flex flex-col justify-between overflow-hidden shadow-2xs hover:shadow-md transition-all group hover:border-[#51867E]">
                     {/* Room Thumbnail with Card Location Effect */}
                     <div className="relative h-16 sm:h-22 w-full overflow-hidden bg-[#3A4F67]">
                       <img
@@ -2062,7 +2063,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         loading="lazy"
                         referrerPolicy="no-referrer"
                       />
-                      <div className="absolute inset-x-0 bottom-0 h-5 sm:h-7 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
+                      <div className="absolute inset-x-0 bottom-0 h-5 sm:h-7 bg-gradient-to-t from-slate-50 via-slate-50/80 to-transparent pointer-events-none" />
 
                       {/* Guest Capacity Badge in Top Right Corner */}
                       <div className="absolute top-1.5 right-1.5 z-10 flex items-center gap-1 bg-[#1E293B]/75 backdrop-blur-xs text-white px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold border border-white/20 shadow-xs">
@@ -2079,11 +2080,11 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between bg-[#EAF2F1]/50 p-1 rounded-lg border border-[#88B2AB]/20">
+                      <div className="flex items-center justify-between bg-white p-1 rounded-lg border border-slate-200">
                         <button
                           type="button"
                           onClick={() => handleRoomCountChange('deluxeRooms', (formData.deluxeRooms || 0) - 1)}
-                          className="w-6 h-6 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
+                          className="w-6 h-6 rounded-md bg-slate-50 border border-slate-200 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-slate-100 cursor-pointer shrink-0"
                         >
                           -
                         </button>
@@ -2102,7 +2103,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         <button
                           type="button"
                           onClick={() => handleRoomCountChange('deluxeRooms', (formData.deluxeRooms || 0) + 1)}
-                          className="w-6 h-6 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
+                          className="w-6 h-6 rounded-md bg-slate-50 border border-slate-200 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-slate-100 cursor-pointer shrink-0"
                         >
                           +
                         </button>
@@ -2111,7 +2112,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   </div>
 
                   {/* Presidential Suite */}
-                  <div className={`bg-white rounded-xl sm:rounded-2xl border border-[#88B2AB]/30 flex flex-col justify-between overflow-hidden shadow-xs hover:shadow-md transition-all group hover:border-[#51867E] ${!hasPrivateVilla ? 'col-span-2 sm:col-span-1' : ''}`}>
+                  <div className={`bg-slate-50 rounded-xl sm:rounded-2xl border border-slate-200/90 flex flex-col justify-between overflow-hidden shadow-2xs hover:shadow-md transition-all group hover:border-[#51867E] ${!hasPrivateVilla ? 'col-span-2 sm:col-span-1' : ''}`}>
                     {/* Room Thumbnail with Card Location Effect */}
                     <div className="relative h-16 sm:h-22 w-full overflow-hidden bg-[#3A4F67]">
                       <img
@@ -2121,7 +2122,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         loading="lazy"
                         referrerPolicy="no-referrer"
                       />
-                      <div className="absolute inset-x-0 bottom-0 h-5 sm:h-7 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
+                      <div className="absolute inset-x-0 bottom-0 h-5 sm:h-7 bg-gradient-to-t from-slate-50 via-slate-50/80 to-transparent pointer-events-none" />
 
                       {/* Guest Capacity Badge in Top Right Corner */}
                       <div className="absolute top-1.5 right-1.5 z-10 flex items-center gap-1 bg-[#1E293B]/75 backdrop-blur-xs text-white px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold border border-white/20 shadow-xs">
@@ -2138,11 +2139,11 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between bg-[#EAF2F1]/50 p-1 rounded-lg border border-[#88B2AB]/20">
+                      <div className="flex items-center justify-between bg-white p-1 rounded-lg border border-slate-200">
                         <button
                           type="button"
                           onClick={() => handleRoomCountChange('presidentialSuites', (formData.presidentialSuites || 0) - 1)}
-                          className="w-6 h-6 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
+                          className="w-6 h-6 rounded-md bg-slate-50 border border-slate-200 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-slate-100 cursor-pointer shrink-0"
                         >
                           -
                         </button>
@@ -2161,7 +2162,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                         <button
                           type="button"
                           onClick={() => handleRoomCountChange('presidentialSuites', (formData.presidentialSuites || 0) + 1)}
-                          className="w-6 h-6 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
+                          className="w-6 h-6 rounded-md bg-slate-50 border border-slate-200 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-slate-100 cursor-pointer shrink-0"
                         >
                           +
                         </button>
@@ -2171,7 +2172,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
                   {/* Private Villa (Eco Resort & Hotel & Resort) */}
                   {hasPrivateVilla && pricePrivateVilla && (
-                    <div className="bg-white rounded-xl sm:rounded-2xl border border-[#51867E]/40 flex flex-col justify-between overflow-hidden shadow-xs hover:shadow-md transition-all group hover:border-[#51867E]">
+                    <div className="bg-slate-50 rounded-xl sm:rounded-2xl border border-slate-200/90 flex flex-col justify-between overflow-hidden shadow-2xs hover:shadow-md transition-all group hover:border-[#51867E]">
                       {/* Room Thumbnail with Card Location Effect */}
                       <div className="relative h-16 sm:h-22 w-full overflow-hidden bg-[#3A4F67]">
                         <img
@@ -2181,7 +2182,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                           loading="lazy"
                           referrerPolicy="no-referrer"
                         />
-                        <div className="absolute inset-x-0 bottom-0 h-5 sm:h-7 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
+                        <div className="absolute inset-x-0 bottom-0 h-5 sm:h-7 bg-gradient-to-t from-slate-50 via-slate-50/80 to-transparent pointer-events-none" />
 
                         {/* Top Left Badge */}
                         <div className="absolute top-1.5 left-1.5 z-10 px-1.5 py-0.5 rounded bg-[#51867E] text-white text-[7.5px] sm:text-[8.5px] font-bold shadow-xs">
@@ -2203,11 +2204,11 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                           </span>
                         </div>
 
-                        <div className="flex items-center justify-between bg-[#EAF2F1]/50 p-1 rounded-lg border border-[#88B2AB]/20">
+                        <div className="flex items-center justify-between bg-white p-1 rounded-lg border border-slate-200">
                           <button
                             type="button"
                             onClick={() => handleRoomCountChange('privateVillas', (formData.privateVillas || 0) - 1)}
-                            className="w-6 h-6 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
+                            className="w-6 h-6 rounded-md bg-slate-50 border border-slate-200 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-slate-100 cursor-pointer shrink-0"
                           >
                             -
                           </button>
@@ -2226,7 +2227,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                           <button
                             type="button"
                             onClick={() => handleRoomCountChange('privateVillas', (formData.privateVillas || 0) + 1)}
-                            className="w-6 h-6 rounded-md bg-white border border-[#88B2AB]/40 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-[#88B2AB]/10 cursor-pointer shrink-0"
+                            className="w-6 h-6 rounded-md bg-slate-50 border border-slate-200 font-bold text-xs text-[#3A4F67] flex items-center justify-center hover:bg-slate-100 cursor-pointer shrink-0"
                           >
                             +
                           </button>
@@ -2239,8 +2240,8 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
             )}
 
             {/* 7. Live Calculation & Total Display */}
-            <div className="bg-[#3A4F67] text-white p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-[#88B2AB]/30 space-y-3 sm:space-y-4 shadow-lg">
-              <div className="flex items-center justify-between border-b border-[#88B2AB]/30 pb-2.5 sm:pb-3">
+            <div className="bg-gradient-to-br from-[#3A4F67] to-[#2C3744] text-white p-4 sm:p-6 rounded-2xl border border-slate-700/80 space-y-3 sm:space-y-4 shadow-lg">
+              <div className="flex items-center justify-between border-b border-slate-600/70 pb-2.5 sm:pb-3">
                 <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#EAF2F1] flex items-center gap-1.5">
                   <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#88B2AB]" />
                   Live Estimation Summary
@@ -2251,7 +2252,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
               </div>
 
               {/* Discount / Coupon Code Input */}
-              <div className="bg-[#2C3744]/70 p-2.5 sm:p-3 rounded-xl border border-[#88B2AB]/30 space-y-2">
+              <div className="bg-slate-800/60 p-2.5 sm:p-3 rounded-xl border border-slate-600/60 space-y-2">
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
                   <div className="flex items-center gap-2 text-xs">
                     <Tag className="w-4 h-4 text-[#88B2AB] shrink-0" />
@@ -2274,7 +2275,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                           discountCode: code
                         });
                       }}
-                      className="w-48 sm:w-56 px-3 py-1.5 bg-white text-[#2C3744] font-bold text-xs uppercase rounded-lg focus:outline-none focus:ring-2 focus:ring-[#88B2AB]"
+                      className="w-48 sm:w-56 px-3 py-1.5 bg-white text-slate-800 font-bold text-xs uppercase rounded-lg focus:outline-none focus:ring-2 focus:ring-[#88B2AB]"
                     />
                     {couponResult.isValid && (
                       <span className="bg-[#88B2AB] text-[#1E293B] font-extrabold text-[10px] px-2 py-1 rounded-lg shrink-0">
@@ -2297,14 +2298,14 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
               <div className="space-y-1.5 text-[11px] sm:text-xs">
                 {showRoomsAndDates && currentRoomSubtotal > 0 && (
-                  <div className="flex justify-between text-[#EAF2F1]">
+                  <div className="flex justify-between text-slate-200">
                     <span>Room Accommodation ({currentNights} Night/s):</span>
                     <strong className="font-mono text-white">${currentRoomSubtotal.toLocaleString()}</strong>
                   </div>
                 )}
 
                 {showVenueSettings && currentEventSubtotal > 0 && (
-                  <div className="flex justify-between text-[#EAF2F1]">
+                  <div className="flex justify-between text-slate-200">
                     <span className="truncate pr-2">
                       {formData.bookOption === 'meeting'
                         ? `Venue Rental & Meeting Package (${getVenueRateLabel(formData.venueRentalRate)}):`
@@ -2314,7 +2315,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   </div>
                 )}
 
-                <div className="flex justify-between text-[#EAF2F1]">
+                <div className="flex justify-between text-slate-200">
                   <span>Subtotal Before Discount & Tax:</span>
                   <strong className="font-mono text-white">${currentRawSubtotal.toLocaleString()}</strong>
                 </div>
@@ -2326,18 +2327,18 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   </div>
                 )}
 
-                <div className="flex justify-between text-[#EAF2F1]">
+                <div className="flex justify-between text-slate-200">
                   <span>Subtotal Before Tax:</span>
                   <strong className="font-mono text-white">${currentSubtotalBeforeTax.toLocaleString()}</strong>
                 </div>
 
-                <div className="flex justify-between text-[#EAF2F1]">
+                <div className="flex justify-between text-slate-200">
                   <span>Tax & Service Fee (10%):</span>
                   <strong className="font-mono text-white">${currentTaxAmount.toLocaleString()}</strong>
                 </div>
 
-                <div className="pt-2.5 sm:pt-3 border-t border-[#88B2AB]/30 flex items-center justify-between gap-2">
-                  <span className="text-[10.5px] sm:text-xs font-bold uppercase tracking-wider text-[#EAF2F1] shrink-0">
+                <div className="pt-2.5 sm:pt-3 border-t border-slate-600/70 flex items-center justify-between gap-2">
+                  <span className="text-[10.5px] sm:text-xs font-bold uppercase tracking-wider text-slate-200 shrink-0">
                     Estimated Grand Total
                   </span>
                   <span className="text-base sm:text-xl font-serif font-bold text-[#88B2AB] text-right">
@@ -2361,7 +2362,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 }
                 value={formData.notes || ''}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                className="w-full p-3 sm:p-4 bg-white border border-[#88B2AB]/30 rounded-xl sm:rounded-2xl text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E] font-medium resize-none"
+                className="w-full p-3 sm:p-4 bg-slate-50/70 hover:bg-white focus:bg-white border border-slate-200 rounded-xl sm:rounded-2xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#51867E] focus:ring-2 focus:ring-[#51867E]/20 font-medium resize-none transition-all"
               />
             </div>
 
@@ -2369,7 +2370,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3.5 sm:py-4 px-3 sm:px-6 bg-[#51867E] hover:bg-[#3f6d66] text-white rounded-full text-[11px] sm:text-xs font-bold tracking-[0.08em] sm:tracking-[0.2em] uppercase transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer border border-[#88B2AB]/40"
+              className="w-full py-3.5 sm:py-4 px-3 sm:px-6 bg-[#51867E] hover:bg-[#3f6d66] text-white rounded-full text-[11px] sm:text-xs font-bold tracking-[0.08em] sm:tracking-[0.2em] uppercase transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer border border-[#51867E]"
             >
               {submitting ? (
                 <span>Registering Reservation...</span>
@@ -2385,7 +2386,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
 
         {/* STICKY BOTTOM SUMMARY BAR FOR MOBILE FORM */}
         {!confirmedBooking && (
-          <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#3A4F67]/95 backdrop-blur-md border-t border-[#88B2AB]/30 px-4 py-2.5 shadow-2xl flex items-center justify-between text-white">
+          <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#3A4F67]/95 backdrop-blur-md border-t border-slate-700/80 px-4 py-2.5 shadow-2xl flex items-center justify-between text-white">
             <div className="flex flex-col">
               <span className="text-[9px] uppercase tracking-wider text-[#88B2AB] font-semibold">Total Estimated</span>
               <span className="text-lg font-serif font-bold text-white">${currentGrandTotal.toLocaleString()} USD</span>
@@ -2398,7 +2399,7 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                 }
               }}
               disabled={submitting}
-              className="px-5 py-2 bg-[#51867E] active:bg-[#3f6d66] text-white text-[11px] font-bold uppercase tracking-wider rounded-full shadow border border-[#88B2AB]/40 flex items-center gap-1.5"
+              className="px-5 py-2 bg-[#51867E] active:bg-[#3f6d66] text-white text-[11px] font-bold uppercase tracking-wider rounded-full shadow border border-[#51867E] flex items-center gap-1.5"
             >
               <CalendarCheck className="w-3.5 h-3.5" />
               <span>Book Now</span>

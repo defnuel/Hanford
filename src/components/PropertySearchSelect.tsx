@@ -110,8 +110,8 @@ export const PropertySearchSelect: React.FC<PropertySearchSelectProps> = ({
           }}
           placeholder="Search location by property name, country, or city..."
           disabled={disabled}
-          className={`w-full pl-11 pr-20 py-3 bg-white border border-[#88B2AB]/40 rounded-full text-xs text-[#2C3744] placeholder-[#4A5568] focus:outline-none focus:border-[#51867E] focus:ring-2 focus:ring-[#51867E]/20 font-medium transition-all shadow-xs ${
-            disabled ? 'opacity-60 cursor-not-allowed bg-gray-50' : 'cursor-text'
+          className={`w-full pl-11 pr-20 py-3 bg-slate-50/70 hover:bg-white focus:bg-white border border-slate-200 rounded-full text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#51867E] focus:ring-2 focus:ring-[#51867E]/20 font-medium transition-all shadow-2xs ${
+            disabled ? 'opacity-60 cursor-not-allowed bg-slate-100' : 'cursor-text'
           }`}
         />
 
@@ -120,7 +120,7 @@ export const PropertySearchSelect: React.FC<PropertySearchSelectProps> = ({
             <button
               type="button"
               onClick={handleClear}
-              className="p-1 rounded-full text-gray-400 hover:text-red-500 hover:bg-gray-100 transition-colors cursor-pointer"
+              className="p-1 rounded-full text-slate-400 hover:text-red-500 hover:bg-slate-100 transition-colors cursor-pointer"
               title="Clear search or selection"
             >
               <X className="w-3.5 h-3.5" />
@@ -138,7 +138,7 @@ export const PropertySearchSelect: React.FC<PropertySearchSelectProps> = ({
                 }
               }
             }}
-            className="p-1 rounded-full text-[#51867E] hover:bg-gray-100 transition-colors cursor-pointer"
+            className="p-1 rounded-full text-[#51867E] hover:bg-slate-100 transition-colors cursor-pointer"
           >
             <ChevronDown
               className={`w-4 h-4 transition-transform duration-200 ${
@@ -151,20 +151,20 @@ export const PropertySearchSelect: React.FC<PropertySearchSelectProps> = ({
 
       {/* Dropdown Results List with identical style to Our Locations */}
       {isOpen && !disabled && (
-        <div className="absolute left-0 right-0 top-full mt-2 bg-white border border-[#88B2AB]/40 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200/90 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
           {/* Header info bar */}
-          <div className="px-4 py-2.5 border-b border-[#88B2AB]/20 bg-[#EAF2F1]/60 flex items-center justify-between text-[10.5px] font-bold text-[#3A4F67] uppercase tracking-wider">
+          <div className="px-4 py-2.5 border-b border-slate-200/80 bg-slate-50 flex items-center justify-between text-[10.5px] font-bold text-[#3A4F67] uppercase tracking-wider">
             <span>Matched Sanctuaries ({filteredProperties.length})</span>
             <span className="text-[9.5px] text-[#51867E] font-medium lowercase italic">click location to select</span>
           </div>
 
           {/* Properties List */}
-          <div className="max-h-80 overflow-y-auto divide-y divide-[#88B2AB]/15 p-1.5">
+          <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 p-1.5">
             {filteredProperties.length === 0 ? (
-              <div className="p-6 text-center text-xs text-[#2C3744] space-y-1">
+              <div className="p-6 text-center text-xs text-slate-700 space-y-1">
                 <MapPin className="w-6 h-6 text-[#51867E] mx-auto opacity-70" />
                 <p className="font-bold text-[#3A4F67]">No locations found</p>
-                <p className="text-[11px] text-gray-500">
+                <p className="text-[11px] text-slate-500">
                   Try searching for a different country or hotel name (e.g. "Greece", "Jeju", "Jakarta").
                 </p>
               </div>
@@ -185,13 +185,13 @@ export const PropertySearchSelect: React.FC<PropertySearchSelectProps> = ({
                     }}
                     className={`w-full text-left p-2.5 sm:p-3 rounded-xl transition-all flex items-center justify-between gap-3 group cursor-pointer ${
                       isSelected
-                        ? 'bg-[#EAF2F1] border border-[#88B2AB]/40 shadow-2xs'
-                        : 'hover:bg-[#EAF2F1]/80'
+                        ? 'bg-slate-100/80 border border-slate-200 shadow-2xs'
+                        : 'hover:bg-slate-50'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       {/* Property Thumbnail */}
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden shrink-0 bg-[#3A4F67] border border-[#88B2AB]/30 shadow-xs">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden shrink-0 bg-[#3A4F67] border border-slate-200 shadow-2xs">
                         <img
                           src={property.heroImage}
                           alt={property.name}
