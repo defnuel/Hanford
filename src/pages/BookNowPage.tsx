@@ -1275,15 +1275,12 @@ export const BookNowPage: React.FC<BookNowPageProps> = ({ initialPropertySlug, o
                   <CreditCard className="w-4 h-4 text-[#51867E]" />
                   PAYMENT &amp; CONFIRMATION INSTRUCTIONS
                 </h4>
-                <p className="text-[11px] text-slate-500 italic leading-tight mt-1">
-                  (Instruksi Pembayaran &amp; Konfirmasi)
-                </p>
               </div>
 
               <div className="space-y-3 text-xs text-slate-700">
                 <div className="bg-slate-50 p-3.5 rounded-xl sm:rounded-2xl border border-slate-200/80 text-xs text-slate-700 space-y-1">
                   <p className="leading-relaxed">
-                    <strong className="text-[#3A4F67]">Time Limit / Batas Waktu:</strong> Please complete payment within <strong className="text-[#3A4F67]">48 hours</strong> to confirm your reservation.
+                    Please complete payment within <strong className="text-[#3A4F67]">48 hours</strong> to confirm your reservation.
                   </p>
                   <p className="text-[10.5px] text-slate-500 italic leading-tight">
                     Silakan lakukan pembayaran dalam waktu 48 jam untuk mengonfirmasi reservasi Anda.

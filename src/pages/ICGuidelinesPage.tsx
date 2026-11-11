@@ -174,16 +174,27 @@ export const ICGuidelinesPage: React.FC<ICGuidelinesPageProps> = ({ onNavigate }
                     </div>
 
                     <div className="p-3 bg-white/90 border border-[#88B2AB]/30 rounded-xl space-y-1">
-                      <div className="text-xs font-bold text-[#3A4F67]">1. Isi Formulir Reservasi</div>
+                      <div className="text-xs font-bold text-[#3A4F67]">1. Isi Form Reservasi</div>
                       <p className="text-[11px] text-slate-600 leading-relaxed">
-                        Buka <strong className="text-slate-800">Book Now</strong>, pilih properti, isi data tamu (IC Name & @username X), kategori booking, jadwal, jumlah kamar/tamu, serta catatan jika ada.
+                        Klik{' '}
+                        <a
+                          href="/book-now"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            onNavigate('/book-now');
+                          }}
+                          className="font-bold text-[#51867E] hover:text-[#3f6d66] underline decoration-slate-400 hover:decoration-[#51867E] cursor-pointer"
+                        >
+                          Book Now
+                        </a>
+                        , pilih properti, isi data tamu (Name &amp; @username X), kategori booking, tanggal check in &amp; check out, jumlah kamar, serta catatan jika ada.
                       </p>
                     </div>
 
                     <div className="p-3 bg-white/90 border border-[#88B2AB]/30 rounded-xl space-y-1">
                       <div className="text-xs font-bold text-[#3A4F67]">2. Submit & Unduh Invoice</div>
                       <p className="text-[11px] text-slate-600 leading-relaxed">
-                        Klik <strong className="text-slate-800">Submit Booking</strong> untuk menerbitkan <strong className="text-slate-800">Official Invoice</strong>, lalu unduh invoice dalam format PNG.
+                        Klik <strong className="text-slate-800">Submit Booking</strong> untuk menerbitkan <strong className="text-slate-800">Official Invoice</strong>, lalu unduh invoice.
                       </p>
                     </div>
 
@@ -197,9 +208,9 @@ export const ICGuidelinesPage: React.FC<ICGuidelinesPageProps> = ({ onNavigate }
                         <div>No. Rek: <strong className="text-[#51867E]">3076 6324 4788 9928</strong></div>
                       </div>
                       <p className="text-[11px] text-slate-600 leading-relaxed">
-                        Setelah bayar, <strong className="text-[#3A4F67]">wajib DM</strong> ke{' '}
+                        Setelah payment, kirim DM atau tweet ke{' '}
                         <a href="https://x.com/Hanford_HnR" target="_blank" rel="noopener noreferrer" className="font-bold text-[#3A4F67] hover:text-[#51867E] underline decoration-dotted">@Hanford_HnR</a>
-                        {' '}dengan melampirkan <strong className="text-slate-800">Official Invoice</strong> & <strong className="text-slate-800">bukti payment</strong>.
+                        {' '}dengan melampirkan <strong className="text-slate-800">Invoice</strong> &amp; <strong className="text-slate-800">bukti payment</strong>.
                       </p>
                     </div>
                   </div>
