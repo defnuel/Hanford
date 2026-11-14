@@ -9,18 +9,16 @@ import {
 import {
   DiningServiceType,
   Property,
-  SignatureBookingMatch,
   SignatureOrderItem,
   SignatureOrderReceipt
 } from '../types';
 import {
   fetchLocations,
-  submitSignatureOrder,
-  verifySignatureXCode
+  submitSignatureOrder
 } from '../services/dataService';
 import { PropertySearchSelect } from '../components/PropertySearchSelect';
 import { exportInvoiceAsImage } from '../utils/exportInvoiceImage';
-import { Check, Download, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
+import { Download, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 
 interface ItemDraftState {
   variant?: string;
@@ -38,14 +36,8 @@ export const HFSignaturePage: React.FC = () => {
   const [roomNumber, setRoomNumber] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
 
-  // X Username state + optional booking sheet match
+  // X Username input (no booking matching needed)
   const [xUsernameInput, setXUsernameInput] = useState<string>('');
-  const [codeStatus, setCodeStatus] = useState<{
-    checked: boolean;
-    valid: boolean;
-    message: string;
-    matchedBooking?: SignatureBookingMatch;
-  } | null>(null);
 
   // Per-item draft options (variant, secondaryVariant, enhancements)
   const [itemDrafts, setItemDrafts] = useState<Record<string, ItemDraftState>>({});
@@ -73,39 +65,6 @@ export const HFSignaturePage: React.FC = () => {
     () => properties.find((p) => p.slug === selectedPropertySlug) || null,
     [properties, selectedPropertySlug]
   );
-
-  // Automatically check X username against Google Sheets bookings when Hotel Guest is enabled
-  useEffect(() => {
-    const trimmed = xUsernameInput.trim();
-    if (!isHotelGuest || !trimmed || !selectedProperty) {
-      setCodeStatus(null);
-      return;
-    }
-
-    let cancelled = false;
-    const timer = setTimeout(async () => {
-      const res = await verifySignatureXCode(
-        trimmed,
-        selectedProperty.slug,
-        selectedProperty.name
-      );
-      if (cancelled) return;
-      setCodeStatus({
-        checked: true,
-        valid: res.valid,
-        message: res.message,
-        matchedBooking: res.matchedBooking
-      });
-      if (res.valid && res.matchedBooking?.guestName && !guestName.trim()) {
-        setGuestName(res.matchedBooking.guestName);
-      }
-    }, 350);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [isHotelGuest, xUsernameInput, selectedProperty, guestName]);
 
   const activeTabMeta = useMemo(
     () => SIGNATURE_CATEGORY_TABS.find((t) => t.id === activeCategory),
@@ -258,8 +217,8 @@ export const HFSignaturePage: React.FC = () => {
   const taxAmount = useMemo(() => Math.round(subtotal * 0.1), [subtotal]);
   const grossTotal = subtotal + taxAmount;
 
-  // Guest free complimentary makes Total = $0 whenever I am a Hotel Guest is selected (or booking verified)
-  const isFreeDining = isHotelGuest || Boolean(codeStatus?.valid);
+  // Guest free complimentary makes Total = $0 strictly based on Hotel Guest selection
+  const isFreeDining = isHotelGuest;
   const finalTotal = isFreeDining ? 0 : grossTotal;
   const totalItemCount = useMemo(
     () => cartItems.reduce((sum, i) => sum + i.quantity, 0),
@@ -966,21 +925,6 @@ export const HFSignaturePage: React.FC = () => {
                     placeholder="@username"
                     className="w-full px-3 py-2 border border-slate-200 rounded-md bg-white text-xs text-[#2C3744] focus:outline-none focus:border-[#51867E]"
                   />
-
-                  {codeStatus?.checked && codeStatus.valid && (
-                    <div className="text-[11px] px-3 py-2 rounded-md border bg-[#EAF2F1] border-[#88B2AB] text-[#3A4F67] flex items-start gap-2">
-                      <Check className="w-3.5 h-3.5 text-[#51867E] shrink-0 mt-0.5" />
-                      <div>
-                        <span className="font-semibold">{codeStatus.message}</span>
-                        {codeStatus.matchedBooking && (
-                          <div className="text-[10.5px] text-slate-600 mt-0.5">
-                            Booking #{codeStatus.matchedBooking.bookingId} ·{' '}
-                            {codeStatus.matchedBooking.propertyName}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
                 </div>
 
                 {/* Optional Notes */}

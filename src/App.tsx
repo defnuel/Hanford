@@ -11,6 +11,7 @@ import { BookNowPage } from './pages/BookNowPage';
 import { GuidelinesPage } from './pages/GuidelinesPage';
 import { AdminPage } from './pages/AdminPage';
 import { HFSignaturePage } from './pages/HFSignaturePage';
+import { TelegramDownloadPage } from './pages/TelegramDownloadPage';
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState<string>(() => {
@@ -47,11 +48,18 @@ export default function App() {
     return params.get(paramName) || undefined;
   };
 
-  const isAdminRoute = currentPath.toLowerCase().startsWith('/admin');
+  const lowerPath = currentPath.toLowerCase();
+  const isAdminRoute = lowerPath.startsWith('/admin');
   const isSignatureRoute =
-    currentPath.toLowerCase().startsWith('/hr-signature') ||
-    currentPath.toLowerCase().startsWith('/hf-signature') ||
-    currentPath.toLowerCase().startsWith('/signature');
+    lowerPath.startsWith('/hr-signature') ||
+    lowerPath.startsWith('/hf-signature') ||
+    lowerPath.startsWith('/signature');
+  const isTelegramDownloadRoute =
+    lowerPath.startsWith('/telegram/invoice') ||
+    lowerPath.startsWith('/telegram/receipt') ||
+    lowerPath.startsWith('/api/invoice') ||
+    lowerPath.startsWith('/api/hr-signature/receipt') ||
+    lowerPath.startsWith('/api/hf-signature/receipt');
 
   // Route matching
   const renderRoute = () => {
@@ -115,6 +123,10 @@ export default function App() {
 
   if (isAdminRoute) {
     return <AdminPage onNavigate={navigate} />;
+  }
+
+  if (isTelegramDownloadRoute) {
+    return <TelegramDownloadPage path={currentPath} />;
   }
 
   if (isSignatureRoute) {

@@ -5,6 +5,24 @@ import { MOCK_PROJECTS } from '../data/mockProjects';
 
 const DEFAULT_SPREADSHEET_ID = '1a2WN_AqaV9WS15h-37FDCyVV_ZpLB1IaBDbvb2VYzeU';
 const DEFAULT_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycby2WfS3a2mLS5Z5iGa4onfMwD0jvRONhqxe-hxBvcXUSaX2nfXZG_o8G6uTtQwnHgtG/exec';
+const DEFAULT_SIGNATURE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxhd5gkSqpUERWtTU6DMMDoDwpBsddOx6gfsboD82x_QujNNDb1HTdqM1v9-QKoxCZJ/exec';
+
+function normalizeAppsScriptWebhookUrl(raw?: string): string {
+  const trimmed = String(raw || '').trim();
+  if (!trimmed) return '';
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      new URL(trimmed);
+      return trimmed;
+    } catch {
+      return '';
+    }
+  }
+  if (/^[A-Za-z0-9_-]{20,}$/.test(trimmed)) {
+    return `https://script.google.com/macros/s/${trimmed}/exec`;
+  }
+  return '';
+}
 
 // In-memory array for tracking booking submissions
 const mockBookingsStore: BookingInquiry[] = [];
@@ -794,7 +812,8 @@ export async function appendBookingInquiry(inquiry: BookingInquiry): Promise<{
   let bookingsTab = (/^\d+$/.test(rawTab) || !rawTab) ? 'Bookings' : rawTab;
   const serviceAccountEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const serviceAccountPrivateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
-  const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL || DEFAULT_WEBHOOK_URL;
+  const webhookUrl =
+    normalizeAppsScriptWebhookUrl(process.env.GOOGLE_SHEETS_WEBHOOK_URL) || DEFAULT_WEBHOOK_URL;
 
   // Format book option string for readable Google Sheet row
   let bookOptionText = 'Room Only';
@@ -974,7 +993,7 @@ export async function appendBookingInquiry(inquiry: BookingInquiry): Promise<{
 
 /**
  * Formats an HR Signature dining order into a 15-column row matching the 'HR Signature' tab schema:
- * [Order ID, Timestamp, Property Location, Dining Option, Room Number, Guest Name, X Username, Hotel Guest, Matched Booking ID, Items Ordered, Total Qty, Subtotal ($), Guest Free Complimentary ($), Total ($), Notes]
+ * [Order ID, Timestamp, Property Location, Dining Option, Room Number, Guest Name, X Username, Hotel Guest, Items Ordered, Total Qty, Subtotal ($), Tax & Service 10% ($), Guest Free Complimentary ($), Total ($), Notes]
  */
 export function buildSignatureOrderRowValues(receipt: SignatureOrderReceipt): string[] {
   const serviceLabel =
@@ -987,7 +1006,6 @@ export function buildSignatureOrderRowValues(receipt: SignatureOrderReceipt): st
     ? `@${receipt.xUsernameCode.replace(/^@+/, '')}`
     : 'N/A';
   const hotelGuestLabel = receipt.isFreeDining ? 'Yes (Hotel Guest)' : 'No';
-  const matchedBookingId = receipt.matchedBooking?.bookingId || 'N/A';
 
   const itemsText = receipt.items
     .map((item) => {
@@ -1003,7 +1021,9 @@ export function buildSignatureOrderRowValues(receipt: SignatureOrderReceipt): st
     .join('; ');
 
   const totalQty = receipt.items.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+  const taxAmount = receipt.taxAmount ?? Math.round(Number(receipt.subtotal || 0) * 0.1);
   const subtotalText = `$${Number(receipt.subtotal || 0).toLocaleString()}`;
+  const taxText = `$${taxAmount.toLocaleString()}`;
   const discountText =
     receipt.discountAmount > 0
       ? `-$${Number(receipt.discountAmount).toLocaleString()}`
@@ -1019,10 +1039,10 @@ export function buildSignatureOrderRowValues(receipt: SignatureOrderReceipt): st
     receipt.guestName || 'Guest',
     xHandle,
     hotelGuestLabel,
-    matchedBookingId,
     itemsText,
     String(totalQty),
     subtotalText,
+    taxText,
     discountText,
     totalText,
     receipt.notes?.trim() || 'N/A'
@@ -1031,7 +1051,8 @@ export function buildSignatureOrderRowValues(receipt: SignatureOrderReceipt): st
 
 /**
  * Appends an HR Signature order receipt to the 'HR Signature' worksheet tab in Google Sheets.
- * Supports Service Account OAuth2 API v4 and Apps Script Webhook fallback.
+ * Supports Service Account OAuth2 API v4 and dedicated GOOGLE_SHEETS_SIGNATURE_WEBHOOK_URL
+ * (intentionally never falls back to the Bookings-only webhook URL so HR Signature rows never pollute the Bookings tab).
  */
 export async function appendSignatureOrderToSheet(receipt: SignatureOrderReceipt): Promise<{
   success: boolean;
@@ -1046,7 +1067,9 @@ export async function appendSignatureOrderToSheet(receipt: SignatureOrderReceipt
 
   const serviceAccountEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const serviceAccountPrivateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
-  const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL || DEFAULT_WEBHOOK_URL;
+  const webhookUrl =
+    normalizeAppsScriptWebhookUrl(process.env.GOOGLE_SHEETS_SIGNATURE_WEBHOOK_URL) ||
+    DEFAULT_SIGNATURE_WEBHOOK_URL;
 
   const rowValues = buildSignatureOrderRowValues(receipt);
   const errorsLogged: string[] = [];

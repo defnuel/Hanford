@@ -411,19 +411,8 @@ async function startServer() {
       const subtotal = payload.items.reduce((sum, item) => sum + Number(item.lineTotal || 0), 0);
       const taxAmount = Math.round(subtotal * 0.1);
 
-      let matchedBooking = null;
-      if (payload.xUsernameCode && payload.xUsernameCode.trim()) {
-        const bookingsRes = await getBookingsFromSource();
-        matchedBooking = findMatchingBookingForDining(
-          bookingsRes.bookings,
-          payload.xUsernameCode,
-          payload.propertySlug,
-          payload.propertyName
-        );
-      }
-
-      // Free complimentary when guest confirms they are a Hotel Guest (matching booking verified or hotel guest status)
-      const isFreeDining = Boolean(payload.isHotelGuest) || Boolean(matchedBooking);
+      // Determined strictly by guest selection (I am a Hotel Guest vs No), without matching booking sheet
+      const isFreeDining = Boolean(payload.isHotelGuest);
       const grossTotal = subtotal + taxAmount;
       const discountAmount = isFreeDining ? grossTotal : 0;
       const totalAmount = isFreeDining ? 0 : grossTotal;
@@ -433,7 +422,6 @@ async function startServer() {
 
       const resolvedGuestName =
         (payload.guestName && payload.guestName.trim()) ||
-        (matchedBooking?.guestName) ||
         (payload.xUsernameCode ? `@${payload.xUsernameCode.replace(/^@+/, '')}` : 'Guest');
 
       const receipt: SignatureOrderReceipt = {
@@ -447,7 +435,7 @@ async function startServer() {
         roomOrTable: payload.serviceType === 'room_service' ? (payload.roomOrTable?.trim() || undefined) : undefined,
         xUsernameCode: payload.xUsernameCode?.trim() || undefined,
         isFreeDining,
-        matchedBooking,
+        matchedBooking: null,
         items: payload.items,
         subtotal,
         taxAmount,

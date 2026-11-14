@@ -55,10 +55,11 @@ export async function sendTelegramBookingNotification(
     ? `$${Number(booking.totalAmount).toLocaleString()}`
     : 'Custom Invoice';
 
-  // Construct domain for invoice download links
-  const domain = (baseUrl || process.env.APP_URL || 'https://ais-dev-sfkcuoclk2mqz7rx6iai42-477170986057.asia-southeast1.run.app').replace(/\/$/, '');
-  const paidInvoiceUrl = `${domain}/api/invoice/${encodeURIComponent(bookingId)}?status=PAID`;
-  const unpaidInvoiceUrl = `${domain}/api/invoice/${encodeURIComponent(bookingId)}?status=UNPAID`;
+  // Construct domain for Telegram invoice download links
+  void baseUrl;
+  const domain = (process.env.TELEGRAM_PUBLIC_URL || 'https://hanford.netlify.app').replace(/\/$/, '');
+  const paidInvoiceUrl = `${domain}/telegram/invoice/${encodeURIComponent(bookingId)}?status=PAID`;
+  const unpaidInvoiceUrl = `${domain}/telegram/invoice/${encodeURIComponent(bookingId)}?status=UNPAID`;
 
   let telegramMessage = `🔔 <b>NEW RESERVATION ALERT</b>
 
@@ -144,12 +145,9 @@ export async function sendTelegramDiningNotification(
     };
   }
 
-  const domain = (
-    baseUrl ||
-    process.env.APP_URL ||
-    'https://ais-dev-sfkcuoclk2mqz7rx6iai42-477170986057.asia-southeast1.run.app'
-  ).replace(/\/$/, '');
-  const receiptUrl = `${domain}/api/hr-signature/receipt/${encodeURIComponent(receipt.orderId)}`;
+  void baseUrl;
+  const domain = (process.env.TELEGRAM_PUBLIC_URL || 'https://hanford.netlify.app').replace(/\/$/, '');
+  const receiptUrl = `${domain}/telegram/receipt/${encodeURIComponent(receipt.orderId)}`;
 
   const serviceLabel =
     receipt.serviceType === 'room_service' ? 'Room Service' : 'Dinner in Restaurant';
@@ -175,7 +173,7 @@ export async function sendTelegramDiningNotification(
     .join('\n');
 
   const diningPrivilegeText = receipt.isFreeDining
-    ? `✅ GUEST FREE COMPLIMENTARY${receipt.matchedBooking?.bookingId ? ` (${escapeHtml(receipt.matchedBooking.bookingId)})` : ''}`
+    ? '✅ GUEST FREE COMPLIMENTARY'
     : 'Non-Guest / Standard Billing';
 
   const taxAmount = receipt.taxAmount ?? Math.round(receipt.subtotal * 0.1);

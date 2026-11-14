@@ -64,16 +64,16 @@ const CollapsibleSectionCard: React.FC<CollapsibleSectionCardProps> = ({ sec }) 
           {sec.items.length > 0 ? (
             <ul className="space-y-3 pt-1">
               {sec.items.map((item, i) => (
-                <li key={i} className="flex items-start gap-3 text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
+                <li key={i} className="flex items-start gap-3 text-xs sm:text-sm text-slate-600 font-normal leading-relaxed text-justify">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#51867E] mt-2 shrink-0" />
-                  <span>{item}</span>
+                  <span className="flex-1 text-justify">{item}</span>
                 </li>
               ))}
             </ul>
           ) : sec.paragraphs.length > 0 ? (
-            <div className="space-y-3 pt-1 text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
+            <div className="space-y-3 pt-1 text-xs sm:text-sm text-slate-600 font-normal leading-relaxed text-justify">
               {sec.paragraphs.map((p, i) => (
-                <p key={i}>{p}</p>
+                <p key={i} className="text-justify">{p}</p>
               ))}
             </div>
           ) : null}
@@ -224,9 +224,9 @@ export const CleanPropertyDetails: React.FC<CleanPropertyDetailsProps> = ({ deta
           </button>
 
           {isOverviewOpen && (
-            <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-3 border-t border-slate-100 space-y-4 text-slate-600 font-normal leading-relaxed text-sm sm:text-base relative z-10">
+            <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-3 border-t border-slate-100 space-y-4 text-slate-600 font-normal leading-relaxed text-sm sm:text-base text-justify relative z-10">
               {overviewParagraphs.map((para, idx) => (
-                <p key={idx} className="leading-relaxed">
+                <p key={idx} className="leading-relaxed text-justify">
                   {para}
                 </p>
               ))}

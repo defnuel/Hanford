@@ -6,6 +6,7 @@ import {
   AdminUser,
   GoodsReceivedNote,
   SignatureBookingMatch,
+  SignatureOrderItem,
   SignatureOrderPayload,
   SignatureOrderReceipt
 } from '../types';
@@ -596,6 +597,24 @@ export async function fetchProjectBySlug(slug: string): Promise<ApiResponse<Proj
 }
 
 const DEFAULT_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycby2WfS3a2mLS5Z5iGa4onfMwD0jvRONhqxe-hxBvcXUSaX2nfXZG_o8G6uTtQwnHgtG/exec';
+const DEFAULT_SIGNATURE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxhd5gkSqpUERWtTU6DMMDoDwpBsddOx6gfsboD82x_QujNNDb1HTdqM1v9-QKoxCZJ/exec';
+
+function normalizeAppsScriptWebhookUrlClient(raw?: string): string {
+  const trimmed = String(raw || '').trim();
+  if (!trimmed) return '';
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      new URL(trimmed);
+      return trimmed;
+    } catch {
+      return '';
+    }
+  }
+  if (/^[A-Za-z0-9_-]{20,}$/.test(trimmed)) {
+    return `https://script.google.com/macros/s/${trimmed}/exec`;
+  }
+  return '';
+}
 
 function build32ColumnRowValues(inquiry: BookingInquiry, finalBookingId: string, createdAt: string): string[] {
   let bookOptionText = 'Room Only';
@@ -709,13 +728,13 @@ export async function sendTelegramBookingNotificationClient(booking: BookingInqu
     ? `$${Number(booking.totalAmount).toLocaleString()}`
     : 'Custom Invoice';
 
-  // For Netlify / Static hosting, point invoice links to Cloud Run live API server or window origin
-  const origin = typeof window !== 'undefined' && window.location.origin.includes('netlify.app')
-    ? 'https://ais-dev-sfkcuoclk2mqz7rx6iai42-477170986057.asia-southeast1.run.app'
-    : (typeof window !== 'undefined' ? window.location.origin : '');
+  // Point Telegram invoice download links to the production Netlify domain
+  const origin = (
+    (import.meta as any).env?.VITE_TELEGRAM_PUBLIC_URL || 'https://hanford.netlify.app'
+  ).replace(/\/$/, '');
 
-  const paidInvoiceUrl = `${origin}/api/invoice/${encodeURIComponent(bookingId)}?status=PAID`;
-  const unpaidInvoiceUrl = `${origin}/api/invoice/${encodeURIComponent(bookingId)}?status=UNPAID`;
+  const paidInvoiceUrl = `${origin}/telegram/invoice/${encodeURIComponent(bookingId)}?status=PAID`;
+  const unpaidInvoiceUrl = `${origin}/telegram/invoice/${encodeURIComponent(bookingId)}?status=UNPAID`;
 
   let telegramMessage = `🔔 <b>NEW RESERVATION ALERT</b>
 
@@ -798,7 +817,9 @@ async function handleStaticBookingSubmission(inquiry: BookingInquiry): Promise<{
   }
 
   // Attempt client-side webhook dispatch if available
-  const webhookUrl = (import.meta as any).env?.VITE_GOOGLE_SHEETS_WEBHOOK_URL || DEFAULT_WEBHOOK_URL;
+  const webhookUrl =
+    normalizeAppsScriptWebhookUrlClient((import.meta as any).env?.VITE_GOOGLE_SHEETS_WEBHOOK_URL) ||
+    DEFAULT_WEBHOOK_URL;
   if (webhookUrl) {
     try {
       const rowValues = build32ColumnRowValues(inquiry, finalBookingId, createdAt);
@@ -1691,6 +1712,10 @@ async function sendTelegramDiningNotificationClient(
     .join('\n');
 
   const taxAmount = receipt.taxAmount ?? Math.round(receipt.subtotal * 0.1);
+  const origin = (
+    (import.meta as any).env?.VITE_TELEGRAM_PUBLIC_URL || 'https://hanford.netlify.app'
+  ).replace(/\/$/, '');
+  const receiptUrl = `${origin}/telegram/receipt/${encodeURIComponent(receipt.orderId)}`;
 
   const msg = `🍽️ <b>NEW HR SIGNATURE ORDER</b>
 
@@ -1700,7 +1725,7 @@ async function sendTelegramDiningNotificationClient(
 👤 <b>Guest:</b> ${escapeHtmlClient(receipt.guestName)}${escapeHtmlClient(xHandle)}
 🎟️ <b>Status:</b> ${
     receipt.isFreeDining
-      ? `✅ GUEST FREE COMPLIMENTARY${receipt.matchedBooking?.bookingId ? ` (${escapeHtmlClient(receipt.matchedBooking.bookingId)})` : ''}`
+      ? '✅ GUEST FREE COMPLIMENTARY'
       : 'Non-Guest / Standard Billing'
   }
 
@@ -1714,6 +1739,8 @@ ${itemLines}
       : ''
   }
 💰 <b>Total:</b> <b>$${receipt.totalAmount.toLocaleString()}</b>
+
+📄 <b>Receipt:</b> <a href="${receiptUrl}">View &amp; Download Receipt</a>
 
 <i>Sent from HR Signature · Hanford Hotels &amp; Resorts</i>`;
 
@@ -1740,7 +1767,6 @@ function buildSignatureOrderRowValuesClient(receipt: SignatureOrderReceipt): str
     ? `@${receipt.xUsernameCode.replace(/^@+/, '')}`
     : 'N/A';
   const hotelGuestLabel = receipt.isFreeDining ? 'Yes (Hotel Guest)' : 'No';
-  const matchedBookingId = receipt.matchedBooking?.bookingId || 'N/A';
 
   const itemsText = receipt.items
     .map((item) => {
@@ -1756,6 +1782,7 @@ function buildSignatureOrderRowValuesClient(receipt: SignatureOrderReceipt): str
     .join('; ');
 
   const totalQty = receipt.items.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+  const taxAmount = receipt.taxAmount ?? Math.round(Number(receipt.subtotal || 0) * 0.1);
 
   return [
     receipt.orderId,
@@ -1766,10 +1793,10 @@ function buildSignatureOrderRowValuesClient(receipt: SignatureOrderReceipt): str
     receipt.guestName || 'Guest',
     xHandle,
     hotelGuestLabel,
-    matchedBookingId,
     itemsText,
     String(totalQty),
     `$${Number(receipt.subtotal || 0).toLocaleString()}`,
+    `$${taxAmount.toLocaleString()}`,
     receipt.discountAmount > 0 ? `-$${Number(receipt.discountAmount).toLocaleString()}` : '$0',
     `$${Number(receipt.totalAmount || 0).toLocaleString()}`,
     receipt.notes?.trim() || 'N/A'
@@ -1789,6 +1816,7 @@ export async function submitSignatureOrder(
     if (res.ok && ct.includes('application/json')) {
       const json = await res.json();
       if (json.success && json.receipt) {
+        saveSignatureOrderToStorage(json.receipt);
         return { success: true, receipt: json.receipt };
       }
       return { success: false, error: json.error || 'Failed to place order.' };
@@ -1801,19 +1829,10 @@ export async function submitSignatureOrder(
     // static fallback below
   }
 
-  const bookings = await fetchBookings();
-  const matched = payload.xUsernameCode
-    ? findMatchingBookingClient(
-        bookings,
-        payload.xUsernameCode,
-        payload.propertySlug,
-        payload.propertyName
-      )
-    : null;
   const subtotal = payload.items.reduce((sum, item) => sum + item.lineTotal, 0);
   const taxAmount = Math.round(subtotal * 0.1);
   const grossTotal = subtotal + taxAmount;
-  const isFreeDining = Boolean(payload.isHotelGuest) || Boolean(matched);
+  const isFreeDining = Boolean(payload.isHotelGuest);
   const receipt: SignatureOrderReceipt = {
     orderId: `HRS-2026-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
     createdAt: new Date().toISOString(),
@@ -1821,12 +1840,14 @@ export async function submitSignatureOrder(
     propertyName: payload.propertyName,
     serviceType: payload.serviceType,
     isHotelGuest: isFreeDining,
-    guestName: payload.guestName?.trim() || matched?.guestName || 'Guest',
+    guestName:
+      payload.guestName?.trim() ||
+      (payload.xUsernameCode ? `@${payload.xUsernameCode.replace(/^@+/, '')}` : 'Guest'),
     roomOrTable:
       payload.serviceType === 'room_service' ? payload.roomOrTable?.trim() || undefined : undefined,
     xUsernameCode: payload.xUsernameCode?.trim() || undefined,
     isFreeDining,
-    matchedBooking: matched,
+    matchedBooking: null,
     items: payload.items,
     subtotal,
     taxAmount,
@@ -1835,7 +1856,12 @@ export async function submitSignatureOrder(
     notes: payload.notes?.trim() || undefined
   };
 
-  const webhookUrl = (import.meta as any).env?.VITE_GOOGLE_SHEETS_WEBHOOK_URL || DEFAULT_WEBHOOK_URL;
+  saveSignatureOrderToStorage(receipt);
+
+  const webhookUrl =
+    normalizeAppsScriptWebhookUrlClient(
+      (import.meta as any).env?.VITE_GOOGLE_SHEETS_SIGNATURE_WEBHOOK_URL
+    ) || DEFAULT_SIGNATURE_WEBHOOK_URL;
   if (webhookUrl) {
     try {
       const rowValues = buildSignatureOrderRowValuesClient(receipt);
@@ -1865,6 +1891,222 @@ export async function submitSignatureOrder(
   await sendTelegramDiningNotificationClient(receipt);
   return { success: true, receipt };
 }
+
+const SIGNATURE_ORDERS_STORAGE_KEY = 'hanford_signature_orders_v1';
+
+function saveSignatureOrderToStorage(receipt: SignatureOrderReceipt) {
+  if (typeof window === 'undefined' || !receipt?.orderId) return;
+  try {
+    const raw = localStorage.getItem(SIGNATURE_ORDERS_STORAGE_KEY);
+    const list: SignatureOrderReceipt[] = raw ? JSON.parse(raw) : [];
+    const filtered = Array.isArray(list)
+      ? list.filter((item) => item.orderId !== receipt.orderId)
+      : [];
+    filtered.unshift(receipt);
+    localStorage.setItem(SIGNATURE_ORDERS_STORAGE_KEY, JSON.stringify(filtered.slice(0, 50)));
+  } catch {
+    // Non-blocking storage cache
+  }
+}
+
+function getSignatureOrderFromStorage(orderId: string): SignatureOrderReceipt | null {
+  if (typeof window === 'undefined' || !orderId) return null;
+  try {
+    const raw = localStorage.getItem(SIGNATURE_ORDERS_STORAGE_KEY);
+    if (!raw) return null;
+    const list: SignatureOrderReceipt[] = JSON.parse(raw);
+    if (!Array.isArray(list)) return null;
+    const normalized = orderId.trim().toUpperCase();
+    return list.find((r) => (r.orderId || '').trim().toUpperCase() === normalized) || null;
+  } catch {
+    return null;
+  }
+}
+
+function parseSignatureItemsText(itemsText: string): SignatureOrderItem[] {
+  if (!itemsText || !itemsText.trim()) return [];
+  const parts = itemsText
+    .split(/\s*;\s*/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  return parts.map((segment, idx) => {
+    let working = segment;
+    let lineTotal = 0;
+
+    const priceMatch = working.match(/\[\$?\s*([0-9,]+(?:\.[0-9]+)?)\]\s*$/);
+    if (priceMatch) {
+      lineTotal = parseFloat(priceMatch[1].replace(/,/g, '')) || 0;
+      working = working.slice(0, priceMatch.index).trim();
+    }
+
+    let quantity = 1;
+    const qtyMatch = working.match(/^(\d+)\s*x\s+/i);
+    if (qtyMatch) {
+      quantity = parseInt(qtyMatch[1], 10) || 1;
+      working = working.slice(qtyMatch[0].length).trim();
+    }
+
+    return {
+      id: `sheet-item-${idx}-${Date.now()}`,
+      menuItemId: `sheet-menu-${idx}`,
+      name: working || 'Signature Item',
+      category: 'HR Signature',
+      section: 'Dining',
+      unitPrice: quantity > 0 ? Math.round(lineTotal / quantity) : lineTotal,
+      quantity,
+      lineTotal
+    };
+  });
+}
+
+function parseSheetMoneyAbs(raw: string): number {
+  if (!raw) return 0;
+  const cleaned = String(raw).replace(/[^0-9.]/g, '');
+  const num = parseFloat(cleaned);
+  return isNaN(num) ? 0 : Math.round(num);
+}
+
+/**
+ * Fetches an HR Signature order receipt publicly from Google Sheets (`HR Signature` tab via gviz)
+ * so Telegram receipt download links work on any device and static host (e.g. Netlify).
+ */
+export async function fetchSignatureOrderById(
+  orderId: string
+): Promise<SignatureOrderReceipt | null> {
+  const targetId = String(orderId || '').trim().toUpperCase();
+  if (!targetId) return null;
+
+  const spreadsheetId = DEFAULT_SPREADSHEET_ID;
+  const url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?sheet=${encodeURIComponent(
+    'HR Signature'
+  )}&tqx=out:json`;
+
+  try {
+    const res = await fetch(url);
+    if (res.ok) {
+      const text = await res.text();
+      const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);?/);
+      if (jsonMatch) {
+        const data = JSON.parse(jsonMatch[1]);
+        const tableRows = data.table?.rows || [];
+        let headers: string[] = [];
+        let dataSlice = tableRows;
+
+        const colsHasLabels =
+          data.table?.cols &&
+          data.table.cols.some((c: any) => c && c.label && String(c.label).trim() !== '');
+        if (colsHasLabels) {
+          headers = data.table.cols.map((c: any) => (c && c.label ? String(c.label).trim() : ''));
+        } else if (tableRows[0] && tableRows[0].c) {
+          headers = tableRows[0].c.map((cell: any) =>
+            cell && (cell.f || cell.v) ? String(cell.f || cell.v).trim() : ''
+          );
+          dataSlice = tableRows.slice(1);
+        }
+
+        const matchedRow = dataSlice.find((row: any) => {
+          const firstCell = row?.c?.[0];
+          const val =
+            firstCell && (firstCell.f || firstCell.v)
+              ? String(firstCell.f || firstCell.v).trim().toUpperCase()
+              : '';
+          return val === targetId;
+        });
+
+        if (matchedRow && Array.isArray(matchedRow.c)) {
+          const rowMap: Record<string, string> = {};
+          headers.forEach((h, i) => {
+            const cell = matchedRow.c[i];
+            if (h && cell) {
+              const val =
+                cell.v !== undefined && cell.v !== null
+                  ? String(cell.v)
+                  : cell.f !== undefined && cell.f !== null
+                  ? String(cell.f)
+                  : '';
+              rowMap[h.toLowerCase()] = val.trim();
+            }
+          });
+
+          const getCol = (...keys: string[]): string => {
+            for (const k of keys) {
+              if (rowMap[k] !== undefined && rowMap[k] !== '') return rowMap[k];
+            }
+            return '';
+          };
+
+          const rawOrderId = getCol('order id') || String(matchedRow.c[0]?.v || targetId).trim();
+          const createdAt = getCol('timestamp') || new Date().toISOString();
+          const propertyName = getCol('property location', 'location', 'property') || 'Hanford Estate';
+          const diningOptionRaw = getCol('dining option', 'option').toLowerCase();
+          const serviceType: 'restaurant' | 'room_service' = diningOptionRaw.includes('room')
+            ? 'room_service'
+            : 'restaurant';
+          const rawRoom = getCol('room number', 'room');
+          const roomOrTable =
+            rawRoom && !['n/a', 'na', '--', '-'].includes(rawRoom.toLowerCase())
+              ? rawRoom
+              : undefined;
+          const guestName = getCol('guest name', 'name') || 'Guest';
+          const rawX = getCol('x username', 'x_username');
+          const xUsernameCode =
+            rawX && !['n/a', 'na', '--', '-'].includes(rawX.toLowerCase()) ? rawX : undefined;
+          const hotelGuestRaw = getCol('hotel guest').toLowerCase();
+          const isFreeDining = hotelGuestRaw.includes('yes') || hotelGuestRaw.includes('guest');
+
+          // Handle both current schema (col 8 = Items Ordered) and legacy schema (col 9 = Items Ordered)
+          const cell8 = String(matchedRow.c[8]?.v || '').trim();
+          const itemsStr =
+            getCol('items ordered', 'items') ||
+            (/\[\$/.test(cell8) ? cell8 : String(matchedRow.c[9]?.v || '').trim());
+          const items = parseSignatureItemsText(itemsStr);
+
+          const subtotal = parseSheetMoneyAbs(getCol('subtotal ($)', 'subtotal'));
+          const taxRaw = getCol('tax & service 10% ($)', 'tax & service 10%', 'tax');
+          const taxAmount = taxRaw ? parseSheetMoneyAbs(taxRaw) : Math.round(subtotal * 0.1);
+          const discountAmount = parseSheetMoneyAbs(
+            getCol('guest free complimentary ($)', 'guest complimentary ($)', 'discount ($)')
+          );
+          const totalAmount = parseSheetMoneyAbs(getCol('total ($)', 'total'));
+          const rawNotes = getCol('notes', 'note');
+          const notes =
+            rawNotes && !['n/a', 'na', '--', '-'].includes(rawNotes.toLowerCase())
+              ? rawNotes
+              : undefined;
+
+          const parsedReceipt: SignatureOrderReceipt = {
+            orderId: rawOrderId,
+            createdAt,
+            propertySlug: createSlug(propertyName),
+            propertyName,
+            serviceType,
+            isHotelGuest: isFreeDining,
+            guestName,
+            roomOrTable,
+            xUsernameCode,
+            isFreeDining,
+            matchedBooking: null,
+            items,
+            subtotal:
+              subtotal || items.reduce((sum, it) => sum + Number(it.lineTotal || 0), 0),
+            taxAmount,
+            discountAmount,
+            totalAmount,
+            notes
+          };
+          saveSignatureOrderToStorage(parsedReceipt);
+          return parsedReceipt;
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('[dataService] fetchSignatureOrderById gviz lookup error:', err);
+  }
+
+  return getSignatureOrderFromStorage(targetId);
+}
+
 
 
 
