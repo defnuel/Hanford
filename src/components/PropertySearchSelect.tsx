@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, MapPin, ChevronDown, X, ArrowRight, Check } from 'lucide-react';
+import { Search, MapPin, ChevronDown, X, Check } from 'lucide-react';
 import { Property } from '../types';
 
 interface PropertySearchSelectProps {
@@ -7,6 +7,7 @@ interface PropertySearchSelectProps {
   selectedSlug: string;
   onSelect: (slug: string) => void;
   disabled?: boolean;
+  hidePrice?: boolean;
 }
 
 export const PropertySearchSelect: React.FC<PropertySearchSelectProps> = ({
@@ -14,6 +15,7 @@ export const PropertySearchSelect: React.FC<PropertySearchSelectProps> = ({
   selectedSlug,
   onSelect,
   disabled = false,
+  hidePrice = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -183,15 +185,15 @@ export const PropertySearchSelect: React.FC<PropertySearchSelectProps> = ({
                       setIsTyping(false);
                       setSearchQuery('');
                     }}
-                    className={`w-full text-left p-2.5 sm:p-3 rounded-xl transition-all flex items-center justify-between gap-3 group cursor-pointer ${
+                    className={`w-full text-left p-2.5 rounded-xl transition-all flex items-start justify-between gap-2.5 group cursor-pointer ${
                       isSelected
                         ? 'bg-slate-100/80 border border-slate-200 shadow-2xs'
                         : 'hover:bg-slate-50'
                     }`}
                   >
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      {/* Property Thumbnail */}
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden shrink-0 bg-[#3A4F67] border border-slate-200 shadow-2xs">
+                    <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                      {/* Compact Property Thumbnail */}
+                      <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 bg-[#3A4F67] border border-slate-200 shadow-2xs mt-0.5">
                         <img
                           src={property.heroImage}
                           alt={property.name}
@@ -200,20 +202,20 @@ export const PropertySearchSelect: React.FC<PropertySearchSelectProps> = ({
                         />
                       </div>
 
-                      {/* Property Info */}
+                      {/* Property Info with clean word wrap */}
                       <div className="min-w-0 flex-1">
                         <div
-                          className={`font-bold text-xs sm:text-sm transition-colors truncate ${
+                          className={`font-bold text-xs sm:text-[13px] whitespace-normal break-words leading-snug transition-colors ${
                             isSelected ? 'text-[#51867E]' : 'text-[#2C3744] group-hover:text-[#51867E]'
                           }`}
                         >
                           {property.name}
                         </div>
-                        <div className="text-[10.5px] sm:text-[11px] text-[#51867E] font-medium flex items-center gap-1.5 flex-wrap truncate mt-0.5">
+                        <div className="text-[10.5px] text-[#51867E] font-medium flex items-center gap-1.5 flex-wrap leading-snug mt-0.5">
                           <span className="font-semibold">📍 {property.country}</span>
                           <span className="text-gray-300 font-light">•</span>
                           <span className="text-[#3A4F67] font-normal">{property.continent}</span>
-                          {startPrice ? (
+                          {!hidePrice && startPrice ? (
                             <>
                               <span className="text-gray-300 font-light">•</span>
                               <span className="text-[#2C3744] font-bold">From ${startPrice.toLocaleString()} / night</span>
@@ -223,17 +225,8 @@ export const PropertySearchSelect: React.FC<PropertySearchSelectProps> = ({
                       </div>
                     </div>
 
-                    {/* Action badge */}
-                    {isSelected ? (
-                      <div className="flex items-center gap-1.5 text-[10px] font-bold text-white uppercase tracking-wider shrink-0 bg-[#51867E] px-3 py-1.5 rounded-full border border-[#51867E] shadow-xs">
-                        <Check className="w-3 h-3" />
-                        <span>Selected</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#51867E] uppercase tracking-wider shrink-0 bg-white px-3 py-1.5 rounded-full border border-[#88B2AB]/30 group-hover:bg-[#51867E] group-hover:text-white transition-all shadow-xs">
-                        <span>Select</span>
-                        <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-                      </div>
+                    {isSelected && (
+                      <Check className="w-4 h-4 text-[#51867E] shrink-0 mt-1" />
                     )}
                   </button>
                 );

@@ -303,3 +303,63 @@ export interface GoodsReceivedNote {
   createdAt: string;
   updatedAt?: string;
 }
+
+export type DiningServiceType = 'restaurant' | 'room_service';
+
+export interface SignatureOrderItem {
+  id: string;
+  menuItemId: string;
+  name: string;
+  category: string;
+  section: string;
+  unitPrice: number;
+  quantity: number;
+  selectedVariant?: string;
+  selectedSecondaryVariant?: string;
+  selectedEnhancements?: { id: string; label: string; price: number }[];
+  lineTotal: number;
+}
+
+export interface SignatureBookingMatch {
+  bookingId: string;
+  guestName: string;
+  xUsername: string;
+  propertyName: string;
+  propertySlug: string;
+  checkInDate?: string;
+  checkOutDate?: string;
+  paymentStatus?: 'PAID' | 'UNPAID';
+}
+
+export interface SignatureOrderPayload {
+  items: SignatureOrderItem[];
+  propertySlug: string;
+  propertyName: string;
+  serviceType: DiningServiceType;
+  isHotelGuest?: boolean;
+  guestName?: string;
+  roomOrTable?: string;
+  xUsernameCode?: string;
+  notes?: string;
+}
+
+export interface SignatureOrderReceipt {
+  orderId: string;
+  createdAt: string;
+  propertySlug: string;
+  propertyName: string;
+  serviceType: DiningServiceType;
+  isHotelGuest?: boolean;
+  guestName: string;
+  roomOrTable?: string;
+  xUsernameCode?: string;
+  isFreeDining: boolean;
+  matchedBooking?: SignatureBookingMatch | null;
+  items: SignatureOrderItem[];
+  subtotal: number;
+  taxAmount?: number;
+  discountAmount: number;
+  totalAmount: number;
+  notes?: string;
+}
+

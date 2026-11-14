@@ -10,6 +10,7 @@ import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { BookNowPage } from './pages/BookNowPage';
 import { GuidelinesPage } from './pages/GuidelinesPage';
 import { AdminPage } from './pages/AdminPage';
+import { HFSignaturePage } from './pages/HFSignaturePage';
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState<string>(() => {
@@ -47,6 +48,10 @@ export default function App() {
   };
 
   const isAdminRoute = currentPath.toLowerCase().startsWith('/admin');
+  const isSignatureRoute =
+    currentPath.toLowerCase().startsWith('/hr-signature') ||
+    currentPath.toLowerCase().startsWith('/hf-signature') ||
+    currentPath.toLowerCase().startsWith('/signature');
 
   // Route matching
   const renderRoute = () => {
@@ -110,6 +115,10 @@ export default function App() {
 
   if (isAdminRoute) {
     return <AdminPage onNavigate={navigate} />;
+  }
+
+  if (isSignatureRoute) {
+    return <HFSignaturePage />;
   }
 
   return (

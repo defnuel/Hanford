@@ -1,4 +1,14 @@
-import { Property, Project, BookingInquiry, ApiResponse, AdminUser, GoodsReceivedNote } from '../types';
+import {
+  Property,
+  Project,
+  BookingInquiry,
+  ApiResponse,
+  AdminUser,
+  GoodsReceivedNote,
+  SignatureBookingMatch,
+  SignatureOrderPayload,
+  SignatureOrderReceipt
+} from '../types';
 import { MOCK_PROPERTIES, createSlug } from '../data/mockProperties';
 import { MOCK_PROJECTS } from '../data/mockProjects';
 import { parseInvoiceToGRN, SAMPLE_KEBUN_ASAP_INVOICE_TEXT } from '../utils/grnParser';
@@ -1563,5 +1573,298 @@ export function deleteGoodsReceivedNote(id: string): boolean {
     return false;
   }
 }
+
+function normalizeHandleClient(val?: string): string {
+  return String(val || '')
+    .trim()
+    .toLowerCase()
+    .replace(/^@+/, '');
+}
+
+function findMatchingBookingClient(
+  bookings: BookingInquiry[],
+  xUsername: string,
+  propertySlug: string,
+  propertyName: string
+): SignatureBookingMatch | null {
+  const targetHandle = normalizeHandleClient(xUsername);
+  if (!targetHandle || targetHandle === 'n/a' || targetHandle === 'na' || targetHandle === '-') {
+    return null;
+  }
+  const targetSlug = createSlug(propertySlug || propertyName);
+  const targetNameLower = String(propertyName || '').trim().toLowerCase();
+
+  const matches = bookings.filter((b) => {
+    const bHandle = normalizeHandleClient(b.xUsername);
+    if (!bHandle || bHandle !== targetHandle) return false;
+    const bSlug = createSlug(b.propertySlug || b.propertyName);
+    const bNameLower = String(b.propertyName || '').trim().toLowerCase();
+    if (targetSlug && bSlug && bSlug === targetSlug) return true;
+    if (
+      targetNameLower &&
+      bNameLower &&
+      (bNameLower === targetNameLower ||
+        bNameLower.includes(targetNameLower) ||
+        targetNameLower.includes(bNameLower))
+    ) {
+      return true;
+    }
+    return false;
+  });
+
+  if (matches.length === 0) return null;
+
+  const sorted = [...matches].sort((a, b) => {
+    const aPaid = a.paymentStatus === 'PAID' || a.status === 'Confirmed' ? 1 : 0;
+    const bPaid = b.paymentStatus === 'PAID' || b.status === 'Confirmed' ? 1 : 0;
+    return bPaid - aPaid;
+  });
+  const best = sorted[0];
+  return {
+    bookingId: best.bookingId || best.id || 'BOOKED',
+    guestName: best.guestName || 'Guest',
+    xUsername: best.xUsername.startsWith('@') ? best.xUsername : `@${best.xUsername}`,
+    propertyName: best.propertyName,
+    propertySlug: best.propertySlug,
+    checkInDate: best.checkInDate,
+    checkOutDate: best.checkOutDate,
+    paymentStatus: best.paymentStatus
+  };
+}
+
+export async function verifySignatureXCode(
+  xUsername: string,
+  propertySlug: string,
+  propertyName: string
+): Promise<{ valid: boolean; matchedBooking?: SignatureBookingMatch; message: string }> {
+  try {
+    const res = await fetch('/api/hr-signature/verify-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ xUsername, propertySlug, propertyName })
+    });
+    const ct = res.headers.get('content-type') || '';
+    if (res.ok && ct.includes('application/json')) {
+      const json = await res.json();
+      return {
+        valid: Boolean(json.valid),
+        matchedBooking: json.matchedBooking,
+        message:
+          json.message ||
+          (json.valid ? 'Guest verified — Free complimentary dining.' : 'No matching booking found.')
+      };
+    }
+  } catch {
+    // fallback to client bookings check
+  }
+
+  const bookings = await fetchBookings();
+  const matched = findMatchingBookingClient(bookings, xUsername, propertySlug, propertyName);
+  return {
+    valid: Boolean(matched),
+    matchedBooking: matched || undefined,
+    message: matched
+      ? 'Guest verified — Free complimentary dining.'
+      : 'No matching booking found for this X username at the selected property.'
+  };
+}
+
+async function sendTelegramDiningNotificationClient(
+  receipt: SignatureOrderReceipt
+): Promise<boolean> {
+  const botToken =
+    (import.meta as any).env?.VITE_TELEGRAM_BOT_TOKEN ||
+    '8876777341:AAG20riJl6DGtvwkb6Juvkn3DQADS5qbA6c';
+  const chatId = (import.meta as any).env?.VITE_TELEGRAM_CHAT_ID || '8068935973';
+  if (!botToken || !chatId) return false;
+
+  const serviceLabel =
+    receipt.serviceType === 'room_service' ? 'Room Service' : 'Dinner in Restaurant';
+  const xHandle = receipt.xUsernameCode
+    ? ` (@${receipt.xUsernameCode.replace(/^@+/, '')})`
+    : '';
+  const itemLines = receipt.items
+    .map(
+      (item) =>
+        `• ${item.quantity}x ${escapeHtmlClient(item.name)} — $${item.lineTotal.toLocaleString()}`
+    )
+    .join('\n');
+
+  const taxAmount = receipt.taxAmount ?? Math.round(receipt.subtotal * 0.1);
+
+  const msg = `🍽️ <b>NEW HR SIGNATURE ORDER</b>
+
+🧾 <b>Receipt:</b> <code>#${escapeHtmlClient(receipt.orderId)}</code>
+🏛️ <b>Property:</b> ${escapeHtmlClient(receipt.propertyName)}
+🛎️ <b>Option:</b> ${escapeHtmlClient(serviceLabel)}
+👤 <b>Guest:</b> ${escapeHtmlClient(receipt.guestName)}${escapeHtmlClient(xHandle)}
+🎟️ <b>Status:</b> ${
+    receipt.isFreeDining
+      ? `✅ GUEST FREE COMPLIMENTARY${receipt.matchedBooking?.bookingId ? ` (${escapeHtmlClient(receipt.matchedBooking.bookingId)})` : ''}`
+      : 'Non-Guest / Standard Billing'
+  }
+
+<b>Order Items:</b>
+${itemLines}
+
+💵 <b>Subtotal:</b> $${receipt.subtotal.toLocaleString()}
+🧾 <b>Tax &amp; Service (10%):</b> $${taxAmount.toLocaleString()}${
+    receipt.isFreeDining && receipt.discountAmount > 0
+      ? `\n🎟️ <b>Guest Complimentary Credit:</b> -$${receipt.discountAmount.toLocaleString()}`
+      : ''
+  }
+💰 <b>Total:</b> <b>$${receipt.totalAmount.toLocaleString()}</b>
+
+<i>Sent from HR Signature · Hanford Hotels &amp; Resorts</i>`;
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text: msg, parse_mode: 'HTML' })
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+function buildSignatureOrderRowValuesClient(receipt: SignatureOrderReceipt): string[] {
+  const serviceLabel =
+    receipt.serviceType === 'room_service' ? 'Room Service' : 'Dinner in Restaurant';
+  const roomNumber =
+    receipt.serviceType === 'room_service' && receipt.roomOrTable
+      ? receipt.roomOrTable
+      : 'N/A';
+  const xHandle = receipt.xUsernameCode
+    ? `@${receipt.xUsernameCode.replace(/^@+/, '')}`
+    : 'N/A';
+  const hotelGuestLabel = receipt.isFreeDining ? 'Yes (Hotel Guest)' : 'No';
+  const matchedBookingId = receipt.matchedBooking?.bookingId || 'N/A';
+
+  const itemsText = receipt.items
+    .map((item) => {
+      const extras: string[] = [];
+      if (item.selectedVariant) extras.push(item.selectedVariant);
+      if (item.selectedSecondaryVariant) extras.push(item.selectedSecondaryVariant);
+      if (item.selectedEnhancements && item.selectedEnhancements.length > 0) {
+        extras.push(item.selectedEnhancements.map((e) => `+${e.label}`).join(', '));
+      }
+      const suffix = extras.length > 0 ? ` (${extras.join(' · ')})` : '';
+      return `${item.quantity}x ${item.name}${suffix} [$${item.lineTotal.toLocaleString()}]`;
+    })
+    .join('; ');
+
+  const totalQty = receipt.items.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+
+  return [
+    receipt.orderId,
+    receipt.createdAt,
+    receipt.propertyName || receipt.propertySlug,
+    serviceLabel,
+    roomNumber,
+    receipt.guestName || 'Guest',
+    xHandle,
+    hotelGuestLabel,
+    matchedBookingId,
+    itemsText,
+    String(totalQty),
+    `$${Number(receipt.subtotal || 0).toLocaleString()}`,
+    receipt.discountAmount > 0 ? `-$${Number(receipt.discountAmount).toLocaleString()}` : '$0',
+    `$${Number(receipt.totalAmount || 0).toLocaleString()}`,
+    receipt.notes?.trim() || 'N/A'
+  ];
+}
+
+export async function submitSignatureOrder(
+  payload: SignatureOrderPayload
+): Promise<{ success: boolean; receipt?: SignatureOrderReceipt; error?: string }> {
+  try {
+    const res = await fetch('/api/hr-signature/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const ct = res.headers.get('content-type') || '';
+    if (res.ok && ct.includes('application/json')) {
+      const json = await res.json();
+      if (json.success && json.receipt) {
+        return { success: true, receipt: json.receipt };
+      }
+      return { success: false, error: json.error || 'Failed to place order.' };
+    }
+    if (!ct.includes('text/html') && res.status !== 404 && res.status !== 405) {
+      const json = await res.json().catch(() => ({}));
+      return { success: false, error: json.error || 'Failed to place order.' };
+    }
+  } catch {
+    // static fallback below
+  }
+
+  const bookings = await fetchBookings();
+  const matched = payload.xUsernameCode
+    ? findMatchingBookingClient(
+        bookings,
+        payload.xUsernameCode,
+        payload.propertySlug,
+        payload.propertyName
+      )
+    : null;
+  const subtotal = payload.items.reduce((sum, item) => sum + item.lineTotal, 0);
+  const taxAmount = Math.round(subtotal * 0.1);
+  const grossTotal = subtotal + taxAmount;
+  const isFreeDining = Boolean(payload.isHotelGuest) || Boolean(matched);
+  const receipt: SignatureOrderReceipt = {
+    orderId: `HRS-2026-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
+    createdAt: new Date().toISOString(),
+    propertySlug: payload.propertySlug,
+    propertyName: payload.propertyName,
+    serviceType: payload.serviceType,
+    isHotelGuest: isFreeDining,
+    guestName: payload.guestName?.trim() || matched?.guestName || 'Guest',
+    roomOrTable:
+      payload.serviceType === 'room_service' ? payload.roomOrTable?.trim() || undefined : undefined,
+    xUsernameCode: payload.xUsernameCode?.trim() || undefined,
+    isFreeDining,
+    matchedBooking: matched,
+    items: payload.items,
+    subtotal,
+    taxAmount,
+    discountAmount: isFreeDining ? grossTotal : 0,
+    totalAmount: isFreeDining ? 0 : grossTotal,
+    notes: payload.notes?.trim() || undefined
+  };
+
+  const webhookUrl = (import.meta as any).env?.VITE_GOOGLE_SHEETS_WEBHOOK_URL || DEFAULT_WEBHOOK_URL;
+  if (webhookUrl) {
+    try {
+      const rowValues = buildSignatureOrderRowValuesClient(receipt);
+      await fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          spreadsheetId: DEFAULT_SPREADSHEET_ID,
+          tabName: 'HR Signature',
+          orderId: receipt.orderId,
+          createdAt: receipt.createdAt,
+          propertyName: receipt.propertyName,
+          guestName: receipt.guestName,
+          xUsername: receipt.xUsernameCode || 'N/A',
+          rowValues,
+          order: receipt
+        })
+      }).catch((e) => {
+        console.warn('[dataService] HR Signature webhook post failed:', e);
+      });
+    } catch (err) {
+      console.warn('[dataService] HR Signature webhook skipped:', err);
+    }
+  }
+
+  await sendTelegramDiningNotificationClient(receipt);
+  return { success: true, receipt };
+}
+
 
 

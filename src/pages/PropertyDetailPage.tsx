@@ -32,6 +32,18 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
     return Array.from(new Set(combined));
   }, [property]);
 
+  const cityLabel = useMemo(() => {
+    if (!property) return '';
+    const cleaned = property.name
+      .replace(
+        /^hanford\s+(?:grand\s+hotel\s*&\s*resorts?|hotel\s*&\s*resorts?|eco\s+resorts?|grand\s+hotel|hotel|resorts?|sanctuary|residences)\s+/i,
+        ''
+      )
+      .trim();
+    const primaryCity = cleaned.split(',')[0].trim();
+    return (primaryCity || property.country || property.name).toUpperCase();
+  }, [property]);
+
   // Handle keyboard navigation for gallery & lightbox
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -188,14 +200,14 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
                   referrerPolicy="no-referrer"
                 />
 
-                {/* Top Floating Badges (Matching Hanford Card Aesthetic) */}
+                {/* Top Floating Badges */}
                 <div className="absolute top-3.5 sm:top-5 left-3.5 sm:left-5 right-3.5 sm:right-5 flex items-center justify-between gap-2 z-20 pointer-events-none">
-                  <span className="bg-[#1E293B]/80 backdrop-blur-md text-[#EAF2F1] px-3 sm:px-3.5 py-1 text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase rounded-full border border-white/20 shadow-md">
-                    SANCTUARY GALLERY
+                  <span className="bg-[#1E293B]/80 backdrop-blur-md text-[#EAF2F1] px-3 sm:px-3.5 py-1 text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase rounded-full border border-white/20 shadow-md whitespace-nowrap">
+                    {cityLabel}
                   </span>
 
                   {allGalleryImages.length > 0 && (
-                    <span className="bg-[#1E293B]/80 backdrop-blur-md text-[#88B2AB] px-3 sm:px-3.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase border border-white/20 shadow-md">
+                    <span className="bg-[#1E293B]/80 backdrop-blur-md text-[#88B2AB] px-3 sm:px-3.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase border border-white/20 shadow-md whitespace-nowrap shrink-0">
                       {activeImageIndex + 1} / {allGalleryImages.length}
                     </span>
                   )}
@@ -314,18 +326,13 @@ export const PropertyDetailPage: React.FC<PropertyDetailPageProps> = ({ slug, on
                   onClick={() => setIsLightboxOpen(false)}
                 >
                   {/* Lightbox Top Bar */}
-                  <div className="flex items-center justify-between text-white pb-4 border-b border-white/10" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <span className="bg-[#51867E] text-white px-3 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase">
-                        HANFORD ARCHIVE
-                      </span>
-                      <h3 className="font-serif italic text-base sm:text-xl text-white truncate max-w-[200px] sm:max-w-md">
-                        {property.name}
-                      </h3>
-                    </div>
+                  <div className="flex items-center justify-between gap-3 text-white pb-4 border-b border-white/10" onClick={(e) => e.stopPropagation()}>
+                    <h3 className="text-sm sm:text-base font-bold tracking-[0.2em] uppercase text-white">
+                      {cityLabel}
+                    </h3>
 
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs text-[#88B2AB] font-bold tracking-widest uppercase">
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className="text-xs text-[#88B2AB] font-bold tracking-widest uppercase whitespace-nowrap">
                         {activeImageIndex + 1} / {allGalleryImages.length}
                       </span>
                       <button

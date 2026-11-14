@@ -1,9 +1,10 @@
 import crypto from 'crypto';
-import { Property, Project, BookingInquiry, RawGoogleSheetsPropertyRow, RawGoogleSheetsProjectRow } from '../types';
+import { Property, Project, BookingInquiry, RawGoogleSheetsPropertyRow, RawGoogleSheetsProjectRow, SignatureOrderReceipt } from '../types';
 import { MOCK_PROPERTIES, createSlug } from '../data/mockProperties';
 import { MOCK_PROJECTS } from '../data/mockProjects';
 
 const DEFAULT_SPREADSHEET_ID = '1a2WN_AqaV9WS15h-37FDCyVV_ZpLB1IaBDbvb2VYzeU';
+const DEFAULT_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycby2WfS3a2mLS5Z5iGa4onfMwD0jvRONhqxe-hxBvcXUSaX2nfXZG_o8G6uTtQwnHgtG/exec';
 
 // In-memory array for tracking booking submissions
 const mockBookingsStore: BookingInquiry[] = [];
@@ -793,7 +794,7 @@ export async function appendBookingInquiry(inquiry: BookingInquiry): Promise<{
   let bookingsTab = (/^\d+$/.test(rawTab) || !rawTab) ? 'Bookings' : rawTab;
   const serviceAccountEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const serviceAccountPrivateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
-  const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
+  const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL || DEFAULT_WEBHOOK_URL;
 
   // Format book option string for readable Google Sheet row
   let bookOptionText = 'Room Only';
@@ -970,3 +971,164 @@ export async function appendBookingInquiry(inquiry: BookingInquiry): Promise<{
     inquiry: newInquiry
   };
 }
+
+/**
+ * Formats an HR Signature dining order into a 15-column row matching the 'HR Signature' tab schema:
+ * [Order ID, Timestamp, Property Location, Dining Option, Room Number, Guest Name, X Username, Hotel Guest, Matched Booking ID, Items Ordered, Total Qty, Subtotal ($), Guest Free Complimentary ($), Total ($), Notes]
+ */
+export function buildSignatureOrderRowValues(receipt: SignatureOrderReceipt): string[] {
+  const serviceLabel =
+    receipt.serviceType === 'room_service' ? 'Room Service' : 'Dinner in Restaurant';
+  const roomNumber =
+    receipt.serviceType === 'room_service' && receipt.roomOrTable
+      ? receipt.roomOrTable
+      : 'N/A';
+  const xHandle = receipt.xUsernameCode
+    ? `@${receipt.xUsernameCode.replace(/^@+/, '')}`
+    : 'N/A';
+  const hotelGuestLabel = receipt.isFreeDining ? 'Yes (Hotel Guest)' : 'No';
+  const matchedBookingId = receipt.matchedBooking?.bookingId || 'N/A';
+
+  const itemsText = receipt.items
+    .map((item) => {
+      const extras: string[] = [];
+      if (item.selectedVariant) extras.push(item.selectedVariant);
+      if (item.selectedSecondaryVariant) extras.push(item.selectedSecondaryVariant);
+      if (item.selectedEnhancements && item.selectedEnhancements.length > 0) {
+        extras.push(item.selectedEnhancements.map((e) => `+${e.label}`).join(', '));
+      }
+      const suffix = extras.length > 0 ? ` (${extras.join(' · ')})` : '';
+      return `${item.quantity}x ${item.name}${suffix} [$${item.lineTotal.toLocaleString()}]`;
+    })
+    .join('; ');
+
+  const totalQty = receipt.items.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+  const subtotalText = `$${Number(receipt.subtotal || 0).toLocaleString()}`;
+  const discountText =
+    receipt.discountAmount > 0
+      ? `-$${Number(receipt.discountAmount).toLocaleString()}`
+      : '$0';
+  const totalText = `$${Number(receipt.totalAmount || 0).toLocaleString()}`;
+
+  return [
+    receipt.orderId,
+    receipt.createdAt,
+    receipt.propertyName || receipt.propertySlug,
+    serviceLabel,
+    roomNumber,
+    receipt.guestName || 'Guest',
+    xHandle,
+    hotelGuestLabel,
+    matchedBookingId,
+    itemsText,
+    String(totalQty),
+    subtotalText,
+    discountText,
+    totalText,
+    receipt.notes?.trim() || 'N/A'
+  ];
+}
+
+/**
+ * Appends an HR Signature order receipt to the 'HR Signature' worksheet tab in Google Sheets.
+ * Supports Service Account OAuth2 API v4 and Apps Script Webhook fallback.
+ */
+export async function appendSignatureOrderToSheet(receipt: SignatureOrderReceipt): Promise<{
+  success: boolean;
+  source: 'google_sheets' | 'memory_fallback';
+  tabName: string;
+  message: string;
+  error?: string;
+}> {
+  const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID || DEFAULT_SPREADSHEET_ID;
+  const rawTab = (process.env.GOOGLE_SHEETS_SIGNATURE_TAB || 'HR Signature').trim();
+  const signatureTab = (/^\d+$/.test(rawTab) || !rawTab) ? 'HR Signature' : rawTab;
+
+  const serviceAccountEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  const serviceAccountPrivateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
+  const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL || DEFAULT_WEBHOOK_URL;
+
+  const rowValues = buildSignatureOrderRowValues(receipt);
+  const errorsLogged: string[] = [];
+
+  // Method 1: Google Service Account OAuth2 JWT to Google Sheets API v4
+  if (serviceAccountEmail && serviceAccountPrivateKey) {
+    try {
+      const accessToken = await getGoogleSheetsAccessToken(serviceAccountEmail, serviceAccountPrivateKey);
+      const appendUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(signatureTab)}:append?valueInputOption=USER_ENTERED`;
+
+      const res = await fetch(appendUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({
+          values: [rowValues]
+        })
+      });
+
+      const json = await res.json().catch(() => ({}));
+      if (res.ok) {
+        return {
+          success: true,
+          source: 'google_sheets',
+          tabName: signatureTab,
+          message: `HR Signature order saved to Google Sheet tab '${signatureTab}'.`
+        };
+      } else {
+        const msg = json?.error?.message || json?.error || `HTTP ${res.status}`;
+        console.warn(`[GoogleSheetsService] HR Signature append notice (${res.status}): ${msg}`);
+        errorsLogged.push(`Google Sheets API (${res.status}): ${msg}`);
+      }
+    } catch (err: any) {
+      console.warn('[GoogleSheetsService] HR Signature Service Account notice:', err?.message);
+      errorsLogged.push(`Service Account Error: ${err?.message || String(err)}`);
+    }
+  }
+
+  // Method 2: Apps Script Webhook URL
+  if (webhookUrl) {
+    try {
+      const res = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          spreadsheetId,
+          tabName: signatureTab,
+          orderId: receipt.orderId,
+          createdAt: receipt.createdAt,
+          propertyName: receipt.propertyName,
+          guestName: receipt.guestName,
+          xUsername: receipt.xUsernameCode || 'N/A',
+          rowValues,
+          order: receipt
+        })
+      });
+
+      const text = await res.text().catch(() => '');
+      if (res.ok && !text.includes('You need access') && !text.includes('<!DOCTYPE html>')) {
+        return {
+          success: true,
+          source: 'google_sheets',
+          tabName: signatureTab,
+          message: `HR Signature order sent to Google Sheet tab '${signatureTab}' via Webhook.`
+        };
+      } else {
+        errorsLogged.push('Webhook Endpoint Error: Permission denied or unhandled HTML response.');
+      }
+    } catch (err: any) {
+      console.warn('[GoogleSheetsService] HR Signature Webhook append error:', err?.message);
+      errorsLogged.push(`Webhook Error: ${err?.message || String(err)}`);
+    }
+  }
+
+  return {
+    success: false,
+    source: 'memory_fallback',
+    tabName: signatureTab,
+    message: `Order recorded in memory. Configure Google Sheet tab '${signatureTab}' & Webhook/Service Account to sync rows.`,
+    error: errorsLogged.join(' | ') || 'No Google Sheets write mechanism succeeded.'
+  };
+}
+

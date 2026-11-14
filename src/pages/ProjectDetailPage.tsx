@@ -227,14 +227,14 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
               referrerPolicy="no-referrer"
             />
 
-            {/* Top Floating Badges (Matching Location Details Gallery Aesthetic) */}
+            {/* Top Floating Badges */}
             <div className="absolute top-3.5 sm:top-5 left-3.5 sm:left-5 right-3.5 sm:right-5 flex items-center justify-between gap-2 z-20 pointer-events-none">
-              <span className="bg-[#1E293B]/80 backdrop-blur-md text-[#EAF2F1] px-3 sm:px-3.5 py-1 text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase rounded-full border border-white/20 shadow-md">
-                COLLABORATION GALLERY
+              <span className="bg-[#1E293B]/80 backdrop-blur-md text-[#EAF2F1] px-3 sm:px-3.5 py-1 text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase rounded-full border border-white/20 shadow-md whitespace-nowrap">
+                Gallery
               </span>
 
               {allImages.length > 0 && (
-                <span className="bg-[#1E293B]/80 backdrop-blur-md text-[#88B2AB] px-3 sm:px-3.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase border border-white/20 shadow-md">
+                <span className="bg-[#1E293B]/80 backdrop-blur-md text-[#88B2AB] px-3 sm:px-3.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase border border-white/20 shadow-md whitespace-nowrap shrink-0">
                   {activeImageIndex + 1} / {allImages.length}
                 </span>
               )}
@@ -353,18 +353,13 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
               onClick={() => setIsLightboxOpen(false)}
             >
               {/* Lightbox Top Bar */}
-              <div className="flex items-center justify-between text-white pb-4 border-b border-white/10" onClick={(e) => e.stopPropagation()}>
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <span className="bg-[#51867E] text-white px-3 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase">
-                    HANFORD ARCHIVE
-                  </span>
-                  <h3 className="font-serif italic text-base sm:text-xl text-white truncate max-w-[200px] sm:max-w-md">
-                    {project.projectName}
-                  </h3>
-                </div>
+              <div className="flex items-center justify-between gap-3 text-white pb-4 border-b border-white/10" onClick={(e) => e.stopPropagation()}>
+                <h3 className="font-serif italic text-lg sm:text-xl text-white">
+                  Gallery
+                </h3>
 
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-[#88B2AB] font-bold tracking-widest uppercase">
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className="text-xs text-[#88B2AB] font-bold tracking-widest uppercase whitespace-nowrap">
                     {activeImageIndex + 1} / {allImages.length}
                   </span>
                   <button

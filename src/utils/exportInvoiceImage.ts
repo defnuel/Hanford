@@ -140,7 +140,8 @@ async function inlineImagesInElement(element: HTMLElement) {
 export async function exportInvoiceAsImage(
   exportNode: HTMLElement | null,
   onscreenNode: HTMLElement | null,
-  fileName: string
+  fileName: string,
+  exportWidth: number = 800
 ): Promise<ExportResult> {
   // Always target exportNode first to guarantee the wide 800px Desktop format layout, or fallback to onscreenNode
   const primaryNode = exportNode || onscreenNode;
@@ -173,14 +174,14 @@ export async function exportInvoiceAsImage(
 
   // Helper to reset parent layout in cloned document so html2canvas renders at (0, 0)
   const resetClonedLayout = (clonedDoc: Document, element: HTMLElement) => {
-    // Ensure the iframe document and body evaluate as wide desktop viewport (>= 820px)
+    const vpWidth = exportWidth + 20;
     if (clonedDoc.documentElement) {
-      clonedDoc.documentElement.style.width = '820px';
-      clonedDoc.documentElement.style.minWidth = '820px';
+      clonedDoc.documentElement.style.width = `${vpWidth}px`;
+      clonedDoc.documentElement.style.minWidth = `${vpWidth}px`;
     }
     if (clonedDoc.body) {
-      clonedDoc.body.style.width = '820px';
-      clonedDoc.body.style.minWidth = '820px';
+      clonedDoc.body.style.width = `${vpWidth}px`;
+      clonedDoc.body.style.minWidth = `${vpWidth}px`;
       clonedDoc.body.style.margin = '0';
       clonedDoc.body.style.padding = '0';
       clonedDoc.body.style.backgroundColor = '#FFFFFF';
@@ -197,9 +198,9 @@ export async function exportInvoiceAsImage(
       current.style.overflow = 'visible';
       current = current.parentElement;
     }
-    element.style.width = '800px';
-    element.style.minWidth = '800px';
-    element.style.maxWidth = '800px';
+    element.style.width = `${exportWidth}px`;
+    element.style.minWidth = `${exportWidth}px`;
+    element.style.maxWidth = `${exportWidth}px`;
     element.style.display = 'block';
     element.style.backgroundColor = '#FFFFFF';
     element.style.boxSizing = 'border-box';
@@ -257,8 +258,8 @@ export async function exportInvoiceAsImage(
         imageTimeout: 3000,
         scrollX: 0,
         scrollY: 0,
-        windowWidth: 820,
-        width: 800,
+        windowWidth: exportWidth + 20,
+        width: exportWidth,
         onclone: (clonedDoc, element) => {
           resetClonedLayout(clonedDoc, element);
         }
@@ -302,15 +303,15 @@ export async function exportInvoiceAsImage(
             backgroundColor: '#FFFFFF',
             skipFonts: true,
             fontEmbedCSS: '',
-            width: 800,
+            width: exportWidth,
             style: {
               position: 'static',
               opacity: '1',
               visibility: 'visible',
               transform: 'none',
-              width: '800px',
-              minWidth: '800px',
-              maxWidth: '800px'
+              width: `${exportWidth}px`,
+              minWidth: `${exportWidth}px`,
+              maxWidth: `${exportWidth}px`
             }
           }),
           4000,

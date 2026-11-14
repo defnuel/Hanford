@@ -2,10 +2,21 @@ import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
-import { getPropertiesFromSource, getProjectsFromSource, getBookingsFromSource, appendBookingInquiry } from './src/server/googleSheetsService';
-import { sendTelegramBookingNotification } from './src/server/telegramService';
+import {
+  getPropertiesFromSource,
+  getProjectsFromSource,
+  getBookingsFromSource,
+  appendBookingInquiry,
+  appendSignatureOrderToSheet
+} from './src/server/googleSheetsService';
+import { sendTelegramBookingNotification, sendTelegramDiningNotification } from './src/server/telegramService';
 import { generateInvoiceHtml } from './src/server/invoiceHtmlService';
-import { BookingInquiry } from './src/types';
+import {
+  findMatchingBookingForDining,
+  generateSignatureReceiptHtml,
+  signatureOrdersStore
+} from './src/server/signatureReceiptService';
+import { BookingInquiry, SignatureOrderPayload, SignatureOrderReceipt } from './src/types';
 
 async function startServer() {
   const app = express();
@@ -323,6 +334,181 @@ async function startServer() {
       console.error('Error serving invoice HTML:', err);
       res.status(500).send('<h1>Error generating invoice</h1><p>' + (err?.message || String(err)) + '</p>');
     }
+  });
+
+  // POST /api/hr-signature/verify-code - Verify X username against Google Sheets Bookings & Location
+  app.post(['/api/hr-signature/verify-code', '/api/hf-signature/verify-code'], async (req: Request, res: Response) => {
+    try {
+      const { xUsername, propertySlug, propertyName } = req.body || {};
+
+      if (!xUsername || !String(xUsername).trim()) {
+        return res.status(400).json({
+          success: false,
+          valid: false,
+          message: 'Please enter your X username.'
+        });
+      }
+
+      if (!propertySlug && !propertyName) {
+        return res.status(400).json({
+          success: false,
+          valid: false,
+          message: 'Please select a property location first.'
+        });
+      }
+
+      const bookingsRes = await getBookingsFromSource();
+      const matched = findMatchingBookingForDining(
+        bookingsRes.bookings,
+        xUsername,
+        propertySlug,
+        propertyName
+      );
+
+      if (!matched) {
+        return res.json({
+          success: true,
+          valid: false,
+          message: 'No matching booking found for this X username at the selected property.'
+        });
+      }
+
+      return res.json({
+        success: true,
+        valid: true,
+        matchedBooking: matched,
+        message: 'Guest verified — Free complimentary dining.'
+      });
+    } catch (err: any) {
+      console.error('Error in /api/hr-signature/verify-code:', err);
+      return res.status(500).json({
+        success: false,
+        valid: false,
+        message: 'Unable to verify X username against bookings.'
+      });
+    }
+  });
+
+  // POST /api/hr-signature/order - Place HR Signature order & notify Telegram bot
+  app.post(['/api/hr-signature/order', '/api/hf-signature/order'], async (req: Request, res: Response) => {
+    try {
+      const payload = req.body as SignatureOrderPayload;
+
+      if (!payload || !Array.isArray(payload.items) || payload.items.length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Order must contain at least one menu item.'
+        });
+      }
+
+      if (!payload.propertySlug && !payload.propertyName) {
+        return res.status(400).json({
+          success: false,
+          error: 'Property location is required.'
+        });
+      }
+
+      const subtotal = payload.items.reduce((sum, item) => sum + Number(item.lineTotal || 0), 0);
+      const taxAmount = Math.round(subtotal * 0.1);
+
+      let matchedBooking = null;
+      if (payload.xUsernameCode && payload.xUsernameCode.trim()) {
+        const bookingsRes = await getBookingsFromSource();
+        matchedBooking = findMatchingBookingForDining(
+          bookingsRes.bookings,
+          payload.xUsernameCode,
+          payload.propertySlug,
+          payload.propertyName
+        );
+      }
+
+      // Free complimentary when guest confirms they are a Hotel Guest (matching booking verified or hotel guest status)
+      const isFreeDining = Boolean(payload.isHotelGuest) || Boolean(matchedBooking);
+      const grossTotal = subtotal + taxAmount;
+      const discountAmount = isFreeDining ? grossTotal : 0;
+      const totalAmount = isFreeDining ? 0 : grossTotal;
+
+      const randomHex = Math.random().toString(36).substring(2, 7).toUpperCase();
+      const orderId = `HRS-2026-${randomHex}`;
+
+      const resolvedGuestName =
+        (payload.guestName && payload.guestName.trim()) ||
+        (matchedBooking?.guestName) ||
+        (payload.xUsernameCode ? `@${payload.xUsernameCode.replace(/^@+/, '')}` : 'Guest');
+
+      const receipt: SignatureOrderReceipt = {
+        orderId,
+        createdAt: new Date().toISOString(),
+        propertySlug: payload.propertySlug,
+        propertyName: payload.propertyName || payload.propertySlug,
+        serviceType: payload.serviceType === 'room_service' ? 'room_service' : 'restaurant',
+        isHotelGuest: isFreeDining,
+        guestName: resolvedGuestName,
+        roomOrTable: payload.serviceType === 'room_service' ? (payload.roomOrTable?.trim() || undefined) : undefined,
+        xUsernameCode: payload.xUsernameCode?.trim() || undefined,
+        isFreeDining,
+        matchedBooking,
+        items: payload.items,
+        subtotal,
+        taxAmount,
+        discountAmount,
+        totalAmount,
+        notes: payload.notes?.trim() || undefined
+      };
+
+      signatureOrdersStore.set(orderId, receipt);
+
+      let sheetSync: any = null;
+      try {
+        sheetSync = await appendSignatureOrderToSheet(receipt);
+      } catch (sErr: any) {
+        console.warn('Google Sheet HR Signature sync warning:', sErr?.message);
+        sheetSync = { success: false, source: 'memory_fallback', error: sErr?.message };
+      }
+
+      let telegramResult: any = null;
+      try {
+        const host = req.get('x-forwarded-host') || req.get('host');
+        const protocol = req.get('x-forwarded-proto') || req.protocol || 'http';
+        const baseUrl = `${protocol}://${host}`;
+        telegramResult = await sendTelegramDiningNotification(receipt, baseUrl);
+      } catch (tErr: any) {
+        console.warn('Telegram dining alert warning:', tErr?.message);
+        telegramResult = { success: false, error: tErr?.message };
+      }
+
+      return res.status(201).json({
+        success: true,
+        receipt,
+        sheetSync,
+        telegramNotification: telegramResult
+      });
+    } catch (err: any) {
+      console.error('Error in /api/hr-signature/order:', err);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to place HR Signature order.',
+        details: err?.message || String(err)
+      });
+    }
+  });
+
+  // GET /api/hr-signature/receipt/:orderId - Serve printable HTML receipt linked from Telegram
+  app.get(['/api/hr-signature/receipt/:orderId', '/api/hf-signature/receipt/:orderId'], (req: Request, res: Response) => {
+    const { orderId } = req.params;
+    const stored = signatureOrdersStore.get(orderId);
+
+    if (!stored) {
+      return res.status(404).send(`
+        <html><body style="font-family:sans-serif;padding:40px;color:#2C3744;">
+          <h2 style="color:#3A4F67;">HR Signature Receipt #${String(orderId).replace(/[<>&"]/g, '')}</h2>
+          <p>This receipt session is no longer stored in memory. Please download the PNG receipt directly from the HR Signature confirmation page.</p>
+        </body></html>
+      `);
+    }
+
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.send(generateSignatureReceiptHtml(stored));
   });
 
   // ---------------------------------------------------------------------------
