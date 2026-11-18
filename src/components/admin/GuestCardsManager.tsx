@@ -21,6 +21,7 @@ import {
   LayoutGrid,
   Bed,
   CheckCircle2,
+  GripVertical,
 } from 'lucide-react';
 import { BookingInquiry, Property } from '../../types';
 import { GuestKeyCardCanvas } from './GuestKeyCardCanvas';
@@ -614,6 +615,9 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
   const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhotoItem[]>(PRESET_COLLECTIONS.uluwatu);
   const [newPhotoUrl, setNewPhotoUrl] = useState<string>('');
   const [newPhotoTitle, setNewPhotoTitle] = useState<string>('');
+  const [draggedPhotoIdx, setDraggedPhotoIdx] = useState<number | null>(null);
+  const [dragOverPhotoIdx, setDragOverPhotoIdx] = useState<number | null>(null);
+  const galleryListRef = useRef<HTMLDivElement>(null);
 
   // Close autofill dropdown on outside click
   useEffect(() => {
@@ -906,6 +910,17 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
       const temp = copy[index];
       copy[index] = copy[targetIdx];
       copy[targetIdx] = temp;
+      return copy;
+    });
+  };
+
+  const handleReorderPhoto = (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0) return;
+    setGalleryPhotos((prev) => {
+      if (fromIndex >= prev.length || toIndex >= prev.length) return prev;
+      const copy = [...prev];
+      const [moved] = copy.splice(fromIndex, 1);
+      copy.splice(toIndex, 0, moved);
       return copy;
     });
   };
@@ -1471,12 +1486,12 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                   <label className="block font-bold text-slate-700 uppercase tracking-wider text-[10.5px]">
                     Room Category
                   </label>
-                  <input
-                    type="text"
+                  <textarea
+                    rows={2}
                     value={welcomeRoomDetails}
                     onChange={(e) => setWelcomeRoomDetails(e.target.value)}
                     placeholder="e.g. Deluxe Ocean View Room"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-[#51867E] focus:outline-none"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-[#51867E] focus:outline-none resize-y"
                   />
                 </div>
               </div>
@@ -1860,7 +1875,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                 </div>
               </div>
 
-              {/* Manage Active Gallery Photos List (Reorder, Edit Title, Delete) */}
+              {/* Manage Active Gallery Photos List (Drag & Drop Reorder, Edit Title, Delete) */}
               <div className="space-y-2 pt-2 border-t border-slate-100">
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col">
@@ -1868,7 +1883,7 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                       Gallery Photos List ({galleryPhotos.length} Total)
                     </label>
                     <span className="text-[10px] text-emerald-700 font-medium">
-                      Top 15 are displayed on the A4 Document
+                      Drag naik/turun untuk atur urutan • Top 15 are displayed on the A4 Document
                     </span>
                   </div>
                   {galleryPhotos.length > 0 && (
@@ -1882,19 +1897,128 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                   )}
                 </div>
 
-                <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                <div
+                  ref={galleryListRef}
+                  className="space-y-2 max-h-96 overflow-y-auto pr-1"
+                >
                   {galleryPhotos.map((photo, idx) => {
                     const isFeaturedOnA4 = idx < 15;
+                    const isDragging = draggedPhotoIdx === idx;
+                    const isDropTarget =
+                      dragOverPhotoIdx === idx && draggedPhotoIdx !== null && draggedPhotoIdx !== idx;
+
                     return (
                       <div
                         key={photo.id || idx}
-                        className={`flex items-center gap-2 p-2 rounded-xl text-xs border transition-colors ${
-                          isFeaturedOnA4
-                            ? 'bg-slate-50 border-slate-200'
-                            : 'bg-slate-100/60 border-dashed border-slate-300 opacity-80'
+                        data-photo-idx={idx}
+                        draggable
+                        onDragStart={(e) => {
+                          const targetTag = (e.target as HTMLElement)?.tagName;
+                          if (targetTag === 'INPUT' || targetTag === 'BUTTON') {
+                            e.preventDefault();
+                            return;
+                          }
+                          setDraggedPhotoIdx(idx);
+                          setDragOverPhotoIdx(idx);
+                          if (e.dataTransfer) {
+                            e.dataTransfer.effectAllowed = 'move';
+                            e.dataTransfer.setData('text/plain', String(idx));
+                          }
+                        }}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          if (e.dataTransfer) {
+                            e.dataTransfer.dropEffect = 'move';
+                          }
+                          if (dragOverPhotoIdx !== idx) {
+                            setDragOverPhotoIdx(idx);
+                          }
+                          const container = galleryListRef.current;
+                          if (container) {
+                            const rect = container.getBoundingClientRect();
+                            if (e.clientY - rect.top < 40) {
+                              container.scrollTop -= 12;
+                            } else if (rect.bottom - e.clientY < 40) {
+                              container.scrollTop += 12;
+                            }
+                          }
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          const fromIdx =
+                            draggedPhotoIdx !== null
+                              ? draggedPhotoIdx
+                              : Number(e.dataTransfer?.getData('text/plain'));
+                          if (!isNaN(fromIdx)) {
+                            handleReorderPhoto(fromIdx, idx);
+                          }
+                          setDraggedPhotoIdx(null);
+                          setDragOverPhotoIdx(null);
+                        }}
+                        onDragEnd={() => {
+                          setDraggedPhotoIdx(null);
+                          setDragOverPhotoIdx(null);
+                        }}
+                        className={`flex items-center gap-2 p-2 rounded-xl text-xs border transition-all select-none ${
+                          isDragging
+                            ? 'opacity-45 scale-[0.99] border-[#51867E] bg-[#EAF2F1]/50'
+                            : isDropTarget
+                            ? 'border-2 border-[#51867E] bg-[#EAF2F1]/70 shadow-sm'
+                            : isFeaturedOnA4
+                            ? 'bg-slate-50 border-slate-200 hover:border-[#88B2AB]'
+                            : 'bg-slate-100/60 border-dashed border-slate-300 opacity-85 hover:border-slate-400'
                         }`}
                       >
-                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-slate-200 shrink-0 border border-slate-300 relative">
+                        {/* Drag Handle (Mouse + Touch) */}
+                        <div
+                          className="p-1 text-slate-400 hover:text-[#3A4F67] cursor-grab active:cursor-grabbing shrink-0 touch-none"
+                          title="Drag naik/turun untuk memindahkan urutan"
+                          onTouchStart={() => {
+                            setDraggedPhotoIdx(idx);
+                            setDragOverPhotoIdx(idx);
+                          }}
+                          onTouchMove={(e) => {
+                            if (draggedPhotoIdx === null) return;
+                            const touch = e.touches[0];
+                            if (!touch) return;
+                            const container = galleryListRef.current;
+                            if (container) {
+                              const rect = container.getBoundingClientRect();
+                              if (touch.clientY - rect.top < 40) {
+                                container.scrollTop -= 10;
+                              } else if (rect.bottom - touch.clientY < 40) {
+                                container.scrollTop += 10;
+                              }
+                            }
+                            const el = document.elementFromPoint(touch.clientX, touch.clientY);
+                            const rowEl = el?.closest('[data-photo-idx]') as HTMLElement | null;
+                            if (rowEl) {
+                              const targetIdx = Number(rowEl.getAttribute('data-photo-idx'));
+                              if (!isNaN(targetIdx) && dragOverPhotoIdx !== targetIdx) {
+                                setDragOverPhotoIdx(targetIdx);
+                              }
+                            }
+                          }}
+                          onTouchEnd={() => {
+                            if (
+                              draggedPhotoIdx !== null &&
+                              dragOverPhotoIdx !== null &&
+                              draggedPhotoIdx !== dragOverPhotoIdx
+                            ) {
+                              handleReorderPhoto(draggedPhotoIdx, dragOverPhotoIdx);
+                            }
+                            setDraggedPhotoIdx(null);
+                            setDragOverPhotoIdx(null);
+                          }}
+                          onTouchCancel={() => {
+                            setDraggedPhotoIdx(null);
+                            setDragOverPhotoIdx(null);
+                          }}
+                        >
+                          <GripVertical className="w-4 h-4" />
+                        </div>
+
+                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-slate-200 shrink-0 border border-slate-300 relative pointer-events-none">
                           <img
                             src={photo.url}
                             alt={photo.title}

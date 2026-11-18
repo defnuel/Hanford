@@ -106,6 +106,14 @@ export const HF_SIGNATURE_MENU: SignatureMenuItem[] = [
     price: 18
   },
   {
+    id: 'bk-acai-bowl',
+    category: 'breakfast',
+    section: 'À la Carte',
+    name: 'Açaí Bowl',
+    description: 'Creamy açaí and banana, seasonal fruit, oats.',
+    price: 20
+  },
+  {
     id: 'bk-organic-avocado-toast',
     category: 'breakfast',
     section: 'À la Carte',
@@ -120,6 +128,14 @@ export const HF_SIGNATURE_MENU: SignatureMenuItem[] = [
     name: 'Fresh Fruit Bowl',
     description: 'Selection of seasonal fresh fruits.',
     price: 22
+  },
+  {
+    id: 'bk-spanish-tortilla',
+    category: 'breakfast',
+    section: 'À la Carte',
+    name: 'Spanish Tortilla',
+    description: 'Egg, potatoes, bread basket.',
+    price: 25
   },
   {
     id: 'bk-cured-ham-toast',

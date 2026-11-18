@@ -175,7 +175,7 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-1">
+              <div className="flex items-start justify-between gap-4 pt-1">
                 <div>
                   <div className="text-[10px] tracking-wider text-slate-500 uppercase font-semibold">
                     X USERNAME
@@ -193,7 +193,7 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
                     <div className="text-[10px] tracking-wider text-slate-500 uppercase font-semibold">
                       ALLOCATED ROOM
                     </div>
-                    <div className="text-base text-[#1E293B] font-bold mt-0.5">
+                    <div className="text-base text-[#1E293B] font-bold mt-0.5 whitespace-pre-line leading-snug">
                       {roomDetails}
                     </div>
                   </div>
