@@ -29,7 +29,7 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
   stayDates,
   bookingRef = 'Ref No: HNF-ACCOM-2026',
   photos = [],
-  brandLogoUrl = 'https://lh3.googleusercontent.com/d/1F-m9SWOLAD63pO-tzJIzOCUSv4heXHLk',
+  brandLogoUrl = '/android-chrome-192x192.png',
   canvasRef,
   id = 'hanford-gallery-card-canvas',
   fixedWidth = false,
@@ -98,7 +98,9 @@ export const AccommodationGalleryCanvas: React.FC<AccommodationGalleryCanvasProp
                 alt="Hanford Logo"
                 className="w-full h-full object-contain"
                 onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).src = 'https://lh3.googleusercontent.com/d/1F-m9SWOLAD63pO-tzJIzOCUSv4heXHLk';
+                  const img = e.currentTarget as HTMLImageElement;
+                  img.onerror = null;
+                  img.src = '/logo-hanford.svg';
                 }}
               />
             </div>

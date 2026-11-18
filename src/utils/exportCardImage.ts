@@ -101,15 +101,17 @@ async function fetchAsDataUrl(url: string): Promise<string> {
     const res = await runWithTimeout(fetch(url, { mode: 'cors' }), 2500, 'direct fetch');
     if (res.ok) {
       const blob = await res.blob();
-      const result = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result : '');
-        reader.onerror = () => resolve('');
-        reader.readAsDataURL(blob);
-      });
-      if (result) {
-        dataUrlCache.set(url, result);
-        return result;
+      if (blob.type && blob.type.startsWith('image/')) {
+        const result = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+          reader.onerror = () => resolve('');
+          reader.readAsDataURL(blob);
+        });
+        if (result) {
+          dataUrlCache.set(url, result);
+          return result;
+        }
       }
     }
   } catch {
@@ -122,15 +124,17 @@ async function fetchAsDataUrl(url: string): Promise<string> {
     const res = await runWithTimeout(fetch(proxyUrl), 3500, 'proxy fetch');
     if (res.ok) {
       const blob = await res.blob();
-      const result = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result : '');
-        reader.onerror = () => resolve('');
-        reader.readAsDataURL(blob);
-      });
-      if (result) {
-        dataUrlCache.set(url, result);
-        return result;
+      if (blob.type && blob.type.startsWith('image/')) {
+        const result = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+          reader.onerror = () => resolve('');
+          reader.readAsDataURL(blob);
+        });
+        if (result) {
+          dataUrlCache.set(url, result);
+          return result;
+        }
       }
     }
   } catch (err) {

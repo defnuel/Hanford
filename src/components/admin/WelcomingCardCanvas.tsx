@@ -50,7 +50,7 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
     'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=85';
   const imageSource = heroImageUrl && heroImageUrl.trim() ? heroImageUrl.trim() : defaultHeroImage;
 
-  const brandLogoUrl = 'https://lh3.googleusercontent.com/d/1F-m9SWOLAD63pO-tzJIzOCUSv4heXHLk';
+  const brandLogoUrl = '/android-chrome-192x192.png';
 
   return (
     <div
@@ -84,7 +84,9 @@ export const WelcomingCardCanvas: React.FC<WelcomingCardCanvasProps> = ({
                 alt="Hanford Logo"
                 className="w-full h-full object-contain"
                 onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).src = 'https://lh3.googleusercontent.com/d/1F-m9SWOLAD63pO-tzJIzOCUSv4heXHLk';
+                  const img = e.currentTarget as HTMLImageElement;
+                  img.onerror = null;
+                  img.src = '/logo-hanford.svg';
                 }}
               />
             </div>
