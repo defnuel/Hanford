@@ -127,11 +127,17 @@ export function generateSignatureReceiptHtml(receipt: SignatureOrderReceipt): st
           ? `<div style="font-size:10.5px;color:#666666;margin-top:2px;">${escapeHtml(details.join(' · '))}</div>`
           : '';
       const qtyPrefix = item.quantity > 1 ? `${item.quantity}x ` : '';
+      const displayName =
+        !/^set breakfast\b/i.test(item.name) &&
+        (item.section === 'Set Breakfast' ||
+          /^(Healthy|Continental|Classic Platter)(?:\s*\(|$)/i.test(item.name.trim()))
+          ? `Set Breakfast - ${item.name}`
+          : item.name;
 
       return `
         <div style="margin-bottom:12px;">
           <div style="display:flex;align-items:baseline;font-size:12px;color:#2C3744;">
-            <span style="font-weight:600;max-width:65%;word-break:break-word;">${escapeHtml(qtyPrefix + item.name)}</span>
+            <span style="font-weight:600;max-width:65%;word-break:break-word;">${escapeHtml(qtyPrefix + displayName)}</span>
             <span style="flex:1;border-bottom:1.5px dotted #88B2AB;margin:0 8px;"></span>
             <span style="font-weight:700;color:#3A4F67;white-space:nowrap;">${item.lineTotal.toLocaleString()}$</span>
           </div>

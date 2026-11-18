@@ -685,7 +685,7 @@ const ICGuidelinesSection: React.FC<{ onNavigate: (path: string) => void }> = ({
                       >
                         Book Now
                       </a>
-                      , pilih properti, isi data tamu (Name &amp; @username X), kategori booking, tanggal check in &amp; check out, jumlah kamar, serta catatan jika ada.
+                      , pilih properti, isi data tamu (Name &amp; @username X), kategori booking, informasi dan jumlah yang diperlukan, serta catatan jika ada.
                     </p>
                   </div>
 

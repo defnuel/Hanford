@@ -18,6 +18,10 @@ export interface SignatureMenuItem {
   secondaryVariantLabel?: string;
   secondaryVariants?: string[];
   enhancements?: SignatureEnhancementOption[];
+  descriptionSections?: {
+    title: string;
+    lines: string[];
+  }[];
 }
 
 export const SIGNATURE_CATEGORY_TABS: {
@@ -207,7 +211,35 @@ export const HF_SIGNATURE_MENU: SignatureMenuItem[] = [
     section: 'Tasting Experience',
     name: 'Signature Tasting Stand (Per Person)',
     description:
-      'Cold Stand: bread basket, fresh oyster, crispy wheat pocket, olive & anchovy skewer, foie gras pâté with pickles, mustard and crisp flatbread, artichoke & cured ham salad. Hot Stand: grilled Wagyu beef sandwich, crispy layered potatoes with spiced tomato sauce, crispy prawn taco. Dessert: homemade cake with coffee or tea.',
+      'Cold Stand:\nBread basket\nFresh oyster\nCrispy wheat pocket\nOlive & anchovy skewer\nFoie gras pâté with pickles, mustard, crisp flatbread\nArtichoke & cured ham salad\n\nHot Stand:\nGrilled Wagyu beef sandwich\nCrispy layered potatoes with spiced tomato sauce\nCrispy prawn taco\n\nDessert:\nChoose between a slice of our homemade cake or share the delight of the cakes in the vitrine.\nIncludes coffee or tea',
+    descriptionSections: [
+      {
+        title: 'COLD STAND',
+        lines: [
+          'Bread basket',
+          'Fresh oyster',
+          'Crispy wheat pocket',
+          'Olive & anchovy skewer',
+          'Foie gras pâté with pickles, mustard, crisp flatbread',
+          'Artichoke & cured ham salad'
+        ]
+      },
+      {
+        title: 'HOT STAND',
+        lines: [
+          'Grilled Wagyu beef sandwich',
+          'Crispy layered potatoes with spiced tomato sauce',
+          'Crispy prawn taco'
+        ]
+      },
+      {
+        title: 'DESSERT',
+        lines: [
+          'Choose between a slice of our homemade cake or share the delight of the cakes in the vitrine.',
+          'Includes coffee or tea'
+        ]
+      }
+    ],
     price: 60,
     enhancements: [
       { id: 'pair-sparkling', label: 'Sparkling Brut Pairing', price: 10 },
@@ -337,6 +369,14 @@ export const HF_SIGNATURE_MENU: SignatureMenuItem[] = [
     section: 'Mains, Salads & Sharing',
     name: 'Lobster Roll',
     description: 'Brioche, lobster, pickles, red cabbage, hollandaise sauce, Schrenckii caviar (5g), french fries.',
+    price: 55
+  },
+  {
+    id: 'ld-wagyu-a5-steak',
+    category: 'lunch_dinner',
+    section: 'Mains, Salads & Sharing',
+    name: 'Signature Wagyu A5 Steak',
+    description: 'Japanese A5 Wagyu striploin, roasted garlic, seasonal vegetables, black peppercorn jus.',
     price: 55
   },
 

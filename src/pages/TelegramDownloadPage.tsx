@@ -305,13 +305,19 @@ export const TelegramDownloadPage: React.FC<TelegramDownloadPageProps> = ({ path
               meta.push(item.selectedEnhancements.map((e) => `+ ${e.label}`).join(', '));
             }
             const qtyPrefix = item.quantity > 1 ? `${item.quantity}x ` : '';
+            const displayName =
+              !/^set breakfast\b/i.test(item.name) &&
+              (item.section === 'Set Breakfast' ||
+                /^(Healthy|Continental|Classic Platter)(?:\s*\(|$)/i.test(item.name.trim()))
+                ? `Set Breakfast - ${item.name}`
+                : item.name;
 
             return (
               <div key={item.id}>
                 <div className="flex items-baseline text-xs text-[#2C3744]">
                   <span className="font-semibold max-w-[66%] break-words">
                     {qtyPrefix}
-                    {item.name}
+                    {displayName}
                   </span>
                   <span className="flex-1 border-b border-dotted border-[#88B2AB] mx-2 mb-0.5" />
                   <span className="font-bold text-[#3A4F67] whitespace-nowrap tabular-nums">

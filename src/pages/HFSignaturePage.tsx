@@ -173,7 +173,10 @@ export const HFSignaturePage: React.FC = () => {
         {
           id: key,
           menuItemId: item.id,
-          name: item.name,
+          name:
+            item.section === 'Set Breakfast' && !/^set breakfast\b/i.test(item.name)
+              ? `Set Breakfast - ${item.name}`
+              : item.name,
           category: item.category,
           section: item.section,
           unitPrice,
@@ -376,12 +379,19 @@ export const HFSignaturePage: React.FC = () => {
             }
             const qtyPrefix = item.quantity > 1 ? `${item.quantity}x ` : '';
 
+            const displayName =
+              !/^set breakfast\b/i.test(item.name) &&
+              (item.section === 'Set Breakfast' ||
+                /^(Healthy|Continental|Classic Platter)(?:\s*\(|$)/i.test(item.name.trim()))
+                ? `Set Breakfast - ${item.name}`
+                : item.name;
+
             return (
               <div key={item.id}>
                 <div className="flex items-baseline text-xs text-[#2C3744]">
                   <span className="font-semibold max-w-[66%] break-words">
                     {qtyPrefix}
-                    {item.name}
+                    {displayName}
                   </span>
                   <span className="flex-1 border-b border-dotted border-[#88B2AB] mx-2 mb-0.5" />
                   <span className="font-bold text-[#3A4F67] whitespace-nowrap tabular-nums">
@@ -590,10 +600,32 @@ export const HFSignaturePage: React.FC = () => {
                                 <h3 className="text-sm sm:text-[15px] font-semibold text-[#2C3744]">
                                   {item.name}
                                 </h3>
-                                {item.description && (
-                                  <p className="text-xs text-[#666666] leading-relaxed">
-                                    {item.description}
-                                  </p>
+                                {item.descriptionSections && item.descriptionSections.length > 0 ? (
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 pt-1.5 text-xs text-[#666666]">
+                                    {item.descriptionSections.map((sec) => (
+                                      <div
+                                        key={sec.title}
+                                        className={
+                                          sec.title === 'DESSERT' ? 'sm:col-span-2 space-y-1' : 'space-y-1'
+                                        }
+                                      >
+                                        <div className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#3A4F67]">
+                                          {sec.title}
+                                        </div>
+                                        <div className="space-y-0.5 leading-relaxed">
+                                          {sec.lines.map((line, lineIdx) => (
+                                            <div key={lineIdx}>{line}</div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  item.description && (
+                                    <p className="text-xs text-[#666666] leading-relaxed whitespace-pre-line">
+                                      {item.description}
+                                    </p>
+                                  )
                                 )}
                               </div>
 
