@@ -618,16 +618,6 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
   const [draggedPhotoIdx, setDraggedPhotoIdx] = useState<number | null>(null);
   const [dragOverPhotoIdx, setDragOverPhotoIdx] = useState<number | null>(null);
   const galleryListRef = useRef<HTMLDivElement>(null);
-  const lastLoadedGalleryLocationRef = useRef<string | null>(null);
-
-  const getGalleryLocationKey = (name?: string, matched?: Property): string => {
-    const base = matched?.slug || matched?.name || name || '';
-    return base
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '');
-  };
 
   // Close autofill dropdown on outside click
   useEffect(() => {
@@ -780,24 +770,18 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
       findPropertyFromList(propName, properties) ||
       (b.propertySlug ? findPropertyFromList(b.propertySlug, properties) : undefined);
 
-    const resolvedGalleryPropName = matchedProp?.name || propName;
     if (matchedProp) {
       setWelcomeProperty(matchedProp.name);
       setGalleryProperty(matchedProp.name);
       if (matchedProp.heroImage) {
         setWelcomeHeroImage(matchedProp.heroImage);
       }
-    }
-
-    const nextLocationKey = getGalleryLocationKey(resolvedGalleryPropName, matchedProp);
-    const isSameLocation =
-      lastLoadedGalleryLocationRef.current !== null &&
-      lastLoadedGalleryLocationRef.current === nextLocationKey;
-
-    if (!isSameLocation) {
-      const propPhotos = get15PhotosForProperty(resolvedGalleryPropName, matchedProp, properties);
+      // Auto-select 15 curated photos from Google Spreadsheet Location data
+      const propPhotos = get15PhotosForProperty(matchedProp.name, matchedProp, properties);
       setGalleryPhotos(propPhotos);
-      lastLoadedGalleryLocationRef.current = nextLocationKey;
+    } else {
+      const propPhotos = get15PhotosForProperty(propName, undefined, properties);
+      setGalleryPhotos(propPhotos);
     }
   };
 
@@ -857,12 +841,8 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
   const handlePropertySelectForGallery = (propName: string) => {
     setGalleryProperty(propName);
     const matched = findPropertyFromList(propName, properties);
-    const nextLocationKey = getGalleryLocationKey(matched?.name || propName, matched);
-    if (lastLoadedGalleryLocationRef.current !== nextLocationKey) {
-      const propPhotos = get15PhotosForProperty(propName, matched, properties);
-      setGalleryPhotos(propPhotos);
-      lastLoadedGalleryLocationRef.current = nextLocationKey;
-    }
+    const propPhotos = get15PhotosForProperty(propName, matched, properties);
+    setGalleryPhotos(propPhotos);
   };
 
   const handlePropertySelectForKeyCard = (propName: string) => {
@@ -1774,7 +1754,6 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                       if (p) {
                         setGalleryProperty(p.name);
                         setGalleryPhotos(get15PhotosForProperty(p.name, p, properties));
-                        lastLoadedGalleryLocationRef.current = getGalleryLocationKey(p.name, p);
                       }
                     }}
                     className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[10.5px] font-semibold cursor-pointer transition-colors"
@@ -1788,7 +1767,6 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                       if (p) {
                         setGalleryProperty(p.name);
                         setGalleryPhotos(get15PhotosForProperty(p.name, p, properties));
-                        lastLoadedGalleryLocationRef.current = getGalleryLocationKey(p.name, p);
                       }
                     }}
                     className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[10.5px] font-semibold cursor-pointer transition-colors"
@@ -1802,7 +1780,6 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                       if (p) {
                         setGalleryProperty(p.name);
                         setGalleryPhotos(get15PhotosForProperty(p.name, p, properties));
-                        lastLoadedGalleryLocationRef.current = getGalleryLocationKey(p.name, p);
                       }
                     }}
                     className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[10.5px] font-semibold cursor-pointer transition-colors"
@@ -1816,7 +1793,6 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                       if (p) {
                         setGalleryProperty(p.name);
                         setGalleryPhotos(get15PhotosForProperty(p.name, p, properties));
-                        lastLoadedGalleryLocationRef.current = getGalleryLocationKey(p.name, p);
                       }
                     }}
                     className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[10.5px] font-semibold cursor-pointer transition-colors"
@@ -1829,7 +1805,6 @@ export const GuestCardsManager: React.FC<GuestCardsManagerProps> = ({
                       const p = findPropertyFromList(galleryProperty, properties);
                       if (p) {
                         setGalleryPhotos(get15PhotosForProperty(p.name, p, properties));
-                        lastLoadedGalleryLocationRef.current = getGalleryLocationKey(p.name, p);
                       }
                     }}
                     className="px-2.5 py-1 bg-[#EAF2F1] hover:bg-[#d5e7e4] text-[#2D5A53] rounded-lg text-[10.5px] font-bold cursor-pointer transition-colors flex items-center gap-1"
